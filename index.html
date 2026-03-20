@@ -1,1 +1,432 @@
-<!DOCTYPE html><html><body><h1>index.html</h1><p>Error: This request would exceed your organization's rate limit of 30,000 input tokens per minute (org: 8c5f1d36-658d-40a0-87e2-5c3d19dce712, model: claude-sonnet-4-20250514). For details, refer to: https://docs.claude.com/en/api/rate-limits. You can see the response headers for current usage. Please reduce the prompt length or the maximum tokens requested, or try again later. You may also contact sales at https://claude.com/contact-sales to discuss your options for a rate limit increase.</p></body></html>
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GCP PDE Study Hub</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Outfit', sans-serif;
+            background: #0f0f0f;
+            color: #e0e0e0;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .header h1 {
+            font-size: 3rem;
+            font-weight: 700;
+            color: #1D9E75;
+            margin-bottom: 0.5rem;
+        }
+
+        .header p {
+            font-size: 1.2rem;
+            color: #888;
+        }
+
+        .stats {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            margin-bottom: 3rem;
+            flex-wrap: wrap;
+        }
+
+        .stat-card {
+            background: #1a1a1a;
+            border: 1px solid #333;
+            border-radius: 12px;
+            padding: 1.5rem;
+            min-width: 150px;
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 600;
+            color: #1D9E75;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-label {
+            color: #888;
+            font-size: 0.9rem;
+        }
+
+        .progress-bar {
+            background: #333;
+            border-radius: 10px;
+            height: 8px;
+            margin-top: 0.5rem;
+        }
+
+        .progress-fill {
+            background: #1D9E75;
+            height: 100%;
+            border-radius: 10px;
+            transition: width 0.3s ease;
+        }
+
+        .section {
+            margin-bottom: 3rem;
+        }
+
+        .section-title {
+            font-size: 1.8rem;
+            font-weight: 600;
+            color: #1D9E75;
+            margin-bottom: 1.5rem;
+            border-bottom: 2px solid #333;
+            padding-bottom: 0.5rem;
+        }
+
+        .card-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .service-card {
+            background: #1a1a1a;
+            border: 1px solid #333;
+            border-radius: 12px;
+            padding: 1.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .service-card:hover {
+            border-color: #1D9E75;
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(29, 158, 117, 0.1);
+        }
+
+        .service-name {
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: #e0e0e0;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+        }
+
+        .service-icon {
+            width: 24px;
+            height: 24px;
+            background: #1D9E75;
+            border-radius: 4px;
+            margin-right: 0.8rem;
+        }
+
+        .service-links {
+            display: flex;
+            flex-direction: column;
+            gap: 0.8rem;
+        }
+
+        .service-link {
+            display: flex;
+            align-items: center;
+            text-decoration: none;
+            color: #888;
+            transition: color 0.3s ease;
+            padding: 0.5rem 0.8rem;
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .service-link:hover {
+            color: #1D9E75;
+            background: rgba(29, 158, 117, 0.1);
+        }
+
+        .checkbox {
+            width: 18px;
+            height: 18px;
+            margin-right: 0.8rem;
+            accent-color: #1D9E75;
+            cursor: pointer;
+        }
+
+        .exam-section {
+            background: linear-gradient(135deg, rgba(29, 158, 117, 0.1), rgba(29, 158, 117, 0.05));
+            border: 1px solid rgba(29, 158, 117, 0.2);
+            border-radius: 16px;
+            padding: 2rem;
+            margin-top: 2rem;
+        }
+
+        .exam-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1rem;
+        }
+
+        .exam-link {
+            display: flex;
+            align-items: center;
+            text-decoration: none;
+            color: #e0e0e0;
+            padding: 1rem;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .exam-link:hover {
+            background: rgba(29, 158, 117, 0.2);
+            transform: translateX(5px);
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 1rem;
+            }
+
+            .header h1 {
+                font-size: 2rem;
+            }
+
+            .stats {
+                gap: 1rem;
+            }
+
+            .card-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <h1>GCP Professional Data Engineer</h1>
+            <p>Complete Study Hub & Certification Guide</p>
+        </header>
+
+        <div class="stats">
+            <div class="stat-card">
+                <div class="stat-value" id="totalFiles">82</div>
+                <div class="stat-label">Total Resources</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="completedFiles">0</div>
+                <div class="stat-label">Completed</div>
+                <div class="progress-bar">
+                    <div class="progress-fill" id="progressFill"></div>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="progressPercent">0%</div>
+                <div class="stat-label">Progress</div>
+            </div>
+        </div>
+
+        <section class="section">
+            <h2 class="section-title">Data Processing & Analytics</h2>
+            <div class="card-grid">
+                <div class="service-card">
+                    <div class="service-name">
+                        <div class="service-icon"></div>
+                        BigQuery
+                    </div>
+                    <div class="service-links">
+                        <a href="bigquery/bigquery-core.html" class="service-link">
+                            <input type="checkbox" class="checkbox" data-file="bigquery-core">
+                            Core Concepts & Architecture
+                        </a>
+                        <a href="bigquery/bigquery-exam.html" class="service-link">
+                            <input type="checkbox" class="checkbox" data-file="bigquery-exam">
+                            Exam Traps & Cheatsheet
+                        </a>
+                    </div>
+                </div>
+
+                <div class="service-card">
+                    <div class="service-name">
+                        <div class="service-icon"></div>
+                        Dataflow
+                    </div>
+                    <div class="service-links">
+                        <a href="dataflow/dataflow-core.html" class="service-link">
+                            <input type="checkbox" class="checkbox" data-file="dataflow-core">
+                            Core Concepts & Architecture
+                        </a>
+                        <a href="dataflow/dataflow-exam.html" class="service-link">
+                            <input type="checkbox" class="checkbox" data-file="dataflow-exam">
+                            Exam Traps & Cheatsheet
+                        </a>
+                    </div>
+                </div>
+
+                <div class="service-card">
+                    <div class="service-name">
+                        <div class="service-icon"></div>
+                        Dataproc
+                    </div>
+                    <div class="service-links">
+                        <a href="dataproc/dataproc-core.html" class="service-link">
+                            <input type="checkbox" class="checkbox" data-file="dataproc-core">
+                            Core Concepts & Architecture
+                        </a>
+                        <a href="dataproc/dataproc-exam.html" class="service-link">
+                            <input type="checkbox" class="checkbox" data-file="dataproc-exam">
+                            Exam Traps & Cheatsheet
+                        </a>
+                    </div>
+                </div>
+
+                <div class="service-card">
+                    <div class="service-name">
+                        <div class="service-icon"></div>
+                        Cloud Data Fusion
+                    </div>
+                    <div class="service-links">
+                        <a href="cloud-data-fusion/cloud-data-fusion-core.html" class="service-link">
+                            <input type="checkbox" class="checkbox" data-file="cloud-data-fusion-core">
+                            Core Concepts & Architecture
+                        </a>
+                    </div>
+                </div>
+
+                <div class="service-card">
+                    <div class="service-name">
+                        <div class="service-icon"></div>
+                        Dataform
+                    </div>
+                    <div class="service-links">
+                        <a href="dataform/dataform-core.html" class="service-link">
+                            <input type="checkbox" class="checkbox" data-file="dataform-core">
+                            Core Concepts & Architecture
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="section">
+            <h2 class="section-title">Machine Learning</h2>
+            <div class="card-grid">
+                <div class="service-card">
+                    <div class="service-name">
+                        <div class="service-icon"></div>
+                        BigQuery ML
+                    </div>
+                    <div class="service-links">
+                        <a href="bigquery-ml/bigquery-ml-core.html" class="service-link">
+                            <input type="checkbox" class="checkbox" data-file="bigquery-ml-core">
+                            Core Concepts & Architecture
+                        </a>
+                        <a href="bigquery-ml/bigquery-ml-exam.html" class="service-link">
+                            <input type="checkbox" class="checkbox" data-file="bigquery-ml-exam">
+                            Exam Traps & Cheatsheet
+                        </a>
+                    </div>
+                </div>
+
+                <div class="service-card">
+                    <div class="service-name">
+                        <div class="service-icon"></div>
+                        Vertex AI
+                    </div>
+                    <div class="service-links">
+                        <a href="vertex-ai/vertex-ai-core.html" class="service-link">
+                            <input type="checkbox" class="checkbox" data-file="vertex-ai-core">
+                            Core Concepts & Architecture
+                        </a>
+                        <a href="vertex-ai/vertex-ai-exam.html" class="service-link">
+                            <input type="checkbox" class="checkbox" data-file="vertex-ai-exam">
+                            Exam Traps & Cheatsheet
+                        </a>
+                    </div>
+                </div>
+
+                <div class="service-card">
+                    <div class="service-name">
+                        <div class="service-icon"></div>
+                        Vertex AI AutoML
+                    </div>
+                    <div class="service-links">
+                        <a href="vertex-ai-automl/vertex-ai-automl-core.html" class="service-link">
+                            <input type="checkbox" class="checkbox" data-file="vertex-ai-automl-core">
+                            Core Concepts & Architecture
+                        </a>
+                    </div>
+                </div>
+
+                <div class="service-card">
+                    <div class="service-name">
+                        <div class="service-icon"></div>
+                        Vertex AI Custom Training
+                    </div>
+                    <div class="service-links">
+                        <a href="vertex-ai-custom-training/vertex-ai-custom-training-core.html" class="service-link">
+                            <input type="checkbox" class="checkbox" data-file="vertex-ai-custom-training-core">
+                            Core Concepts & Architecture
+                        </a>
+                    </div>
+                </div>
+
+                <div class="service-card">
+                    <div class="service-name">
+                        <div class="service-icon"></div>
+                        Vertex AI Workbench
+                    </div>
+                    <div class="service-links">
+                        <a href="vertex-ai-workbench/vertex-ai-workbench-core.html" class="service-link">
+                            <input type="checkbox" class="checkbox" data-file="vertex-ai-workbench-core">
+                            Core Concepts & Architecture
+                        </a>
+                    </div>
+                </div>
+
+                <div class="service-card">
+                    <div class="service-name">
+                        <div class="service-icon"></div>
+                        Vertex AI Pipelines
+                    </div>
+                    <div class="service-links">
+                        <a href="vertex-ai-pipelines/vertex-ai-pipelines-core.html" class="service-link">
+                            <input type="checkbox" class="checkbox" data-file="vertex-ai-pipelines-core">
+                            Core Concepts & Architecture
+                        </a>
+                    </div>
+                </div>
+
+                <div class="service-card">
+                    <div class="service-name">
+                        <div class="service-icon"></div>
+                        Vertex AI Feature Store
+                    </div>
+                    <div class="service-links">
+                        <a href="vertex-ai-feature-store/vertex-ai-feature-store-core.html" class="service-link">
+                            <input type="checkbox" class="checkbox" data-file="vertex-ai-feature-store-core">
+                            Core Concepts & Architecture
+                        </a>
+                    </div>
+                </div>
+
+                <div class="service-card">
+                    <div class="service-name">
+                        <div class="service-icon"></div>
+                        Vertex AI Endpoints
+                    </div>
+                

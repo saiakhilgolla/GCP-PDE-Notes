@@ -1,0 +1,374 @@
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BigQuery ML - GCP PDE Study Notes</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { 
+            font-family: 'Outfit', sans-serif; 
+            background-color: #0f1117; 
+            color: #e1e5e9; 
+            line-height: 1.6; 
+            padding: 20px; 
+        }
+        .container { max-width: 1200px; margin: 0 auto; }
+        h1 { color: #1D9E75; font-size: 2.5rem; margin-bottom: 30px; text-align: center; }
+        h2 { color: #1D9E75; font-size: 1.8rem; margin: 25px 0 15px 0; }
+        h3 { color: #1D9E75; font-size: 1.3rem; margin: 20px 0 10px 0; }
+        
+        details { 
+            background: #1a1d24; 
+            border: 1px solid #2d3748; 
+            border-radius: 8px; 
+            margin: 15px 0; 
+            overflow: hidden; 
+        }
+        summary { 
+            background: #2d3748; 
+            padding: 15px 20px; 
+            cursor: pointer; 
+            font-weight: 600; 
+            color: #1D9E75; 
+            border-bottom: 1px solid #374151; 
+        }
+        summary:hover { background: #374151; }
+        details[open] summary { border-bottom: 1px solid #1D9E75; }
+        details > div { padding: 20px; }
+        
+        table { 
+            width: 100%; 
+            border-collapse: collapse; 
+            margin: 15px 0; 
+            background: #1a1d24; 
+        }
+        th, td { 
+            padding: 12px; 
+            text-align: left; 
+            border: 1px solid #374151; 
+        }
+        th { 
+            background: #2d3748; 
+            color: #1D9E75; 
+            font-weight: 600; 
+        }
+        tr:nth-child(even) { background: #252932; }
+        
+        .warning { 
+            background: #7f1d1d; 
+            border-left: 4px solid #ef4444; 
+            padding: 15px; 
+            margin: 15px 0; 
+            border-radius: 4px; 
+        }
+        .tip { 
+            background: #064e3b; 
+            border-left: 4px solid #1D9E75; 
+            padding: 15px; 
+            margin: 15px 0; 
+            border-radius: 4px; 
+        }
+        code { 
+            background: #2d3748; 
+            padding: 2px 6px; 
+            border-radius: 4px; 
+            font-family: 'Courier New', monospace; 
+            color: #1D9E75; 
+        }
+        pre { 
+            background: #1a1d24; 
+            padding: 15px; 
+            border-radius: 6px; 
+            overflow-x: auto; 
+            margin: 10px 0; 
+            border: 1px solid #374151; 
+        }
+        ul, ol { padding-left: 25px; margin: 10px 0; }
+        li { margin: 8px 0; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>BigQuery ML - GCP PDE Exam Prep</h1>
+        
+        <details open>
+            <summary>Core Concepts</summary>
+            <div>
+                <p><strong>BigQuery ML</strong> enables SQL-based machine learning directly in BigQuery. Train models using SQL, no Python/R required. Models stored as BigQuery objects.</p>
+                
+                <h3>Key Workflow</h3>
+                <ol>
+                    <li><code>CREATE MODEL</code> - Train model with TRANSFORM clause for preprocessing</li>
+                    <li><code>ML.EVALUATE</code> - Check model performance metrics</li>
+                    <li><code>ML.PREDICT</code> - Run inference on new data</li>
+                    <li><code>ML.TRANSFORM</code> - Apply same preprocessing to serving data</li>
+                </ol>
+            </div>
+        </details>
+
+        <details>
+            <summary>Architecture</summary>
+            <div>
+                <h3>Model Storage & Execution</h3>
+                <table>
+                    <tr>
+                        <th>Component</th>
+                        <th>Function</th>
+                        <th>Location</th>
+                    </tr>
+                    <tr>
+                        <td>Model Object</td>
+                        <td>Trained model weights & metadata</td>
+                        <td>BigQuery dataset</td>
+                    </tr>
+                    <tr>
+                        <td>TRANSFORM Logic</td>
+                        <td>Preprocessing saved with model</td>
+                        <td>Model metadata</td>
+                    </tr>
+                    <tr>
+                        <td>Training Data</td>
+                        <td>Source tables for CREATE MODEL</td>
+                        <td>BigQuery tables</td>
+                    </tr>
+                    <tr>
+                        <td>Predictions</td>
+                        <td>ML.PREDICT output</td>
+                        <td>Query results or table</td>
+                    </tr>
+                </table>
+
+                <h3>Integration Points</h3>
+                <table>
+                    <tr>
+                        <th>Service</th>
+                        <th>Integration</th>
+                        <th>Use Case</th>
+                    </tr>
+                    <tr>
+                        <td>Vertex AI</td>
+                        <td>Export BQML models</td>
+                        <td>Online serving &lt;100ms</td>
+                    </tr>
+                    <tr>
+                        <td>Cloud Storage</td>
+                        <td>Import TensorFlow models</td>
+                        <td>Bring external models</td>
+                    </tr>
+                    <tr>
+                        <td>AutoML</td>
+                        <td>AUTOML_CLASSIFIER/REGRESSOR</td>
+                        <td>Automated model selection</td>
+                    </tr>
+                </table>
+            </div>
+        </details>
+
+        <details>
+            <summary>Key Configs & Limits</summary>
+            <div>
+                <table>
+                    <tr>
+                        <th>Parameter</th>
+                        <th>Default</th>
+                        <th>Range/Options</th>
+                        <th>Notes</th>
+                    </tr>
+                    <tr>
+                        <td>max_iterations</td>
+                        <td>20 (linear), 50 (boosted)</td>
+                        <td>1-1000</td>
+                        <td>Training iterations</td>
+                    </tr>
+                    <tr>
+                        <td>learn_rate</td>
+                        <td>0.1 (boosted)</td>
+                        <td>0.001-1.0</td>
+                        <td>Gradient descent step size</td>
+                    </tr>
+                    <tr>
+                        <td>l1_reg/l2_reg</td>
+                        <td>0</td>
+                        <td>0-10</td>
+                        <td>Regularization strength</td>
+                    </tr>
+                    <tr>
+                        <td>num_clusters</td>
+                        <td>auto</td>
+                        <td>2-100</td>
+                        <td>KMEANS only</td>
+                    </tr>
+                    <tr>
+                        <td>data_split_method</td>
+                        <td>AUTO_SPLIT</td>
+                        <td>RANDOM, SEQ, NO_SPLIT</td>
+                        <td>Train/eval split</td>
+                    </tr>
+                    <tr>
+                        <td>Model export size</td>
+                        <td>-</td>
+                        <td>Max 10GB</td>
+                        <td>To Vertex AI</td>
+                    </tr>
+                </table>
+            </div>
+        </details>
+
+        <details>
+            <summary>🚨 Exam Traps</summary>
+            <div>
+                <div class="warning">
+                    <h3>Model Types Confusion</h3>
+                    <ul>
+                        <li><strong>BOOSTED_TREE_*</strong> typically highest accuracy on tabular data, NOT RANDOM_FOREST_*</li>
+                        <li><strong>MATRIX_FACTORIZATION</strong> for recommendations, NOT collaborative filtering in name</li>
+                        <li><strong>ARIMA_PLUS</strong> for time series, NOT just ARIMA</li>
+                        <li><strong>AUTOML_*</strong> uses Vertex AI behind scenes, NOT native BQML algorithm</li>
+                    </ul>
+                </div>
+
+                <div class="warning">
+                    <h3>Function Purpose Traps</h3>
+                    <ul>
+                        <li><code>ML.TRANSFORM</code> applies TRAINING preprocessing to NEW data - prevents skew</li>
+                        <li><code>ML.EXPLAIN_PREDICT</code> for feature attribution, NOT just predictions</li>
+                        <li><code>ML.FORECAST</code> only for ARIMA_PLUS models, NOT general predictions</li>
+                        <li><code>ML.WEIGHTS</code> only for linear/logistic, NOT tree models</li>
+                    </ul>
+                </div>
+
+                <div class="warning">
+                    <h3>BQML vs Vertex AI Decision</h3>
+                    <ul>
+                        <li><strong>Use BQML when:</strong> Data in BigQuery, batch predictions OK, SQL-preferred workflow</li>
+                        <li><strong>Use Vertex AI when:</strong> Need &lt;100ms latency, complex preprocessing, non-SQL users</li>
+                        <li><strong>Export workflow:</strong> Train in BQML → Export to GCS → Import to Vertex AI → Deploy endpoint</li>
+                    </ul>
+                </div>
+
+                <div class="warning">
+                    <h3>Feature Engineering Gotchas</h3>
+                    <ul>
+                        <li>TRANSFORM clause must be in CREATE MODEL, NOT in ML.PREDICT</li>
+                        <li>ML.STANDARD_SCALER = mean 0, stddev 1 (NOT min-max scaling)</li>
+                        <li>ML.MIN_MAX_SCALER = range 0 to 1 (NOT standardization)</li>
+                        <li>Feature crosses only between categorical columns</li>
+                    </ul>
+                </div>
+            </div>
+        </details>
+
+        <details>
+            <summary>⚡ Quick Cheatsheet</summary>
+            <div>
+                <h3>Model Types Quick Reference</h3>
+                <table>
+                    <tr>
+                        <th>Model Type</th>
+                        <th>Use Case</th>
+                        <th>Output</th>
+                    </tr>
+                    <tr>
+                        <td>LINEAR_REG</td>
+                        <td>Numeric prediction</td>
+                        <td>Continuous value</td>
+                    </tr>
+                    <tr>
+                        <td>LOGISTIC_REG</td>
+                        <td>Classification</td>
+                        <td>Class + probability</td>
+                    </tr>
+                    <tr>
+                        <td>KMEANS</td>
+                        <td>Clustering</td>
+                        <td>Cluster assignment</td>
+                    </tr>
+                    <tr>
+                        <td>ARIMA_PLUS</td>
+                        <td>Time series</td>
+                        <td>Future values + CI</td>
+                    </tr>
+                    <tr>
+                        <td>BOOSTED_TREE_*</td>
+                        <td>High accuracy tabular</td>
+                        <td>Best performance</td>
+                    </tr>
+                    <tr>
+                        <td>MATRIX_FACTORIZATION</td>
+                        <td>Recommendations</td>
+                        <td>User-item scores</td>
+                    </tr>
+                </table>
+
+                <h3>Essential SQL Patterns</h3>
+                <pre><code>-- Create model with preprocessing
+CREATE MODEL `project.dataset.model_name`
+OPTIONS(model_type='BOOSTED_TREE_CLASSIFIER')
+AS SELECT * FROM ML.TRANSFORM(
+  SELECT ML.STANDARD_SCALER(feature1) OVER() as feature1,
+         ML.ONE_HOT_ENCODER(category) OVER() as category,
+         label
+  FROM `training_table`
+);
+
+-- Batch prediction
+SELECT * FROM ML.PREDICT(
+  MODEL `project.dataset.model_name`,
+  TABLE `prediction_data`
+);
+
+-- Evaluation metrics
+SELECT * FROM ML.EVALUATE(
+  MODEL `project.dataset.model_name`
+);</code></pre>
+
+                <h3>Transform Functions</h3>
+                <table>
+                    <tr>
+                        <th>Function</th>
+                        <th>Purpose</th>
+                        <th>Output Range</th>
+                    </tr>
+                    <tr>
+                        <td>ML.STANDARD_SCALER</td>
+                        <td>Normalize to mean=0, std=1</td>
+                        <td>(-∞, +∞)</td>
+                    </tr>
+                    <tr>
+                        <td>ML.MIN_MAX_SCALER</td>
+                        <td>Scale to range</td>
+                        <td>[0, 1]</td>
+                    </tr>
+                    <tr>
+                        <td>ML.ONE_HOT_ENCODER</td>
+                        <td>Categorical to binary</td>
+                        <td>{0, 1}</td>
+                    </tr>
+                    <tr>
+                        <td>ML.BUCKETIZE</td>
+                        <td>Numeric to categorical</td>
+                        <td>Bucket indices</td>
+                    </tr>
+                    <tr>
+                        <td>ML.FEATURE_CROSS</td>
+                        <td>Categorical interactions</td>
+                        <td>Combined features</td>
+                    </tr>
+                </table>
+            </div>
+        </details>
+
+        <details>
+            <summary>🎯 Question Patterns</summary>
+            <div>
+                <h3>Pattern 1: Model Type Selection</h3>
+                <div class="tip">
+                    <strong>Question signals:</strong> "highest accuracy", "tabular data", "structured data"<br>
+                    <strong>Answer:</strong> BOOSTED_TREE_CLASSIFIER/REGRESSOR<br>
+                    <strong>Trap:</strong> Don't pick RANDOM_FOREST (good but not best accuracy)
+                </div>
+
+                <h3>Pattern

@@ -1,0 +1,395 @@
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GCP PDE: Cloud Data Catalog Study Notes</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            background-color: #0f1117;
+            color: #e0e0e0;
+            font-family: 'Outfit', sans-serif;
+            line-height: 1.6;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+        
+        h1 {
+            color: #1D9E75;
+            margin-bottom: 30px;
+            font-size: 2.5em;
+            text-align: center;
+            border-bottom: 2px solid #1D9E75;
+            padding-bottom: 20px;
+        }
+        
+        h2 {
+            color: #1D9E75;
+            margin-top: 40px;
+            margin-bottom: 20px;
+            font-size: 1.8em;
+            border-left: 4px solid #1D9E75;
+            padding-left: 15px;
+        }
+        
+        h3 {
+            color: #26b896;
+            margin-top: 25px;
+            margin-bottom: 15px;
+            font-size: 1.3em;
+        }
+        
+        details {
+            background-color: #161b22;
+            border: 1px solid #1D9E75;
+            border-radius: 6px;
+            margin: 15px 0;
+            padding: 15px;
+            cursor: pointer;
+        }
+        
+        summary {
+            color: #1D9E75;
+            font-weight: 600;
+            user-select: none;
+            padding: 10px;
+            margin: -10px;
+        }
+        
+        summary:hover {
+            color: #26b896;
+        }
+        
+        details[open] {
+            background-color: #1c2128;
+        }
+        
+        details p, details li {
+            margin-top: 10px;
+            color: #c9d1d9;
+        }
+        
+        ul {
+            margin-left: 20px;
+        }
+        
+        li {
+            margin: 8px 0;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            background-color: #161b22;
+            border: 1px solid #1D9E75;
+            border-radius: 6px;
+            overflow: hidden;
+        }
+        
+        th {
+            background-color: #1D9E75;
+            color: #0f1117;
+            padding: 12px;
+            text-align: left;
+            font-weight: 700;
+        }
+        
+        td {
+            padding: 12px;
+            border-bottom: 1px solid #30363d;
+            color: #c9d1d9;
+        }
+        
+        tr:last-child td {
+            border-bottom: none;
+        }
+        
+        tr:hover {
+            background-color: #0d1117;
+        }
+        
+        code {
+            background-color: #0d1117;
+            color: #79c0ff;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-family: 'Courier New', monospace;
+        }
+        
+        .cheatsheet {
+            background-color: #1c2128;
+            border-left: 4px solid #1D9E75;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 6px;
+        }
+        
+        .trap {
+            background-color: #2d1f1a;
+            border-left: 4px solid #d1480f;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 6px;
+        }
+        
+        .trap strong {
+            color: #ff7b42;
+        }
+        
+        .section-intro {
+            background-color: #0d1117;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 6px;
+            border: 1px solid #30363d;
+        }
+        
+        .key-term {
+            color: #79c0ff;
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>GCP Professional Data Engineer: Cloud Data Catalog</h1>
+        
+        <!-- CORE CONCEPTS -->
+        <h2>1. Core Concepts</h2>
+        
+        <div class="section-intro">
+            <p><strong>Cloud Data Catalog</strong> is GCP's fully managed, scalable metadata repository. It discovers, catalogs, and governs data across BigQuery, Cloud Storage, Pub/Sub, Dataproc, and on-premises data sources. It bridges technical metadata (schemas, lineage) with business metadata (business glossary, data stewardship).</p>
+        </div>
+        
+        <details>
+            <summary>Metadata Types & Organization</summary>
+            <p><strong>Technical Metadata:</strong> Data type, schema, table size, creation date, column names, data source location</p>
+            <p><strong>Business Metadata:</strong> Data owner, steward, purpose, audience, classification level, glossary terms</p>
+            <p><strong>Operational Metadata:</strong> Last modified, access patterns, query frequency, lineage dependencies</p>
+        </details>
+        
+        <details>
+            <summary>Tags & Tag Templates</summary>
+            <p><span class="key-term">Tag Template</span> is a reusable schema for tags. Define once, apply many times. Templates have mandatory and optional fields.</p>
+            <p><span class="key-term">Tags</span> are instances of a template attached to assets (tables, columns, datasets). Tags add business context and enforce data governance policies.</p>
+            <p><strong>Example:</strong> Create template <code>pii_classification</code> with fields: level (HIGH/MEDIUM/LOW), owner, retention_days. Apply this tag to sensitive columns across multiple tables.</p>
+            <p><strong>Template Scope:</strong> Templates are project-level resources. Assets can be tagged with templates from their own project or inherited from parent organizations if using centralized metadata management.</p>
+        </details>
+        
+        <details>
+            <summary>Policy Tags & Column-Level Security</summary>
+            <p><span class="key-term">Policy Tags</span> are hierarchical tags that control data access at the column level in BigQuery. Unlike business tags, policy tags enforce actual access control.</p>
+            <p><strong>How it works:</strong></p>
+            <ul>
+                <li>Create a taxonomy (hierarchical structure of policy tags)</li>
+                <li>Assign policy tags to BigQuery columns</li>
+                <li>Grant <code>roles/datacatalog.categoryEditor</code> or <code>roles/datacatalog.categoryMasker</code> to users/groups</li>
+                <li>Users with masking role see NULL or redacted data; editors see actual values</li>
+            </ul>
+            <p><strong>Key difference from IAM:</strong> Policy tags are column-specific. IAM dataset permissions are coarse-grained. Use policy tags for fine-grained access within datasets.</p>
+        </details>
+        
+        <details>
+            <summary>Data Lineage & Dependency Tracking</summary>
+            <p><span class="key-term">Lineage</span> shows upstream sources and downstream consumers of data assets. Automatically captured for BigQuery tables created via queries.</p>
+            <p><strong>Lineage sources:</strong></p>
+            <ul>
+                <li>BigQuery query logs (table read/write)</li>
+                <li>Dataflow job definitions</li>
+                <li>Dataproc Spark/Hive jobs</li>
+                <li>Custom lineage via API (Data Catalog Lineage API)</li>
+            </ul>
+            <p><strong>Common use case:</strong> Track impact of schema changes. If column is dropped, Data Catalog shows all dependent dashboards and reports.</p>
+        </details>
+        
+        <details>
+            <summary>Search & Discovery</summary>
+            <p><span class="key-term">Unified Search</span> queries across all metadata—table names, column names, descriptions, tags, glossary terms, lineage.</p>
+            <p><strong>Search syntax:</strong> <code>name:"customer" tag:pii=HIGH</code></p>
+            <p><strong>Discovery patterns:</strong></p>
+            <ul>
+                <li>Find tables by business owner (tag-based search)</li>
+                <li>Locate PII columns across organization</li>
+                <li>Identify data dependencies before pipeline changes</li>
+                <li>Search by glossary term to find canonical data definitions</li>
+            </ul>
+        </details>
+        
+        <!-- ARCHITECTURE -->
+        <h2>2. Architecture & Components</h2>
+        
+        <div class="section-intro">
+            <p>Cloud Data Catalog operates as a centralized metadata service. It does not move or store actual data—only metadata and governance policies.</p>
+        </div>
+        
+        <h3>Key Components</h3>
+        
+        <table>
+            <thead>
+                <tr>
+                    <th>Component</th>
+                    <th>Purpose</th>
+                    <th>Key Role</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>Entry</strong></td>
+                    <td>A data asset (BigQuery table, Cloud Storage bucket, Pub/Sub topic)</td>
+                    <td>Basic unit of cataloging</td>
+                </tr>
+                <tr>
+                    <td><strong>Entry Group</strong></td>
+                    <td>Logical container for related entries</td>
+                    <td>Organize entries by source or domain</td>
+                </tr>
+                <tr>
+                    <td><strong>Tag Template</strong></td>
+                    <td>Schema defining tag structure and fields</td>
+                    <td>Enforce consistent metadata</td>
+                </tr>
+                <tr>
+                    <td><strong>Tag</strong></td>
+                    <td>Instance of template applied to entry</td>
+                    <td>Attach business context</td>
+                </tr>
+                <tr>
+                    <td><strong>Policy Tag Taxonomy</strong></td>
+                    <td>Hierarchical classification system</td>
+                    <td>Enforce column-level access control</td>
+                </tr>
+                <tr>
+                    <td><strong>Glossary Term</strong></td>
+                    <td>Business definition (e.g., "customer lifetime value")</td>
+                    <td>Standardize business language</td>
+                </tr>
+                <tr>
+                    <td><strong>Lineage Edge</strong></td>
+                    <td>Dependency link between assets</td>
+                    <td>Track data flow</td>
+                </tr>
+            </tbody>
+        </table>
+        
+        <h3>Integration Architecture</h3>
+        
+        <table>
+            <thead>
+                <tr>
+                    <th>GCP Service</th>
+                    <th>Auto-Discovery</th>
+                    <th>Lineage Support</th>
+                    <th>Policy Tag Support</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>BigQuery</strong></td>
+                    <td>✓ Automatic</td>
+                    <td>✓ Query-based</td>
+                    <td>✓ Full support</td>
+                </tr>
+                <tr>
+                    <td><strong>Cloud Storage</strong></td>
+                    <td>✓ Via connector</td>
+                    <td>✓ Custom lineage API</td>
+                    <td>✗ No column-level</td>
+                </tr>
+                <tr>
+                    <td><strong>Pub/Sub</strong></td>
+                    <td>✓ Automatic</td>
+                    <td>✓ Manual registration</td>
+                    <td>✗ No</td>
+                </tr>
+                <tr>
+                    <td><strong>Dataflow</strong></td>
+                    <td>✗ Manual</td>
+                    <td>✓ Via API</td>
+                    <td>✗ No</td>
+                </tr>
+                <tr>
+                    <td><strong>On-Premises</strong></td>
+                    <td>✗ Manual + connectors</td>
+                    <td>✓ Via API</td>
+                    <td>✗ No</td>
+                </tr>
+            </tbody>
+        </table>
+        
+        <h3>Permission Model</h3>
+        
+        <table>
+            <thead>
+                <tr>
+                    <th>Role</th>
+                    <th>Permissions</th>
+                    <th>Use Case</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><code>roles/datacatalog.viewer</code></td>
+                    <td>Read entries, tags, search metadata</td>
+                    <td>Data consumers, analysts</td>
+                </tr>
+                <tr>
+                    <td><code>roles/datacatalog.editor</code></td>
+                    <td>Create/edit entries, tags, glossary</td>
+                    <td>Data stewards, catalogers</td>
+                </tr>
+                <tr>
+                    <td><code>roles/datacatalog.admin</code></td>
+                    <td>Full control + policy tag taxonomies</td>
+                    <td>Data governance leads</td>
+                </tr>
+                <tr>
+                    <td><code>roles/datacatalog.categoryEditor</code></td>
+                    <td>Edit policy tags, view unmasked data</td>
+                    <td>Authorized data users</td>
+                </tr>
+                <tr>
+                    <td><code>roles/datacatalog.categoryMasker</code></td>
+                    <td>Apply masking, view masked data</td>
+                    <td>Data privacy admins</td>
+                </tr>
+            </tbody>
+        </table>
+        
+        <!-- KEY CONFIGS & LIMITS -->
+        <h2>3. Key Configs & Limits</h2>
+        
+        <table>
+            <thead>
+                <tr>
+                    <th>Resource</th>
+                    <th>Limit / Default</th>
+                    <th>Impact</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>Entries per project</strong></td>
+                    <td>Unlimited</td>
+                    <td>Scale to millions of assets</td>
+                </tr>
+                <tr>
+                    <td><strong>Tag templates per project</strong></td>
+                    <td>100 templates</td>
+                    <td>Design reusable templates upfront</td>
+                </tr>
+                <tr>
+                    <td><strong>Fields per template</strong></td>
+                    <td>50 fields max</td>

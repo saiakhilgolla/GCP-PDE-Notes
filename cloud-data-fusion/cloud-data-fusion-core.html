@@ -1,0 +1,381 @@
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GCP PDE Exam - Cloud Data Fusion Study Notes</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            background-color: #0f1117;
+            color: #c9d1d9;
+            font-family: 'Outfit', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            line-height: 1.6;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+        
+        header {
+            border-bottom: 3px solid #1D9E75;
+            padding-bottom: 20px;
+            margin-bottom: 30px;
+        }
+        
+        h1 {
+            color: #1D9E75;
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+        
+        h2 {
+            color: #1D9E75;
+            font-size: 1.8em;
+            margin-top: 30px;
+            margin-bottom: 15px;
+            border-left: 4px solid #1D9E75;
+            padding-left: 15px;
+        }
+        
+        h3 {
+            color: #58a6ff;
+            font-size: 1.3em;
+            margin-top: 20px;
+            margin-bottom: 10px;
+        }
+        
+        details {
+            background-color: #161b22;
+            border: 1px solid #30363d;
+            border-radius: 6px;
+            padding: 15px;
+            margin: 15px 0;
+            cursor: pointer;
+        }
+        
+        details[open] {
+            background-color: #0d1117;
+            border-color: #1D9E75;
+        }
+        
+        summary {
+            color: #1D9E75;
+            font-weight: 600;
+            padding: 5px 0;
+            user-select: none;
+        }
+        
+        summary:hover {
+            color: #3dd89f;
+        }
+        
+        details > *:not(summary) {
+            margin-top: 15px;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 15px 0;
+            background-color: #161b22;
+            border: 1px solid #30363d;
+            border-radius: 6px;
+            overflow: hidden;
+        }
+        
+        th {
+            background-color: #0d1117;
+            color: #1D9E75;
+            padding: 12px;
+            text-align: left;
+            font-weight: 600;
+            border-bottom: 2px solid #1D9E75;
+        }
+        
+        td {
+            padding: 12px;
+            border-bottom: 1px solid #30363d;
+        }
+        
+        tr:last-child td {
+            border-bottom: none;
+        }
+        
+        tr:hover {
+            background-color: #0d1117;
+        }
+        
+        .code-block {
+            background-color: #0d1117;
+            border-left: 3px solid #1D9E75;
+            padding: 12px;
+            margin: 10px 0;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9em;
+            overflow-x: auto;
+            border-radius: 4px;
+        }
+        
+        .trap {
+            background-color: #3d2626;
+            border-left: 4px solid #ff6b6b;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 4px;
+        }
+        
+        .trap h4 {
+            color: #ff8a8a;
+            margin-bottom: 8px;
+        }
+        
+        .key-point {
+            background-color: #1a3a2a;
+            border-left: 4px solid #1D9E75;
+            padding: 12px;
+            margin: 10px 0;
+            border-radius: 4px;
+        }
+        
+        .cheatsheet {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+        
+        .cheatsheet-item {
+            background-color: #161b22;
+            border: 1px solid #30363d;
+            padding: 15px;
+            border-radius: 6px;
+            border-left: 4px solid #1D9E75;
+        }
+        
+        .cheatsheet-item h4 {
+            color: #1D9E75;
+            margin-bottom: 8px;
+            font-size: 0.95em;
+        }
+        
+        .cheatsheet-item p {
+            font-size: 0.9em;
+            color: #8b949e;
+        }
+        
+        ul {
+            margin-left: 20px;
+            margin-top: 10px;
+        }
+        
+        li {
+            margin-bottom: 8px;
+        }
+        
+        .subtitle {
+            color: #8b949e;
+            font-size: 0.95em;
+        }
+        
+        .section-nav {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 30px;
+            justify-content: center;
+        }
+        
+        .nav-btn {
+            background-color: #161b22;
+            color: #1D9E75;
+            padding: 8px 16px;
+            border: 1px solid #1D9E75;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.9em;
+            transition: all 0.3s;
+        }
+        
+        .nav-btn:hover {
+            background-color: #1D9E75;
+            color: #0f1117;
+        }
+        
+        .icon {
+            display: inline-block;
+            margin-right: 8px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>☁️ Cloud Data Fusion - GCP PDE Study Guide</h1>
+            <p class="subtitle">Core Concepts, Architecture, Configuration & Exam Patterns</p>
+        </header>
+
+        <section id="core-concepts">
+            <h2>1. Core Concepts</h2>
+            
+            <details>
+                <summary>What is Cloud Data Fusion?</summary>
+                <p>Cloud Data Fusion is a fully managed, cloud-native data integration service built on top of CDAP (Cask Data Application Platform). It provides a visual, code-free interface for building ETL/ELT pipelines at scale.</p>
+                <div class="key-point">
+                    <strong>Key Idea:</strong> Combines visual designer, pre-built plugins, and enterprise-grade data integration capabilities to move, transform, and integrate data across sources.
+                </div>
+            </details>
+
+            <details>
+                <summary>CDAP Foundation</summary>
+                <p>Cloud Data Fusion runs on CDAP, an open-source framework that provides:</p>
+                <ul>
+                    <li><strong>Pipeline Execution Engine:</strong> Runs batch and real-time pipelines at scale</li>
+                    <li><strong>Plugin System:</strong> Extensible architecture with 200+ pre-built connectors and transformations</li>
+                    <li><strong>Data Pipeline Studio:</strong> Visual drag-and-drop interface for pipeline design</li>
+                    <li><strong>Metadata Management:</strong> Tracks data lineage, schema, and transformations</li>
+                    <li><strong>REST API:</strong> Programmatic pipeline deployment and orchestration</li>
+                </ul>
+            </details>
+
+            <details>
+                <summary>Pipeline Types</summary>
+                <table>
+                    <tr>
+                        <th>Pipeline Type</th>
+                        <th>Execution Model</th>
+                        <th>Use Case</th>
+                        <th>Engine</th>
+                    </tr>
+                    <tr>
+                        <td><strong>Batch</strong></td>
+                        <td>Scheduled or triggered execution</td>
+                        <td>Daily ETL, periodic data loads, bulk transformations</td>
+                        <td>Spark or MapReduce</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Real-time</strong></td>
+                        <td>Continuous event streaming</td>
+                        <td>Live data feeds, message queue processing, event-driven architectures</td>
+                        <td>Spark Streaming or Beam</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Replication</strong></td>
+                        <td>Incremental change data capture</td>
+                        <td>Keep data warehouses in sync, replicate database changes</td>
+                        <td>CDC (Change Data Capture)</td>
+                    </tr>
+                </table>
+            </details>
+
+            <details>
+                <summary>Key Components: Sources, Transforms, Sinks</summary>
+                <h4>Sources (Plugins)</h4>
+                <ul>
+                    <li>Read data from external systems</li>
+                    <li>Examples: BigQuery, Cloud SQL, GCS, Pub/Sub, HTTP, Salesforce, SAP, Oracle</li>
+                    <li>Support batch and streaming modes</li>
+                </ul>
+                <h4>Transforms (Plugins)</h4>
+                <ul>
+                    <li>Process, enrich, and reshape data</li>
+                    <li>Examples: Aggregator, Joiner, Filter, Deduplicator, SQL transform, Python script</li>
+                    <li>Chainable in directed acyclic graph (DAG) patterns</li>
+                </ul>
+                <h4>Sinks (Plugins)</h4>
+                <ul>
+                    <li>Write transformed data to destinations</li>
+                    <li>Examples: BigQuery, Cloud SQL, GCS, Pub/Sub, Data Catalog</li>
+                    <li>Auto-create tables or append to existing</li>
+                </ul>
+            </details>
+
+            <details>
+                <summary>Visual Designer</summary>
+                <p>Cloud Data Fusion Studio provides a drag-and-drop interface:</p>
+                <ul>
+                    <li><strong>Canvas:</strong> Design pipelines by connecting plugins visually</li>
+                    <li><strong>Plugin Library:</strong> Browse 200+ pre-built sources, transforms, and sinks</li>
+                    <li><strong>Configuration Panels:</strong> Configure credentials, schemas, transformations without code</li>
+                    <li><strong>Data Preview:</strong> Test data flow at each stage before running the full pipeline</li>
+                    <li><strong>Lineage View:</strong> Visualize end-to-end data flow and dependencies</li>
+                    <li><strong>Schema Management:</strong> Auto-detect or manually define input/output schemas</li>
+                </ul>
+            </details>
+
+            <details>
+                <summary>Plugins Deep Dive</summary>
+                <h4>Plugin Types</h4>
+                <ul>
+                    <li><strong>Source Plugins:</strong> BigQuery, Cloud SQL, PostgreSQL, MySQL, Oracle, Salesforce, SAP HANA, Cloud Storage (CSV, Parquet, Avro), Pub/Sub, Kafka, HTTP</li>
+                    <li><strong>Transform Plugins:</strong> SQL transform (write SQL queries), Python script (custom transformations), Aggregator, Joiner (INNER/LEFT/RIGHT/FULL), Filter (row filtering), Deduplicator, Validator, Column Renamer, Type Converter</li>
+                    <li><strong>Sink Plugins:</strong> BigQuery (auto table creation, schema matching), Cloud SQL, Cloud Storage (output format options), Pub/Sub, Data Catalog, Bigtable</li>
+                </ul>
+                <h4>Custom Plugins</h4>
+                <ul>
+                    <li>Write Java or Scala code to create custom source, transform, or sink plugins</li>
+                    <li>Package as JAR and deploy to Cloud Data Fusion</li>
+                    <li>Integrated into pipeline canvas like built-in plugins</li>
+                </ul>
+            </details>
+
+            <details>
+                <summary>Transformations & Data Processing</summary>
+                <h4>Common Transformation Patterns</h4>
+                <ul>
+                    <li><strong>SQL Transform:</strong> Write standard SQL for complex transformations, filtering, aggregations</li>
+                    <li><strong>Python Script:</strong> Row-level transformations in Python, access schema and transform each row</li>
+                    <li><strong>Joiner:</strong> INNER, LEFT, RIGHT, FULL OUTER joins on configured keys</li>
+                    <li><strong>Aggregator:</strong> GROUP BY operations, SUM, AVG, COUNT, MIN, MAX</li>
+                    <li><strong>Filter:</strong> Include/exclude rows based on column conditions</li>
+                    <li><strong>Deduplicator:</strong> Remove duplicate rows on specified columns</li>
+                    <li><strong>Conditional Router:</strong> Route records to different outputs based on conditions</li>
+                </ul>
+                <h4>Schema Handling</h4>
+                <ul>
+                    <li>Auto-detect from source or manually define</li>
+                    <li>Types: boolean, int, long, float, double, string, bytes, date, datetime, decimal</li>
+                    <li>Nullable columns supported</li>
+                </ul>
+            </details>
+
+            <details>
+                <summary>Replication & Change Data Capture</summary>
+                <p><strong>Replication</strong> keeps a target system in sync with source changes in near real-time or incremental batches.</p>
+                <h4>Replication Types</h4>
+                <ul>
+                    <li><strong>Full Load:</strong> Initial complete copy of source to target</li>
+                    <li><strong>Incremental (CDC):</strong> Track and replicate only changed rows via change data capture mechanisms</li>
+                    <li><strong>Snapshot:</strong> Time-point copies at scheduled intervals</li>
+                </ul>
+                <h4>CDC Support</h4>
+                <ul>
+                    <li>MySQL, PostgreSQL, Oracle, SQL Server using binary logs or WAL (Write-Ahead Logs)</li>
+                    <li>BigQuery (export snapshots or use time-based increments)</li>
+                    <li>Tracks INSERT, UPDATE, DELETE operations</li>
+                </ul>
+                <div class="key-point">
+                    <strong>Replication Pipeline Workflow:</strong><br>
+                    1. Configure source database connection<br>
+                    2. Select tables to replicate<br>
+                    3. Choose full load + incremental or incremental-only strategy<br>
+                    4. Configure CDC method (binary logs, WAL, transaction log)<br>
+                    5. Set target connection and table creation behavior<br>
+                    6. Schedule or run continuous replication
+                </div>
+            </details>
+        </section>
+
+        <section id="architecture">
+            <h2>2. Architecture & Components</h2>
+
+            <details>
+                <summary>Cloud Data Fusion Instance

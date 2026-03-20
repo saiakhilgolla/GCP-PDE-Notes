@@ -1,0 +1,409 @@
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GCP PDE: Dataproc Workflow Templates</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Outfit', sans-serif;
+            background-color: #0f1117;
+            color: #e6edf3;
+            line-height: 1.6;
+            padding: 20px;
+        }
+        h1 {
+            color: #1D9E75;
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 2.5em;
+            font-weight: 700;
+        }
+        h2 {
+            color: #1D9E75;
+            margin: 25px 0 15px 0;
+            font-size: 1.5em;
+            font-weight: 600;
+            border-bottom: 2px solid #1D9E75;
+            padding-bottom: 5px;
+        }
+        details {
+            margin: 15px 0;
+            background: #161b22;
+            border-radius: 8px;
+            border-left: 4px solid #1D9E75;
+        }
+        summary {
+            padding: 15px;
+            cursor: pointer;
+            font-weight: 600;
+            color: #1D9E75;
+            user-select: none;
+        }
+        summary:hover {
+            background: #21262d;
+        }
+        details[open] summary {
+            border-bottom: 1px solid #30363d;
+        }
+        .content {
+            padding: 20px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 15px 0;
+            background: #161b22;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #30363d;
+        }
+        th {
+            background: #1D9E75;
+            color: white;
+            font-weight: 600;
+        }
+        tr:hover {
+            background: #21262d;
+        }
+        .highlight {
+            background: #1D9E75;
+            color: white;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-weight: 600;
+        }
+        .warning {
+            background: #da3633;
+            color: white;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-weight: 600;
+        }
+        code {
+            background: #21262d;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: 'Courier New', monospace;
+        }
+        ul {
+            padding-left: 20px;
+        }
+        li {
+            margin: 8px 0;
+        }
+        .cheatsheet {
+            background: #0d1117;
+            border: 2px solid #1D9E75;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+    </style>
+</head>
+<body>
+    <h1>Dataproc Workflow Templates</h1>
+
+    <details>
+        <summary>1. Core Concepts</summary>
+        <div class="content">
+            <h2>What are Workflow Templates?</h2>
+            <p>Define a <span class="highlight">DAG of Dataproc operations</span> (create cluster, submit jobs, delete cluster) as a single managed unit. Lighter-weight than Cloud Composer for simple Dataproc-only pipelines.</p>
+            
+            <h2>Key Components</h2>
+            <table>
+                <tr>
+                    <th>Component</th>
+                    <th>Purpose</th>
+                    <th>Details</th>
+                </tr>
+                <tr>
+                    <td><strong>Template Definition</strong></td>
+                    <td>Blueprint for workflow</td>
+                    <td>Cluster config + job sequence + parameters</td>
+                </tr>
+                <tr>
+                    <td><strong>Instantiation</strong></td>
+                    <td>Execute the template</td>
+                    <td>Via gcloud, REST API, or Cloud Scheduler</td>
+                </tr>
+                <tr>
+                    <td><strong>Managed Cluster</strong></td>
+                    <td>Ephemeral compute</td>
+                    <td>Created, used, deleted automatically</td>
+                </tr>
+                <tr>
+                    <td><strong>Job Sequence</strong></td>
+                    <td>Ordered operations</td>
+                    <td>Spark, Hadoop, Hive, Pig jobs</td>
+                </tr>
+            </table>
+
+            <h2>When to Use vs Other Services</h2>
+            <table>
+                <tr>
+                    <th>Scenario</th>
+                    <th>Best Service</th>
+                    <th>Reason</th>
+                </tr>
+                <tr>
+                    <td>Single recurring SQL</td>
+                    <td>BigQuery Scheduled Query</td>
+                    <td>Native, serverless, cost-effective</td>
+                </tr>
+                <tr>
+                    <td>Single Dataflow job on schedule</td>
+                    <td>Cloud Scheduler + Dataflow template</td>
+                    <td>Simple scheduling without Airflow overhead</td>
+                </tr>
+                <tr>
+                    <td><span class="highlight">Simple Dataproc-only workflow</span></td>
+                    <td><span class="highlight">Dataproc Workflow Templates</span></td>
+                    <td>Linear DAG, no cross-service dependencies</td>
+                </tr>
+                <tr>
+                    <td>Multi-service complex pipeline</td>
+                    <td>Cloud Composer</td>
+                    <td>Complex dependencies, branching logic</td>
+                </tr>
+            </table>
+        </div>
+    </details>
+
+    <details>
+        <summary>2. Architecture</summary>
+        <div class="content">
+            <h2>Template Structure</h2>
+            <table>
+                <tr>
+                    <th>Layer</th>
+                    <th>Components</th>
+                    <th>Function</th>
+                </tr>
+                <tr>
+                    <td><strong>Template Definition</strong></td>
+                    <td>YAML/JSON spec</td>
+                    <td>Defines cluster config, job sequence, parameters</td>
+                </tr>
+                <tr>
+                    <td><strong>Cluster Management</strong></td>
+                    <td>Managed Cluster or Cluster Selector</td>
+                    <td>Auto-create ephemeral or use existing cluster</td>
+                </tr>
+                <tr>
+                    <td><strong>Job Execution</strong></td>
+                    <td>Ordered job list</td>
+                    <td>Sequential execution of Spark/Hadoop jobs</td>
+                </tr>
+                <tr>
+                    <td><strong>Parameter Injection</strong></td>
+                    <td>Runtime parameters</td>
+                    <td>Template parameterization for reusability</td>
+                </tr>
+            </table>
+
+            <h2>Execution Flow</h2>
+            <table>
+                <tr>
+                    <th>Step</th>
+                    <th>Action</th>
+                    <th>Component</th>
+                </tr>
+                <tr>
+                    <td>1</td>
+                    <td>Template instantiation triggered</td>
+                    <td>gcloud/API/Scheduler</td>
+                </tr>
+                <tr>
+                    <td>2</td>
+                    <td>Cluster creation (if managed)</td>
+                    <td>Dataproc service</td>
+                </tr>
+                <tr>
+                    <td>3</td>
+                    <td>Job submission and execution</td>
+                    <td>Sequential job processing</td>
+                </tr>
+                <tr>
+                    <td>4</td>
+                    <td>Cluster deletion (if managed)</td>
+                    <td>Automatic cleanup</td>
+                </tr>
+            </table>
+
+            <h2>Cluster Options</h2>
+            <table>
+                <tr>
+                    <th>Option</th>
+                    <th>Use Case</th>
+                    <th>Lifecycle</th>
+                </tr>
+                <tr>
+                    <td><strong>Managed Cluster</strong></td>
+                    <td>Ephemeral workflows</td>
+                    <td>Created → Used → Deleted automatically</td>
+                </tr>
+                <tr>
+                    <td><strong>Cluster Selector</strong></td>
+                    <td>Persistent clusters</td>
+                    <td>Use existing cluster by labels</td>
+                </tr>
+            </table>
+        </div>
+    </details>
+
+    <details>
+        <summary>3. Key Configs & Limits</summary>
+        <div class="content">
+            <table>
+                <tr>
+                    <th>Configuration</th>
+                    <th>Default/Limit</th>
+                    <th>Notes</th>
+                </tr>
+                <tr>
+                    <td>Max jobs per template</td>
+                    <td>100</td>
+                    <td>Sequential execution limit</td>
+                </tr>
+                <tr>
+                    <td>Template timeout</td>
+                    <td>24 hours</td>
+                    <td>Maximum workflow execution time</td>
+                </tr>
+                <tr>
+                    <td>Concurrent instantiations</td>
+                    <td>1000 per region</td>
+                    <td>Parallel template executions</td>
+                </tr>
+                <tr>
+                    <td>Parameter count</td>
+                    <td>100</td>
+                    <td>Maximum runtime parameters</td>
+                </tr>
+                <tr>
+                    <td>Template size</td>
+                    <td>1 MB</td>
+                    <td>YAML/JSON definition limit</td>
+                </tr>
+                <tr>
+                    <td>Job retry attempts</td>
+                    <td>3 (configurable)</td>
+                    <td>Per-job retry behavior</td>
+                </tr>
+                <tr>
+                    <td>Supported job types</td>
+                    <td>Spark, Hadoop, Hive, Pig, SparkSql</td>
+                    <td>Available job frameworks</td>
+                </tr>
+            </table>
+
+            <h2>Instantiation Methods</h2>
+            <table>
+                <tr>
+                    <th>Method</th>
+                    <th>Command/Syntax</th>
+                    <th>Use Case</th>
+                </tr>
+                <tr>
+                    <td>gcloud CLI</td>
+                    <td><code>gcloud dataproc workflow-templates instantiate TEMPLATE</code></td>
+                    <td>Manual execution, testing</td>
+                </tr>
+                <tr>
+                    <td>REST API</td>
+                    <td><code>POST /projects/{project}/regions/{region}/workflowTemplates/{template}:instantiate</code></td>
+                    <td>Programmatic integration</td>
+                </tr>
+                <tr>
+                    <td>Cloud Scheduler</td>
+                    <td>HTTP target → REST API call</td>
+                    <td>Scheduled recurring workflows</td>
+                </tr>
+            </table>
+        </div>
+    </details>
+
+    <details>
+        <summary>4. Exam Traps</summary>
+        <div class="content">
+            <h2>Common Mistakes</h2>
+            <ul>
+                <li><span class="warning">Trap:</span> Using Composer for simple Dataproc-only pipelines</li>
+                <li><span class="highlight">Reality:</span> Workflow Templates are lighter-weight for Dataproc-only workflows</li>
+            </ul>
+            <ul>
+                <li><span class="warning">Trap:</span> Assuming Workflow Templates can orchestrate multiple services</li>
+                <li><span class="highlight">Reality:</span> Only supports Dataproc jobs - use Composer for cross-service workflows</li>
+            </ul>
+            <ul>
+                <li><span class="warning">Trap:</span> Expecting complex branching logic</li>
+                <li><span class="highlight">Reality:</span> Linear job execution only - no conditional branching</li>
+            </ul>
+            <ul>
+                <li><span class="warning">Trap:</span> Confusing with Dataflow templates</li>
+                <li><span class="highlight">Reality:</span> Different services - Dataproc vs Dataflow job orchestration</li>
+            </ul>
+
+            <h2>Decision Framework Traps</h2>
+            <table>
+                <tr>
+                    <th>If You See...</th>
+                    <th>Wrong Answer</th>
+                    <th>Correct Answer</th>
+                </tr>
+                <tr>
+                    <td>"Simple recurring Spark job"</td>
+                    <td>Cloud Composer</td>
+                    <td>Dataproc Workflow Templates</td>
+                </tr>
+                <tr>
+                    <td>"ETL from GCS to BigQuery with transformations"</td>
+                    <td>Workflow Templates</td>
+                    <td>Dataflow or Composer (multi-service)</td>
+                </tr>
+                <tr>
+                    <td>"Complex dependencies between services"</td>
+                    <td>Workflow Templates</td>
+                    <td>Cloud Composer</td>
+                </tr>
+                <tr>
+                    <td>"Conditional job execution based on data"</td>
+                    <td>Workflow Templates</td>
+                    <td>Cloud Composer with Airflow operators</td>
+                </tr>
+            </table>
+
+            <h2>Cost Trap</h2>
+            <p><span class="warning">Warning:</span> Composer has minimum cost (GKE + Cloud SQL) even when idle. Don't over-engineer simple workflows that could use Workflow Templates or Cloud Scheduler.</p>
+        </div>
+    </details>
+
+    <details>
+        <summary>5. Quick Cheatsheet</summary>
+        <div class="content">
+            <div class="cheatsheet">
+                <h2>Dataproc Workflow Templates Cheatsheet</h2>
+                
+                <h3>📋 Core Facts</h3>
+                <ul>
+                    <li><strong>Purpose:</strong> DAG of Dataproc operations as single unit</li>
+                    <li><strong>Cluster:</strong> Managed (ephemeral) or Selector (existing)</li>
+                    <li><strong>Jobs:</strong> Sequential execution, no branching</li>
+                    <li><strong>Limits:</strong> 100 jobs, 24h timeout, 1MB template size</li>
+                </ul>
+
+                <h3>🚀 Instantiation</h3>
+                <ul>
+                    <li><code>g

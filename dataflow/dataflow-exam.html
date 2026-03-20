@@ -1,0 +1,409 @@
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GCP PDE - Dataflow Study Notes</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Outfit', sans-serif;
+            background-color: #0f1117;
+            color: #e4e4e7;
+            line-height: 1.6;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        h1 {
+            color: #1D9E75;
+            font-size: 2.5em;
+            font-weight: 700;
+            margin-bottom: 30px;
+            text-align: center;
+            border-bottom: 3px solid #1D9E75;
+            padding-bottom: 15px;
+        }
+        
+        h2 {
+            color: #1D9E75;
+            font-size: 1.8em;
+            font-weight: 600;
+            margin: 25px 0 15px 0;
+        }
+        
+        h3 {
+            color: #1D9E75;
+            font-size: 1.3em;
+            font-weight: 600;
+            margin: 20px 0 10px 0;
+        }
+        
+        details {
+            background: #1a1f2e;
+            border: 1px solid #2d3748;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            overflow: hidden;
+        }
+        
+        summary {
+            background: #2d3748;
+            padding: 15px 20px;
+            cursor: pointer;
+            font-weight: 600;
+            color: #1D9E75;
+            border-bottom: 1px solid #4a5568;
+        }
+        
+        summary:hover {
+            background: #3a4553;
+        }
+        
+        details[open] summary {
+            background: #1D9E75;
+            color: #0f1117;
+        }
+        
+        .content {
+            padding: 20px;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 15px 0;
+            background: #1a1f2e;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #2d3748;
+        }
+        
+        th {
+            background: #1D9E75;
+            color: #0f1117;
+            font-weight: 600;
+        }
+        
+        tr:last-child td {
+            border-bottom: none;
+        }
+        
+        .warning {
+            background: #7c2d12;
+            border: 1px solid #ea580c;
+            border-radius: 6px;
+            padding: 15px;
+            margin: 15px 0;
+        }
+        
+        .tip {
+            background: #14532d;
+            border: 1px solid #16a34a;
+            border-radius: 6px;
+            padding: 15px;
+            margin: 15px 0;
+        }
+        
+        .code {
+            background: #1e293b;
+            border: 1px solid #334155;
+            border-radius: 4px;
+            padding: 12px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9em;
+            margin: 10px 0;
+        }
+        
+        ul, ol {
+            padding-left: 25px;
+            margin: 10px 0;
+        }
+        
+        li {
+            margin: 5px 0;
+        }
+        
+        .highlight {
+            background: #1D9E75;
+            color: #0f1117;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>GCP PDE: Dataflow Study Notes</h1>
+
+        <details>
+            <summary>🎯 Core Concepts</summary>
+            <div class="content">
+                <h3>Apache Beam & Dataflow</h3>
+                <ul>
+                    <li><strong>Apache Beam:</strong> Unified programming model for batch and streaming</li>
+                    <li><strong>Dataflow:</strong> Fully managed Apache Beam runner on GCP</li>
+                    <li><strong>Portability:</strong> Beam code runs on multiple runners (Dataflow, Spark, Flink)</li>
+                    <li><strong>SDK Support:</strong> Java, Python, Go</li>
+                </ul>
+
+                <h3>Windowing & Time</h3>
+                <ul>
+                    <li><strong>Fixed Windows:</strong> Non-overlapping time intervals</li>
+                    <li><strong>Sliding Windows:</strong> Overlapping time intervals</li>
+                    <li><strong>Session Windows:</strong> Activity-based grouping with gaps</li>
+                    <li><strong>Global Window:</strong> Single window containing all elements</li>
+                </ul>
+
+                <h3>Watermarks & Triggers</h3>
+                <ul>
+                    <li><strong>Watermark:</strong> Progress indicator for event time</li>
+                    <li><strong>Late Data:</strong> Data arriving after watermark</li>
+                    <li><strong>Triggers:</strong> When to emit window results</li>
+                </ul>
+            </div>
+        </details>
+
+        <details>
+            <summary>🏗️ Architecture</summary>
+            <div class="content">
+                <table>
+                    <tr>
+                        <th>Component</th>
+                        <th>Function</th>
+                        <th>Key Features</th>
+                    </tr>
+                    <tr>
+                        <td>Pipeline</td>
+                        <td>Data processing workflow</td>
+                        <td>DAG of transforms, immutable</td>
+                    </tr>
+                    <tr>
+                        <td>PCollection</td>
+                        <td>Distributed dataset</td>
+                        <td>Bounded/unbounded, immutable</td>
+                    </tr>
+                    <tr>
+                        <td>Transform</td>
+                        <td>Processing step</td>
+                        <td>ParDo, GroupByKey, CoGroupByKey</td>
+                    </tr>
+                    <tr>
+                        <td>Runner</td>
+                        <td>Execution engine</td>
+                        <td>Dataflow, DirectRunner, SparkRunner</td>
+                    </tr>
+                </table>
+
+                <h3>Execution Model</h3>
+                <table>
+                    <tr>
+                        <th>Mode</th>
+                        <th>Data Type</th>
+                        <th>Processing</th>
+                        <th>Use Case</th>
+                    </tr>
+                    <tr>
+                        <td>Batch</td>
+                        <td>Bounded</td>
+                        <td>All data available</td>
+                        <td>Historical analysis</td>
+                    </tr>
+                    <tr>
+                        <td>Streaming</td>
+                        <td>Unbounded</td>
+                        <td>Continuous processing</td>
+                        <td>Real-time analytics</td>
+                    </tr>
+                </table>
+            </div>
+        </details>
+
+        <details>
+            <summary>⚙️ Key Configs & Limits</summary>
+            <div class="content">
+                <table>
+                    <tr>
+                        <th>Configuration</th>
+                        <th>Default</th>
+                        <th>Max</th>
+                        <th>Notes</th>
+                    </tr>
+                    <tr>
+                        <td>Max workers (batch)</td>
+                        <td>1000</td>
+                        <td>4000</td>
+                        <td>Region-dependent</td>
+                    </tr>
+                    <tr>
+                        <td>Max workers (streaming)</td>
+                        <td>100</td>
+                        <td>1000</td>
+                        <td>Lower for streaming</td>
+                    </tr>
+                    <tr>
+                        <td>Num workers (initial)</td>
+                        <td>1</td>
+                        <td>-</td>
+                        <td>Autoscaling starts here</td>
+                    </tr>
+                    <tr>
+                        <td>Worker machine type</td>
+                        <td>n1-standard-1</td>
+                        <td>-</td>
+                        <td>Streaming: n1-standard-2</td>
+                    </tr>
+                    <tr>
+                        <td>Pipeline timeout</td>
+                        <td>10 minutes</td>
+                        <td>168 hours</td>
+                        <td>For pipeline creation</td>
+                    </tr>
+                </table>
+
+                <h3>Autoscaling Parameters</h3>
+                <table>
+                    <tr>
+                        <th>Parameter</th>
+                        <th>Default</th>
+                        <th>Description</th>
+                    </tr>
+                    <tr>
+                        <td>autoscalingAlgorithm</td>
+                        <td>THROUGHPUT_BASED</td>
+                        <td>CPU utilization or throughput</td>
+                    </tr>
+                    <tr>
+                        <td>targetUtilization</td>
+                        <td>0.6</td>
+                        <td>Target CPU utilization</td>
+                    </tr>
+                    <tr>
+                        <td>cooldownPeriod</td>
+                        <td>10 minutes</td>
+                        <td>Wait time between scaling events</td>
+                    </tr>
+                </table>
+            </div>
+        </details>
+
+        <details>
+            <summary>⚠️ Exam Traps</summary>
+            <div class="content">
+                <div class="warning">
+                    <h3>🚨 Common Gotchas</h3>
+                    <ul>
+                        <li><strong>Templates vs Flex Templates:</strong> Classic templates are JSON, Flex are Docker containers</li>
+                        <li><strong>Streaming Autoscaling:</strong> Less aggressive than batch, CPU-based by default</li>
+                        <li><strong>Late Data:</strong> Requires allowed lateness AND triggers to handle properly</li>
+                        <li><strong>Side Inputs:</strong> Must fit in worker memory, broadcasted to all workers</li>
+                        <li><strong>Stateful Processing:</strong> Only works with keyed data (after GroupByKey)</li>
+                    </ul>
+                </div>
+
+                <h3>Windowing Traps</h3>
+                <ul>
+                    <li><strong>Default Window:</strong> Global window with default trigger (end of window)</li>
+                    <li><strong>Session Window Gap:</strong> Minimum 1 minute gap required</li>
+                    <li><strong>Sliding Window Size:</strong> Must be multiple of period</li>
+                    <li><strong>Late Data in Batch:</strong> All data is "on time" - no late data concept</li>
+                </ul>
+
+                <h3>Template Confusion</h3>
+                <div class="warning">
+                    <ul>
+                        <li><strong>Classic Templates:</strong> Staging location, JSON metadata, limited flexibility</li>
+                        <li><strong>Flex Templates:</strong> Docker image, runtime parameters, full flexibility</li>
+                        <li><strong>When to Use Each:</strong> Flex for complex logic, Classic for simple pipelines</li>
+                    </ul>
+                </div>
+
+                <h3>Performance Traps</h3>
+                <ul>
+                    <li><strong>Hot Keys:</strong> Uneven key distribution causes stragglers</li>
+                    <li><strong>Fusion:</strong> Automatic optimization can hide performance issues</li>
+                    <li><strong>Streaming Insert Mode:</strong> Use FILE_LOADS for BigQuery streaming at scale</li>
+                    <li><strong>Worker Types:</strong> Streaming needs more memory (n1-standard-2 default)</li>
+                </ul>
+            </div>
+        </details>
+
+        <details>
+            <summary>📋 Quick Cheatsheet</summary>
+            <div class="content">
+                <h3>Pipeline Development</h3>
+                <div class="code">
+# Basic Pipeline Structure
+Pipeline p = Pipeline.create(options);
+p.apply("Read", TextIO.read().from("gs://..."))
+ .apply("Transform", ParDo.of(new MyDoFn()))
+ .apply("Write", TextIO.write().to("gs://..."));
+p.run().waitUntilFinish();
+                </div>
+
+                <h3>Windowing Quick Reference</h3>
+                <table>
+                    <tr>
+                        <th>Window Type</th>
+                        <th>Code Example</th>
+                        <th>Use Case</th>
+                    </tr>
+                    <tr>
+                        <td>Fixed</td>
+                        <td>Window.into(FixedWindows.of(Duration.standardMinutes(5)))</td>
+                        <td>Regular intervals</td>
+                    </tr>
+                    <tr>
+                        <td>Sliding</td>
+                        <td>Window.into(SlidingWindows.of(Duration.standardMinutes(10)).every(Duration.standardMinutes(1)))</td>
+                        <td>Moving averages</td>
+                    </tr>
+                    <tr>
+                        <td>Session</td>
+                        <td>Window.into(Sessions.withGapDuration(Duration.standardMinutes(30)))</td>
+                        <td>User sessions</td>
+                    </tr>
+                </table>
+
+                <h3>Common Transforms</h3>
+                <ul>
+                    <li><strong>Map:</strong> 1:1 element transformation</li>
+                    <li><strong>FlatMap:</strong> 1:N element transformation</li>
+                    <li><strong>Filter:</strong> Conditional element selection</li>
+                    <li><strong>GroupByKey:</strong> Shuffle operation, creates iterables</li>
+                    <li><strong>CoGroupByKey:</strong> Join multiple PCollections</li>
+                    <li><strong>Combine:</strong> Reduce operation (sum, max, custom)</li>
+                </ul>
+
+                <h3>Template Commands</h3>
+                <div class="code">
+# Classic Template
+gcloud dataflow jobs run JOB_NAME \
+  --gcs-location gs://bucket/templates/template \
+  --parameters inputFile=gs://bucket/input.txt
+
+# Flex Template  
+gcloud dataflow flex-template run JOB_NAME \
+  --template-file-gcs-location gs://bucket/template.json \
+  --parameters inputFile=gs://bucket/input.txt
+                </div>
+
+                <h3>Monitoring Keys</h3>
+                <div class="

@@ -1,0 +1,346 @@
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GCP PDE - Vertex AI Custom Training</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Outfit', sans-serif; background: #0f1117; color: #e4e7eb; line-height: 1.6; }
+        .container { max-width: 1200px; margin: 0 auto; padding: 20px; }
+        h1, h2 { color: #1D9E75; margin-bottom: 15px; }
+        h1 { font-size: 2.2em; text-align: center; margin-bottom: 30px; }
+        h2 { font-size: 1.6em; border-bottom: 2px solid #1D9E75; padding-bottom: 5px; }
+        details { margin: 20px 0; border: 1px solid #333; border-radius: 8px; overflow: hidden; }
+        summary { background: #1a1f2e; padding: 15px; cursor: pointer; font-weight: 600; color: #1D9E75; }
+        summary:hover { background: #242938; }
+        .content { padding: 20px; }
+        table { width: 100%; border-collapse: collapse; margin: 15px 0; }
+        th, td { padding: 12px; text-align: left; border: 1px solid #333; }
+        th { background: #1D9E75; color: white; font-weight: 600; }
+        tr:nth-child(even) { background: #1a1f2e; }
+        .highlight { background: #2d4a3e; padding: 10px; border-left: 4px solid #1D9E75; margin: 15px 0; border-radius: 4px; }
+        .warning { background: #4a2d2d; border-left-color: #d73027; }
+        code { background: #1a1f2e; padding: 2px 6px; border-radius: 3px; font-family: 'Courier New', monospace; }
+        ul { margin: 15px 0; padding-left: 20px; }
+        li { margin: 5px 0; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Vertex AI Custom Training</h1>
+
+        <details open>
+            <summary>Core Concepts</summary>
+            <div class="content">
+                <h2>Training Jobs</h2>
+                <p><strong>Custom Training Job:</strong> A managed service to train ML models using your own training code. Supports TensorFlow, PyTorch, scikit-learn, XGBoost, and custom frameworks.</p>
+                
+                <table>
+                    <tr>
+                        <th>Job Type</th>
+                        <th>Use Case</th>
+                        <th>Key Features</th>
+                    </tr>
+                    <tr>
+                        <td>Custom Training</td>
+                        <td>Full control over training logic</td>
+                        <td>Custom containers, distributed training, hyperparameter tuning</td>
+                    </tr>
+                    <tr>
+                        <td>AutoML</td>
+                        <td>Automated model development</td>
+                        <td>No code required, built-in feature engineering</td>
+                    </tr>
+                </table>
+
+                <h2>Container Types</h2>
+                <div class="highlight">
+                    <strong>Pre-built Containers:</strong> Google-managed containers with popular ML frameworks (TensorFlow, PyTorch, scikit-learn) pre-installed. Fastest to get started.
+                </div>
+                <div class="highlight">
+                    <strong>Custom Containers:</strong> Your own Docker container with specific dependencies, frameworks, or custom code. Pushed to Artifact Registry or Container Registry.
+                </div>
+
+                <h2>Training Pipeline</h2>
+                <p>1. <strong>Data:</strong> Input data from GCS, BigQuery, or other sources</p>
+                <p>2. <strong>Container:</strong> Pre-built or custom container with training code</p>
+                <p>3. <strong>Compute:</strong> VMs with CPUs, GPUs, or TPUs</p>
+                <p>4. <strong>Output:</strong> Trained model artifacts saved to GCS</p>
+            </div>
+        </details>
+
+        <details>
+            <summary>Architecture</summary>
+            <div class="content">
+                <h2>Training Job Components</h2>
+                <table>
+                    <tr>
+                        <th>Component</th>
+                        <th>Description</th>
+                        <th>Configuration</th>
+                    </tr>
+                    <tr>
+                        <td>Training Application</td>
+                        <td>Your ML training code</td>
+                        <td>Python package or container image</td>
+                    </tr>
+                    <tr>
+                        <td>Worker Pool</td>
+                        <td>Compute resources for training</td>
+                        <td>Machine type, accelerator type, replica count</td>
+                    </tr>
+                    <tr>
+                        <td>Input/Output</td>
+                        <td>Data sources and model output</td>
+                        <td>GCS paths, BigQuery datasets</td>
+                    </tr>
+                    <tr>
+                        <td>Environment</td>
+                        <td>Runtime environment</td>
+                        <td>Pre-built container or custom image</td>
+                    </tr>
+                </table>
+
+                <h2>Distributed Training Architecture</h2>
+                <table>
+                    <tr>
+                        <th>Strategy</th>
+                        <th>Framework</th>
+                        <th>Implementation</th>
+                    </tr>
+                    <tr>
+                        <td>Data Parallelism</td>
+                        <td>TensorFlow</td>
+                        <td>MultiWorkerMirroredStrategy</td>
+                    </tr>
+                    <tr>
+                        <td>Data Parallelism</td>
+                        <td>PyTorch</td>
+                        <td>DistributedDataParallel (DDP)</td>
+                    </tr>
+                    <tr>
+                        <td>Model Parallelism</td>
+                        <td>Large models</td>
+                        <td>Custom sharding logic</td>
+                    </tr>
+                </table>
+
+                <h2>Hardware Accelerators</h2>
+                <div class="highlight">
+                    <strong>GPUs:</strong> NVIDIA Tesla V100, P100, T4, P4. Best for deep learning workloads.
+                </div>
+                <div class="highlight">
+                    <strong>TPUs:</strong> Google's Tensor Processing Units. Optimized for TensorFlow, especially large-scale training.
+                </div>
+                <div class="highlight">
+                    <strong>CPUs:</strong> Standard compute for traditional ML algorithms and preprocessing.
+                </div>
+            </div>
+        </details>
+
+        <details>
+            <summary>Key Configs & Limits</summary>
+            <div class="content">
+                <h2>Training Job Limits</h2>
+                <table>
+                    <tr>
+                        <th>Resource</th>
+                        <th>Limit</th>
+                        <th>Notes</th>
+                    </tr>
+                    <tr>
+                        <td>Max job duration</td>
+                        <td>7 days</td>
+                        <td>Auto-terminates after 7 days</td>
+                    </tr>
+                    <tr>
+                        <td>Max worker pools</td>
+                        <td>10</td>
+                        <td>Different machine types per pool</td>
+                    </tr>
+                    <tr>
+                        <td>Max replicas per pool</td>
+                        <td>1000</td>
+                        <td>For distributed training</td>
+                    </tr>
+                    <tr>
+                        <td>Container image size</td>
+                        <td>10 GB</td>
+                        <td>Compressed size limit</td>
+                    </tr>
+                </table>
+
+                <h2>Hyperparameter Tuning (Vizier)</h2>
+                <table>
+                    <tr>
+                        <th>Parameter</th>
+                        <th>Default/Limit</th>
+                        <th>Description</th>
+                    </tr>
+                    <tr>
+                        <td>Max trials</td>
+                        <td>1000</td>
+                        <td>Maximum hyperparameter combinations</td>
+                    </tr>
+                    <tr>
+                        <td>Max parallel trials</td>
+                        <td>100</td>
+                        <td>Concurrent training jobs</td>
+                    </tr>
+                    <tr>
+                        <td>Max parameters</td>
+                        <td>100</td>
+                        <td>Hyperparameters to optimize</td>
+                    </tr>
+                    <tr>
+                        <td>Algorithm</td>
+                        <td>Bayesian</td>
+                        <td>Default optimization algorithm</td>
+                    </tr>
+                </table>
+
+                <h2>Machine Types & Pricing</h2>
+                <table>
+                    <tr>
+                        <th>Machine Type</th>
+                        <th>vCPUs</th>
+                        <th>Memory</th>
+                        <th>Use Case</th>
+                    </tr>
+                    <tr>
+                        <td>n1-standard-4</td>
+                        <td>4</td>
+                        <td>15 GB</td>
+                        <td>Light training workloads</td>
+                    </tr>
+                    <tr>
+                        <td>n1-highmem-8</td>
+                        <td>8</td>
+                        <td>52 GB</td>
+                        <td>Memory-intensive training</td>
+                    </tr>
+                    <tr>
+                        <td>n1-highcpu-32</td>
+                        <td>32</td>
+                        <td>28.8 GB</td>
+                        <td>CPU-intensive algorithms</td>
+                    </tr>
+                </table>
+            </div>
+        </details>
+
+        <details>
+            <summary>Exam Traps</summary>
+            <div class="content">
+                <div class="highlight warning">
+                    <strong>Trap:</strong> "Use AutoML for all custom training needs"<br>
+                    <strong>Reality:</strong> AutoML is for automated model development. Custom Training is for when you need full control over training logic, custom architectures, or specific frameworks.
+                </div>
+
+                <div class="highlight warning">
+                    <strong>Trap:</strong> "Pre-built containers can't be customized"<br>
+                    <strong>Reality:</strong> You can install additional packages in pre-built containers using requirements.txt or setup.py, but for complex dependencies, use custom containers.
+                </div>
+
+                <div class="highlight warning">
+                    <strong>Trap:</strong> "Hyperparameter tuning always improves model performance"<br>
+                    <strong>Reality:</strong> Poor search space definition or insufficient trials can lead to suboptimal results. Define reasonable bounds and run enough trials.
+                </div>
+
+                <div class="highlight warning">
+                    <strong>Trap:</strong> "More parallel trials = faster hyperparameter tuning"<br>
+                    <strong>Reality:</strong> Bayesian optimization needs sequential feedback. Too many parallel trials reduce optimization effectiveness.
+                </div>
+
+                <div class="highlight warning">
+                    <strong>Trap:</strong> "TPUs work with all frameworks"<br>
+                    <strong>Reality:</strong> TPUs are optimized for TensorFlow. PyTorch support exists but is limited. Use GPUs for PyTorch workloads.
+                </div>
+
+                <h2>Common Confusion Points</h2>
+                <table>
+                    <tr>
+                        <th>Often Confused</th>
+                        <th>Key Difference</th>
+                    </tr>
+                    <tr>
+                        <td>Custom Training vs AutoML</td>
+                        <td>Custom = your code, AutoML = automated</td>
+                    </tr>
+                    <tr>
+                        <td>Pre-built vs Custom containers</td>
+                        <td>Pre-built = Google managed, Custom = you build</td>
+                    </tr>
+                    <tr>
+                        <td>GPU vs TPU</td>
+                        <td>GPU = versatile, TPU = TensorFlow optimized</td>
+                    </tr>
+                    <tr>
+                        <td>Distributed vs Hyperparameter tuning</td>
+                        <td>Distributed = parallel compute, HP tuning = parameter optimization</td>
+                    </tr>
+                </table>
+            </div>
+        </details>
+
+        <details>
+            <summary>Quick Cheatsheet</summary>
+            <div class="content">
+                <h2>Decision Matrix</h2>
+                <table>
+                    <tr>
+                        <th>Scenario</th>
+                        <th>Solution</th>
+                    </tr>
+                    <tr>
+                        <td>Need full control over training logic</td>
+                        <td>Custom Training with custom container</td>
+                    </tr>
+                    <tr>
+                        <td>Standard TensorFlow/PyTorch training</td>
+                        <td>Pre-built container</td>
+                    </tr>
+                    <tr>
+                        <td>Large dataset, long training time</td>
+                        <td>Distributed training with multiple replicas</td>
+                    </tr>
+                    <tr>
+                        <td>Need optimal hyperparameters</td>
+                        <td>Vertex AI Vizier (hyperparameter tuning)</td>
+                    </tr>
+                    <tr>
+                        <td>Deep learning with large models</td>
+                        <td>GPU or TPU accelerators</td>
+                    </tr>
+                    <tr>
+                        <td>Traditional ML algorithms</td>
+                        <td>CPU-only training</td>
+                    </tr>
+                </table>
+
+                <h2>Key Commands</h2>
+                <ul>
+                    <li><code>gcloud ai custom-jobs create</code> - Submit training job</li>
+                    <li><code>gcloud ai hp-tuning-jobs create</code> - Start hyperparameter tuning</li>
+                    <li><code>gcloud ai jobs list</code> - List training jobs</li>
+                    <li><code>gcloud ai jobs cancel</code> - Cancel running job</li>
+                </ul>
+
+                <h2>Best Practices</h2>
+                <ul>
+                    <li>Use pre-built containers for standard frameworks</li>
+                    <li>Implement checkpointing for long training jobs</li>
+                    <li>Start with single-node before distributed training</li>
+                    <li>Monitor resource utilization and costs</li>
+                    <li>Use appropriate machine types for workload</li>
+                </ul>
+            </div>
+        </details>
+
+        <details>
+            <summary>Question Patterns</summary>
+            <div class="content">
+                <h2>Common Exam Patterns</h2>

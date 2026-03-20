@@ -1,0 +1,352 @@
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GCP PDE: Cloud SQL Study Notes</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            background-color: #0f1117;
+            color: #e0e0e0;
+            font-family: 'Outfit', sans-serif;
+            line-height: 1.6;
+            padding: 20px;
+        }
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+        h1 {
+            color: #1D9E75;
+            border-bottom: 3px solid #1D9E75;
+            padding-bottom: 15px;
+            margin-bottom: 30px;
+            font-size: 2.2em;
+        }
+        h2 {
+            color: #1D9E75;
+            margin-top: 30px;
+            margin-bottom: 15px;
+            font-size: 1.6em;
+        }
+        h3 {
+            color: #1D9E75;
+            margin-top: 20px;
+            margin-bottom: 10px;
+            font-size: 1.2em;
+        }
+        details {
+            background-color: #161b22;
+            border-left: 4px solid #1D9E75;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        details summary {
+            color: #1D9E75;
+            font-weight: 600;
+            user-select: none;
+            outline: none;
+        }
+        details summary:hover {
+            color: #25b892;
+        }
+        details[open] summary {
+            color: #25b892;
+            margin-bottom: 10px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background-color: #161b22;
+            margin: 15px 0;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+        th {
+            background-color: #1D9E75;
+            color: #0f1117;
+            padding: 12px;
+            text-align: left;
+            font-weight: 700;
+        }
+        td {
+            padding: 12px;
+            border-bottom: 1px solid #30363d;
+        }
+        tr:last-child td {
+            border-bottom: none;
+        }
+        tr:hover {
+            background-color: #1d262f;
+        }
+        .cheatsheet {
+            background-color: #1d262f;
+            border: 2px solid #1D9E75;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 4px;
+        }
+        .cheatsheet-item {
+            margin: 10px 0;
+            padding: 8px 0;
+            border-bottom: 1px solid #30363d;
+        }
+        .cheatsheet-item:last-child {
+            border-bottom: none;
+        }
+        .key {
+            color: #1D9E75;
+            font-weight: 700;
+        }
+        .trap {
+            background-color: #3d2626;
+            border-left: 4px solid #ff6b6b;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 4px;
+        }
+        .trap-title {
+            color: #ff8787;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+        code {
+            background-color: #0d1117;
+            color: #79c0ff;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-family: 'Courier New', monospace;
+        }
+        .section-divider {
+            border-top: 2px solid #1D9E75;
+            margin: 40px 0;
+            padding-top: 20px;
+        }
+        ul, ol {
+            margin-left: 20px;
+            margin: 10px 0;
+        }
+        li {
+            margin: 8px 0;
+        }
+        strong {
+            color: #1D9E75;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>☁️ Cloud SQL: Complete Study Guide</h1>
+
+        <div style="background-color: #161b22; padding: 15px; border-radius: 4px; margin-bottom: 30px;">
+            <p><strong>Focus Areas:</strong> Engines | HA & Replication | Connection Methods | Auth | Backups | Migration | Maintenance</p>
+            <p style="margin-top: 10px;"><strong>Exam Weight:</strong> 15-20% of PDE (Data Engineering)</strong></p>
+        </div>
+
+        <!-- SECTION 1: CORE CONCEPTS -->
+        <h2>1. Core Concepts</h2>
+
+        <details>
+            <summary>What is Cloud SQL?</summary>
+            <p>Cloud SQL is a fully managed relational database service on GCP. Handles patching, backups, replication, and failover automatically. No infrastructure management required. Scales vertically (machine type) and horizontally (read replicas). Available as MySQL 5.7/8.0, PostgreSQL 12-15, or SQL Server 2019/2022.</p>
+        </details>
+
+        <details>
+            <summary>Managed vs Manual Operations</summary>
+            <p><strong>Automatic:</strong></p>
+            <ul>
+                <li>Backups (daily automatic backups retained 35 days by default)</li>
+                <li>OS and database patching</li>
+                <li>Failover in HA configuration</li>
+                <li>Replication to standby or read replicas</li>
+                <li>SSL/TLS encryption in transit</li>
+            </ul>
+            <p style="margin-top: 10px;"><strong>Manual:</strong></p>
+            <ul>
+                <li>Schema design and optimization</li>
+                <li>Connection pooling strategy</li>
+                <li>Query tuning</li>
+                <li>Index creation</li>
+                <li>Maintenance windows (you choose the window)</li>
+            </ul>
+        </details>
+
+        <details>
+            <summary>Key Advantages Over Self-Managed Databases</summary>
+            <ul>
+                <li>99.95% SLA for HA instances (regional)</li>
+                <li>Zero-downtime patching in maintenance window</li>
+                <li>Automatic failover to standby in seconds</li>
+                <li>Point-in-time recovery up to 35 days</li>
+                <li>Integrated IAM and encryption at rest (CMEK)</li>
+                <li>No server provisioning or OS patching needed</li>
+            </ul>
+        </details>
+
+        <!-- SECTION 2: ARCHITECTURE -->
+        <div class="section-divider"></div>
+        <h2>2. Architecture & Components</h2>
+
+        <h3>Database Engines Comparison</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>Engine</th>
+                    <th>Versions</th>
+                    <th>Best For</th>
+                    <th>Key Notes</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>MySQL</strong></td>
+                    <td>5.7, 8.0</td>
+                    <td>Web apps, LAMP stacks, high throughput</td>
+                    <td>InnoDB default storage engine. Row-based replication. Good for OLTP.</td>
+                </tr>
+                <tr>
+                    <td><strong>PostgreSQL</strong></td>
+                    <td>12, 13, 14, 15</td>
+                    <td>Complex queries, JSON, advanced types, analytics</td>
+                    <td>MVCC concurrency. logical replication. Superior query planner.</td>
+                </tr>
+                <tr>
+                    <td><strong>SQL Server</strong></td>
+                    <td>2019, 2022</td>
+                    <td>Enterprise apps, .NET integration, Windows auth</td>
+                    <td>Always On HA. T-SQL. High licensing cost on GCP.</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h3>High Availability (HA) Architecture</h3>
+        <details>
+            <summary>HA Deployment Model</summary>
+            <p><strong>Regional Deployment (Multi-Zone):</strong></p>
+            <ul>
+                <li><strong>Primary:</strong> Accepts reads and writes. Synchronous replication to standby.</li>
+                <li><strong>Standby Replica:</strong> In different zone, same region. Receives writes synchronously. Cannot serve queries in normal operation.</li>
+                <li><strong>Failover:</strong> Automatic if primary becomes unavailable. Standby promotes to primary (5-10 seconds typical).</li>
+                <li><strong>Zonal Outage:</strong> Handled. Datacentre failure triggers failover.</li>
+                <li><strong>SLA:</strong> 99.95% uptime SLA.</li>
+            </ul>
+            <p style="margin-top: 15px;"><strong>Cost:</strong> Standby replica charged at 50% of primary instance cost.</p>
+        </details>
+
+        <h3>Replication Topologies</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>Type</th>
+                    <th>Sync Mode</th>
+                    <th>Purpose</th>
+                    <th>Read/Write?</th>
+                    <th>Region</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>Standby (HA)</strong></td>
+                    <td>Synchronous</td>
+                    <td>Automatic failover</td>
+                    <td>Read-only (except on failover)</td>
+                    <td>Same region, diff zone</td>
+                </tr>
+                <tr>
+                    <td><strong>Read Replica</strong></td>
+                    <td>Asynchronous</td>
+                    <td>Scale read capacity, analytics offload</td>
+                    <td>Read-only</td>
+                    <td>Same or different region</td>
+                </tr>
+                <tr>
+                    <td><strong>Cross-Region Replica</strong></td>
+                    <td>Asynchronous</td>
+                    <td>Disaster recovery, data locality</td>
+                    <td>Read-only</td>
+                    <td>Different region (any)</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <details>
+            <summary>Read Replica Behavior & Lag</summary>
+            <ul>
+                <li><strong>Asynchronous replication:</strong> Primary does not wait for replica to confirm write. Lower latency on primary but potential lag on replica.</li>
+                <li><strong>Replication lag:</strong> Typically milliseconds to seconds. Monitor via <code>Replication Offset Lag</code> metric in Cloud Console.</li>
+                <li><strong>Promotion:</strong> Read replica can be promoted to a standalone instance (one-way, irreversible). Useful for failover in multi-region disaster recovery.</li>
+                <li><strong>Connection string:</strong> Replicas have separate public IP. Applications must connect to replica endpoint explicitly for reads.</li>
+                <li><strong>Cascading replicas:</strong> A replica can have its own replicas (MySQL/PostgreSQL only). Creates hierarchical replication.</li>
+            </ul>
+        </details>
+
+        <h3>Cloud SQL Architecture Diagram (Text)</h3>
+        <pre style="background-color: #161b22; padding: 15px; border-radius: 4px; overflow-x: auto;">
+┌─────────────────────────────────────────────────────┐
+│            GCP Project (Cloud SQL)                   │
+├─────────────────────────────────────────────────────┤
+│                                                       │
+│  ┌────────────────────────────────────────────┐    │
+│  │         Primary Instance (Zone A)           │    │
+│  │  ┌─────────────────────────────────────┐   │    │
+│  │  │  Cloud SQL Engine (MySQL/PG/MSSQL)  │   │    │
+│  │  │  - Accepts R/W                       │   │    │
+│  │  └─────────────────────────────────────┘   │    │
+│  │         ↓ (Sync replication)               │    │
+│  └────────────────────────────────────────────┘    │
+│                      │                               │
+│                      ├─ Standby (Zone B, HA)        │
+│                      │                               │
+│                      └─ Read Replica (Region B)    │
+│                                                       │
+│  ┌────────────────────────────────────────────┐    │
+│  │       Cloud SQL Auth Proxy (VM)             │    │
+│  │  - Client authentication                    │    │
+│  │  - IAM-based access control                │    │
+│  └────────────────────────────────────────────┘    │
+│                                                       │
+└─────────────────────────────────────────────────────┘
+        </pre>
+
+        <!-- SECTION 3: KEY CONFIGS & LIMITS -->
+        <div class="section-divider"></div>
+        <h2>3. Key Configurations & Limits</h2>
+
+        <h3>Instance Configuration Limits</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>Parameter</th>
+                    <th>Limit/Default</th>
+                    <th>Notes</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>Machine Type (vCPU)</strong></td>
+                    <td>1 to 96 vCPU</td>
+                    <td>db-custom-1-3840 smallest, db-custom-96-624000 largest. Scale requires restart.</td>
+                </tr>
+                <tr>
+                    <td><strong>Memory (RAM)</strong></td>
+                    <td>3.75 GB to 624 GB</td>
+                    <td>Minimum 3.75 GB per instance. 6.5 GB RAM per 1 vCPU typical. Shared-core instances deprecated.</td>
+                </tr>
+                <tr>
+                    <td><strong>Storage</strong></td>
+                    <td>10 GB to 65,536 GB (64 TB)</td>
+                    <td>Auto-expand enabled by default. Grows by 1 GB increments when capacity threshold hit. SSD only.</td>
+                </tr>
+                <tr>
+                    <td><strong>Automatic Storage Increase</strong></td>
+                    <td>On by default</td>
+                    <td>Expands if storage usage exceeds a threshold (defaults to 90%). Set

@@ -1,0 +1,423 @@
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GCP PDE: Vertex AI Pipelines Study Notes</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Outfit', sans-serif;
+            background-color: #0f1117;
+            color: #e4e4e7;
+            margin: 0;
+            padding: 20px;
+            line-height: 1.6;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        h1 {
+            color: #1D9E75;
+            text-align: center;
+            margin-bottom: 30px;
+            font-weight: 700;
+        }
+        h2 {
+            color: #1D9E75;
+            border-bottom: 2px solid #1D9E75;
+            padding-bottom: 5px;
+            margin-top: 30px;
+        }
+        details {
+            background-color: #1a1a1a;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 15px;
+            border: 1px solid #333;
+        }
+        summary {
+            font-weight: 600;
+            cursor: pointer;
+            color: #1D9E75;
+            margin-bottom: 10px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 15px 0;
+            background-color: #1a1a1a;
+        }
+        th, td {
+            border: 1px solid #333;
+            padding: 10px;
+            text-align: left;
+        }
+        th {
+            background-color: #1D9E75;
+            color: white;
+            font-weight: 600;
+        }
+        .highlight {
+            color: #1D9E75;
+            font-weight: 500;
+        }
+        .warning {
+            color: #ff6b6b;
+            font-weight: 500;
+        }
+        code {
+            background-color: #2d2d2d;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: 'Courier New', monospace;
+        }
+        ul, ol {
+            margin-left: 20px;
+        }
+        .cheatsheet {
+            background-color: #1a1a1a;
+            padding: 20px;
+            border-radius: 8px;
+            border-left: 4px solid #1D9E75;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Vertex AI Pipelines - GCP PDE Study Notes</h1>
+
+        <h2>1. Core Concepts</h2>
+        
+        <details>
+            <summary>What is Vertex AI Pipelines</summary>
+            <p>Vertex AI Pipelines is a serverless ML workflow orchestration service built on <span class="highlight">Kubeflow Pipelines (KFP)</span>. It allows you to automate, monitor, and govern ML systems by orchestrating workflows in a serverless manner.</p>
+            <ul>
+                <li><span class="highlight">Serverless execution</span> - no infrastructure management</li>
+                <li><span class="highlight">Kubeflow Pipelines</span> compatibility</li>
+                <li><span class="highlight">TensorFlow Extended (TFX)</span> integration</li>
+                <li>Built-in experiment tracking and metadata management</li>
+                <li>Pipeline versioning and scheduling</li>
+            </ul>
+        </details>
+
+        <details>
+            <summary>Kubeflow Pipelines (KFP)</summary>
+            <p>Open-source platform for building and deploying portable, scalable ML workflows based on Docker containers.</p>
+            <ul>
+                <li><span class="highlight">Components</span> - containerized functions that perform specific tasks</li>
+                <li><span class="highlight">Pipelines</span> - workflows composed of connected components</li>
+                <li><span class="highlight">Pipeline runs</span> - single execution of a pipeline</li>
+                <li><span class="highlight">Experiments</span> - collections of pipeline runs</li>
+            </ul>
+        </details>
+
+        <details>
+            <summary>TensorFlow Extended (TFX)</summary>
+            <p>Production ML platform providing components and libraries for deploying production ML pipelines.</p>
+            
+            <table>
+                <tr>
+                    <th>TFX Component</th>
+                    <th>Purpose</th>
+                    <th>Key Function</th>
+                </tr>
+                <tr>
+                    <td>ExampleGen</td>
+                    <td>Data ingestion</td>
+                    <td>Splits data into train/eval</td>
+                </tr>
+                <tr>
+                    <td>StatisticsGen</td>
+                    <td>Data analysis</td>
+                    <td>Computes dataset statistics</td>
+                </tr>
+                <tr>
+                    <td>SchemaGen</td>
+                    <td>Schema inference</td>
+                    <td>Infers data schema</td>
+                </tr>
+                <tr>
+                    <td>ExampleValidator</td>
+                    <td>Data validation</td>
+                    <td>Detects anomalies/errors</td>
+                </tr>
+                <tr>
+                    <td>Transform</td>
+                    <td>Feature engineering</td>
+                    <td>Preprocessing at scale</td>
+                </tr>
+                <tr>
+                    <td>Trainer</td>
+                    <td>Model training</td>
+                    <td>Trains TensorFlow models</td>
+                </tr>
+                <tr>
+                    <td>Evaluator</td>
+                    <td>Model validation</td>
+                    <td>Performs deep model analysis</td>
+                </tr>
+                <tr>
+                    <td>Pusher</td>
+                    <td>Model deployment</td>
+                    <td>Deploys blessed models</td>
+                </tr>
+            </table>
+        </details>
+
+        <details>
+            <summary>Components and Artifacts</summary>
+            <p><span class="highlight">Components</span> are self-contained pieces of code packaged as Docker images. They consume and produce <span class="highlight">artifacts</span>.</p>
+            
+            <h4>Component Types:</h4>
+            <ul>
+                <li><span class="highlight">Lightweight components</span> - Python functions with @component decorator</li>
+                <li><span class="highlight">Containerized components</span> - Full Docker containers</li>
+                <li><span class="highlight">TFX components</span> - Pre-built TensorFlow Extended components</li>
+            </ul>
+
+            <h4>Artifact Types:</h4>
+            <ul>
+                <li><code>Dataset</code> - Training/evaluation data</li>
+                <li><code>Model</code> - Trained ML models</li>
+                <li><code>Metrics</code> - Evaluation metrics</li>
+                <li><code>Examples</code> - TFX data format</li>
+                <li><code>Schema</code> - Data schema definitions</li>
+            </ul>
+        </details>
+
+        <details>
+            <summary>Pipeline Caching</summary>
+            <p>Vertex AI Pipelines automatically caches component outputs to avoid re-running unchanged components.</p>
+            <ul>
+                <li><span class="highlight">Automatic caching</span> based on component inputs and code</li>
+                <li><span class="highlight">Cache key</span> includes component spec, inputs, and container image digest</li>
+                <li>Can be disabled per component or pipeline</li>
+                <li>Speeds up iterative development and re-runs</li>
+            </ul>
+        </details>
+
+        <h2>2. Architecture</h2>
+
+        <details>
+            <summary>Pipeline Architecture Overview</summary>
+            
+            <table>
+                <tr>
+                    <th>Layer</th>
+                    <th>Component</th>
+                    <th>Responsibility</th>
+                </tr>
+                <tr>
+                    <td>User Interface</td>
+                    <td>Vertex AI Console</td>
+                    <td>Pipeline monitoring, visualization</td>
+                </tr>
+                <tr>
+                    <td>API Layer</td>
+                    <td>Vertex AI Pipelines API</td>
+                    <td>Pipeline submission, management</td>
+                </tr>
+                <tr>
+                    <td>Orchestration</td>
+                    <td>Kubeflow Pipelines</td>
+                    <td>Workflow execution, DAG management</td>
+                </tr>
+                <tr>
+                    <td>Runtime</td>
+                    <td>Google Kubernetes Engine</td>
+                    <td>Container execution</td>
+                </tr>
+                <tr>
+                    <td>Storage</td>
+                    <td>ML Metadata & Cloud Storage</td>
+                    <td>Artifact storage, lineage tracking</td>
+                </tr>
+            </table>
+        </details>
+
+        <details>
+            <summary>Component Execution Flow</summary>
+            
+            <table>
+                <tr>
+                    <th>Step</th>
+                    <th>Action</th>
+                    <th>Details</th>
+                </tr>
+                <tr>
+                    <td>1</td>
+                    <td>Pipeline Compilation</td>
+                    <td>Python DSL → JSON/YAML spec</td>
+                </tr>
+                <tr>
+                    <td>2</td>
+                    <td>Pipeline Submission</td>
+                    <td>Spec uploaded to Vertex AI</td>
+                </tr>
+                <tr>
+                    <td>3</td>
+                    <td>DAG Creation</td>
+                    <td>Kubeflow Pipelines creates execution graph</td>
+                </tr>
+                <tr>
+                    <td>4</td>
+                    <td>Component Scheduling</td>
+                    <td>Kubernetes pods created for each component</td>
+                </tr>
+                <tr>
+                    <td>5</td>
+                    <td>Artifact Management</td>
+                    <td>Inputs/outputs stored in Cloud Storage</td>
+                </tr>
+                <tr>
+                    <td>6</td>
+                    <td>Metadata Tracking</td>
+                    <td>ML Metadata records lineage and metrics</td>
+                </tr>
+            </table>
+        </details>
+
+        <details>
+            <summary>Integration Architecture</summary>
+            
+            <table>
+                <tr>
+                    <th>Integration Point</th>
+                    <th>Service</th>
+                    <th>Purpose</th>
+                </tr>
+                <tr>
+                    <td>Data Sources</td>
+                    <td>BigQuery, Cloud Storage</td>
+                    <td>Training data ingestion</td>
+                </tr>
+                <tr>
+                    <td>Training</td>
+                    <td>Vertex AI Training</td>
+                    <td>Custom and built-in algorithms</td>
+                </tr>
+                <tr>
+                    <td>Model Registry</td>
+                    <td>Vertex AI Model Registry</td>
+                    <td>Model versioning and management</td>
+                </tr>
+                <tr>
+                    <td>Serving</td>
+                    <td>Vertex AI Prediction</td>
+                    <td>Model deployment and serving</td>
+                </tr>
+                <tr>
+                    <td>Monitoring</td>
+                    <td>Vertex AI Model Monitoring</td>
+                    <td>Model performance tracking</td>
+                </tr>
+                <tr>
+                    <td>Feature Store</td>
+                    <td>Vertex AI Feature Store</td>
+                    <td>Feature management and serving</td>
+                </tr>
+            </table>
+        </details>
+
+        <h2>3. Key Configs & Limits</h2>
+
+        <details>
+            <summary>Pipeline Limits</summary>
+            
+            <table>
+                <tr>
+                    <th>Resource</th>
+                    <th>Limit</th>
+                    <th>Notes</th>
+                </tr>
+                <tr>
+                    <td>Pipeline runs (concurrent)</td>
+                    <td>100 per region</td>
+                    <td>Can request quota increase</td>
+                </tr>
+                <tr>
+                    <td>Pipeline spec size</td>
+                    <td>32 MB</td>
+                    <td>Compressed JSON/YAML</td>
+                </tr>
+                <tr>
+                    <td>Component timeout</td>
+                    <td>7 days default</td>
+                    <td>Configurable per component</td>
+                </tr>
+                <tr>
+                    <td>Pipeline timeout</td>
+                    <td>7 days default</td>
+                    <td>Configurable at pipeline level</td>
+                </tr>
+                <tr>
+                    <td>Artifact size</td>
+                    <td>No explicit limit</td>
+                    <td>Limited by Cloud Storage quotas</td>
+                </tr>
+                <tr>
+                    <td>Components per pipeline</td>
+                    <td>No explicit limit</td>
+                    <td>Practical limit ~1000 components</td>
+                </tr>
+            </table>
+        </details>
+
+        <details>
+            <summary>Default Resource Configurations</summary>
+            
+            <table>
+                <tr>
+                    <th>Resource</th>
+                    <th>Default Value</th>
+                    <th>Configurable</th>
+                </tr>
+                <tr>
+                    <td>CPU request</td>
+                    <td>0.1 CPU</td>
+                    <td>Yes, via component spec</td>
+                </tr>
+                <tr>
+                    <td>Memory request</td>
+                    <td>0.1 GB</td>
+                    <td>Yes, via component spec</td>
+                </tr>
+                <tr>
+                    <td>CPU limit</td>
+                    <td>Not set</td>
+                    <td>Yes, recommended for production</td>
+                </tr>
+                <tr>
+                    <td>Memory limit</td>
+                    <td>Not set</td>
+                    <td>Yes, recommended for production</td>
+                </tr>
+                <tr>
+                    <td>GPU</td>
+                    <td>None</td>
+                    <td>Yes, specify type and count</td>
+                </tr>
+                <tr>
+                    <td>Disk size</td>
+                    <td>10 GB</td>
+                    <td>Yes, for large datasets</td>
+                </tr>
+            </table>
+        </details>
+
+        <details>
+            <summary>Scheduling & Triggering</summary>
+            
+            <table>
+                <tr>
+                    <th>Trigger Type</th>
+                    <th>Configuration</th>
+                    <th>Use Case</th>
+                </tr>
+                <tr>
+                    <td>Manual</td>
+                    <td>One-time execution</td>
+                    <td>Development, testing

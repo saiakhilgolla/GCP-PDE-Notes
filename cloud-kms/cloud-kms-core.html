@@ -1,0 +1,373 @@
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GCP PDE: Cloud KMS Study Notes</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Outfit', sans-serif;
+            background-color: #0f1117;
+            color: #e0e0e0;
+            line-height: 1.6;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        header {
+            border-bottom: 3px solid #1D9E75;
+            padding-bottom: 20px;
+            margin-bottom: 30px;
+        }
+        
+        h1 {
+            color: #1D9E75;
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+        
+        h2 {
+            color: #1D9E75;
+            font-size: 1.8em;
+            margin-top: 40px;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #1D9E75;
+        }
+        
+        h3 {
+            color: #1D9E75;
+            font-size: 1.3em;
+            margin-top: 25px;
+            margin-bottom: 15px;
+        }
+        
+        details {
+            background-color: #161b22;
+            border-left: 4px solid #1D9E75;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        
+        summary {
+            color: #1D9E75;
+            font-weight: 600;
+            font-size: 1.1em;
+            outline: none;
+            user-select: none;
+        }
+        
+        summary:hover {
+            color: #2db894;
+        }
+        
+        details[open] > summary {
+            color: #2db894;
+            margin-bottom: 15px;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            background-color: #161b22;
+            border: 1px solid #1D9E75;
+        }
+        
+        th {
+            background-color: #1D9E75;
+            color: #0f1117;
+            padding: 12px;
+            text-align: left;
+            font-weight: 700;
+        }
+        
+        td {
+            padding: 12px;
+            border-bottom: 1px solid #30363d;
+        }
+        
+        tr:last-child td {
+            border-bottom: none;
+        }
+        
+        tr:hover {
+            background-color: #0d1117;
+        }
+        
+        .section {
+            margin-bottom: 40px;
+        }
+        
+        .concept-box {
+            background-color: #161b22;
+            border-left: 4px solid #1D9E75;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 4px;
+        }
+        
+        .concept-box strong {
+            color: #1D9E75;
+        }
+        
+        .trap-box {
+            background-color: #2d1a1a;
+            border-left: 4px solid #d97c6f;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 4px;
+        }
+        
+        .trap-box strong {
+            color: #ff6b6b;
+        }
+        
+        .cheatsheet-box {
+            background-color: #1a2d1a;
+            border-left: 4px solid #1D9E75;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 4px;
+            font-size: 0.95em;
+        }
+        
+        .cheatsheet-box strong {
+            color: #1D9E75;
+        }
+        
+        code {
+            background-color: #0d1117;
+            color: #7ee787;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-family: 'Courier New', monospace;
+        }
+        
+        ul, ol {
+            margin-left: 20px;
+            margin-bottom: 15px;
+        }
+        
+        li {
+            margin-bottom: 8px;
+        }
+        
+        .decision-tree {
+            background-color: #161b22;
+            padding: 20px;
+            border-radius: 4px;
+            margin: 20px 0;
+            border-left: 4px solid #1D9E75;
+        }
+        
+        .toc {
+            background-color: #161b22;
+            padding: 20px;
+            border-radius: 4px;
+            margin-bottom: 30px;
+            border-left: 4px solid #1D9E75;
+        }
+        
+        .toc h3 {
+            margin-top: 0;
+        }
+        
+        .toc ul {
+            list-style: none;
+            margin: 0;
+        }
+        
+        .toc li {
+            margin: 8px 0;
+        }
+        
+        .toc a {
+            color: #1D9E75;
+            text-decoration: none;
+        }
+        
+        .toc a:hover {
+            color: #2db894;
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>☁️ GCP Cloud KMS Study Notes</h1>
+            <p style="color: #888; margin-top: 10px;">Professional Data Engineer Exam Preparation</p>
+            <p style="color: #1D9E75; font-weight: 600; margin-top: 5px;">Focus: Key Rings, Key Versions, CMEK, DEK, KEK, Rotation, HSM vs Software, Envelope Encryption</p>
+        </header>
+
+        <div class="toc">
+            <h3>📋 Quick Navigation</h3>
+            <ul>
+                <li><a href="#core-concepts">Core Concepts</a></li>
+                <li><a href="#architecture">Architecture & Components</a></li>
+                <li><a href="#configs-limits">Key Configs & Limits</a></li>
+                <li><a href="#exam-traps">Exam Traps</a></li>
+                <li><a href="#cheatsheet">Quick Cheatsheet</a></li>
+                <li><a href="#decision-patterns">Decision Patterns</a></li>
+            </ul>
+        </div>
+
+        <div class="section" id="core-concepts">
+            <h2>1. Core Concepts</h2>
+
+            <h3>What is Cloud KMS?</h3>
+            <div class="concept-box">
+                <strong>Cloud Key Management Service (KMS)</strong> is a managed encryption service for creating, rotating, and managing cryptographic keys. Used to encrypt sensitive data at rest using customer-managed encryption keys (CMEK).
+            </div>
+
+            <h3>Key Hierarchies: KEK vs DEK</h3>
+            <details>
+                <summary>KEK (Key Encryption Key) vs DEK (Data Encryption Key)</summary>
+                <div style="padding-top: 10px;">
+                    <p><strong>KEK (Key Encryption Key):</strong></p>
+                    <ul>
+                        <li>Master key stored in Cloud KMS</li>
+                        <li>Used to encrypt other keys</li>
+                        <li>Never leaves KMS (except for manual export with export policies)</li>
+                        <li>Managed by you or Google</li>
+                        <li>Rotation handled by KMS</li>
+                    </ul>
+                    <p style="margin-top: 15px;"><strong>DEK (Data Encryption Key):</strong></p>
+                    <ul>
+                        <li>Data encryption key that actually encrypts your application data</li>
+                        <li>Encrypted by KEK</li>
+                        <li>Can exist in application memory or storage</li>
+                        <li>Unique per data object (often)</li>
+                        <li>Generated on-demand or in bulk</li>
+                    </ul>
+                    <p style="margin-top: 15px; background-color: #0d1117; padding: 10px; border-radius: 3px;"><strong>Pattern:</strong> <code>Data encrypted with DEK → DEK encrypted with KEK → KEK stored in KMS</code></p>
+                </div>
+            </details>
+
+            <h3>Envelope Encryption Pattern</h3>
+            <details>
+                <summary>How envelope encryption works</summary>
+                <div style="padding-top: 10px;">
+                    <p><strong>Step 1: Generate DEK</strong></p>
+                    <ul>
+                        <li>Request plaintext DEK from Cloud KMS</li>
+                        <li>Receive both plaintext and encrypted versions</li>
+                    </ul>
+                    <p style="margin-top: 15px;"><strong>Step 2: Encrypt Data</strong></p>
+                    <ul>
+                        <li>Use plaintext DEK to encrypt your data</li>
+                        <li>Store encrypted data + encrypted DEK together</li>
+                        <li>Discard plaintext DEK from memory</li>
+                    </ul>
+                    <p style="margin-top: 15px;"><strong>Step 3: Decrypt Data</strong></p>
+                    <ul>
+                        <li>Fetch encrypted DEK from storage</li>
+                        <li>Call KMS to decrypt the DEK using KEK</li>
+                        <li>Use plaintext DEK to decrypt data</li>
+                    </ul>
+                    <p style="margin-top: 15px;"><strong>Benefit:</strong> KMS doesn't see or encrypt your actual data — only the small DEK. Reduces KMS throughput bottleneck.</p>
+                </div>
+            </details>
+
+            <h3>CMEK (Customer-Managed Encryption Keys)</h3>
+            <div class="concept-box">
+                <strong>CMEK</strong> means you create and control the encryption key in Cloud KMS. Google services use your key to encrypt their managed services (BigQuery, Cloud Storage, Pub/Sub, etc.). Alternative: Google-managed keys (GMEK) where Google controls key generation and rotation.
+            </div>
+
+            <h3>Key Rings</h3>
+            <details>
+                <summary>Understanding Key Rings</summary>
+                <div style="padding-top: 10px;">
+                    <ul>
+                        <li><strong>Key Ring:</strong> A container that holds cryptographic keys in a specific location</li>
+                        <li><strong>Regional scope:</strong> Key rings exist in a GCP region (us-central1, europe-west1, etc.)</li>
+                        <li><strong>Organization:</strong> Group related keys in a key ring (e.g., all keys for a project)</li>
+                        <li><strong>No resource hierarchy:</strong> Key rings don't follow folder/project nesting — they're independent resources at regional level</li>
+                        <li><strong>Access control:</strong> IAM bindings apply to individual key rings and keys within them</li>
+                        <li><strong>Cannot be deleted:</strong> Once created, key rings cannot be deleted (can only be managed)</li>
+                        <li><strong>Operations:</strong> You cannot encrypt/decrypt with a key ring directly — only with a key version inside it</li>
+                    </ul>
+                </div>
+            </details>
+
+            <h3>Key Versions and Rotation</h3>
+            <details>
+                <summary>Key versions explained</summary>
+                <div style="padding-top: 10px;">
+                    <ul>
+                        <li><strong>Key Version:</strong> A specific instance of a cryptographic key with a unique version number (1, 2, 3...)</li>
+                        <li><strong>Primary version:</strong> The key version used by default for encrypt operations</li>
+                        <li><strong>Rotation:</strong> Process of creating a new key version and promoting it to primary</li>
+                        <li><strong>Asymmetric rotation:</strong> Old versions remain active for decryption (backward compatibility)</li>
+                        <li><strong>Automatic rotation:</strong> KMS can automatically create new versions on a schedule (90 days default)</li>
+                        <li><strong>Manual rotation:</strong> You can create versions on demand</li>
+                        <li><strong>Version states:</strong> PENDING_GENERATION, ENABLED (can encrypt/decrypt), DISABLED, DESTROYED</li>
+                        <li><strong>Destroyed versions:</strong> Data encrypted with destroyed versions cannot be recovered (permanent)</li>
+                        <li><strong>Max 1000 versions:</strong> A single key can have up to 1000 versions</li>
+                    </ul>
+                </div>
+            </details>
+
+            <h3>HSM vs Software Keys</h3>
+            <details>
+                <summary>Hardware Security Module keys vs software-based keys</summary>
+                <div style="padding-top: 10px;">
+                    <table>
+                        <tr>
+                            <th>Aspect</th>
+                            <th>HSM Keys</th>
+                            <th>Software Keys</th>
+                        </tr>
+                        <tr>
+                            <td><strong>Storage</strong></td>
+                            <td>Dedicated hardware security module</td>
+                            <td>Google-managed secure servers</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Compliance</strong></td>
+                            <td>FIPS 140-2 Level 3, cryptographic validation, key never leaves HSM</td>
+                            <td>FIPS 140-2 Level 2, sufficient for many use cases</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Cost</strong></td>
+                            <td>Higher per-key-version</td>
+                            <td>Lower cost</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Latency</strong></td>
+                            <td>Slightly higher (physical crypto)</td>
+                            <td>Lower latency</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Use Cases</strong></td>
+                            <td>Regulated industries (finance, healthcare), strict compliance, key material cannot leave jurisdiction</td>
+                            <td>General encryption, most GCP services, cost-sensitive</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Key Export</strong></td>
+                            <td>Cannot export (enforced by HSM)</td>
+                            <td>Can export with proper IAM permissions</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Available Operations</strong></td>
+                            <td>Encrypt, Decrypt, Sign, Verify, Asymmetric Decrypt</td>
+                            <td>All cryptographic operations</td>
+                        </tr>
+                    </table>
+                </div>
+            

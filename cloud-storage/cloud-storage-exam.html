@@ -1,0 +1,400 @@
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GCP PDE - Cloud Storage Exam Prep</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Outfit', sans-serif;
+            background-color: #0f1117;
+            color: #e1e5e9;
+            line-height: 1.6;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        h1 {
+            color: #1D9E75;
+            text-align: center;
+            margin-bottom: 30px;
+            font-weight: 700;
+            font-size: 2.5em;
+        }
+        
+        h2 {
+            color: #1D9E75;
+            font-weight: 600;
+            margin: 20px 0 15px 0;
+            font-size: 1.5em;
+        }
+        
+        h3 {
+            color: #1D9E75;
+            font-weight: 500;
+            margin: 15px 0 10px 0;
+        }
+        
+        details {
+            background: #1a1f2e;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            border-left: 4px solid #1D9E75;
+        }
+        
+        summary {
+            padding: 15px 20px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 1.1em;
+            color: #1D9E75;
+            background: #242938;
+            border-radius: 8px 8px 0 0;
+        }
+        
+        summary:hover {
+            background: #2a3142;
+        }
+        
+        details[open] summary {
+            border-radius: 8px 8px 0 0;
+        }
+        
+        .content {
+            padding: 20px;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 15px 0;
+            background: #1a1f2e;
+        }
+        
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border: 1px solid #2a3142;
+        }
+        
+        th {
+            background: #1D9E75;
+            color: #0f1117;
+            font-weight: 600;
+        }
+        
+        tr:nth-child(even) {
+            background: #242938;
+        }
+        
+        .warning {
+            background: #2d1b1b;
+            border-left: 4px solid #d73027;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 5px;
+        }
+        
+        .tip {
+            background: #1b2d1b;
+            border-left: 4px solid #1D9E75;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 5px;
+        }
+        
+        ul, ol {
+            margin: 10px 0;
+            padding-left: 20px;
+        }
+        
+        li {
+            margin: 5px 0;
+        }
+        
+        code {
+            background: #2a3142;
+            padding: 2px 6px;
+            border-radius: 4px;
+            color: #1D9E75;
+        }
+        
+        .cheat-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 15px;
+            margin: 15px 0;
+        }
+        
+        .cheat-card {
+            background: #1a1f2e;
+            padding: 15px;
+            border-radius: 8px;
+            border-left: 4px solid #1D9E75;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Cloud Storage - PDE Exam Prep</h1>
+        
+        <details>
+            <summary>Core Concepts</summary>
+            <div class="content">
+                <h3>Object Storage Service</h3>
+                <p>Unified object storage for live data and archival. Objects stored in buckets with global namespace. RESTful API access.</p>
+                
+                <h3>Key Components</h3>
+                <ul>
+                    <li><strong>Bucket:</strong> Top-level container with global unique name</li>
+                    <li><strong>Object:</strong> Individual file with metadata</li>
+                    <li><strong>Storage Class:</strong> Performance/cost tier</li>
+                    <li><strong>Lifecycle:</strong> Automated object management</li>
+                </ul>
+            </div>
+        </details>
+
+        <details>
+            <summary>Architecture & Storage Classes</summary>
+            <div class="content">
+                <table>
+                    <tr>
+                        <th>Storage Class</th>
+                        <th>Use Case</th>
+                        <th>Min Duration</th>
+                        <th>Retrieval</th>
+                        <th>Availability SLA</th>
+                    </tr>
+                    <tr>
+                        <td>Standard</td>
+                        <td>Frequently accessed</td>
+                        <td>None</td>
+                        <td>Immediate</td>
+                        <td>99.95% (multi-region)<br>99.9% (region)</td>
+                    </tr>
+                    <tr>
+                        <td>Nearline</td>
+                        <td>Monthly access</td>
+                        <td>30 days</td>
+                        <td>Immediate</td>
+                        <td>99.95% (multi-region)<br>99.9% (region)</td>
+                    </tr>
+                    <tr>
+                        <td>Coldline</td>
+                        <td>Quarterly access</td>
+                        <td>90 days</td>
+                        <td>Immediate</td>
+                        <td>99.95% (multi-region)<br>99.9% (region)</td>
+                    </tr>
+                    <tr>
+                        <td>Archive</td>
+                        <td>Yearly access</td>
+                        <td>365 days</td>
+                        <td>Immediate</td>
+                        <td>99.95% (multi-region)<br>99.9% (region)</td>
+                    </tr>
+                </table>
+
+                <h3>Location Types</h3>
+                <table>
+                    <tr>
+                        <th>Type</th>
+                        <th>Description</th>
+                        <th>Availability</th>
+                    </tr>
+                    <tr>
+                        <td>Multi-region</td>
+                        <td>us, eu, asia</td>
+                        <td>99.95%</td>
+                    </tr>
+                    <tr>
+                        <td>Dual-region</td>
+                        <td>2 specific regions</td>
+                        <td>99.95%</td>
+                    </tr>
+                    <tr>
+                        <td>Region</td>
+                        <td>Single region</td>
+                        <td>99.9%</td>
+                    </tr>
+                </table>
+            </div>
+        </details>
+
+        <details>
+            <summary>Key Configs & Limits</summary>
+            <div class="content">
+                <table>
+                    <tr>
+                        <th>Limit</th>
+                        <th>Value</th>
+                    </tr>
+                    <tr>
+                        <td>Object size (single PUT)</td>
+                        <td>5 TB</td>
+                    </tr>
+                    <tr>
+                        <td>Object size (resumable upload)</td>
+                        <td>5 TB</td>
+                    </tr>
+                    <tr>
+                        <td>Bucket name length</td>
+                        <td>3-63 characters</td>
+                    </tr>
+                    <tr>
+                        <td>Operations per second per object</td>
+                        <td>1 write, unlimited reads</td>
+                    </tr>
+                    <tr>
+                        <td>Lifecycle rules per bucket</td>
+                        <td>1,000</td>
+                    </tr>
+                    <tr>
+                        <td>Object versions per object</td>
+                        <td>Unlimited (but costly)</td>
+                    </tr>
+                    <tr>
+                        <td>Signed URL max duration</td>
+                        <td>7 days</td>
+                    </tr>
+                    <tr>
+                        <td>Retention period max</td>
+                        <td>100 years</td>
+                    </tr>
+                </table>
+            </div>
+        </details>
+
+        <details>
+            <summary>Exam Traps</summary>
+            <div class="content">
+                <div class="warning">
+                    <h3>🚨 Common Gotchas</h3>
+                </div>
+
+                <h3>Storage Class Transitions</h3>
+                <ul>
+                    <li><strong>TRAP:</strong> Can only transition to "colder" classes, never warmer</li>
+                    <li><strong>TRAP:</strong> Early deletion charges apply if deleting before minimum duration</li>
+                    <li><strong>TRAP:</strong> Retrieval charges apply for Nearline/Coldline/Archive even for lifecycle transitions</li>
+                </ul>
+
+                <h3>Retention & Compliance</h3>
+                <ul>
+                    <li><strong>TRAP:</strong> Bucket Lock is permanent and cannot be removed</li>
+                    <li><strong>TRAP:</strong> Retention policy prevents deletion/modification, not access</li>
+                    <li><strong>TRAP:</strong> Legal holds can be applied/removed but retention policy cannot</li>
+                </ul>
+
+                <h3>Versioning</h3>
+                <ul>
+                    <li><strong>TRAP:</strong> Versioning charges for ALL versions, can get expensive</li>
+                    <li><strong>TRAP:</strong> Lifecycle rules can delete old versions, but need explicit configuration</li>
+                    <li><strong>TRAP:</strong> Disabling versioning doesn't delete existing versions</li>
+                </ul>
+
+                <h3>CMEK/CSEK</h3>
+                <ul>
+                    <li><strong>TRAP:</strong> CMEK keys in Cloud KMS must be in same region as bucket for regional buckets</li>
+                    <li><strong>TRAP:</strong> CSEK keys must be provided for every operation on the object</li>
+                    <li><strong>TRAP:</strong> Losing CSEK key = data is unrecoverable</li>
+                </ul>
+
+                <h3>Transfer Options</h3>
+                <ul>
+                    <li><strong>TRAP:</strong> Transfer Appliance for 10TB+, not for small datasets</li>
+                    <li><strong>TRAP:</strong> Storage Transfer Service for cloud-to-cloud, not on-premise</li>
+                    <li><strong>TRAP:</strong> gsutil for on-premise to GCS</li>
+                </ul>
+
+                <h3>Access Control</h3>
+                <ul>
+                    <li><strong>TRAP:</strong> Uniform bucket-level access disables ACLs permanently</li>
+                    <li><strong>TRAP:</strong> Signed URLs work without Cloud IAM authentication</li>
+                    <li><strong>TRAP:</strong> Requester Pays - requester needs BOTH bucket access AND billing permissions</li>
+                </ul>
+            </div>
+        </details>
+
+        <details>
+            <summary>Quick Cheatsheet</summary>
+            <div class="content">
+                <div class="cheat-grid">
+                    <div class="cheat-card">
+                        <h3>Storage Classes</h3>
+                        <ul>
+                            <li><strong>Standard:</strong> Hot data, no minimum</li>
+                            <li><strong>Nearline:</strong> 30-day minimum</li>
+                            <li><strong>Coldline:</strong> 90-day minimum</li>
+                            <li><strong>Archive:</strong> 365-day minimum</li>
+                        </ul>
+                    </div>
+
+                    <div class="cheat-card">
+                        <h3>Lifecycle Actions</h3>
+                        <ul>
+                            <li><code>SetStorageClass</code></li>
+                            <li><code>Delete</code></li>
+                            <li><code>AbortIncompleteMultipartUpload</code></li>
+                        </ul>
+                    </div>
+
+                    <div class="cheat-card">
+                        <h3>Lifecycle Conditions</h3>
+                        <ul>
+                            <li><code>age</code> - days since creation</li>
+                            <li><code>createdBefore</code> - date</li>
+                            <li><code>matchesStorageClass</code></li>
+                            <li><code>numNewerVersions</code></li>
+                        </ul>
+                    </div>
+
+                    <div class="cheat-card">
+                        <h3>Security Options</h3>
+                        <ul>
+                            <li><strong>CMEK:</strong> Cloud KMS managed</li>
+                            <li><strong>CSEK:</strong> Customer-supplied</li>
+                            <li><strong>Signed URLs:</strong> Time-limited access</li>
+                            <li><strong>Bucket Lock:</strong> Immutable retention</li>
+                        </ul>
+                    </div>
+
+                    <div class="cheat-card">
+                        <h3>Transfer Tools</h3>
+                        <ul>
+                            <li><strong>gsutil:</strong> CLI, on-premise to GCS</li>
+                            <li><strong>Storage Transfer Service:</strong> Cloud-to-cloud</li>
+                            <li><strong>Transfer Appliance:</strong> 10TB+ offline</li>
+                            <li><strong>BigQuery Data Transfer:</strong> Analytics data</li>
+                        </ul>
+                    </div>
+
+                    <div class="cheat-card">
+                        <h3>Key Commands</h3>
+                        <ul>
+                            <li><code>gsutil cp</code> - copy objects</li>
+                            <li><code>gsutil rsync</code> - sync directories</li>
+                            <li><code>gsutil lifecycle set</code></li>
+                            <li><code>gsutil versioning set on</code></li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="tip">
+                    <h3>💡 Memory Aids</h3>
+                    <ul>
+                        <li><strong>"NEAR-ly monthly"</strong> = Nearline 30 days</li>
+                        <li><strong>"COLD quarterly"</strong> = Coldline 90 days</li>
+                        <li><strong>"ARCHIVE yearly"</strong> = Archive 365 days

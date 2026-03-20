@@ -1,0 +1,286 @@
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GCP PDE: Cloud Pub/Sub Study Notes</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { 
+            font-family: 'Outfit', sans-serif; 
+            background: #0f1117; 
+            color: #e8e9ed; 
+            line-height: 1.6; 
+            padding: 20px;
+        }
+        .container { max-width: 1200px; margin: 0 auto; }
+        h1 { color: #1D9E75; font-size: 2.5em; margin-bottom: 30px; text-align: center; }
+        h2 { color: #1D9E75; font-size: 1.8em; margin: 25px 0 15px 0; }
+        h3 { color: #1D9E75; font-size: 1.3em; margin: 20px 0 10px 0; }
+        details { 
+            background: #1a1d24; 
+            border: 1px solid #2d3139; 
+            border-radius: 8px; 
+            margin: 15px 0; 
+            padding: 0;
+        }
+        summary { 
+            background: #2d3139; 
+            padding: 15px 20px; 
+            cursor: pointer; 
+            font-weight: 600; 
+            color: #1D9E75;
+            border-radius: 7px 7px 0 0;
+        }
+        details[open] summary { border-radius: 7px 7px 0 0; }
+        details > div { padding: 20px; }
+        table { 
+            width: 100%; 
+            border-collapse: collapse; 
+            margin: 15px 0; 
+            background: #1a1d24; 
+            border-radius: 8px; 
+            overflow: hidden;
+        }
+        th, td { 
+            padding: 12px 15px; 
+            text-align: left; 
+            border-bottom: 1px solid #2d3139; 
+        }
+        th { 
+            background: #2d3139; 
+            color: #1D9E75; 
+            font-weight: 600; 
+        }
+        tr:last-child td { border-bottom: none; }
+        .warning { 
+            background: #2d1810; 
+            border-left: 4px solid #ff6b35; 
+            padding: 15px; 
+            margin: 15px 0; 
+            border-radius: 0 8px 8px 0;
+        }
+        .tip { 
+            background: #0d2818; 
+            border-left: 4px solid #1D9E75; 
+            padding: 15px; 
+            margin: 15px 0; 
+            border-radius: 0 8px 8px 0;
+        }
+        code { 
+            background: #2d3139; 
+            padding: 2px 6px; 
+            border-radius: 4px; 
+            font-family: 'Courier New', monospace; 
+        }
+        ul, ol { margin: 10px 0 10px 30px; }
+        li { margin: 5px 0; }
+        .cheat-grid { 
+            display: grid; 
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); 
+            gap: 15px; 
+            margin: 20px 0; 
+        }
+        .cheat-item { 
+            background: #1a1d24; 
+            padding: 15px; 
+            border-radius: 8px; 
+            border-left: 4px solid #1D9E75; 
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Cloud Pub/Sub Study Notes</h1>
+
+        <details>
+            <summary>1. Core Concepts</summary>
+            <div>
+                <h3>Publisher-Subscriber Pattern</h3>
+                <p><strong>Pub/Sub</strong> decouples message producers (publishers) from consumers (subscribers) using topics as message channels.</p>
+                
+                <h3>Key Components</h3>
+                <table>
+                    <tr><th>Component</th><th>Description</th><th>Key Properties</th></tr>
+                    <tr><td><strong>Topic</strong></td><td>Named channel for messages</td><td>Globally unique, region-agnostic</td></tr>
+                    <tr><td><strong>Subscription</strong></td><td>Receives messages from a topic</td><td>One-to-many from topic, each gets all messages</td></tr>
+                    <tr><td><strong>Message</strong></td><td>Data payload with attributes</td><td>Up to 10MB, base64 encoded data</td></tr>
+                    <tr><td><strong>Publisher</strong></td><td>Sends messages to topics</td><td>Can be any application or GCP service</td></tr>
+                    <tr><td><strong>Subscriber</strong></td><td>Receives messages from subscriptions</td><td>Pull or Push delivery</td></tr>
+                </table>
+
+                <h3>Message Flow</h3>
+                <ol>
+                    <li>Publisher sends message to topic</li>
+                    <li>Pub/Sub distributes message to all subscriptions</li>
+                    <li>Subscribers receive messages via pull or push</li>
+                    <li>Subscriber acknowledges (ACKs) message</li>
+                    <li>Pub/Sub removes acknowledged messages</li>
+                </ol>
+
+                <div class="tip">
+                    <strong>At-least-once delivery:</strong> Messages delivered at least once but may be duplicated. Design idempotent message handlers.
+                </div>
+            </div>
+        </details>
+
+        <details>
+            <summary>2. Architecture</summary>
+            <div>
+                <h3>Subscription Types</h3>
+                <table>
+                    <tr><th>Type</th><th>How it Works</th><th>Use Cases</th><th>Pros</th><th>Cons</th></tr>
+                    <tr>
+                        <td><strong>Pull</strong></td>
+                        <td>Subscriber actively requests messages</td>
+                        <td>Batch processing, controlled throughput</td>
+                        <td>Subscriber controls rate, no endpoint needed</td>
+                        <td>Higher latency, polling overhead</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Push</strong></td>
+                        <td>Pub/Sub delivers to HTTP endpoint</td>
+                        <td>Real-time processing, serverless</td>
+                        <td>Low latency, automatic scaling</td>
+                        <td>Requires HTTP endpoint, less control</td>
+                    </tr>
+                </table>
+
+                <h3>Message Ordering</h3>
+                <table>
+                    <tr><th>Feature</th><th>Unordered</th><th>Ordered (Regional)</th></tr>
+                    <tr><td>Delivery</td><td>Parallel, any order</td><td>Sequential by ordering key</td></tr>
+                    <tr><td>Throughput</td><td>High</td><td>Lower (single partition per key)</td></tr>
+                    <tr><td>Latency</td><td>Low</td><td>Higher</td></tr>
+                    <tr><td>Scope</td><td>Global</td><td>Regional only</td></tr>
+                    <tr><td>Partitioning</td><td>By ordering key</td><td>By ordering key</td></tr>
+                </table>
+
+                <h3>Exactly-Once Delivery</h3>
+                <ul>
+                    <li><strong>Enabled per subscription</strong> - not at topic level</li>
+                    <li><strong>Higher cost</strong> - additional processing overhead</li>
+                    <li><strong>Regional only</strong> - not available for global topics</li>
+                    <li><strong>Deduplication</strong> - based on message ID and publish timestamp</li>
+                </ul>
+
+                <div class="warning">
+                    <strong>Architecture Limitation:</strong> Exactly-once delivery is only available for regional topics and subscriptions, not global ones.
+                </div>
+            </div>
+        </details>
+
+        <details>
+            <summary>3. Key Configs & Limits</summary>
+            <div>
+                <h3>Message Limits</h3>
+                <table>
+                    <tr><th>Property</th><th>Limit</th><th>Notes</th></tr>
+                    <tr><td>Message size</td><td>10 MB</td><td>Including attributes</td></tr>
+                    <tr><td>Batch size (pull)</td><td>1000 messages</td><td>Or 10 MB total</td></tr>
+                    <tr><td>Attributes per message</td><td>100</td><td>Key-value pairs</td></tr>
+                    <tr><td>Attribute key size</td><td>256 bytes</td><td>UTF-8 encoded</td></tr>
+                    <tr><td>Attribute value size</td><td>1024 bytes</td><td>UTF-8 encoded</td></tr>
+                    <tr><td>Topic name length</td><td>255 characters</td><td>Must match regex pattern</td></tr>
+                </table>
+
+                <h3>Retention & Acknowledgment</h3>
+                <table>
+                    <tr><th>Setting</th><th>Default</th><th>Range</th><th>Purpose</th></tr>
+                    <tr><td>Message retention</td><td>7 days</td><td>10 min - 7 days</td><td>Unacknowledged message lifetime</td></tr>
+                    <tr><td>Acknowledgment deadline</td><td>10 seconds</td><td>10 sec - 10 min</td><td>Time to ACK before redelivery</td></tr>
+                    <tr><td>Min backoff delay</td><td>10 seconds</td><td>0 - 600 sec</td><td>Min wait before retry</td></tr>
+                    <tr><td>Max backoff delay</td><td>600 seconds</td><td>1 - 600 sec</td><td>Max wait before retry</td></tr>
+                </table>
+
+                <h3>Dead Letter Queues</h3>
+                <table>
+                    <tr><th>Setting</th><th>Default</th><th>Range</th><th>Behavior</th></tr>
+                    <tr><td>Max delivery attempts</td><td>5</td><td>5 - 100</td><td>After max attempts, send to DLQ</td></tr>
+                    <tr><td>DLQ topic</td><td>None</td><td>Must exist</td><td>Where failed messages go</td></tr>
+                </table>
+
+                <h3>Schema Registry</h3>
+                <table>
+                    <tr><th>Format</th><th>Features</th><th>Validation</th></tr>
+                    <tr><td>Avro</td><td>Binary serialization, evolution</td><td>Strict schema validation</td></tr>
+                    <tr><td>Protocol Buffers</td><td>Language neutral, compact</td><td>Backward/forward compatibility</td></tr>
+                    <tr><td>JSON</td><td>Human readable</td><td>JSON Schema validation</td></tr>
+                </table>
+            </div>
+        </details>
+
+        <details>
+            <summary>4. Exam Traps</summary>
+            <div>
+                <h3>Common Gotchas</h3>
+                <div class="warning">
+                    <strong>Ordering Key Misconception:</strong> Ordering keys don't guarantee global message order - only within the same key partition.
+                </div>
+
+                <div class="warning">
+                    <strong>Regional vs Global:</strong> Exactly-once delivery and message ordering require regional topics. Global topics don't support these features.
+                </div>
+
+                <div class="warning">
+                    <strong>Push Subscription Authentication:</strong> Push endpoints must validate JWT tokens from Pub/Sub to ensure message authenticity.
+                </div>
+
+                <h3>Configuration Traps</h3>
+                <table>
+                    <tr><th>Trap</th><th>Reality</th><th>Impact</th></tr>
+                    <tr><td>Small ACK deadline</td><td>Causes message redelivery loops</td><td>Duplicate processing</td></tr>
+                    <tr><td>No dead letter queue</td><td>Failed messages retry indefinitely</td><td>Resource waste</td></tr>
+                    <tr><td>Wrong retention period</td><td>Messages expire before processing</td><td>Data loss</td></tr>
+                    <tr><td>Missing flow control</td><td>Subscriber overwhelmed</td><td>High memory usage</td></tr>
+                </table>
+
+                <h3>Design Pattern Mistakes</h3>
+                <ul>
+                    <li><strong>Not designing for idempotency</strong> - At-least-once delivery means duplicates</li>
+                    <li><strong>Ignoring message size limits</strong> - 10MB max, use Cloud Storage for large payloads</li>
+                    <li><strong>Over-partitioning with ordering keys</strong> - Too many unique keys reduces throughput</li>
+                    <li><strong>Synchronous publishing</strong> - Use async publishing for better performance</li>
+                </ul>
+
+                <div class="tip">
+                    <strong>Exam Tip:</strong> Questions about "guaranteed order" always require message ordering to be enabled and regional topics.
+                </div>
+            </div>
+        </details>
+
+        <details>
+            <summary>5. Quick Cheatsheet</summary>
+            <div>
+                <div class="cheat-grid">
+                    <div class="cheat-item">
+                        <h4>Message Delivery</h4>
+                        <ul>
+                            <li>At-least-once by default</li>
+                            <li>Exactly-once (regional only)</li>
+                            <li>Ordering requires regional topics</li>
+                            <li>10MB message size limit</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="cheat-item">
+                        <h4>Subscription Types</h4>
+                        <ul>
+                            <li><strong>Pull:</strong> Subscriber requests</li>
+                            <li><strong>Push:</strong> HTTP endpoint</li>
+                            <li>Flow control for pull subs</li>
+                            <li>Authentication for push</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="cheat-item">
+                        <h4>Key Timeouts</h4>
+                        <ul>
+                            <li>ACK deadline: 10s-10min</li>
+                            <li>Message retention: 7 days max</li>
+                            <li>Min backoff: 10 seconds</li>
+                            <li>Max backoff: 600 seconds</li>
+                        </ul>
+                    

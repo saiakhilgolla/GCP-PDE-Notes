@@ -1,0 +1,416 @@
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GCP PDE: Cloud Memorystore Study Notes</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Outfit', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background-color: #0f1117;
+            color: #e6edf3;
+            line-height: 1.6;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+        
+        h1 {
+            color: #1D9E75;
+            margin-bottom: 10px;
+            font-size: 2.2em;
+            text-shadow: 0 0 20px rgba(29, 158, 117, 0.3);
+        }
+        
+        h2 {
+            color: #1D9E75;
+            margin-top: 30px;
+            margin-bottom: 15px;
+            font-size: 1.6em;
+            border-bottom: 2px solid #1D9E75;
+            padding-bottom: 8px;
+        }
+        
+        h3 {
+            color: #58a6ff;
+            margin-top: 20px;
+            margin-bottom: 10px;
+            font-size: 1.2em;
+        }
+        
+        .subtitle {
+            color: #8b949e;
+            font-size: 1.1em;
+            margin-bottom: 30px;
+        }
+        
+        details {
+            background-color: #161b22;
+            border-left: 4px solid #1D9E75;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        
+        details summary {
+            color: #1D9E75;
+            font-weight: 600;
+            cursor: pointer;
+            user-select: none;
+        }
+        
+        details summary:hover {
+            color: #2dd4a4;
+        }
+        
+        details[open] summary {
+            margin-bottom: 12px;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            background-color: #161b22;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+        
+        th {
+            background-color: #0d1117;
+            color: #1D9E75;
+            padding: 12px;
+            text-align: left;
+            font-weight: 600;
+            border-bottom: 2px solid #1D9E75;
+        }
+        
+        td {
+            padding: 12px;
+            border-bottom: 1px solid #30363d;
+        }
+        
+        tr:hover {
+            background-color: #1c2128;
+        }
+        
+        .comparison-table td:first-child {
+            font-weight: 600;
+            color: #1D9E75;
+        }
+        
+        ul, ol {
+            margin: 15px 0 15px 25px;
+        }
+        
+        li {
+            margin: 8px 0;
+        }
+        
+        .code {
+            background-color: #0d1117;
+            color: #79c0ff;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9em;
+        }
+        
+        .note {
+            background-color: #1c3329;
+            border-left: 4px solid #1D9E75;
+            padding: 12px;
+            margin: 15px 0;
+            border-radius: 4px;
+        }
+        
+        .warning {
+            background-color: #3d2817;
+            border-left: 4px solid #d29922;
+            padding: 12px;
+            margin: 15px 0;
+            border-radius: 4px;
+            color: #ffd700;
+        }
+        
+        .trap {
+            background-color: #3d1f1f;
+            border-left: 4px solid #f85149;
+            padding: 12px;
+            margin: 15px 0;
+            border-radius: 4px;
+            color: #ff9797;
+        }
+        
+        .cheatsheet-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin: 20px 0;
+        }
+        
+        .cheatsheet-item {
+            background-color: #161b22;
+            border: 1px solid #1D9E75;
+            padding: 12px;
+            border-radius: 4px;
+        }
+        
+        .cheatsheet-item strong {
+            color: #1D9E75;
+        }
+        
+        @media (max-width: 768px) {
+            .cheatsheet-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            h1 {
+                font-size: 1.6em;
+            }
+        }
+        
+        .section-nav {
+            background-color: #161b22;
+            padding: 15px;
+            border-radius: 4px;
+            margin-bottom: 30px;
+        }
+        
+        .section-nav a {
+            color: #1D9E75;
+            text-decoration: none;
+            margin-right: 20px;
+            font-weight: 500;
+        }
+        
+        .section-nav a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>☁️ Cloud Memorystore Study Guide</h1>
+        <p class="subtitle">GCP Professional Data Engineer Exam Prep</p>
+        
+        <div class="section-nav">
+            <strong>Quick Navigation:</strong><br>
+            <a href="#core">Core Concepts</a>
+            <a href="#architecture">Architecture</a>
+            <a href="#configs">Key Configs & Limits</a>
+            <a href="#traps">Exam Traps</a>
+            <a href="#cheatsheet">Cheatsheet</a>
+            <a href="#patterns">Question Patterns</a>
+        </div>
+
+        <!-- CORE CONCEPTS -->
+        <h2 id="core">1. Core Concepts</h2>
+        
+        <h3>What is Cloud Memorystore?</h3>
+        <p>A fully managed in-memory data store service. Provides Redis and Valkey instances for sub-millisecond caching, sessions, real-time analytics, and message queues.</p>
+        
+        <details>
+            <summary>Redis vs Valkey</summary>
+            <table class="comparison-table">
+                <tr>
+                    <th>Aspect</th>
+                    <th>Redis</th>
+                    <th>Valkey</th>
+                </tr>
+                <tr>
+                    <td>Origin</td>
+                    <td>Original open-source in-memory store</td>
+                    <td>Linux Foundation fork of Redis (2024)</td>
+                </tr>
+                <tr>
+                    <td>License</td>
+                    <td>BSD 3-Clause (dual license as of 7.0)</td>
+                    <td>Open source (SSPL/Elastic)</td>
+                </tr>
+                <tr>
+                    <td>GCP Support</td>
+                    <td>Available in Cloud Memorystore</td>
+                    <td>Available in Cloud Memorystore (newer option)</td>
+                </tr>
+                <tr>
+                    <td>API Compatibility</td>
+                    <td>Standard Redis commands</td>
+                    <td>Fully compatible with Redis commands</td>
+                </tr>
+                <tr>
+                    <td>Performance</td>
+                    <td>Well-established, proven</td>
+                    <td>Comparable, community-driven improvements</td>
+                </tr>
+                <tr>
+                    <td>Exam Context</td>
+                    <td>More common; default choice</td>
+                    <td>Know it exists; Valkey = Redis-compatible fork</td>
+                </tr>
+            </table>
+        </details>
+
+        <h3>Key Use Cases</h3>
+        <ul>
+            <li><strong>Caching Layer:</strong> Cache database query results, API responses, expensive computations</li>
+            <li><strong>Session Storage:</strong> Store user sessions for web apps; faster than database</li>
+            <li><strong>Real-time Leaderboards:</strong> Sorted sets for rankings updated at scale</li>
+            <li><strong>Rate Limiting:</strong> Track request counts per user with TTL</li>
+            <li><strong>Pub/Sub Messaging:</strong> Lightweight event distribution between services</li>
+            <li><strong>Task Queues:</strong> Resque, Celery, Bull use Redis for job management</li>
+            <li><strong>Real-time Analytics:</strong> HyperLogLog for cardinality, bit operations for flags</li>
+        </ul>
+
+        <h3>Core Data Types</h3>
+        <table>
+            <tr>
+                <th>Type</th>
+                <th>Use Case</th>
+                <th>Example Command</th>
+            </tr>
+            <tr>
+                <td><span class="code">String</span></td>
+                <td>Simple key-value cache, counters</td>
+                <td><span class="code">SET key value</span>, <span class="code">INCR counter</span></td>
+            </tr>
+            <tr>
+                <td><span class="code">Hash</span></td>
+                <td>Object serialization (user profile, config)</td>
+                <td><span class="code">HSET user:1 name "John"</span></td>
+            </tr>
+            <tr>
+                <td><span class="code">List</span></td>
+                <td>Queues, activity feeds</td>
+                <td><span class="code">LPUSH queue item</span></td>
+            </tr>
+            <tr>
+                <td><span class="code">Set</span></td>
+                <td>Unique collections, deduplication</td>
+                <td><span class="code">SADD tags "redis" "cache"</span></td>
+            </tr>
+            <tr>
+                <td><span class="code">Sorted Set</span></td>
+                <td>Leaderboards, rankings, priority queues</td>
+                <td><span class="code">ZADD scores 100 user1</span></td>
+            </tr>
+        </table>
+
+        <h3>Persistence Modes</h3>
+        <details>
+            <summary>RDB (Snapshotting)</summary>
+            <ul>
+                <li>Point-in-time snapshots of entire dataset</li>
+                <li>Compact binary format; fast to load</li>
+                <li>Scheduled periodically (e.g., every 6 hours)</li>
+                <li>Minimal CPU overhead during operation</li>
+                <li>Some data loss possible between snapshots</li>
+                <li>Good for disaster recovery backups</li>
+            </ul>
+        </details>
+
+        <details>
+            <summary>AOF (Append-Only File)</summary>
+            <ul>
+                <li>Logs every write command to disk</li>
+                <li>Durability closer to real-time; minimal data loss</li>
+                <li>Higher disk I/O than RDB</li>
+                <li>Log file can grow large; periodical rewriting needed</li>
+                <li>Slower recovery (replays commands on restart)</li>
+                <li>Better for compliance and audit trails</li>
+            </ul>
+        </details>
+
+        <h3>Eviction Policies</h3>
+        <p>When memory is full, Memorystore evicts keys based on policy:</p>
+        <table>
+            <tr>
+                <th>Policy</th>
+                <th>Behavior</th>
+                <th>Best For</th>
+            </tr>
+            <tr>
+                <td><span class="code">noeviction</span></td>
+                <td>Return error; refuse new writes</td>
+                <td>Prevent data loss; tight SLA on memory</td>
+            </tr>
+            <tr>
+                <td><span class="code">allkeys-lru</span></td>
+                <td>Evict least recently used key from all keys</td>
+                <td>General cache; working set smaller than memory</td>
+            </tr>
+            <tr>
+                <td><span class="code">volatile-lru</span></td>
+                <td>LRU only among keys with TTL</td>
+                <td>Mixed volatile + permanent data</td>
+            </tr>
+            <tr>
+                <td><span class="code">allkeys-lfu</span></td>
+                <td>Evict least frequently used key</td>
+                <td>Hit-rate sensitive workloads</td>
+            </tr>
+            <tr>
+                <td><span class="code">volatile-lfu</span></td>
+                <td>LFU only among keys with TTL</td>
+                <td>Hybrid scenario with TTL keys</td>
+            </tr>
+            <tr>
+                <td><span class="code">allkeys-random</span></td>
+                <td>Random eviction from all keys</td>
+                <td>Rare; testing only</td>
+            </tr>
+        </table>
+
+        <!-- ARCHITECTURE -->
+        <h2 id="architecture">2. Architecture</h2>
+
+        <h3>Deployment Tiers</h3>
+        <table>
+            <tr>
+                <th>Tier</th>
+                <th>Availability</th>
+                <th>Replicas</th>
+                <th>HA Failover</th>
+                <th>Best For</th>
+            </tr>
+            <tr>
+                <td><strong>Basic</strong></td>
+                <td>Single node</td>
+                <td>None</td>
+                <td>No automatic failover</td>
+                <td>Dev/test, non-critical cache</td>
+            </tr>
+            <tr>
+                <td><strong>Standard</strong></td>
+                <td>High availability (99.9% SLA)</td>
+                <td>Read replicas in different zones</td>
+                <td>Automatic failover to replica</td>
+                <td>Production workloads</td>
+            </tr>
+            <tr>
+                <td><strong>Premium</strong></td>
+                <td>High availability + cluster mode</td>
+                <td>Multiple shards with replicas</td>
+                <td>Automatic failover per shard</td>
+                <td>Large datasets, extreme scale</td>
+            </tr>
+        </table>
+
+        <h3>Standard Tier Architecture</h3>
+        <details>
+            <summary>Master-Replica Setup (Click to expand)</summary>
+            <p><strong>Primary Node (Master):</strong></p>
+            <ul>
+                <li>Accepts all writes (SET, DEL, LPUSH, etc.)</li>
+                <li>Replicates writes to replica(

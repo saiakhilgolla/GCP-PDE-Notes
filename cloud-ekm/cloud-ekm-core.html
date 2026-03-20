@@ -1,0 +1,366 @@
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GCP Cloud EKM - PDE Study Notes</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            background-color: #0f1117;
+            color: #c9d1d9;
+            font-family: 'Outfit', sans-serif;
+            line-height: 1.6;
+            padding: 20px;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        h1 {
+            color: #1D9E75;
+            margin-bottom: 30px;
+            font-size: 2.5em;
+            border-bottom: 3px solid #1D9E75;
+            padding-bottom: 15px;
+        }
+        h2 {
+            color: #1D9E75;
+            margin-top: 40px;
+            margin-bottom: 20px;
+            font-size: 1.8em;
+        }
+        h3 {
+            color: #58a6ff;
+            margin-top: 25px;
+            margin-bottom: 15px;
+            font-size: 1.3em;
+        }
+        h4 {
+            color: #79c0ff;
+            margin-top: 15px;
+            margin-bottom: 10px;
+        }
+        details {
+            background-color: #161b22;
+            border-left: 4px solid #1D9E75;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+        details summary {
+            font-weight: 600;
+            color: #1D9E75;
+            outline: none;
+            user-select: none;
+        }
+        details summary:hover {
+            color: #2dd4a4;
+        }
+        details > * {
+            margin-top: 15px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            background-color: #161b22;
+            border: 1px solid #30363d;
+        }
+        th {
+            background-color: #0d1117;
+            color: #1D9E75;
+            padding: 12px;
+            text-align: left;
+            font-weight: 700;
+            border: 1px solid #30363d;
+        }
+        td {
+            padding: 12px;
+            border: 1px solid #30363d;
+        }
+        tr:hover {
+            background-color: #0d1117;
+        }
+        tr:nth-child(even) {
+            background-color: #0d1117;
+        }
+        .code {
+            background-color: #0d1117;
+            border-left: 3px solid #1D9E75;
+            padding: 12px;
+            margin: 15px 0;
+            font-family: 'Courier New', monospace;
+            overflow-x: auto;
+            border-radius: 4px;
+        }
+        .section {
+            margin-bottom: 40px;
+        }
+        .trap {
+            background-color: #3d2621;
+            border-left: 4px solid #ff6b6b;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 4px;
+        }
+        .trap strong {
+            color: #ff6b6b;
+        }
+        .cheatsheet-item {
+            background-color: #161b22;
+            border-left: 4px solid #1D9E75;
+            padding: 12px;
+            margin: 10px 0;
+            border-radius: 4px;
+        }
+        .cheatsheet-item strong {
+            color: #1D9E75;
+        }
+        .decision-box {
+            background-color: #161b22;
+            border: 2px solid #1D9E75;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 6px;
+        }
+        .decision-box h4 {
+            color: #1D9E75;
+        }
+        ul, ol {
+            margin-left: 30px;
+            margin-top: 10px;
+        }
+        li {
+            margin-bottom: 8px;
+        }
+        .highlight {
+            color: #1D9E75;
+            font-weight: 600;
+        }
+        .comparison-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin: 20px 0;
+        }
+        .comparison-box {
+            background-color: #161b22;
+            padding: 15px;
+            border-radius: 6px;
+            border-left: 4px solid #1D9E75;
+        }
+        @media (max-width: 768px) {
+            .comparison-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>☁️ GCP Cloud EKM - PDE Study Notes</h1>
+
+        <div class="section">
+            <h2>1. Core Concepts</h2>
+            
+            <h3>What is Cloud EKM?</h3>
+            <p><span class="highlight">External Key Manager (EKM)</span> is a GCP service that enables you to manage encryption keys outside of Google's infrastructure while still leveraging GCP's encryption services. It allows your organization to maintain <span class="highlight">sovereign control</span> over encryption keys in your own data centers or approved third-party Key Management Services (KMS).</p>
+            
+            <details>
+                <summary>Key Principles & How It Works</summary>
+                <h4>Core Principles:</h4>
+                <ul>
+                    <li><span class="highlight">Key Sovereignty:</span> Keys remain outside GCP in your external KMS</li>
+                    <li><span class="highlight">CMEK Enhanced:</span> Extends Customer-Managed Encryption Keys (CMEK) capabilities</li>
+                    <li><span class="highlight">Compliance:</span> Meets regulatory requirements (GDPR, data residency laws)</li>
+                    <li><span class="highlight">Access Control:</span> GCP must request key access via signed API calls</li>
+                    <li><span class="highlight">Dual Custody:</span> Both GCP and customer have control points</li>
+                </ul>
+                
+                <h4>How It Works:</h4>
+                <ol>
+                    <li>Customer stores encryption keys in external KMS (e.g., Thales, YubiHSM, on-premises)</li>
+                    <li>GCP services need to encrypt/decrypt data; they request key access via EKM API</li>
+                    <li>Customer's KMS evaluates the request against policies (access justifications, time limits)</li>
+                    <li>If approved, key material flows through encrypted channel to GCP service</li>
+                    <li>Data is encrypted/decrypted; key is not persisted in GCP</li>
+                    <li>All access logged for audit and compliance</li>
+                </ol>
+                
+                <h4>Encryption Flow:</h4>
+                <div class="code">
+User Data → GCP Service (e.g., Cloud Storage)
+                  ↓
+        [Needs to encrypt/decrypt]
+                  ↓
+        EKM API → External KMS (customer-controlled)
+                  ↓
+        [Access Justification Check]
+                  ↓
+        Key Material (via secure channel) → GCP Service
+                  ↓
+        Encrypt/Decrypt Operation
+                  ↓
+        Key is NOT stored in GCP; returned/cleared
+                </div>
+            </details>
+
+            <h3>EKM vs Cloud KMS</h3>
+            <table>
+                <tr>
+                    <th>Aspect</th>
+                    <th>Cloud KMS</th>
+                    <th>Cloud EKM</th>
+                </tr>
+                <tr>
+                    <td><strong>Key Location</strong></td>
+                    <td>Google-managed HSMs in GCP</td>
+                    <td>Customer's external KMS (on-prem or 3rd-party)</td>
+                </tr>
+                <tr>
+                    <td><strong>Key Control</strong></td>
+                    <td>Google + Customer (shared)</td>
+                    <td>Customer (sovereign)</td>
+                </tr>
+                <tr>
+                    <td><strong>Key Residency</strong></td>
+                    <td>Multi-region by default</td>
+                    <td>Where customer's KMS is deployed</td>
+                </tr>
+                <tr>
+                    <td><strong>Access Justifications</strong></td>
+                    <td>Not required</td>
+                    <td>Required for key requests</td>
+                </tr>
+                <tr>
+                    <td><strong>Compliance Use Case</strong></td>
+                    <td>Basic encryption needs</td>
+                    <td>Data residency, sovereign control</td>
+                </tr>
+                <tr>
+                    <td><strong>Cost Model</strong></td>
+                    <td>Pay per KMS operation</td>
+                    <td>No GCP key storage cost (external system cost)</td>
+                </tr>
+                <tr>
+                    <td><strong>Key Unwrapping</strong></td>
+                    <td>Google has access</td>
+                    <td>Customer controls unwrapping</td>
+                </tr>
+                <tr>
+                    <td><strong>Availability</strong></td>
+                    <td>Highly available (multi-region)</td>
+                    <td>Depends on external KMS availability</td>
+                </tr>
+            </table>
+        </div>
+
+        <div class="section">
+            <h2>2. Architecture</h2>
+
+            <h3>EKM Architecture Components</h3>
+            <table>
+                <tr>
+                    <th>Component</th>
+                    <th>Role</th>
+                    <th>Ownership</th>
+                </tr>
+                <tr>
+                    <td><strong>External KMS</strong></td>
+                    <td>Stores actual encryption keys; enforces access policies</td>
+                    <td>Customer</td>
+                </tr>
+                <tr>
+                    <td><strong>EKM API</strong></td>
+                    <td>Gateway for GCP services to request key access</td>
+                    <td>Google</td>
+                </tr>
+                <tr>
+                    <td><strong>Access Justification Service</strong></td>
+                    <td>Evaluates requests against customer policies</td>
+                    <td>Customer (configured)</td>
+                </tr>
+                <tr>
+                    <td><strong>GCP Data Services</strong></td>
+                    <td>Consume encrypted key material for data operations</td>
+                    <td>Google</td>
+                </tr>
+                <tr>
+                    <td><strong>Audit Logging</strong></td>
+                    <td>Records all key access requests and decisions</td>
+                    <td>Google (logs in customer project)</td>
+                </tr>
+                <tr>
+                    <td><strong>EKM Connection Profile</strong></td>
+                    <td>Configuration binding GCP to external KMS</td>
+                    <td>Customer</td>
+                </tr>
+            </table>
+
+            <h3>Data Flow Architecture</h3>
+            <details>
+                <summary>EKM Request & Response Flow</summary>
+                <div class="code">
+┌─────────────────────────────────────────────────────────────────┐
+│                    GCP Tenant (Customer Project)                 │
+├─────────────────────────────────────────────────────────────────┤
+│                                                                   │
+│  ┌──────────────────────┐        ┌──────────────────────────┐  │
+│  │  GCP Data Service    │        │  EKM Connection Profile  │  │
+│  │  (e.g., Cloud       │───────▶│  - External KMS URL      │  │
+│  │   Storage, BigQuery) │        │  - Service Account       │  │
+│  │                      │        │  - Credentials           │  │
+│  └──────────────────────┘        └──────────────────────────┘  │
+│                │                                                  │
+│                │ [1] Request key material                         │
+│                │ (via EKM API)                                    │
+│                ▼                                                  │
+│  ┌──────────────────────────────────────────────────────────┐   │
+│  │  Cloud EKM Service                                       │   │
+│  │  - Validates request                                     │   │
+│  │  - Checks quotas & policies                              │   │
+│  └──────────────────────────────────────────────────────────┘   │
+│                │                                                  │
+│                │ [2] Access Justification Request                 │
+│                │ (includes: timestamp, service, location, reason) │
+│                ▼                                                  │
+└─────────────────────────────────────────────────────────────────┘
+                           │
+                           │ TLS 1.2+ Encrypted Channel
+                           │
+┌─────────────────────────────────────────────────────────────────┐
+│              Customer's External Key Management System            │
+├─────────────────────────────────────────────────────────────────┤
+│                                                                   │
+│  ┌──────────────────────────────────────────────────────────┐   │
+│  │  External KMS (Thales, YubiHSM, on-premises, etc.)       │   │
+│  │  - Policy Engine (evaluates access justifications)        │   │
+│  │  - Access Control Rules                                   │   │
+│  │  - Audit Log                                              │   │
+│  └──────────────────────────────────────────────────────────┘   │
+│                │                                                  │
+│                │ [3] Evaluate Access Justification                │
+│                │ (admin/operator approval, policy check)          │
+│                ▼                                                  │
+│  ┌──────────────────────────────────────────────────────────┐   │
+│  │  Access Decision: APPROVE / DENY                         │   │
+│  │  [Response back to EKM]                                   │   │
+│  └──────────────────────────────────────────────────────────┘   │
+│                                                                   │
+└─────────────────────────────────────────────────────────────────┘
+                           │
+                           │ [4] If APPROVED:
+                           │ Key material sent encrypted
+                           ▼
+┌─────────────────────────────────────────────────────────────────┐
+│                    GCP Tenant (Customer Project)                 │
+│  ┌──────────────────────────────────────────────────────────┐   │
+│  │  Cloud EKM Service receives key material                 │   

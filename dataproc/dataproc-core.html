@@ -1,0 +1,429 @@
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GCP PDE Study Notes - Dataproc</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Outfit', sans-serif;
+            background-color: #0f1117;
+            color: #e4e4e7;
+            line-height: 1.6;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        h1 {
+            color: #1D9E75;
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+        
+        h2 {
+            color: #1D9E75;
+            font-size: 1.8rem;
+            font-weight: 600;
+            margin: 2rem 0 1rem 0;
+        }
+        
+        h3 {
+            color: #1D9E75;
+            font-size: 1.4rem;
+            font-weight: 600;
+            margin: 1.5rem 0 0.8rem 0;
+        }
+        
+        details {
+            background: #1a1a2e;
+            border: 1px solid #2a2a3a;
+            border-radius: 8px;
+            margin: 1rem 0;
+            padding: 1rem;
+        }
+        
+        summary {
+            cursor: pointer;
+            font-weight: 600;
+            color: #1D9E75;
+            font-size: 1.2rem;
+            margin-bottom: 1rem;
+        }
+        
+        summary:hover {
+            color: #22b883;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1rem 0;
+            background: #1a1a2e;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        
+        th, td {
+            border: 1px solid #2a2a3a;
+            padding: 12px;
+            text-align: left;
+        }
+        
+        th {
+            background: #1D9E75;
+            color: white;
+            font-weight: 600;
+        }
+        
+        tr:nth-child(even) {
+            background: #1f1f2f;
+        }
+        
+        .highlight {
+            background: #2a2a3a;
+            padding: 15px;
+            border-radius: 6px;
+            border-left: 4px solid #1D9E75;
+            margin: 1rem 0;
+        }
+        
+        .warning {
+            background: #3a2a1a;
+            border-left-color: #ff6b47;
+            color: #ffaa88;
+        }
+        
+        ul, ol {
+            margin: 1rem 0;
+            padding-left: 2rem;
+        }
+        
+        li {
+            margin: 0.5rem 0;
+        }
+        
+        code {
+            background: #2a2a3a;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-family: 'Courier New', monospace;
+            color: #22b883;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>GCP Dataproc Study Notes</h1>
+        
+        <details open>
+            <summary>Core Concepts</summary>
+            
+            <h3>What is Dataproc?</h3>
+            <p>Managed Apache Spark and Hadoop service on GCP. Fully managed clusters that auto-provision VMs, install software, and handle scaling.</p>
+            
+            <h3>Key Processing Frameworks</h3>
+            <ul>
+                <li><strong>Apache Spark:</strong> In-memory distributed processing for batch and streaming</li>
+                <li><strong>Apache Hadoop:</strong> MapReduce and HDFS for large-scale batch processing</li>
+                <li><strong>Apache Hive:</strong> SQL-like queries over distributed datasets</li>
+                <li><strong>Pig, Presto, Zeppelin:</strong> Additional data processing tools</li>
+            </ul>
+            
+            <h3>Cluster Modes</h3>
+            <table>
+                <tr>
+                    <th>Mode</th>
+                    <th>Use Case</th>
+                    <th>Duration</th>
+                    <th>Characteristics</th>
+                </tr>
+                <tr>
+                    <td>Standard</td>
+                    <td>Long-running clusters</td>
+                    <td>Days/Months</td>
+                    <td>Persistent storage, reusable</td>
+                </tr>
+                <tr>
+                    <td>Single Node</td>
+                    <td>Development/Testing</td>
+                    <td>Short</td>
+                    <td>No HDFS replication, cheaper</td>
+                </tr>
+                <tr>
+                    <td>Preemptible</td>
+                    <td>Batch workloads</td>
+                    <td>Variable</td>
+                    <td>80% cost savings, fault-tolerant</td>
+                </tr>
+            </table>
+            
+            <h3>Serverless Spark</h3>
+            <div class="highlight">
+                <p>Fully managed Spark without cluster management. Auto-scales from 0. Pay only for resources used during job execution.</p>
+            </div>
+        </details>
+
+        <details>
+            <summary>Architecture</summary>
+            
+            <h3>Cluster Components</h3>
+            <table>
+                <tr>
+                    <th>Component</th>
+                    <th>Role</th>
+                    <th>VM Requirements</th>
+                </tr>
+                <tr>
+                    <td>Master Node</td>
+                    <td>ResourceManager, NameNode, job coordination</td>
+                    <td>1 VM (HA: 3 VMs)</td>
+                </tr>
+                <tr>
+                    <td>Worker Nodes</td>
+                    <td>NodeManager, DataNodes, task execution</td>
+                    <td>2+ VMs (primary)</td>
+                </tr>
+                <tr>
+                    <td>Preemptible Workers</td>
+                    <td>Additional compute capacity</td>
+                    <td>0+ VMs (secondary)</td>
+                </tr>
+            </table>
+            
+            <h3>Storage Options</h3>
+            <table>
+                <tr>
+                    <th>Storage Type</th>
+                    <th>Persistence</th>
+                    <th>Performance</th>
+                    <th>Cost</th>
+                </tr>
+                <tr>
+                    <td>Cloud Storage</td>
+                    <td>Persistent</td>
+                    <td>Good</td>
+                    <td>Low</td>
+                </tr>
+                <tr>
+                    <td>HDFS (Local SSD)</td>
+                    <td>Ephemeral</td>
+                    <td>Highest</td>
+                    <td>High</td>
+                </tr>
+                <tr>
+                    <td>HDFS (Persistent Disk)</td>
+                    <td>Persistent</td>
+                    <td>Medium</td>
+                    <td>Medium</td>
+                </tr>
+            </table>
+            
+            <h3>Network Architecture</h3>
+            <ul>
+                <li>Clusters deploy in single subnet</li>
+                <li>Internal IPs for node communication</li>
+                <li>Optional external IPs for SSH access</li>
+                <li>Private IP clusters supported</li>
+                <li>VPC firewall rules auto-created</li>
+            </ul>
+        </details>
+
+        <details>
+            <summary>Key Configs & Limits</summary>
+            
+            <h3>Cluster Limits</h3>
+            <table>
+                <tr>
+                    <th>Resource</th>
+                    <th>Limit</th>
+                    <th>Notes</th>
+                </tr>
+                <tr>
+                    <td>Max workers per cluster</td>
+                    <td>1,000</td>
+                    <td>Primary + secondary combined</td>
+                </tr>
+                <tr>
+                    <td>Max preemptible workers</td>
+                    <td>1,000</td>
+                    <td>Can be 100% of cluster</td>
+                </tr>
+                <tr>
+                    <td>Cluster name length</td>
+                    <td>54 characters</td>
+                    <td>Lowercase, numbers, hyphens</td>
+                </tr>
+                <tr>
+                    <td>Max idle time</td>
+                    <td>24 hours</td>
+                    <td>Auto-deletion threshold</td>
+                </tr>
+            </table>
+            
+            <h3>Default Configurations</h3>
+            <table>
+                <tr>
+                    <th>Setting</th>
+                    <th>Default Value</th>
+                    <th>Configurable</th>
+                </tr>
+                <tr>
+                    <td>Machine type</td>
+                    <td>n1-standard-4</td>
+                    <td>Yes</td>
+                </tr>
+                <tr>
+                    <td>Disk size</td>
+                    <td>100 GB</td>
+                    <td>Yes</td>
+                </tr>
+                <tr>
+                    <td>Disk type</td>
+                    <td>pd-standard</td>
+                    <td>Yes</td>
+                </tr>
+                <tr>
+                    <td>Worker nodes</td>
+                    <td>2</td>
+                    <td>Yes</td>
+                </tr>
+                <tr>
+                    <td>Preemptible workers</td>
+                    <td>0</td>
+                    <td>Yes</td>
+                </tr>
+            </table>
+            
+            <h3>Autoscaling Parameters</h3>
+            <table>
+                <tr>
+                    <th>Parameter</th>
+                    <th>Range</th>
+                    <th>Description</th>
+                </tr>
+                <tr>
+                    <td>Min workers</td>
+                    <td>2-1000</td>
+                    <td>Always-on primary workers</td>
+                </tr>
+                <tr>
+                    <td>Max workers</td>
+                    <td>2-1000</td>
+                    <td>Peak primary workers</td>
+                </tr>
+                <tr>
+                    <td>Max preemptible</td>
+                    <td>0-1000</td>
+                    <td>Secondary worker limit</td>
+                </tr>
+                <tr>
+                    <td>Scale-up factor</td>
+                    <td>1.05-2.0</td>
+                    <td>Default: 1.05</td>
+                </tr>
+            </table>
+        </details>
+
+        <details>
+            <summary>Exam Traps</summary>
+            
+            <h3>Common Misconceptions</h3>
+            <div class="warning highlight">
+                <p><strong>Trap:</strong> Thinking Dataproc is serverless by default</p>
+                <p><strong>Reality:</strong> Standard Dataproc requires cluster management. Only Serverless Spark is truly serverless.</p>
+            </div>
+            
+            <div class="warning highlight">
+                <p><strong>Trap:</strong> Using 100% preemptible workers</p>
+                <p><strong>Reality:</strong> Need at least 2 primary workers for HDFS replication and cluster stability.</p>
+            </div>
+            
+            <div class="warning highlight">
+                <p><strong>Trap:</strong> Expecting instant autoscaling</p>
+                <p><strong>Reality:</strong> Scaling takes 2-5 minutes due to VM provisioning time.</p>
+            </div>
+            
+            <h3>Frequently Confused Concepts</h3>
+            <table>
+                <tr>
+                    <th>Concept A</th>
+                    <th>Concept B</th>
+                    <th>Key Difference</th>
+                </tr>
+                <tr>
+                    <td>Dataproc</td>
+                    <td>Dataflow</td>
+                    <td>Dataproc = managed clusters, Dataflow = serverless streaming</td>
+                </tr>
+                <tr>
+                    <td>Primary workers</td>
+                    <td>Preemptible workers</td>
+                    <td>Primary = guaranteed, Preemptible = can be terminated</td>
+                </tr>
+                <tr>
+                    <td>Workflow template</td>
+                    <td>Job</td>
+                    <td>Template = reusable definition, Job = single execution</td>
+                </tr>
+                <tr>
+                    <td>Cluster mode</td>
+                    <td>Serverless</td>
+                    <td>Cluster = manage VMs, Serverless = no infrastructure</td>
+                </tr>
+            </table>
+            
+            <h3>Pricing Gotchas</h3>
+            <ul>
+                <li>Charged for full minutes even if job runs seconds</li>
+                <li>Preemptible instances billed minimum 1 minute</li>
+                <li>Storage charges separate from compute</li>
+                <li>Network egress charges apply</li>
+                <li>Idle clusters still incur compute charges</li>
+            </ul>
+        </details>
+
+        <details>
+            <summary>Quick Cheatsheet</summary>
+            
+            <h3>Decision Framework</h3>
+            <div class="highlight">
+                <p><strong>Use Dataproc when:</strong> Migrating existing Spark/Hadoop, need cluster control, custom configurations</p>
+                <p><strong>Use Serverless Spark when:</strong> New projects, simple Spark jobs, want zero infrastructure management</p>
+                <p><strong>Use BigQuery when:</strong> SQL analytics, no complex ETL, structured data</p>
+            </div>
+            
+            <h3>Quick Commands</h3>
+            <table>
+                <tr>
+                    <th>Task</th>
+                    <th>Command Pattern</th>
+                </tr>
+                <tr>
+                    <td>Create cluster</td>
+                    <td><code>gcloud dataproc clusters create CLUSTER</code></td>
+                </tr>
+                <tr>
+                    <td>Submit Spark job</td>
+                    <td><code>gcloud dataproc jobs submit spark</code></td>
+                </tr>
+                <tr>
+                    <td>Enable autoscaling</td>
+                    <td><code>--enable-autoscaling --max-workers=N</code></td>
+                </tr>
+                <tr>
+                    <td>Use preemptible</td>
+                    <td><code>--num-preemptible-workers=N
