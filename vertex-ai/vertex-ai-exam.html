@@ -1,0 +1,267 @@
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GCP PDE: Vertex AI - Study Notes</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { 
+            font-family: 'Outfit', sans-serif; 
+            background: #0f1117; 
+            color: #e1e5e9; 
+            line-height: 1.6; 
+            padding: 20px;
+        }
+        .container { max-width: 1200px; margin: 0 auto; }
+        h1 { color: #1D9E75; font-size: 2.5em; text-align: center; margin-bottom: 30px; font-weight: 700; }
+        h2 { color: #1D9E75; font-size: 1.8em; margin: 25px 0 15px 0; font-weight: 600; }
+        h3 { color: #4a9eff; font-size: 1.3em; margin: 20px 0 10px 0; font-weight: 600; }
+        
+        details { 
+            background: #1a1d24; 
+            border: 1px solid #2d3748; 
+            border-radius: 8px; 
+            margin: 15px 0; 
+            overflow: hidden;
+        }
+        summary { 
+            background: #252a36; 
+            padding: 15px 20px; 
+            cursor: pointer; 
+            font-weight: 600; 
+            color: #1D9E75;
+            border-bottom: 1px solid #2d3748;
+        }
+        summary:hover { background: #2d3748; }
+        details[open] summary { background: #1D9E75; color: #0f1117; }
+        .content { padding: 20px; }
+        
+        table { 
+            width: 100%; 
+            border-collapse: collapse; 
+            margin: 15px 0; 
+            background: #1a1d24;
+        }
+        th, td { 
+            padding: 12px; 
+            text-align: left; 
+            border: 1px solid #2d3748; 
+        }
+        th { 
+            background: #1D9E75; 
+            color: #0f1117; 
+            font-weight: 600; 
+        }
+        tr:nth-child(even) { background: #252a36; }
+        
+        .warning { 
+            background: #3d1a1a; 
+            border: 1px solid #e53e3e; 
+            border-radius: 6px; 
+            padding: 15px; 
+            margin: 15px 0;
+        }
+        .tip { 
+            background: #1a3d2e; 
+            border: 1px solid #1D9E75; 
+            border-radius: 6px; 
+            padding: 15px; 
+            margin: 15px 0;
+        }
+        .code { 
+            background: #252a36; 
+            padding: 10px 15px; 
+            border-radius: 4px; 
+            font-family: 'Courier New', monospace; 
+            border-left: 4px solid #1D9E75;
+        }
+        ul, ol { margin-left: 25px; margin-bottom: 15px; }
+        li { margin-bottom: 8px; }
+        strong { color: #1D9E75; font-weight: 600; }
+        .highlight { background: #3d2a1a; padding: 2px 6px; border-radius: 3px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Vertex AI - Unified ML Platform</h1>
+
+        <details>
+            <summary>Core Concepts</summary>
+            <div class="content">
+                <h3>Unified ML Platform</h3>
+                <ul>
+                    <li><strong>Vertex AI:</strong> End-to-end ML platform combining AutoML and custom training</li>
+                    <li><strong>Workbench:</strong> Managed Jupyter notebooks with pre-configured ML environments</li>
+                    <li><strong>Model Garden:</strong> Collection of pre-trained, foundation, and open-source models</li>
+                    <li><strong>Feature Store:</strong> Centralized repository for ML features with versioning</li>
+                    <li><strong>Pipelines:</strong> MLOps workflow orchestration using Kubeflow or TFX</li>
+                </ul>
+
+                <h3>Key Components</h3>
+                <table>
+                    <tr><th>Component</th><th>Purpose</th><th>Use Case</th></tr>
+                    <tr><td>Training</td><td>Custom model training</td><td>Complex ML models requiring custom code</td></tr>
+                    <tr><td>AutoML</td><td>No-code ML training</td><td>Standard ML tasks without custom code</td></tr>
+                    <tr><td>Endpoints</td><td>Online prediction serving</td><td>Real-time inference with low latency</td></tr>
+                    <tr><td>Batch Prediction</td><td>Offline prediction jobs</td><td>Large-scale batch inference</td></tr>
+                    <tr><td>Model Registry</td><td>Model versioning and management</td><td>MLOps model lifecycle</td></tr>
+                </table>
+            </div>
+        </details>
+
+        <details>
+            <summary>Architecture & Components</summary>
+            <div class="content">
+                <h3>Training Architecture</h3>
+                <table>
+                    <tr><th>Training Type</th><th>Compute</th><th>Scaling</th><th>Best For</th></tr>
+                    <tr><td>AutoML</td><td>Managed infrastructure</td><td>Automatic</td><td>Standard ML tasks, no ML expertise</td></tr>
+                    <tr><td>Custom Training</td><td>Custom containers</td><td>Manual configuration</td><td>Complex models, full control</td></tr>
+                    <tr><td>Hyperparameter Tuning</td><td>Parallel jobs</td><td>Configured trials</td><td>Model optimization</td></tr>
+                </table>
+
+                <h3>Serving Options</h3>
+                <table>
+                    <tr><th>Option</th><th>Latency</th><th>Throughput</th><th>Cost Model</th></tr>
+                    <tr><td>Online Prediction</td><td>< 100ms</td><td>Thousands RPS</td><td>Node-hours</td></tr>
+                    <tr><td>Batch Prediction</td><td>Minutes-Hours</td><td>Millions records</td><td>Per prediction</td></tr>
+                    <tr><td>Edge Deployment</td><td>< 10ms</td><td>Device-limited</td><td>No cloud cost</td></tr>
+                </table>
+
+                <h3>Feature Store Architecture</h3>
+                <ul>
+                    <li><strong>Feature Registry:</strong> Metadata and schema management</li>
+                    <li><strong>Feature Repository:</strong> Actual feature value storage</li>
+                    <li><strong>Online Store:</strong> Low-latency feature serving (Bigtable)</li>
+                    <li><strong>Offline Store:</strong> Batch feature access (BigQuery)</li>
+                </ul>
+            </div>
+        </details>
+
+        <details>
+            <summary>Key Configs & Limits</summary>
+            <div class="content">
+                <table>
+                    <tr><th>Resource</th><th>Limit</th><th>Default</th><th>Notes</th></tr>
+                    <tr><td>Training Job Duration</td><td>7 days</td><td>N/A</td><td>Automatic timeout</td></tr>
+                    <tr><td>Custom Container Size</td><td>10 GB</td><td>N/A</td><td>Container Registry limit</td></tr>
+                    <tr><td>Batch Prediction Input</td><td>100 GB per file</td><td>N/A</td><td>BigQuery/GCS sources</td></tr>
+                    <tr><td>Online Prediction Timeout</td><td>60 seconds</td><td>60 seconds</td><td>Request timeout</td></tr>
+                    <tr><td>Endpoint Replicas</td><td>1000</td><td>1</td><td>Auto-scaling limit</td></tr>
+                    <tr><td>Feature Store Features</td><td>10,000 per FeatureGroup</td><td>N/A</td><td>Schema limit</td></tr>
+                    <tr><td>Model Registry Models</td><td>1000 per project</td><td>N/A</td><td>Versioning limit</td></tr>
+                    <tr><td>Pipeline Execution Time</td><td>30 days</td><td>N/A</td><td>Kubeflow Pipelines</td></tr>
+                </table>
+
+                <h3>AutoML Limits</h3>
+                <table>
+                    <tr><th>Task Type</th><th>Max Dataset Size</th><th>Max Training Time</th><th>Features</th></tr>
+                    <tr><td>Tables (Classification)</td><td>100 GB</td><td>24 hours</td><td>1000 columns</td></tr>
+                    <tr><td>Tables (Regression)</td><td>100 GB</td><td>24 hours</td><td>1000 columns</td></tr>
+                    <tr><td>Vision</td><td>1M images</td><td>24 hours</td><td>N/A</td></tr>
+                    <tr><td>NLP</td><td>128k documents</td><td>24 hours</td><td>N/A</td></tr>
+                </table>
+            </div>
+        </details>
+
+        <details>
+            <summary>⚠️ Exam Traps</summary>
+            <div class="content">
+                <div class="warning">
+                    <h3>Common Confusions</h3>
+                    <ul>
+                        <li><strong>AutoML vs Custom Training:</strong> AutoML = no code required, Custom = full control with containers</li>
+                        <li><strong>Online vs Batch Prediction:</strong> Online = real-time endpoints, Batch = scheduled jobs on large datasets</li>
+                        <li><strong>Model Garden vs Registry:</strong> Garden = pre-built models, Registry = your trained models</li>
+                        <li><strong>Feature Store Online vs Offline:</strong> Online = real-time serving, Offline = training data preparation</li>
+                    </ul>
+                </div>
+
+                <div class="warning">
+                    <h3>Training Traps</h3>
+                    <ul>
+                        <li><strong>Hyperparameter Tuning requires Custom Training</strong> - not available with AutoML</li>
+                        <li><strong>AutoML automatically handles feature engineering</strong> - no manual preprocessing needed</li>
+                        <li><strong>Custom containers must be in Container Registry or Artifact Registry</strong> - not Docker Hub</li>
+                        <li><strong>Training data must be in same region as Vertex AI job</strong> - no cross-region access</li>
+                    </ul>
+                </div>
+
+                <div class="warning">
+                    <h3>Serving Traps</h3>
+                    <ul>
+                        <li><strong>Batch Prediction requires Cloud Storage output</strong> - cannot write directly to BigQuery</li>
+                        <li><strong>Online endpoints charge for node uptime</strong> - even with zero traffic</li>
+                        <li><strong>Model deployment requires explicit machine type selection</strong> - no automatic sizing</li>
+                        <li><strong>Edge deployment needs TensorFlow Lite conversion</strong> - not all models supported</li>
+                    </ul>
+                </div>
+
+                <div class="warning">
+                    <h3>Feature Store Gotchas</h3>
+                    <ul>
+                        <li><strong>Online serving requires Bigtable backend</strong> - automatic provisioning</li>
+                        <li><strong>Feature ingestion has eventual consistency</strong> - not immediate availability</li>
+                        <li><strong>Point-in-time queries only available offline</strong> - not in online store</li>
+                        <li><strong>Schema evolution requires versioning</strong> - cannot modify existing features</li>
+                    </ul>
+                </div>
+
+                <div class="warning">
+                    <h3>Pipeline Traps</h3>
+                    <ul>
+                        <li><strong>Vertex Pipelines uses Kubeflow SDK v2</strong> - not compatible with v1</li>
+                        <li><strong>Pipeline components must be containerized</strong> - no direct Python functions</li>
+                        <li><strong>Artifact lineage requires explicit metadata</strong> - not automatically tracked</li>
+                        <li><strong>Scheduled pipelines require Cloud Scheduler integration</strong> - not built-in cron</li>
+                    </ul>
+                </div>
+            </div>
+        </details>
+
+        <details>
+            <summary>Quick Cheatsheet</summary>
+            <div class="content">
+                <h3>Training Decision Tree</h3>
+                <div class="tip">
+                    <ul>
+                        <li><strong>Standard ML task + No ML expertise:</strong> AutoML</li>
+                        <li><strong>Custom algorithms + Full control:</strong> Custom Training</li>
+                        <li><strong>Optimize model performance:</strong> Hyperparameter Tuning</li>
+                        <li><strong>Large datasets (>100GB):</strong> Custom Training with distributed strategy</li>
+                    </ul>
+                </div>
+
+                <h3>Serving Decision Tree</h3>
+                <div class="tip">
+                    <ul>
+                        <li><strong>Real-time + Low latency:</strong> Online Prediction Endpoints</li>
+                        <li><strong>Large batch + Cost optimization:</strong> Batch Prediction Jobs</li>
+                        <li><strong>Mobile/IoT devices:</strong> Edge Deployment (TF Lite)</li>
+                        <li><strong>Variable traffic:</strong> Endpoint with auto-scaling</li>
+                    </ul>
+                </div>
+
+                <h3>Key Commands</h3>
+                <div class="code">
+                    # Create training job<br>
+                    gcloud ai custom-jobs create --display-name=my-job<br>
+                    <br>
+                    # Deploy model to endpoint<br>
+                    gcloud ai endpoints deploy-model ENDPOINT_ID --model=MODEL_ID<br>
+                    <br>
+                    # Run batch prediction<br>
+                    gcloud ai batch-prediction-jobs create --model=MODEL_ID<br>
+                    <br>
+                    # Create feature store<br>
+                    gcloud ai feature-stores create --display-name=my-store
+                </div>
+
+                <h3>Cost Optimization</h3>
+                <table>
+                    <tr><th>Component</th><th>Cost Factor</th><th>Optimization</th></tr>
+                    <tr><td>Training</td><td>Compute hours</td><td>Use preemptible instances</td></tr>
+                    

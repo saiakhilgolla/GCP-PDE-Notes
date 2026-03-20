@@ -4,740 +4,374 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BigQuery Core Concepts & Architecture - GCP PDE Study Notes</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <title>BigQuery - GCP PDE Study Notes</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700&display=swap" rel="stylesheet">
     <style>
-        :root {
-            --bg-primary: #ffffff;
-            --bg-secondary: #f8f9fa;
-            --bg-tertiary: #e9ecef;
-            --accent: #1D9E75;
-            --accent-light: #2db386;
-            --accent-dark: #166b54;
-            --text-primary: #212529;
-            --text-secondary: #495057;
-            --text-muted: #6c757d;
-            --border: #dee2e6;
-            --shadow: rgba(0, 0, 0, 0.1);
-        }
-
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
+        * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
             font-family: 'Outfit', sans-serif;
-            background-color: var(--bg-primary);
-            color: var(--text-primary);
+            background-color: #0f1117;
+            color: #e6e6e6;
             line-height: 1.6;
+            padding: 20px;
         }
-
-        .header {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            background: var(--bg-secondary);
-            border-bottom: 1px solid var(--border);
-            z-index: 1000;
-            padding: 1rem 2rem;
-        }
-
-        .header h1 {
-            font-size: 1.5rem;
-            font-weight: 600;
-            color: var(--accent-dark);
-        }
-
-        .header .breadcrumb {
-            font-size: 0.875rem;
-            color: var(--text-muted);
-            margin-top: 0.25rem;
-        }
-
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 0 2rem;
-            margin-top: 5rem;
-            padding-bottom: 2rem;
-        }
-
-        .section {
-            background: var(--bg-primary);
-            border: 1px solid var(--border);
-            border-radius: 8px;
-            padding: 2rem;
-            margin-bottom: 2rem;
-            box-shadow: 0 2px 8px var(--shadow);
-        }
-
-        .section-title {
-            font-size: 1.75rem;
-            font-weight: 600;
-            color: var(--accent-dark);
-            margin-bottom: 1rem;
-            border-bottom: 3px solid var(--accent);
-            padding-bottom: 0.5rem;
-        }
-
-        .subsection-title {
-            font-size: 1.25rem;
-            font-weight: 600;
-            color: var(--text-primary);
-            margin: 1.5rem 0 0.75rem 0;
-        }
-
-        .code-block {
-            background: var(--bg-tertiary);
-            border: 1px solid var(--border);
-            border-radius: 6px;
-            padding: 1rem;
-            margin: 1rem 0;
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 0.875rem;
-            overflow-x: auto;
-        }
-
-        .warning {
-            background: #fff3cd;
-            border: 1px solid #ffeaa7;
-            border-left: 4px solid #f39c12;
-            border-radius: 6px;
-            padding: 1rem;
-            margin: 1rem 0;
-        }
-
-        .warning-title {
-            font-weight: 600;
-            color: #f39c12;
-            margin-bottom: 0.5rem;
-        }
-
-        .info {
-            background: #e7f3ff;
-            border: 1px solid #b3d9ff;
-            border-left: 4px solid var(--accent);
-            border-radius: 6px;
-            padding: 1rem;
-            margin: 1rem 0;
-        }
-
-        .info-title {
-            font-weight: 600;
-            color: var(--accent-dark);
-            margin-bottom: 0.5rem;
-        }
-
-        .comparison-table {
-            width: 100%;
-            border-collapse: collapse;
-            margin: 1rem 0;
-            font-size: 0.9rem;
-        }
-
-        .comparison-table th,
-        .comparison-table td {
-            border: 1px solid var(--border);
-            padding: 0.75rem;
-            text-align: left;
-        }
-
-        .comparison-table th {
-            background: var(--bg-secondary);
-            font-weight: 600;
-            color: var(--text-primary);
-        }
-
-        .comparison-table tr:nth-child(even) {
-            background: var(--bg-secondary);
-        }
-
-        .highlight {
-            background: #fff3cd;
-            padding: 0.2rem 0.4rem;
-            border-radius: 3px;
-            font-weight: 500;
-        }
-
+        .container { max-width: 1200px; margin: 0 auto; }
+        h1 { color: #1D9E75; font-size: 2.5rem; margin-bottom: 30px; text-align: center; }
+        h2 { color: #1D9E75; font-size: 1.8rem; margin: 20px 0 10px; }
+        h3 { color: #1D9E75; font-size: 1.3rem; margin: 15px 0 8px; }
         details {
-            margin: 1rem 0;
-            border: 1px solid var(--border);
-            border-radius: 6px;
-            overflow: hidden;
+            background: #1a1d23;
+            border: 1px solid #2d3748;
+            border-radius: 8px;
+            margin: 15px 0;
+            padding: 10px;
         }
-
         summary {
-            background: var(--bg-secondary);
-            padding: 1rem;
+            color: #1D9E75;
+            font-weight: 600;
             cursor: pointer;
-            font-weight: 600;
-            color: var(--text-primary);
-            border-bottom: 1px solid var(--border);
+            padding: 10px;
+            font-size: 1.2rem;
         }
-
-        summary:hover {
-            background: var(--bg-tertiary);
-        }
-
-        details[open] summary {
-            border-bottom: 1px solid var(--border);
-        }
-
-        .details-content {
-            padding: 1rem;
-        }
-
-        .key-point {
-            background: var(--bg-secondary);
-            border-left: 4px solid var(--accent);
-            padding: 1rem;
-            margin: 1rem 0;
-        }
-
-        .exam-focus {
-            background: #ffeaa7;
-            border: 2px solid #f39c12;
-            border-radius: 6px;
-            padding: 1rem;
-            margin: 1rem 0;
-        }
-
-        .exam-focus-title {
-            font-weight: 600;
-            color: #f39c12;
-            margin-bottom: 0.5rem;
-        }
-
-        ul, ol {
-            margin: 0.5rem 0;
-            padding-left: 1.5rem;
-        }
-
-        li {
-            margin: 0.25rem 0;
-        }
-
-        .metric-table {
+        summary:hover { background: #2d3748; }
+        table {
             width: 100%;
             border-collapse: collapse;
-            margin: 1rem 0;
+            margin: 15px 0;
+            background: #1a1d23;
         }
-
-        .metric-table th,
-        .metric-table td {
-            border: 1px solid var(--border);
-            padding: 0.5rem;
+        th, td {
+            border: 1px solid #2d3748;
+            padding: 12px;
             text-align: left;
         }
-
-        .metric-table th {
-            background: var(--accent);
+        th {
+            background: #1D9E75;
             color: white;
             font-weight: 600;
         }
-
-        .metric-table .number {
-            font-family: 'JetBrains Mono', monospace;
-            font-weight: 600;
-            text-align: right;
+        .highlight { background: #2d3748; color: #1D9E75; font-weight: 600; }
+        .warning { background: #4a1a1a; border-left: 4px solid #dc3545; padding: 10px; margin: 10px 0; }
+        ul, ol { margin: 10px 0 10px 25px; }
+        code {
+            background: #2d3748;
+            color: #1D9E75;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: monospace;
+        }
+        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+        .card {
+            background: #1a1d23;
+            border: 1px solid #2d3748;
+            border-radius: 8px;
+            padding: 15px;
         }
     </style>
 </head>
 <body>
-    <div class="header">
-        <h1>BigQuery Core Concepts & Architecture</h1>
-        <div class="breadcrumb">GCP Professional Data Engineer Study Notes</div>
-    </div>
-
     <div class="container">
-        <div class="section">
-            <h2 class="section-title">1. Core Concepts</h2>
-            
-            <div class="key-point">
-                <strong>BigQuery is a serverless columnar analytics database</strong> powered by Dremel execution engine and Capacitor storage format on Google's Colossus filesystem.
-            </div>
+        <h1>BigQuery - Core Concepts & Architecture</h1>
 
-            <h3 class="subsection-title">Internal Architecture</h3>
-            <table class="comparison-table">
+        <details open>
+            <summary>1. Core Concepts</summary>
+            
+            <h3>BigQuery Fundamentals</h3>
+            <table>
                 <tr>
                     <th>Component</th>
-                    <th>Function</th>
-                    <th>Key Details</th>
-                </tr>
-                <tr>
-                    <td><strong>Dremel execution engine</strong></td>
-                    <td>Distributes SQL across thousands of workers</td>
-                    <td>Compiles query into tree of execution stages, each processing data slices independently</td>
-                </tr>
-                <tr>
-                    <td><strong>Capacitor storage</strong></td>
-                    <td>Proprietary columnar format on Colossus</td>
-                    <td>Columns stored separately and compressed. Query reading 3 of 100 columns only touches 3% of data</td>
-                </tr>
-                <tr>
-                    <td><strong>Compute/Storage separation</strong></td>
-                    <td>Dremel workers allocated on demand</td>
-                    <td>No cluster to provision. Storage persists independently of compute</td>
-                </tr>
-                <tr>
-                    <td><strong>Slot</strong></td>
-                    <td>Unit of BigQuery compute (virtual CPU)</td>
-                    <td>On-demand projects get up to 2000 concurrent slots by default</td>
-                </tr>
-                <tr>
-                    <td><strong>Shuffle service</strong></td>
-                    <td>Handles data redistribution between stages</td>
-                    <td>Runs off worker VMs. Workers don't need extra memory for shuffle</td>
-                </tr>
-            </table>
-
-            <h3 class="subsection-title">Table Storage Types</h3>
-            <details>
-                <summary>Native BigQuery Storage</summary>
-                <div class="details-content">
-                    <ul>
-                        <li>Data stored in Capacitor format on Colossus</li>
-                        <li>Fastest queries with full optimization support</li>
-                        <li>Supports partitioning, clustering, materialized views, streaming inserts</li>
-                        <li><strong>This is the default and recommended option</strong></li>
-                    </ul>
-                </div>
-            </details>
-
-            <details>
-                <summary>External Tables</summary>
-                <div class="details-content">
-                    <ul>
-                        <li>Data stored outside BigQuery (Cloud Storage, Bigtable, Google Sheets, Spanner)</li>
-                        <li>BigQuery reads at query time - no storage cost in BQ but lower performance</li>
-                        <li><strong>Cannot use partitioning/clustering natively</strong></li>
-                        <li><strong>Cannot use streaming inserts or DML</strong></li>
-                    </ul>
-                </div>
-            </details>
-
-            <details>
-                <summary>BigLake Tables</summary>
-                <div class="details-content">
-                    <ul>
-                        <li>External data in Cloud Storage, S3, or Azure Blob via Connection resource</li>
-                        <li>Adds row-level security and column-level policy tags on external storage</li>
-                        <li>Object tables for unstructured data (images, video)</li>
-                    </ul>
-                </div>
-            </details>
-        </div>
-
-        <div class="section">
-            <h2 class="section-title">2. Architecture Deep Dive</h2>
-            
-            <h3 class="subsection-title">Partitioning</h3>
-            <div class="info">
-                <div class="info-title">Performance Impact</div>
-                Partitioning physically divides table data into segments. When a query filters on the partition column, BigQuery reads only relevant partitions, reducing bytes processed and cost.
-            </div>
-
-            <table class="comparison-table">
-                <tr>
-                    <th>Partition Type</th>
-                    <th>When to Use</th>
+                    <th>Description</th>
                     <th>Key Features</th>
                 </tr>
                 <tr>
-                    <td><strong>Ingestion-time (_PARTITIONTIME)</strong></td>
-                    <td>No meaningful timestamp column in data</td>
-                    <td>Auto-assigns rows to daily/hourly partitions based on load time</td>
+                    <td>Dremel Engine</td>
+                    <td>Distributed SQL execution engine</td>
+                    <td>Tree-based query execution, parallel processing</td>
                 </tr>
                 <tr>
-                    <td><strong>Column partitioning</strong></td>
-                    <td>Have DATE/TIMESTAMP/DATETIME column</td>
-                    <td>Partition by DAY (default), HOUR, MONTH, or YEAR</td>
+                    <td>Capacitor Storage</td>
+                    <td>Columnar storage format on Colossus</td>
+                    <td>Column compression, optimized for analytics</td>
                 </tr>
                 <tr>
-                    <td><strong>Integer range partitioning</strong></td>
-                    <td>ID-based sharding patterns</td>
-                    <td>Partition by INT64 column across user-defined ranges</td>
+                    <td>Slots</td>
+                    <td>Virtual CPU units for compute</td>
+                    <td>2000 default on-demand, allocated dynamically</td>
+                </tr>
+                <tr>
+                    <td>Shuffle Service</td>
+                    <td>Managed data redistribution</td>
+                    <td>Off-worker shuffle, no memory overhead</td>
                 </tr>
             </table>
 
-            <div class="warning">
-                <div class="warning-title">Partition Pruning Failures</div>
-                <ul>
-                    <li><strong>Wrapping partition column in function:</strong> WHERE DATE(created_at) = '2024-01-15'</li>
-                    <li><strong>Filter inside subquery BigQuery can't resolve</strong></li>
-                    <li><strong>Fix:</strong> Use direct literal comparison: WHERE order_date = '2024-01-15'</li>
-                </ul>
-            </div>
-
-            <h3 class="subsection-title">Clustering</h3>
-            <div class="key-point">
-                <strong>Block Pruning:</strong> Clustering sorts data within partitions by up to 4 columns. BigQuery stores min/max metadata per block to skip blocks that can't contain matching rows.
-            </div>
-
-            <table class="comparison-table">
+            <h3>Storage Types</h3>
+            <table>
                 <tr>
-                    <th>Aspect</th>
-                    <th>Details</th>
+                    <th>Type</th>
+                    <th>Location</th>
+                    <th>Features</th>
+                    <th>Limitations</th>
                 </tr>
                 <tr>
-                    <td>Column ordering</td>
-                    <td>First cluster column prunes most aggressively. Order from most-queried to least-queried</td>
+                    <td class="highlight">Native Tables</td>
+                    <td>Capacitor/Colossus</td>
+                    <td>Full optimization, streaming, DML</td>
+                    <td>Storage cost</td>
                 </tr>
                 <tr>
-                    <td>High cardinality benefit</td>
-                    <td>user_id, device_id, order_id benefit most. Low cardinality offers less benefit</td>
+                    <td>External Tables</td>
+                    <td>Cloud Storage, Bigtable, Sheets</td>
+                    <td>No storage cost</td>
+                    <td>No partitioning, slower queries</td>
                 </tr>
                 <tr>
-                    <td>Maintenance</td>
-                    <td>Automatic re-clustering as data is inserted. No manual maintenance required</td>
-                </tr>
-                <tr>
-                    <td>Power pattern</td>
-                    <td><strong>Partition by date + cluster by high-cardinality ID</strong> - benefits from both layers</td>
+                    <td>BigLake Tables</td>
+                    <td>Multi-cloud storage</td>
+                    <td>Row-level security, policy tags</td>
+                    <td>Requires Connection resource</td>
                 </tr>
             </table>
+        </details>
 
-            <div class="exam-focus">
-                <div class="exam-focus-title">Rule of Thumb</div>
-                <ul>
-                    <li><strong>High cardinality columns (customer_id, user_id):</strong> Clustering</li>
-                    <li><strong>Low cardinality time-based columns (date, month):</strong> Partitioning</li>
-                    <li><strong>Status and region columns:</strong> Clustering after high-cardinality column</li>
-                </ul>
-            </div>
-        </div>
-
-        <div class="section">
-            <h2 class="section-title">3. Key Configs & Limits</h2>
+        <details>
+            <summary>2. Architecture</summary>
             
-            <h3 class="subsection-title">Partitioning Limits</h3>
-            <table class="metric-table">
+            <h3>BigQuery Architecture Overview</h3>
+            <table>
                 <tr>
-                    <th>Configuration</th>
-                    <th>Value</th>
-                    <th>Impact</th>
-                </tr>
-                <tr>
-                    <td>Maximum partitions per table</td>
-                    <td class="number">10,000</td>
-                    <td>Table creation fails if exceeded</td>
-                </tr>
-                <tr>
-                    <td>require_partition_filter</td>
-                    <td>Boolean option</td>
-                    <td>Prevents accidental full table scans - returns error if no partition filter</td>
-                </tr>
-                <tr>
-                    <td>partition_expiration_days</td>
-                    <td>User-defined</td>
-                    <td>Expired partitions automatically deleted</td>
-                </tr>
-            </table>
-
-            <h3 class="subsection-title">Pricing Models Comparison</h3>
-            <table class="comparison-table">
-                <tr>
-                    <th>Model</th>
-                    <th>Cost Structure</th>
-                    <th>Best For</th>
-                    <th>Break-even Point</th>
-                </tr>
-                <tr>
-                    <td><strong>On-demand</strong></td>
-                    <td>$6.25 per TB processed</td>
-                    <td>Exploratory, ad-hoc workloads</td>
-                    <td>Below 100TB/month</td>
-                </tr>
-                <tr>
-                    <td><strong>Capacity (Standard/Enterprise/Enterprise Plus)</strong></td>
-                    <td>Pay for committed slots whether used or not</td>
-                    <td>Large predictable workloads</td>
-                    <td>Above 100TB/month</td>
-                </tr>
-                <tr>
-                    <td><strong>Autoscaling slots</strong></td>
-                    <td>Scale up during peak, down during low usage</td>
-                    <td>Variable workloads with peaks</td>
-                    <td>Baseline + burst pattern</td>
-                </tr>
-                <tr>
-                    <td><strong>Flex slots</strong></td>
-                    <td>Purchase by minute (60s minimum)</td>
-                    <td>Burst workloads, month-end reports</td>
-                    <td>Short-term capacity needs</td>
-                </tr>
-            </table>
-
-            <h3 class="subsection-title">Reservation Assignment Model</h3>
-            <div class="code-block">
-Admin Project: Holds slot reservations and commitments
-    ↓
-Reservations: Named pools of slots (e.g., "production-2000-slots")
-    ↓
-Assignments: Link project/folder/org to a reservation
-    ↓
-Query Execution: Assigned projects consume from reservation
-    ↓
-Fallback: Unassigned projects use on-demand pricing
-            </div>
-
-            <div class="info">
-                <div class="info-title">Idle Slot Sharing</div>
-                Unused slots in one reservation can be temporarily lent to another reservation in the same admin project automatically. No configuration needed.
-            </div>
-        </div>
-
-        <div class="section">
-            <h2 class="section-title">4. Exam Traps & Gotchas</h2>
-            
-            <div class="warning">
-                <div class="warning-title">Most Common Traps</div>
-                <ul>
-                    <li><strong>Partition pruning failure:</strong> Wrapping partition column in function prevents pruning</li>
-                    <li><strong>CSEK in BigQuery:</strong> Does NOT exist. BigQuery only supports GMEK and CMEK</li>
-                    <li><strong>Policy tags behavior:</strong> Return ACCESS DENIED error, not NULL or masked values</li>
-                    <li><strong>Time travel limit:</strong> 7 days maximum. Use table snapshots for longer recovery windows</li>
-                    <li><strong>Random lookups:</strong> BigQuery takes seconds. Use Bigtable for millisecond lookups</li>
-                    <li><strong>Frequent updates:</strong> BigQuery is append-optimized. DML UPDATE scans whole table</li>
-                </ul>
-            </div>
-
-            <h3 class="subsection-title">DML Quotas & Best Practices</h3>
-            <table class="comparison-table">
-                <tr>
-                    <th>Operation</th>
-                    <th>Quota</th>
-                    <th>Best Practice</th>
-                </tr>
-                <tr>
-                    <td>DML statements per day per table</td>
-                    <td>~1,500</td>
-                    <td>Use single MERGE instead of multiple UPDATE statements</td>
-                </tr>
-                <tr>
-                    <td>MERGE statement counting</td>
-                    <td>Counts as 1 DML regardless of rows affected</td>
-                    <td>Bulk updates via staging table + MERGE</td>
-                </tr>
-            </table>
-
-            <h3 class="subsection-title">BigQuery ML Latency Trap</h3>
-            <div class="exam-focus">
-                <div class="exam-focus-title">Critical Exam Point</div>
-                <ul>
-                    <li><strong>BigQuery ML.PREDICT latency:</strong> Seconds-level</li>
-                    <li><strong>For sub-100ms real-time predictions:</strong> Export model to Vertex AI Endpoint</li>
-                    <li><strong>Alternative:</strong> Pre-compute predictions and serve from Bigtable/Memorystore</li>
-                </ul>
-            </div>
-
-            <h3 class="subsection-title">Security Gotchas</h3>
-            <details>
-                <summary>IAM Role Combinations</summary>
-                <div class="details-content">
-                    <div class="key-point">
-                        <strong>Critical Pattern:</strong> Service accounts querying BigQuery need BOTH:
-                        <ul>
-                            <li><code>bigquery.jobUser</code> to create jobs</li>
-                            <li><code>bigquery.dataViewer</code> to read data</li>
-                            <li>Alternatively: <code>bigquery.user</code> covers both</li>
-                        </ul>
-                    </div>
-                </div>
-            </details>
-
-            <details>
-                <summary>Table-Level Access Control</summary>
-                <div class="details-content">
-                    <div class="warning">
-                        <div class="warning-title">No Table-Level IAM</div>
-                        BigQuery does NOT support IAM roles at individual table level. Access control is at dataset level via IAM or below through authorized views.
-                    </div>
-                    <div class="code-block">
-Solution Pattern:
-1. Create view in restricted dataset selecting only allowed columns/rows
-2. Authorize the view on source dataset  
-3. Grant restricted users bigquery.dataViewer on restricted dataset only
-                    </div>
-                </div>
-            </details>
-        </div>
-
-        <div class="section">
-            <h2 class="section-title">5. Quick Cheatsheet</h2>
-            
-            <h3 class="subsection-title">BigQuery ML Functions</h3>
-            <table class="comparison-table">
-                <tr>
+                    <th>Layer</th>
+                    <th>Component</th>
                     <th>Function</th>
-                    <th>Purpose</th>
-                    <th>Key Details</th>
                 </tr>
                 <tr>
-                    <td>ML.EVALUATE</td>
-                    <td>Model evaluation metrics</td>
-                    <td>AUC-ROC, precision, recall for classifiers; MAE, RMSE for regressors</td>
+                    <td rowspan="2">Compute</td>
+                    <td>Dremel Workers</td>
+                    <td>Execute query stages in parallel</td>
                 </tr>
                 <tr>
-                    <td>ML.PREDICT</td>
-                    <td>Run inference</td>
-                    <td>Returns predictions + probabilities. Seconds-level latency</td>
+                    <td>Slot Scheduler</td>
+                    <td>Allocate and manage compute resources</td>
                 </tr>
                 <tr>
-                    <td>ML.EXPLAIN_PREDICT</td>
-                    <td>Feature attributions</td>
-                    <td>Shapley values showing which features drove each prediction</td>
+                    <td rowspan="2">Storage</td>
+                    <td>Capacitor Format</td>
+                    <td>Columnar data storage with compression</td>
                 </tr>
                 <tr>
-                    <td>ML.TRANSFORM</td>
-                    <td>Apply preprocessing</td>
-                    <td>Uses transformations defined in CREATE MODEL TRANSFORM clause</td>
+                    <td>Colossus FS</td>
+                    <td>Distributed file system</td>
                 </tr>
                 <tr>
-                    <td>ML.FORECAST</td>
-                    <td>Time series predictions</td>
-                    <td>For ARIMA_PLUS models with confidence intervals</td>
+                    <td>Orchestration</td>
+                    <td>Query Optimizer</td>
+                    <td>SQL compilation and execution planning</td>
                 </tr>
             </table>
 
-            <h3 class="subsection-title">Advanced SQL Features</h3>
-            <details>
-                <summary>Materialized Views</summary>
-                <div class="details-content">
-                    <ul>
-                        <li><strong>Smart rewriting:</strong> BigQuery can use materialized view to answer base table queries</li>
-                        <li><strong>Incremental refresh:</strong> Only processes new/changed data</li>
-                        <li><strong>Limitations:</strong> Base table cannot be view, external table, or partitioned by ingestion time</li>
-                        <li><strong>Query requirements:</strong> Aggregation with GROUP BY, no non-deterministic functions</li>
-                    </ul>
-                </div>
-            </details>
-
-            <details>
-                <summary>Time Travel vs Snapshots vs Clones</summary>
-                <div class="details-content">
-                    <table class="comparison-table">
-                        <tr>
-                            <th>Feature</th>
-                            <th>Duration</th>
-                            <th>Cost</th>
-                            <th>Use Case</th>
-                        </tr>
-                        <tr>
-                            <td>Time Travel</td>
-                            <td>7 days</td>
-                            <td>No additional cost</td>
-                            <td>Recovery from accidental DELETE/UPDATE</td>
-                        </tr>
-                        <tr>
-                            <td>Table Snapshots</td>
-                            <td>User-defined expiration</td>
-                            <td>Delta pricing</td>
-                            <td>Recovery beyond 7 days (read-only)</td>
-                        </tr>
-                        <tr>
-                            <td>Table Clones</td>
-                            <td>Permanent until deleted</td>
-                            <td>Delta pricing</td>
-                            <td>Development/testing (writable)</td>
-                        </tr>
-                    </table>
-                </div>
-            </details>
-
-            <h3 class="subsection-title">Export Formats</h3>
-            <table class="comparison-table">
+            <h3>Partitioning Strategies</h3>
+            <table>
                 <tr>
-                    <th>Format</th>
-                    <th>Best For</th>
+                    <th>Type</th>
+                    <th>Column</th>
+                    <th>Use Case</th>
+                    <th>Granularity</th>
                 </tr>
                 <tr>
-                    <td>Parquet</td>
-                    <td>Downstream Spark processing or BigQuery re-import</td>
+                    <td>Ingestion-time</td>
+                    <td>_PARTITIONTIME</td>
+                    <td>No date column in data</td>
+                    <td>Daily/Hourly</td>
                 </tr>
                 <tr>
-                    <td>Avro</td>
-                    <td>Dataflow intermediate storage</td>
+                    <td>Column-based</td>
+                    <td>DATE/TIMESTAMP/DATETIME</td>
+                    <td>Time-series data</td>
+                    <td>HOUR/DAY/MONTH/YEAR</td>
                 </tr>
                 <tr>
-                    <td>JSON</td>
-                    <td>Human-readable inspection</td>
-                </tr>
-                <tr>
-                    <td>CSV</td>
-                    <td>Simple tabular exports</td>
+                    <td>Integer Range</td>
+                    <td>INT64</td>
+                    <td>ID-based sharding</td>
+                    <td>Custom ranges</td>
                 </tr>
             </table>
-        </div>
 
-        <div class="section">
-            <h2 class="section-title">6. Question Patterns</h2>
+            <h3>Clustering Best Practices</h3>
+            <ul>
+                <li><strong>Column Order:</strong> Most-queried columns first (up to 4 columns)</li>
+                <li><strong>High Cardinality:</strong> user_id, device_id, order_id work best</li>
+                <li><strong>Combined Strategy:</strong> Partition by date + cluster by high-cardinality columns</li>
+                <li><strong>Automatic Maintenance:</strong> Re-clustering happens transparently</li>
+            </ul>
+        </details>
+
+        <details>
+            <summary>3. Key Configs & Limits</summary>
             
-            <div class="exam-focus">
-                <div class="exam-focus-title">Signal Recognition</div>
+            <table>
+                <tr>
+                    <th>Resource</th>
+                    <th>Limit/Default</th>
+                    <th>Notes</th>
+                </tr>
+                <tr>
+                    <td>Max partitions per table</td>
+                    <td class="highlight">10,000</td>
+                    <td>Exceeding causes creation failure</td>
+                </tr>
+                <tr>
+                    <td>Default on-demand slots</td>
+                    <td class="highlight">2,000</td>
+                    <td>Concurrent slot allocation</td>
+                </tr>
+                <tr>
+                    <td>Clustering columns</td>
+                    <td class="highlight">4 max</td>
+                    <td>Order by query frequency</td>
+                </tr>
+                <tr>
+                    <td>On-demand pricing</td>
+                    <td class="highlight">$6.25/TB</td>
+                    <td>Data processed</td>
+                </tr>
+                <tr>
+                    <td>Flex slots minimum</td>
+                    <td class="highlight">60 seconds</td>
+                    <td>Per-minute billing</td>
+                </tr>
+                <tr>
+                    <td>Max table size</td>
+                    <td>No enforced limit</td>
+                    <td>Scales automatically</td>
+                </tr>
+                <tr>
+                    <td>Query timeout</td>
+                    <td>6 hours</td>
+                    <td>Interactive queries</td>
+                </tr>
+                <tr>
+                    <td>Streaming buffer</td>
+                    <td>Available immediately</td>
+                    <td>Eventually consistent</td>
+                </tr>
+            </table>
+
+            <h3>BigQuery ML Capabilities</h3>
+            <table>
+                <tr>
+                    <th>Model Type</th>
+                    <th>Use Case</th>
+                    <th>SQL Function</th>
+                </tr>
+                <tr>
+                    <td>Linear Regression</td>
+                    <td>Numerical prediction</td>
+                    <td>CREATE MODEL ... OPTIONS(model_type='LINEAR_REG')</td>
+                </tr>
+                <tr>
+                    <td>Logistic Regression</td>
+                    <td>Binary classification</td>
+                    <td>CREATE MODEL ... OPTIONS(model_type='LOGISTIC_REG')</td>
+                </tr>
+                <tr>
+                    <td>K-means</td>
+                    <td>Clustering</td>
+                    <td>CREATE MODEL ... OPTIONS(model_type='KMEANS')</td>
+                </tr>
+                <tr>
+                    <td>Time Series</td>
+                    <td>Forecasting</td>
+                    <td>CREATE MODEL ... OPTIONS(model_type='ARIMA_PLUS')</td>
+                </tr>
+            </table>
+        </details>
+
+        <details>
+            <summary>4. Exam Traps</summary>
+            
+            <div class="warning">
+                <h3>Common Gotchas</h3>
                 <ul>
-                    <li><strong>"Petabyte analytics" / "SQL queries" / "data warehouse"</strong> → BigQuery</li>
-                    <li><strong>"Complex SQL transformations with dependencies"</strong> → Dataform (not BigQuery Scheduled Queries)</li>
-                    <li><strong>"Row-level security by user identity"</strong> → Row access policies</li>
-                    <li><strong>"Column contains SSN - users should see XXXX"</strong> → Masking rules (not policy tags alone)</li>
-                    <li><strong>"Sub-100ms ML predictions"</strong> → Export to Vertex AI Endpoint (not BQ ML direct)</li>
+                    <li><strong>Partition Pruning Failure:</strong> Using functions like <code>DATE(timestamp_col)</code> in WHERE clauses prevents partition pruning</li>
+                    <li><strong>External vs Native:</strong> External tables cannot use streaming inserts, DML, or native partitioning</li>
+                    <li><strong>Clustering Order:</strong> First cluster column provides most pruning - order by query frequency, not alphabetically</li>
+                    <li><strong>Slot Allocation:</strong> On-demand projects share 2000 slots - not per query or per user</li>
+                    <li><strong>BigLake vs External:</strong> BigLake adds security features but requires Connection resources</li>
                 </ul>
             </div>
 
-            <h3 class="subsection-title">Common Scenario Patterns</h3>
-            <details>
-                <summary>Performance Optimization Scenarios</summary>
-                <div class="details-content">
+            <h3>Pricing Model Confusion</h3>
+            <table>
+                <tr>
+                    <th>Scenario</th>
+                    <th>Wrong Choice</th>
+                    <th>Correct Choice</th>
+                </tr>
+                <tr>
+                    <td>Unpredictable workload</td>
+                    <td>Reserved capacity</td>
+                    <td>On-demand pricing</td>
+                </tr>
+                <tr>
+                    <td>Month-end batch jobs</td>
+                    <td>Increase base reservation</td>
+                    <td>Flex slots for burst</td>
+                </tr>
+                <tr>
+                    <td>&gt;100TB/month consistently</td>
+                    <td>On-demand</td>
+                    <td>Capacity pricing</td>
+                </tr>
+                <tr>
+                    <td>Development environment</td>
+                    <td>Enterprise edition</td>
+                    <td>Standard edition</td>
+                </tr>
+            </table>
+
+            <h3>Security Misconceptions</h3>
+            <ul>
+                <li><strong>Authorized Views:</strong> Don't grant table access - users only need view access</li>
+                <li><strong>Row-level Security:</strong> Requires BigLake tables for external data</li>
+                <li><strong>Column-level Security:</strong> Use policy tags, not separate tables</li>
+                <li><strong>VPC-SC:</strong> Only available in Enterprise+ editions</li>
+            </ul>
+        </details>
+
+        <details>
+            <summary>5. Quick Cheatsheet</summary>
+            
+            <div class="grid">
+                <div class="card">
+                    <h3>Performance Optimization</h3>
                     <ul>
-                        <li><strong>Query scans too much data:</strong> Add partitioning on date column + clustering on high-cardinality columns</li>
-                        <li><strong>Repeated dashboard queries slow:</strong> Use BI Engine for sub-second cached results</li>
-                        <li><strong>Expensive slot consumption:</strong> Switch to capacity pricing with reservations</li>
-                        <li><strong>Burst workloads:</strong> Use flex slots for temporary extra capacity</li>
+                        <li>Partition by low-cardinality time columns</li>
+                        <li>Cluster by high-cardinality filter columns</li>
+                        <li>Use LIMIT with ORDER BY for top-N queries</li>
+                        <li>Avoid SELECT * - specify columns</li>
+                        <li>Use approximate functions: APPROX_COUNT_DISTINCT</li>
                     </ul>
                 </div>
-            </details>
-
-            <details>
-                <summary>Security & Access Control Scenarios</summary>
-                <div class="details-content">
+                
+                <div class="card">
+                    <h3>Cost Control</h3>
                     <ul>
-                        <li><strong>Share data across organizations:</strong> Analytics Hub with linked datasets</li>
-                        <li><strong>Column-level access control:</strong> Policy tags with Fine-Grained Reader role</li>
-                        <li><strong>Data masking requirements:</strong> Masking rules on top of policy tags</li>
-                        <li><strong>Cross-dataset table access:</strong> Authorized views</li>
+                        <li>Set <code>require_partition_filter=true</code></li>
+                        <li>Use query labels for cost tracking</li>
+                        <li>Preview query cost before running</li>
+                        <li>Consider materialized views for repeated queries</li>
+                        <li>Use BI Engine for sub-second dashboards</li>
                     </ul>
                 </div>
-            </details>
 
-            <details>
-                <summary>Integration Scenarios</summary>
-                <div class="details-content">
+                <div class="card">
+                    <h3>BigQuery ML Quick Commands</h3>
                     <ul>
-                        <li><strong>Real-time CDC from operational DB:</strong> Datastream to BigQuery</li>
-                        <li><strong>Streaming data with exactly-once:</strong> Dataflow with Storage Write API committed streams</li>
-                        <li><strong>Cross-cloud data querying:</strong> BigQuery Omni for AWS S3/Azure Blob</li>
-                        <li><strong>Large file uploads:</strong> Stage to Cloud Storage then load to BigQuery</li>
+                        <li><code>CREATE MODEL</code> - Train model</li>
+                        <li><code>ML.EVALUATE</code> - Model metrics</li>
+                        <li><code>ML.PREDICT</code> - Make predictions</li>
+                        <li><code>ML.FEATURE_INFO</code> - Feature analysis</li>
+                        <li><code>ML.EXPLAIN_PREDICT</code> - Explainable AI</li>
                     </ul>
-                </div>
-            </details>
-
-            <div class="info">
-                <div class="info-title">Decision Framework</div>
-                <ol>
-                    <li><strong>Identify data access pattern:</strong> Analytics scans vs operational lookups</li>
-                    <li><strong>Check scale requirements:</strong> Data volume and query frequency</li>
-                    <li><strong>Evaluate latency needs:</strong> Seconds (BigQuery) vs milliseconds (Bigtable)</li>
-                    <li><strong>Consider consistency requirements:</strong> Eventually consistent vs strong consistency</li>
-                    <li><strong>Factor in existing ecosystem:</strong> SQL skills, BI tools, compliance needs</li>
-                </ol>
-            </div>
-        </div>
-    </div>
-</body>
-</html>
-```
+                

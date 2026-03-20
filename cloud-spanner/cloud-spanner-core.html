@@ -1,0 +1,284 @@
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cloud Spanner - GCP PDE Study Notes</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { 
+            font-family: 'Outfit', sans-serif; 
+            background: #0f1117; 
+            color: #e8eaed; 
+            line-height: 1.6; 
+            padding: 20px; 
+        }
+        .container { max-width: 1200px; margin: 0 auto; }
+        h1 { color: #1D9E75; font-size: 2.5rem; margin-bottom: 30px; text-align: center; }
+        h2 { color: #1D9E75; font-size: 1.8rem; margin: 25px 0 15px 0; }
+        h3 { color: #4fc3f7; font-size: 1.3rem; margin: 20px 0 10px 0; }
+        
+        details { 
+            background: #1a1d23; 
+            margin: 15px 0; 
+            border-radius: 8px; 
+            border: 1px solid #2d3748;
+        }
+        summary { 
+            padding: 15px 20px; 
+            cursor: pointer; 
+            font-weight: 600; 
+            color: #1D9E75; 
+            background: #242930;
+            border-radius: 8px;
+        }
+        summary:hover { background: #2d3748; }
+        .content { padding: 20px; }
+        
+        table { 
+            width: 100%; 
+            border-collapse: collapse; 
+            margin: 15px 0; 
+            background: #1a1d23;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        th, td { 
+            padding: 12px 15px; 
+            text-align: left; 
+            border-bottom: 1px solid #2d3748; 
+        }
+        th { 
+            background: #1D9E75; 
+            color: white; 
+            font-weight: 600; 
+        }
+        tr:nth-child(even) { background: #242930; }
+        
+        .highlight { 
+            background: #2d3748; 
+            padding: 15px; 
+            border-radius: 8px; 
+            margin: 15px 0;
+            border-left: 4px solid #1D9E75;
+        }
+        .warning { 
+            background: #3d1a00; 
+            border-left: 4px solid #ff6b35; 
+            color: #ffab91;
+        }
+        .tip { 
+            background: #1a237e; 
+            border-left: 4px solid #4fc3f7; 
+            color: #81d4fa;
+        }
+        
+        code { 
+            background: #2d3748; 
+            padding: 2px 6px; 
+            border-radius: 4px; 
+            color: #4fc3f7; 
+        }
+        ul, ol { margin-left: 20px; margin-bottom: 15px; }
+        li { margin-bottom: 5px; }
+        
+        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin: 20px 0; }
+        @media (max-width: 768px) { .grid { grid-template-columns: 1fr; } }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Cloud Spanner Study Notes</h1>
+        
+        <details open>
+            <summary>1. Core Concepts</summary>
+            <div class="content">
+                <h3>What is Cloud Spanner?</h3>
+                <p>Globally distributed, horizontally scalable, strongly consistent relational database. Combines RDBMS structure with NoSQL scale.</p>
+                
+                <h3>TrueTime API</h3>
+                <div class="highlight">
+                    <p><strong>TrueTime</strong> provides globally synchronized timestamps with bounded uncertainty. Each server gets a time interval [earliest, latest] rather than exact time. Spanner waits for uncertainty to pass before committing transactions, ensuring global consistency.</p>
+                </div>
+                
+                <h3>Key Features</h3>
+                <ul>
+                    <li><strong>Horizontal Scaling</strong>: Add nodes to increase throughput and storage</li>
+                    <li><strong>Strong Consistency</strong>: ACID transactions across all regions</li>
+                    <li><strong>Global Distribution</strong>: Multi-region with automatic failover</li>
+                    <li><strong>SQL Interface</strong>: Standard SQL with extensions for distributed queries</li>
+                    <li><strong>Schema Changes</strong>: Online schema updates without downtime</li>
+                </ul>
+                
+                <h3>Interleaving</h3>
+                <div class="highlight tip">
+                    <p><strong>Table Interleaving</strong>: Child table rows are physically stored with parent rows. Parent-child rows on same split = single-node transactions. Example: Orders interleaved in Customers table.</p>
+                </div>
+                
+                <table>
+                    <tr><th>Concept</th><th>Purpose</th><th>Example</th></tr>
+                    <tr><td>Interleaving</td><td>Co-locate related data</td><td>OrderItems interleaved in Orders</td></tr>
+                    <tr><td>Primary Key</td><td>Data distribution</td><td>(CustomerId, OrderId, ItemId)</td></tr>
+                    <tr><td>Split</td><td>Unit of replication</td><td>Continuous key range</td></tr>
+                </table>
+            </div>
+        </details>
+
+        <details>
+            <summary>2. Architecture</summary>
+            <div class="content">
+                <h3>Spanner Architecture Components</h3>
+                
+                <table>
+                    <tr><th>Component</th><th>Role</th><th>Scope</th></tr>
+                    <tr><td>Universe</td><td>Deployment of Spanner</td><td>Global</td></tr>
+                    <tr><td>Zone</td><td>Admin unit of deployment</td><td>Single datacenter</td></tr>
+                    <tr><td>Spanserver</td><td>Serves data to clients</td><td>Per zone</td></tr>
+                    <tr><td>Placement Driver</td><td>Handles replica placement</td><td>Universe-wide</td></tr>
+                    <tr><td>Paxos Group</td><td>Replication unit</td><td>Cross-zone</td></tr>
+                </table>
+                
+                <h3>Data Distribution</h3>
+                <div class="highlight">
+                    <p><strong>Splits</strong>: Contiguous ranges of rows identified by primary key. Spanner automatically splits tables as they grow. Each split is replicated using Paxos consensus.</p>
+                </div>
+                
+                <h3>Regional vs Multi-Regional</h3>
+                <table>
+                    <tr><th>Configuration</th><th>Zones</th><th>Read Latency</th><th>Write Latency</th><th>Availability</th></tr>
+                    <tr><td>Regional</td><td>3 zones in 1 region</td><td>Low</td><td>Low</td><td>99.99%</td></tr>
+                    <tr><td>Multi-Regional</td><td>5+ zones in 3+ regions</td><td>Regional reads</td><td>Higher</td><td>99.999%</td></tr>
+                </table>
+                
+                <h3>Transaction Types</h3>
+                <ul>
+                    <li><strong>Read-Write</strong>: Full ACID, uses 2PL and 2PC</li>
+                    <li><strong>Read-Only</strong>: Snapshot isolation, no locks</li>
+                    <li><strong>Stale Reads</strong>: Read from timestamp in the past</li>
+                </ul>
+            </div>
+        </details>
+
+        <details>
+            <summary>3. Key Configs & Limits</summary>
+            <div class="content">
+                <table>
+                    <tr><th>Limit Type</th><th>Value</th><th>Notes</th></tr>
+                    <tr><td>Max Database Size</td><td>Unlimited</td><td>Scales horizontally</td></tr>
+                    <tr><td>Max Table Size</td><td>Unlimited</td><td>Auto-split as needed</td></tr>
+                    <tr><td>Max Row Size</td><td>10 MiB</td><td>Including all columns</td></tr>
+                    <tr><td>Max String/Bytes Column</td><td>2.6 MiB</td><td>Per column value</td></tr>
+                    <tr><td>Max Array Elements</td><td>10,000,000</td><td>Per array column</td></tr>
+                    <tr><td>Max Columns per Table</td><td>1,024</td><td>Including inherited</td></tr>
+                    <tr><td>Max Indexes per Table</td><td>128</td><td>Secondary indexes</td></tr>
+                    <tr><td>Max Interleaved Depth</td><td>7 levels</td><td>Parent-child nesting</td></tr>
+                    <tr><td>Max Nodes per Instance</td><td>2,000</td><td>Processing units = nodes × 1,000</td></tr>
+                    <tr><td>Transaction Timeout</td><td>1 hour</td><td>Read-write transactions</td></tr>
+                    <tr><td>Max Mutations per Transaction</td><td>100,000</td><td>Inserts/updates/deletes</td></tr>
+                    <tr><td>Max Commit Size</td><td>100 MiB</td><td>Total mutation data</td></tr>
+                </table>
+                
+                <h3>Performance Benchmarks</h3>
+                <table>
+                    <tr><th>Metric</th><th>Regional</th><th>Multi-Regional</th></tr>
+                    <tr><td>Read Latency</td><td>1-3 ms</td><td>3-7 ms</td></tr>
+                    <tr><td>Write Latency</td><td>3-7 ms</td><td>50-100 ms</td></tr>
+                    <tr><td>QPS per Node</td><td>2,000-10,000</td><td>Varies by region</td></tr>
+                </table>
+            </div>
+        </details>
+
+        <details>
+            <summary>4. Exam Traps</summary>
+            <div class="content">
+                <h3>Hot Spots</h3>
+                <div class="highlight warning">
+                    <p><strong>Trap:</strong> Sequential primary keys (auto-increment IDs, timestamps) create hot spots. All writes go to one split.</p>
+                    <p><strong>Solution:</strong> Use UUID, hash of timestamp, or reverse timestamp as first part of primary key.</p>
+                </div>
+                
+                <h3>Primary Key Design</h3>
+                <div class="highlight warning">
+                    <p><strong>Trap:</strong> Bad primary key = poor distribution. First column determines data distribution.</p>
+                    <p><strong>Best Practice:</strong> High cardinality first column, avoid monotonically increasing values.</p>
+                </div>
+                
+                <h3>Interleaving Gotchas</h3>
+                <ul>
+                    <li><strong>Wrong:</strong> Interleave unrelated tables to "improve performance"</li>
+                    <li><strong>Right:</strong> Only interleave genuine parent-child relationships</li>
+                    <li><strong>Trap:</strong> Too much interleaving can create large splits</li>
+                </ul>
+                
+                <h3>Transaction Boundaries</h3>
+                <div class="highlight warning">
+                    <p><strong>Trap:</strong> Cross-region transactions are expensive. Design schema to minimize cross-region reads/writes.</p>
+                </div>
+                
+                <h3>Schema Changes</h3>
+                <div class="highlight tip">
+                    <p><strong>Remember:</strong> Most schema changes are online and non-blocking, but adding NOT NULL columns or changing primary keys requires table recreation.</p>
+                </div>
+                
+                <h3>Stale Reads vs Fresh Reads</h3>
+                <table>
+                    <tr><th>Read Type</th><th>Consistency</th><th>Latency</th><th>Use Case</th></tr>
+                    <tr><td>Strong Read</td><td>Latest data</td><td>Higher</td><td>Critical consistency</td></tr>
+                    <tr><td>Stale Read</td><td>Point in past</td><td>Lower</td><td>Analytics, reporting</td></tr>
+                </table>
+            </div>
+        </details>
+
+        <details>
+            <summary>5. Quick Cheatsheet</summary>
+            <div class="content">
+                <div class="grid">
+                    <div>
+                        <h3>Schema Design</h3>
+                        <ul>
+                            <li>Primary key = data distribution</li>
+                            <li>First column = highest cardinality</li>
+                            <li>Avoid sequential keys</li>
+                            <li>Interleave parent-child only</li>
+                            <li>Secondary indexes for non-key queries</li>
+                        </ul>
+                        
+                        <h3>Performance</h3>
+                        <ul>
+                            <li>1 node = 1,000 processing units</li>
+                            <li>2,000-10,000 QPS per node</li>
+                            <li>Regional: 99.99% SLA</li>
+                            <li>Multi-regional: 99.999% SLA</li>
+                            <li>Stale reads = lower latency</li>
+                        </ul>
+                    </div>
+                    
+                    <div>
+                        <h3>SQL Extensions</h3>
+                        <ul>
+                            <li><code>INTERLEAVE IN PARENT</code></li>
+                            <li><code>@{FORCE_INDEX=index_name}</code></li>
+                            <li><code>TABLESAMPLE SYSTEM (10 PERCENT)</code></li>
+                            <li>Array and struct support</li>
+                            <li>Commit timestamps</li>
+                        </ul>
+                        
+                        <h3>Common Mistakes</h3>
+                        <ul>
+                            <li>Timestamp as first primary key column</li>
+                            <li>Over-interleaving tables</li>
+                            <li>Cross-region transaction patterns</li>
+                            <li>Not using stale reads for analytics</li>
+                            <li>Ignoring hot spot warnings</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </details>
+
+        <details>
+            <summary>6. Question Patterns</summary>
+            <div class="content">
+                <h

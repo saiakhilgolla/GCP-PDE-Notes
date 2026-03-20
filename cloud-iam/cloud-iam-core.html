@@ -1,0 +1,304 @@
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GCP PDE: Cloud IAM Study Notes</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Outfit', sans-serif;
+            background-color: #0f1117;
+            color: #e1e7ef;
+            line-height: 1.6;
+            padding: 20px;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        h1 {
+            color: #1D9E75;
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 2.5rem;
+            font-weight: 700;
+        }
+        h2 {
+            color: #1D9E75;
+            margin: 30px 0 15px 0;
+            font-size: 1.8rem;
+            font-weight: 600;
+        }
+        h3 {
+            color: #1D9E75;
+            margin: 20px 0 10px 0;
+            font-size: 1.3rem;
+            font-weight: 500;
+        }
+        details {
+            margin-bottom: 20px;
+            border: 1px solid #2a2f3a;
+            border-radius: 8px;
+            background-color: #1a1f26;
+        }
+        summary {
+            padding: 15px;
+            cursor: pointer;
+            font-weight: 600;
+            color: #1D9E75;
+            background-color: #252b34;
+            border-radius: 7px;
+            transition: background-color 0.3s;
+        }
+        summary:hover {
+            background-color: #2d3540;
+        }
+        details[open] summary {
+            border-radius: 7px 7px 0 0;
+        }
+        .content {
+            padding: 20px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 15px 0;
+            background-color: #1a1f26;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        th {
+            background-color: #1D9E75;
+            color: #0f1117;
+            padding: 12px;
+            text-align: left;
+            font-weight: 600;
+        }
+        td {
+            padding: 12px;
+            border-bottom: 1px solid #2a2f3a;
+        }
+        tr:last-child td {
+            border-bottom: none;
+        }
+        .highlight {
+            background-color: #2d3540;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 15px 0;
+            border-left: 4px solid #1D9E75;
+        }
+        .warning {
+            background-color: #3d2617;
+            border-left-color: #ff6b35;
+            color: #ffb499;
+        }
+        code {
+            background-color: #252b34;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: 'Courier New', monospace;
+            color: #1D9E75;
+        }
+        ul, ol {
+            margin-left: 20px;
+            margin-bottom: 15px;
+        }
+        li {
+            margin-bottom: 8px;
+        }
+        .grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin: 20px 0;
+        }
+        @media (max-width: 768px) {
+            .grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>GCP PDE: Cloud IAM</h1>
+
+        <details open>
+            <summary>1. Core Concepts</summary>
+            <div class="content">
+                <h3>IAM Fundamentals</h3>
+                <div class="highlight">
+                    <strong>Identity + Role = Policy</strong><br>
+                    IAM controls who (identity) has what access (role) to which resources (resource).
+                </div>
+                
+                <table>
+                    <tr><th>Component</th><th>Description</th><th>Example</th></tr>
+                    <tr><td><strong>Principal</strong></td><td>Entity requesting access</td><td>user@domain.com, SA@project.iam.gserviceaccount.com</td></tr>
+                    <tr><td><strong>Role</strong></td><td>Collection of permissions</td><td>roles/compute.admin, roles/storage.objectViewer</td></tr>
+                    <tr><td><strong>Resource</strong></td><td>GCP entity being accessed</td><td>Project, Bucket, VM instance</td></tr>
+                    <tr><td><strong>Policy</strong></td><td>Binds principals to roles</td><td>{"bindings": [{"role": "...", "members": [...]}]}</td></tr>
+                </table>
+
+                <h3>Identity Types</h3>
+                <table>
+                    <tr><th>Type</th><th>Format</th><th>Use Case</th></tr>
+                    <tr><td><strong>Google Account</strong></td><td>user@gmail.com</td><td>Individual developers</td></tr>
+                    <tr><td><strong>Service Account</strong></td><td>sa@project.iam.gserviceaccount.com</td><td>Applications, VMs</td></tr>
+                    <tr><td><strong>Google Group</strong></td><td>group@domain.com</td><td>Team access management</td></tr>
+                    <tr><td><strong>Workforce Identity</strong></td><td>External IdP users</td><td>Corporate SSO</td></tr>
+                    <tr><td><strong>Workload Identity</strong></td><td>K8s Service Account → GCP SA</td><td>GKE applications</td></tr>
+                </table>
+
+                <h3>Role Types</h3>
+                <ul>
+                    <li><strong>Basic Roles:</strong> Owner, Editor, Viewer (avoid in production)</li>
+                    <li><strong>Predefined Roles:</strong> Google-managed, service-specific granular access</li>
+                    <li><strong>Custom Roles:</strong> User-defined, project or org level only</li>
+                </ul>
+            </div>
+        </details>
+
+        <details>
+            <summary>2. Architecture</summary>
+            <div class="content">
+                <h3>IAM Policy Hierarchy</h3>
+                <table>
+                    <tr><th>Level</th><th>Scope</th><th>Inheritance</th></tr>
+                    <tr><td>Organization</td><td>All resources in org</td><td>↓ Inherited by folders/projects</td></tr>
+                    <tr><td>Folder</td><td>All resources in folder</td><td>↓ Inherited by sub-folders/projects</td></tr>
+                    <tr><td>Project</td><td>All resources in project</td><td>↓ Inherited by all project resources</td></tr>
+                    <tr><td>Resource</td><td>Specific resource</td><td>Final policy evaluation</td></tr>
+                </table>
+
+                <div class="highlight">
+                    <strong>Policy Inheritance:</strong> Child resources inherit parent policies. More permissive wins (union of permissions).
+                </div>
+
+                <h3>Service Account Architecture</h3>
+                <div class="grid">
+                    <div>
+                        <h4>Service Account as Identity</h4>
+                        <ul>
+                            <li>Acts as principal</li>
+                            <li>Granted roles on resources</li>
+                            <li>Used by applications</li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h4>Service Account as Resource</h4>
+                        <ul>
+                            <li>Can be impersonated</li>
+                            <li>Has IAM policies</li>
+                            <li>Controls who can act as SA</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <h3>Workload Identity Federation</h3>
+                <table>
+                    <tr><th>Component</th><th>Purpose</th></tr>
+                    <tr><td>Workload Identity Pool</td><td>Container for external identities</td></tr>
+                    <tr><td>Provider</td><td>Maps external tokens to Google tokens</td></tr>
+                    <tr><td>Attribute Mapping</td><td>Extracts attributes from external tokens</td></tr>
+                    <tr><td>Attribute Conditions</td><td>Filters which external identities can authenticate</td></tr>
+                </table>
+            </div>
+        </details>
+
+        <details>
+            <summary>3. Key Configs & Limits</summary>
+            <div class="content">
+                <table>
+                    <tr><th>Resource</th><th>Limit</th><th>Notes</th></tr>
+                    <tr><td>Service Accounts per project</td><td>100 (default quota)</td><td>Can request increase</td></tr>
+                    <tr><td>Custom roles per project/org</td><td>300</td><td>Hard limit</td></tr>
+                    <tr><td>IAM policy size</td><td>100KB</td><td>JSON representation</td></tr>
+                    <tr><td>Members per policy binding</td><td>1,500</td><td>Use groups for larger teams</td></tr>
+                    <tr><td>Role bindings per policy</td><td>1,500</td><td>Across all roles</td></tr>
+                    <tr><td>Permissions per custom role</td><td>3,000</td><td>Hard limit</td></tr>
+                    <tr><td>Conditional role binding conditions</td><td>20 per binding</td><td>CEL expressions</td></tr>
+                    <tr><td>SA key maximum age</td><td>10 years</td><td>90 days recommended</td></tr>
+                    <tr><td>Deny policy rules per policy</td><td>100</td><td>Per deny policy</td></tr>
+                </table>
+
+                <h3>Default Service Accounts</h3>
+                <table>
+                    <tr><th>Service</th><th>Default SA</th><th>Default Role</th></tr>
+                    <tr><td>Compute Engine</td><td>PROJECT_NUMBER-compute@developer.gserviceaccount.com</td><td>Editor</td></tr>
+                    <tr><td>App Engine</td><td>PROJECT_ID@appspot.gserviceaccount.com</td><td>Editor</td></tr>
+                    <tr><td>Cloud Functions</td><td>PROJECT_ID@appspot.gserviceaccount.com</td><td>Editor</td></tr>
+                </table>
+
+                <div class="highlight warning">
+                    <strong>Security Best Practice:</strong> Disable/delete default service accounts and create custom ones with minimal permissions.
+                </div>
+            </div>
+        </details>
+
+        <details>
+            <summary>4. Exam Traps</summary>
+            <div class="content">
+                <div class="highlight warning">
+                    <h3>Common Gotchas</h3>
+                    <ul>
+                        <li><strong>Basic roles inheritance:</strong> Project Editor gets Editor on ALL resources, including new ones</li>
+                        <li><strong>Service Account impersonation:</strong> Need <code>roles/iam.serviceAccountTokenCreator</code> not just <code>serviceAccountUser</code></li>
+                        <li><strong>Workload Identity:</strong> Requires BOTH GKE SA annotation AND IAM binding</li>
+                        <li><strong>Custom roles:</strong> Can only be created at project or org level, NOT folder</li>
+                        <li><strong>Deny policies:</strong> Always evaluated BEFORE allow policies, can't be overridden</li>
+                    </ul>
+                </div>
+
+                <h3>Frequently Confused Concepts</h3>
+                <table>
+                    <tr><th>This</th><th>vs</th><th>That</th></tr>
+                    <tr><td>serviceAccountUser</td><td>vs</td><td>serviceAccountTokenCreator</td></tr>
+                    <tr><td>Can attach SA to resources</td><td></td><td>Can generate access tokens</td></tr>
+                    <tr><td>Workforce Identity</td><td>vs</td><td>Workload Identity</td></tr>
+                    <tr><td>Human users from external IdP</td><td></td><td>Applications in GKE</td></tr>
+                    <tr><td>Policy inheritance</td><td>vs</td><td>Deny policies</td></tr>
+                    <tr><td>Additive (union)</td><td></td><td>Subtractive (explicit deny)</td></tr>
+                </table>
+
+                <h3>Trick Question Patterns</h3>
+                <div class="highlight warning">
+                    <ul>
+                        <li><strong>"Minimum permissions"</strong> → Custom role, not predefined</li>
+                        <li><strong>"External developers"</strong> → Workforce Identity Federation, not Google accounts</li>
+                        <li><strong>"GKE pods access GCS"</strong> → Workload Identity, not service account keys</li>
+                        <li><strong>"Prevent access even for owners"</strong> → Deny policies</li>
+                        <li><strong>"Cross-project SA impersonation"</strong> → Grant roles at SA level, not project</li>
+                    </ul>
+                </div>
+            </div>
+        </details>
+
+        <details>
+            <summary>5. Quick Cheatsheet</summary>
+            <div class="content">
+                <div class="grid">
+                    <div>
+                        <h3>Key IAM Roles</h3>
+                        <table>
+                            <tr><th>Role</th><th>Purpose</th></tr>
+                            <tr><td>roles/iam.serviceAccountUser</td><td>Attach SA to resources</td></tr>
+                            <tr><td>roles/iam.serviceAccountTokenCreator</td><td>Generate access tokens</td></tr>
+                            <tr><td>roles/iam.serviceAccountAdmin</td><td>Full SA management</td></tr>
+                            <tr><td>roles/iam.workloadIdentityUser</td><td>GKE → GCP SA binding</td></tr>
+                        </table>
+                    </div>
+                    <div>
+                        <h3>Condition Operators</h3>
+                        <table>
+                            <tr><th>Type</th><th>Example</th></tr>
+                            <tr><td>Time</td><td>request.time &lt; timestamp("2024-12-31T23:59:59Z")</td></tr>
+                            <tr><td>IP</td><td>inIpRange

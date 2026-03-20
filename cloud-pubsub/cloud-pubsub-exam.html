@@ -1,0 +1,405 @@
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cloud Pub/Sub - GCP PDE Exam Study Notes</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: #0f1117;
+            color: #e4e4e7;
+            font-family: 'Outfit', sans-serif;
+            line-height: 1.6;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            color: #1D9E75;
+            text-align: center;
+            margin-bottom: 30px;
+            font-weight: 700;
+            font-size: 2.5em;
+        }
+
+        h2 {
+            color: #1D9E75;
+            margin: 20px 0 10px 0;
+            font-weight: 600;
+            border-bottom: 2px solid #1D9E75;
+            padding-bottom: 5px;
+        }
+
+        h3 {
+            color: #1D9E75;
+            margin: 15px 0 8px 0;
+            font-weight: 500;
+        }
+
+        details {
+            background-color: #1a1d29;
+            border: 1px solid #374151;
+            border-radius: 8px;
+            margin: 15px 0;
+            padding: 15px;
+        }
+
+        summary {
+            cursor: pointer;
+            font-weight: 600;
+            color: #1D9E75;
+            margin-bottom: 10px;
+        }
+
+        summary:hover {
+            color: #22c55e;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 15px 0;
+            background-color: #1a1d29;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #374151;
+        }
+
+        th {
+            background-color: #1D9E75;
+            color: white;
+            font-weight: 600;
+        }
+
+        tr:hover {
+            background-color: #252837;
+        }
+
+        .highlight {
+            background-color: #1D9E75;
+            color: white;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-weight: 600;
+        }
+
+        .warning {
+            background-color: #dc2626;
+            color: white;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-weight: 600;
+        }
+
+        ul, ol {
+            margin-left: 20px;
+            margin-bottom: 15px;
+        }
+
+        li {
+            margin-bottom: 5px;
+        }
+
+        code {
+            background-color: #374151;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: 'Courier New', monospace;
+        }
+
+        .exam-trap {
+            background-color: #dc2626;
+            color: white;
+            padding: 10px;
+            border-radius: 6px;
+            margin: 10px 0;
+            border-left: 4px solid #fca5a5;
+        }
+
+        .key-point {
+            background-color: #1D9E75;
+            color: white;
+            padding: 10px;
+            border-radius: 6px;
+            margin: 10px 0;
+            border-left: 4px solid #86efac;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Cloud Pub/Sub - GCP PDE Exam Study Notes</h1>
+
+        <details open>
+            <summary>Core Concepts</summary>
+            <h3>What is Cloud Pub/Sub?</h3>
+            <p>Asynchronous messaging service for decoupling services. Publishers send messages to topics, subscribers receive from subscriptions.</p>
+            
+            <h3>Key Components</h3>
+            <ul>
+                <li><span class="highlight">Topic</span>: Named resource to which messages are sent</li>
+                <li><span class="highlight">Subscription</span>: Named resource representing stream of messages from topic</li>
+                <li><span class="highlight">Message</span>: Data and attributes sent by publisher</li>
+                <li><span class="highlight">Acknowledgment</span>: Signal that subscriber processed message</li>
+            </ul>
+
+            <h3>Message Flow</h3>
+            <p>Publisher → Topic → Subscription → Subscriber → Ack/Nack</p>
+        </details>
+
+        <details>
+            <summary>Architecture</summary>
+            <table>
+                <tr>
+                    <th>Component</th>
+                    <th>Description</th>
+                    <th>Scalability</th>
+                </tr>
+                <tr>
+                    <td>Topic</td>
+                    <td>Global resource, auto-partitioned</td>
+                    <td>Unlimited publishers</td>
+                </tr>
+                <tr>
+                    <td>Subscription</td>
+                    <td>Per-topic, multiple allowed</td>
+                    <td>Auto-scales subscribers</td>
+                </tr>
+                <tr>
+                    <td>Message Storage</td>
+                    <td>Distributed, replicated</td>
+                    <td>Petabyte scale</td>
+                </tr>
+            </table>
+
+            <h3>Delivery Models</h3>
+            <table>
+                <tr>
+                    <th>Model</th>
+                    <th>How It Works</th>
+                    <th>Use Case</th>
+                </tr>
+                <tr>
+                    <td>Pull</td>
+                    <td>Subscriber requests messages</td>
+                    <td>Batch processing, controlled rate</td>
+                </tr>
+                <tr>
+                    <td>Push</td>
+                    <td>Pub/Sub sends to HTTP endpoint</td>
+                    <td>Serverless, Cloud Functions</td>
+                </tr>
+            </table>
+        </details>
+
+        <details>
+            <summary>Key Configs & Limits</summary>
+            <table>
+                <tr>
+                    <th>Setting</th>
+                    <th>Default</th>
+                    <th>Maximum</th>
+                    <th>Notes</th>
+                </tr>
+                <tr>
+                    <td>Message retention</td>
+                    <td>7 days</td>
+                    <td>7 days</td>
+                    <td>Cannot extend beyond 7 days</td>
+                </tr>
+                <tr>
+                    <td>Message size</td>
+                    <td>-</td>
+                    <td>10 MB</td>
+                    <td>Including attributes</td>
+                </tr>
+                <tr>
+                    <td>Ack deadline</td>
+                    <td>10 seconds</td>
+                    <td>600 seconds</td>
+                    <td>Per subscription setting</td>
+                </tr>
+                <tr>
+                    <td>Max retention duration</td>
+                    <td>-</td>
+                    <td>31 days</td>
+                    <td>With message storage policy</td>
+                </tr>
+                <tr>
+                    <td>Dead letter max delivery</td>
+                    <td>5</td>
+                    <td>100</td>
+                    <td>Attempts before dead letter</td>
+                </tr>
+                <tr>
+                    <td>Ordering key size</td>
+                    <td>-</td>
+                    <td>1024 bytes</td>
+                    <td>UTF-8 encoded</td>
+                </tr>
+            </table>
+        </details>
+
+        <details>
+            <summary>Exam Traps</summary>
+            <div class="exam-trap">
+                <strong>TRAP:</strong> "Exactly-once delivery" - Pub/Sub provides "at-least-once" by default. Exactly-once requires enabling exactly-once delivery on subscription AND idempotent processing.
+            </div>
+
+            <div class="exam-trap">
+                <strong>TRAP:</strong> Message ordering only works with single publisher per ordering key. Multiple publishers break ordering guarantees.
+            </div>
+
+            <div class="exam-trap">
+                <strong>TRAP:</strong> Push subscriptions require public HTTP endpoints or proper authentication. Pull subscriptions work behind firewalls.
+            </div>
+
+            <div class="exam-trap">
+                <strong>TRAP:</strong> Dead letter topics must be in same project and region as source subscription. Cross-project dead letter not supported.
+            </div>
+
+            <div class="exam-trap">
+                <strong>TRAP:</strong> Schemas are optional but once applied, all messages must conform. Schema evolution requires careful version management.
+            </div>
+
+            <div class="exam-trap">
+                <strong>TRAP:</strong> Subscription filters run server-side but count against quota even for filtered messages. Not a cost optimization.
+            </div>
+
+            <div class="exam-trap">
+                <strong>TRAP:</strong> Message retention of 7 days is hard limit. Extended retention requires BigQuery export or Cloud Storage.
+            </div>
+
+            <div class="exam-trap">
+                <strong>TRAP:</strong> Seek to timestamp only works if message retention covers that time period. Cannot seek beyond retention.
+            </div>
+        </details>
+
+        <details>
+            <summary>Quick Cheatsheet</summary>
+            <div class="key-point">
+                <strong>Push vs Pull Decision:</strong><br>
+                • Push: Cloud Functions, App Engine, public endpoints<br>
+                • Pull: GKE, Compute Engine, controlled processing
+            </div>
+
+            <h3>Message Ordering</h3>
+            <ul>
+                <li>Enable on subscription creation</li>
+                <li>Set ordering key in message attributes</li>
+                <li>Same ordering key = same order guarantee</li>
+                <li>Reduces throughput, increases latency</li>
+            </ul>
+
+            <h3>Exactly-Once Delivery</h3>
+            <ul>
+                <li>Enable on subscription (preview feature)</li>
+                <li>Higher cost, lower throughput</li>
+                <li>Still need idempotent processing</li>
+                <li>Not available in all regions</li>
+            </ul>
+
+            <h3>Dead Letter Queues</h3>
+            <ul>
+                <li>Set max delivery attempts (5-100)</li>
+                <li>Configure dead letter topic</li>
+                <li>Same project/region requirement</li>
+                <li>Prevents poison messages</li>
+            </ul>
+
+            <h3>Schemas</h3>
+            <ul>
+                <li>Avro, Protocol Buffers supported</li>
+                <li>JSON schema for validation</li>
+                <li>Versioning with backward/forward compatibility</li>
+                <li>Client libraries auto-encode/decode</li>
+            </ul>
+        </details>
+
+        <details>
+            <summary>Question Patterns</summary>
+            <h3>Scenario: Need reliable message processing</h3>
+            <div class="key-point">
+                <strong>Answer Framework:</strong><br>
+                1. At-least-once by default<br>
+                2. Enable exactly-once if truly needed<br>
+                3. Design idempotent processors<br>
+                4. Use dead letter queues for failures
+            </div>
+
+            <h3>Scenario: High throughput vs. ordered processing</h3>
+            <div class="key-point">
+                <strong>Decision Tree:</strong><br>
+                • Need order? → Enable ordering with keys<br>
+                • Need max throughput? → Disable ordering<br>
+                • Mixed? → Separate topics for ordered/unordered
+            </div>
+
+            <h3>Scenario: Push vs. Pull subscription choice</h3>
+            <table>
+                <tr>
+                    <th>Requirement</th>
+                    <th>Recommendation</th>
+                    <th>Reason</th>
+                </tr>
+                <tr>
+                    <td>Cloud Functions trigger</td>
+                    <td>Push</td>
+                    <td>Native integration</td>
+                </tr>
+                <tr>
+                    <td>Batch processing</td>
+                    <td>Pull</td>
+                    <td>Control message rate</td>
+                </tr>
+                <tr>
+                    <td>Private network</td>
+                    <td>Pull</td>
+                    <td>No public endpoint needed</td>
+                </tr>
+                <tr>
+                    <td>Auto-scaling app</td>
+                    <td>Push</td>
+                    <td>Event-driven scaling</td>
+                </tr>
+            </table>
+
+            <h3>Scenario: Message persistence requirements</h3>
+            <div class="key-point">
+                <strong>Decision Framework:</strong><br>
+                • ≤ 7 days? → Standard retention<br>
+                • > 7 days? → Export to BigQuery/GCS<br>
+                • Audit trail? → Enable message storage policy<br>
+                • Replay capability? → Use snapshots
+            </div>
+
+            <h3>Common Exam Scenarios</h3>
+            <ul>
+                <li><strong>IoT sensors</strong> → Pull subscription, batch processing</li>
+                <li><strong>Real-time notifications</strong> → Push to Cloud Functions</li>
+                <li><strong>Order processing</strong> → Ordered delivery with dead letter</li>
+                <li><strong>Log aggregation</strong> → Pull with filtering</li>
+                <li><strong>Microservices decoupling</strong> → Multiple subscriptions per topic</li>
+            </ul>
+        </details>
+    </div>
+</body>
+</html>
+```

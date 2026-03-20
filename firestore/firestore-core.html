@@ -1,0 +1,361 @@
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GCP PDE: Firestore Study Notes</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            background-color: #0f1117;
+            color: #e6edf3;
+            font-family: 'Outfit', sans-serif;
+            line-height: 1.6;
+            padding: 20px;
+        }
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+        header {
+            border-bottom: 2px solid #1D9E75;
+            padding-bottom: 20px;
+            margin-bottom: 30px;
+        }
+        h1 {
+            color: #1D9E75;
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+        h2 {
+            color: #1D9E75;
+            font-size: 1.8em;
+            margin-top: 40px;
+            margin-bottom: 20px;
+            border-left: 4px solid #1D9E75;
+            padding-left: 15px;
+        }
+        h3 {
+            color: #58a6ff;
+            font-size: 1.3em;
+            margin-top: 25px;
+            margin-bottom: 15px;
+        }
+        details {
+            background-color: #161b22;
+            border: 1px solid #30363d;
+            border-radius: 6px;
+            padding: 15px;
+            margin-bottom: 15px;
+            cursor: pointer;
+        }
+        details[open] {
+            background-color: #0d1117;
+            border-color: #1D9E75;
+        }
+        summary {
+            color: #1D9E75;
+            font-weight: 600;
+            user-select: none;
+            outline: none;
+        }
+        summary:hover {
+            color: #4ade80;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            background-color: #161b22;
+        }
+        th {
+            background-color: #1D9E75;
+            color: #0f1117;
+            padding: 12px;
+            text-align: left;
+            font-weight: 600;
+        }
+        td {
+            padding: 12px;
+            border-bottom: 1px solid #30363d;
+        }
+        tr:hover {
+            background-color: #0d1117;
+        }
+        .content {
+            margin-top: 15px;
+        }
+        .trap {
+            background-color: #3d2621;
+            border-left: 4px solid #da3633;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 4px;
+        }
+        .trap-title {
+            color: #da3633;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+        .cheatsheet {
+            background-color: #162b4a;
+            border-left: 4px solid #58a6ff;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 4px;
+        }
+        .cheatsheet-title {
+            color: #58a6ff;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+        code {
+            background-color: #0d1117;
+            color: #79c0ff;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-size: 0.9em;
+        }
+        .list-item {
+            margin: 10px 0;
+            padding-left: 20px;
+        }
+        .decision-box {
+            background-color: #1c3a3a;
+            border: 1px solid #1D9E75;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 6px;
+        }
+        .decision-title {
+            color: #1D9E75;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+        footer {
+            border-top: 2px solid #1D9E75;
+            margin-top: 50px;
+            padding-top: 20px;
+            text-align: center;
+            color: #8b949e;
+            font-size: 0.9em;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🔥 Firestore Study Notes</h1>
+            <p style="color: #8b949e; font-size: 1.1em;">GCP Professional Data Engineer Exam Prep</p>
+            <p style="color: #8b949e; margin-top: 10px;">Focus: Core Concepts, Architecture, Configs & Limits</p>
+        </header>
+
+        <!-- CORE CONCEPTS -->
+        <h2>1. Core Concepts</h2>
+        
+        <details>
+            <summary>What is Firestore?</summary>
+            <div class="content">
+                <p>Firestore is a cloud-hosted NoSQL database on Google Cloud Platform. It provides:</p>
+                <ul style="margin: 15px 0 15px 20px;">
+                    <li><strong>Real-time synchronization:</strong> Clients receive live updates via listeners</li>
+                    <li><strong>Automatic scaling:</strong> Handles millions of concurrent users</li>
+                    <li><strong>Flexible schema:</strong> Documents store nested JSON-like data (fields and subcollections)</li>
+                    <li><strong>Offline support:</strong> SDK caches data locally; syncs when online</li>
+                    <li><strong>ACID transactions:</strong> Atomicity, Consistency, Isolation, Durability guarantees</li>
+                    <li><strong>Two operational modes:</strong> Native mode (default) and Datastore mode (legacy)</li>
+                </ul>
+            </div>
+        </details>
+
+        <details>
+            <summary>Documents & Collections</summary>
+            <div class="content">
+                <p><strong>Collection:</strong> A group of documents. Collections are created implicitly when you write the first document.</p>
+                <p><strong>Document:</strong> A container of key-value pairs (fields). Each document has a unique ID within its collection.</p>
+                <p><strong>Field:</strong> A key-value pair in a document. Values can be strings, numbers, booleans, timestamps, arrays, maps, or geopoints.</p>
+                <p><strong>Subcollection:</strong> A collection nested inside a document. Path: <code>collection/documentID/subcollection/subDocID</code></p>
+                <p style="margin-top: 15px;"><strong>Document ID:</strong> Auto-generated by Firestore (e.g., <code>aBc1DeF2GhI3</code>) or you can set custom IDs. IDs must be unique within their parent collection.</p>
+                <p style="margin-top: 10px;"><strong>Limits:</strong></p>
+                <ul style="margin: 10px 0 10px 20px;">
+                    <li>Max document size: 1 MB</li>
+                    <li>Max depth of nesting in maps: 20 levels</li>
+                    <li>Array elements: Up to 20,000 elements per array field</li>
+                </ul>
+            </div>
+        </details>
+
+        <details>
+            <summary>Native Mode vs Datastore Mode</summary>
+            <div class="content">
+                <table>
+                    <tr>
+                        <th>Feature</th>
+                        <th>Native Mode</th>
+                        <th>Datastore Mode</th>
+                    </tr>
+                    <tr>
+                        <td><strong>Default</strong></td>
+                        <td>Yes (recommended)</td>
+                        <td>Legacy (use only for backward compatibility)</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Real-time listeners</strong></td>
+                        <td>✓ Full support</td>
+                        <td>✗ Not available</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Offline persistence</strong></td>
+                        <td>✓ Full support</td>
+                        <td>✗ Not available</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Composite indexes</strong></td>
+                        <td>Required only for complex queries</td>
+                        <td>Required for many queries</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Subcollections</strong></td>
+                        <td>✓ Fully supported</td>
+                        <td>Limited support</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Transactions</strong></td>
+                        <td>✓ Read/write transactions</td>
+                        <td>✓ Read/write transactions</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Billing</strong></td>
+                        <td>Read/write/delete ops</td>
+                        <td>Read/write/delete ops</td>
+                    </tr>
+                </table>
+            </div>
+        </details>
+
+        <details>
+            <summary>Data Types in Firestore</summary>
+            <div class="content">
+                <table>
+                    <tr>
+                        <th>Type</th>
+                        <th>Description</th>
+                        <th>Example</th>
+                    </tr>
+                    <tr>
+                        <td><strong>String</strong></td>
+                        <td>UTF-8 text</td>
+                        <td><code>"hello"</code></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Number</strong></td>
+                        <td>Integer or double</td>
+                        <td><code>42</code> or <code>3.14</code></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Boolean</strong></td>
+                        <td>True or false</td>
+                        <td><code>true</code></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Map</strong></td>
+                        <td>Nested object with key-value pairs</td>
+                        <td><code>{ "nested": { "key": "value" } }</code></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Array</strong></td>
+                        <td>Ordered list of values (same or mixed types)</td>
+                        <td><code>["a", "b", "c"]</code></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Timestamp</strong></td>
+                        <td>Server timestamp in UTC</td>
+                        <td><code>2024-01-15T10:30:00Z</code></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Geopoint</strong></td>
+                        <td>Latitude and longitude</td>
+                        <td><code>{ latitude: 40.7128, longitude: -74.0060 }</code></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Reference</strong></td>
+                        <td>Pointer to another document</td>
+                        <td><code>db.collection("users").doc("user123")</code></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Null</strong></td>
+                        <td>Null value (explicitly set)</td>
+                        <td><code>null</code></td>
+                    </tr>
+                </table>
+            </div>
+        </details>
+
+        <!-- ARCHITECTURE -->
+        <h2>2. Architecture</h2>
+
+        <details>
+            <summary>Firestore Architecture Overview</summary>
+            <div class="content">
+                <table>
+                    <tr>
+                        <th>Component</th>
+                        <th>Role</th>
+                    </tr>
+                    <tr>
+                        <td><strong>Client SDK</strong></td>
+                        <td>Web, iOS, Android, or backend SDK. Manages local cache, listeners, offline queue.</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Firestore Service</strong></td>
+                        <td>Serverless managed database. Stores documents, indexes, and metadata.</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Real-time Listener</strong></td>
+                        <td>WebSocket or gRPC connection pushing live updates to clients on data changes.</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Index Service</strong></td>
+                        <td>Maintains composite and single-field indexes for query optimization.</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Transaction Engine</strong></td>
+                        <td>Ensures ACID guarantees. Uses optimistic locking or conflict resolution.</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Backup Service</strong></td>
+                        <td>Handles on-demand and scheduled backups (separate billing).</td>
+                    </tr>
+                </table>
+                <p style="margin-top: 20px;"><strong>Typical Flow:</strong></p>
+                <ol style="margin-left: 20px;">
+                    <li>Client writes document via SDK</li>
+                    <li>SDK routes to Firestore service (REST or gRPC)</li>
+                    <li>Service validates and writes to primary storage</li>
+                    <li>Indexes updated asynchronously</li>
+                    <li>Real-time listeners notified instantly</li>
+                    <li>Changes replicated for durability</li>
+                </ol>
+            </div>
+        </details>
+
+        <details>
+            <summary>Indexes: Single-Field & Composite</summary>
+            <div class="content">
+                <p><strong>Single-field indexes:</strong> Created automatically for each field. Enable filtering and sorting on that field alone. No configuration needed.</p>
+                <p style="margin-top: 15px;"><strong>Composite indexes:</strong> Required for queries that filter or sort on multiple fields, or queries with certain operators like array-contains with ordering.</p>
+                <p style="margin-top: 15px;"><strong>When Firestore requires a composite index:</strong></p>
+                <ul style="margin: 10px 0 10px 20px;">
+                    <li>WHERE clause + ORDER BY on different fields</li>
+                    <li>Multiple inequality filters on different fields</li>
+                    <li>Array-contains with additional filters or ordering</li>
+                </ul>
+                <p style="margin-top: 15px;"><strong>Composite Index

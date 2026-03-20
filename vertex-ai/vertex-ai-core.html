@@ -1,0 +1,376 @@
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GCP PDE - Vertex AI Study Notes</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { 
+            font-family: 'Outfit', sans-serif; 
+            background: #0f1117; 
+            color: #e1e7ef; 
+            line-height: 1.6; 
+            padding: 20px; 
+        }
+        .container { max-width: 1200px; margin: 0 auto; }
+        h1, h2, h3 { color: #1D9E75; margin-bottom: 15px; }
+        h1 { font-size: 2.5em; text-align: center; margin-bottom: 30px; }
+        h2 { font-size: 1.8em; border-bottom: 2px solid #1D9E75; padding-bottom: 5px; }
+        details { 
+            background: #1a1f2e; 
+            margin: 15px 0; 
+            border-radius: 8px; 
+            border: 1px solid #2d3748; 
+        }
+        summary { 
+            padding: 15px; 
+            cursor: pointer; 
+            font-weight: 600; 
+            color: #1D9E75; 
+            border-radius: 8px; 
+        }
+        summary:hover { background: #252d3d; }
+        .content { padding: 0 15px 15px; }
+        table { 
+            width: 100%; 
+            border-collapse: collapse; 
+            margin: 15px 0; 
+            background: #1a1f2e; 
+            border-radius: 8px; 
+            overflow: hidden; 
+        }
+        th, td { 
+            padding: 12px; 
+            text-align: left; 
+            border-bottom: 1px solid #2d3748; 
+        }
+        th { background: #1D9E75; color: #fff; font-weight: 600; }
+        tr:hover { background: #252d3d; }
+        .highlight { background: #2d3748; padding: 10px; border-radius: 5px; margin: 10px 0; }
+        .warning { background: #4a1a1a; border-left: 4px solid #e74c3c; }
+        .tip { background: #1a3a2e; border-left: 4px solid #1D9E75; }
+        ul { margin-left: 20px; margin-bottom: 15px; }
+        code { 
+            background: #2d3748; 
+            padding: 2px 6px; 
+            border-radius: 3px; 
+            font-family: 'Courier New', monospace; 
+        }
+        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin: 20px 0; }
+        @media (max-width: 768px) { .grid { grid-template-columns: 1fr; } }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Vertex AI - Unified ML Platform</h1>
+
+        <details open>
+            <summary>Core Concepts</summary>
+            <div class="content">
+                <h3>Unified ML Platform</h3>
+                <ul>
+                    <li><strong>Single Platform:</strong> End-to-end ML lifecycle from data prep to model serving</li>
+                    <li><strong>No-Code/Low-Code:</strong> AutoML for beginners, custom training for experts</li>
+                    <li><strong>MLOps Integration:</strong> Built-in versioning, monitoring, and CI/CD</li>
+                    <li><strong>Multi-Framework:</strong> TensorFlow, PyTorch, Scikit-learn, XGBoost</li>
+                </ul>
+
+                <h3>Key Components</h3>
+                <div class="grid">
+                    <div>
+                        <h4>Training & Development</h4>
+                        <ul>
+                            <li>AutoML (no-code training)</li>
+                            <li>Custom Training Jobs</li>
+                            <li>Workbench (managed notebooks)</li>
+                            <li>Experiments (track runs)</li>
+                            <li>Pipelines (orchestrate workflows)</li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h4>Serving & Operations</h4>
+                        <ul>
+                            <li>Model Registry (centralized storage)</li>
+                            <li>Endpoints (online prediction)</li>
+                            <li>Batch Prediction Jobs</li>
+                            <li>Model Monitoring</li>
+                            <li>Feature Store</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="highlight tip">
+                    <strong>Model Garden:</strong> Pre-trained models from Google and partners. Includes foundation models like PaLM 2, Gemini, and open-source models.
+                </div>
+            </div>
+        </details>
+
+        <details>
+            <summary>Architecture & Components</summary>
+            <div class="content">
+                <h3>Vertex AI Architecture</h3>
+                <table>
+                    <tr>
+                        <th>Layer</th>
+                        <th>Components</th>
+                        <th>Purpose</th>
+                    </tr>
+                    <tr>
+                        <td>Data Layer</td>
+                        <td>Feature Store, Datasets</td>
+                        <td>Centralized feature management and data storage</td>
+                    </tr>
+                    <tr>
+                        <td>Training Layer</td>
+                        <td>AutoML, Custom Training, Pipelines</td>
+                        <td>Model development and experimentation</td>
+                    </tr>
+                    <tr>
+                        <td>Model Layer</td>
+                        <td>Model Registry, Model Garden</td>
+                        <td>Model storage, versioning, and discovery</td>
+                    </tr>
+                    <tr>
+                        <td>Serving Layer</td>
+                        <td>Endpoints, Batch Prediction</td>
+                        <td>Model deployment and inference</td>
+                    </tr>
+                    <tr>
+                        <td>Operations Layer</td>
+                        <td>Monitoring, Experiments, Metadata</td>
+                        <td>MLOps, observability, and governance</td>
+                    </tr>
+                </table>
+
+                <h3>Training Options Comparison</h3>
+                <table>
+                    <tr>
+                        <th>Method</th>
+                        <th>Code Required</th>
+                        <th>Use Case</th>
+                        <th>Customization</th>
+                    </tr>
+                    <tr>
+                        <td>AutoML</td>
+                        <td>No</td>
+                        <td>Standard ML tasks, quick prototyping</td>
+                        <td>Limited</td>
+                    </tr>
+                    <tr>
+                        <td>Custom Training</td>
+                        <td>Yes</td>
+                        <td>Complex models, specific requirements</td>
+                        <td>Full</td>
+                    </tr>
+                    <tr>
+                        <td>Model Garden</td>
+                        <td>Minimal</td>
+                        <td>Foundation models, fine-tuning</td>
+                        <td>Medium</td>
+                    </tr>
+                </table>
+
+                <h3>Serving Patterns</h3>
+                <table>
+                    <tr>
+                        <th>Pattern</th>
+                        <th>Latency</th>
+                        <th>Throughput</th>
+                        <th>Cost Model</th>
+                    </tr>
+                    <tr>
+                        <td>Online Endpoints</td>
+                        <td>&lt;100ms</td>
+                        <td>Medium</td>
+                        <td>Always-on compute</td>
+                    </tr>
+                    <tr>
+                        <td>Batch Prediction</td>
+                        <td>Minutes-Hours</td>
+                        <td>High</td>
+                        <td>Pay per job</td>
+                    </tr>
+                </table>
+            </div>
+        </details>
+
+        <details>
+            <summary>Key Configurations & Limits</summary>
+            <div class="content">
+                <h3>Training Limits</h3>
+                <table>
+                    <tr>
+                        <th>Resource</th>
+                        <th>Limit</th>
+                        <th>Notes</th>
+                    </tr>
+                    <tr>
+                        <td>Custom Training Job Duration</td>
+                        <td>7 days</td>
+                        <td>Maximum runtime per job</td>
+                    </tr>
+                    <tr>
+                        <td>Concurrent Custom Jobs</td>
+                        <td>100</td>
+                        <td>Per project, per region</td>
+                    </tr>
+                    <tr>
+                        <td>AutoML Training Data</td>
+                        <td>100GB</td>
+                        <td>Maximum dataset size</td>
+                    </tr>
+                    <tr>
+                        <td>Pipeline Steps</td>
+                        <td>10,000</td>
+                        <td>Maximum components per pipeline</td>
+                    </tr>
+                    <tr>
+                        <td>Hyperparameter Trials</td>
+                        <td>1,000</td>
+                        <td>Maximum parallel trials</td>
+                    </tr>
+                </table>
+
+                <h3>Serving Limits</h3>
+                <table>
+                    <tr>
+                        <th>Resource</th>
+                        <th>Limit</th>
+                        <th>Notes</th>
+                    </tr>
+                    <tr>
+                        <td>Endpoints per Project</td>
+                        <td>300</td>
+                        <td>Regional limit</td>
+                    </tr>
+                    <tr>
+                        <td>Models per Endpoint</td>
+                        <td>10</td>
+                        <td>For traffic splitting</td>
+                    </tr>
+                    <tr>
+                        <td>Batch Prediction Input</td>
+                        <td>10TB</td>
+                        <td>Maximum dataset size</td>
+                    </tr>
+                    <tr>
+                        <td>Online Prediction Timeout</td>
+                        <td>60 seconds</td>
+                        <td>Maximum request duration</td>
+                    </tr>
+                    <tr>
+                        <td>Request Size</td>
+                        <td>1.5MB</td>
+                        <td>Maximum payload per request</td>
+                    </tr>
+                </table>
+
+                <h3>Default Configurations</h3>
+                <table>
+                    <tr>
+                        <th>Setting</th>
+                        <th>Default</th>
+                        <th>Configurable</th>
+                    </tr>
+                    <tr>
+                        <td>AutoML Training Budget</td>
+                        <td>1 node hour</td>
+                        <td>Yes</td>
+                    </tr>
+                    <tr>
+                        <td>Endpoint Machine Type</td>
+                        <td>n1-standard-2</td>
+                        <td>Yes</td>
+                    </tr>
+                    <tr>
+                        <td>Min Replicas</td>
+                        <td>1</td>
+                        <td>Yes (0-1000)</td>
+                    </tr>
+                    <tr>
+                        <td>Max Replicas</td>
+                        <td>1</td>
+                        <td>Yes (1-1000)</td>
+                    </tr>
+                    <tr>
+                        <td>Model Monitoring Frequency</td>
+                        <td>24 hours</td>
+                        <td>Yes</td>
+                    </tr>
+                </table>
+            </div>
+        </details>
+
+        <details>
+            <summary>Exam Traps & Gotchas</summary>
+            <div class="content">
+                <h3>Common Confusion Points</h3>
+                <div class="highlight warning">
+                    <strong>AutoML vs Custom Training:</strong>
+                    <ul>
+                        <li>AutoML: No code, limited customization, faster to deploy</li>
+                        <li>Custom Training: Full code control, any framework, complex architectures</li>
+                        <li>Don't choose AutoML for specialized architectures or research models</li>
+                    </ul>
+                </div>
+
+                <div class="highlight warning">
+                    <strong>Batch vs Online Prediction:</strong>
+                    <ul>
+                        <li>Batch: High throughput, batch processing, cost-effective for bulk inference</li>
+                        <li>Online: Real-time, sub-100ms latency, always-on cost</li>
+                        <li>Can't use online endpoints for bulk batch processing (cost prohibitive)</li>
+                    </ul>
+                </div>
+
+                <h3>Feature Store Traps</h3>
+                <table>
+                    <tr>
+                        <th>Scenario</th>
+                        <th>Wrong Answer</th>
+                        <th>Correct Answer</th>
+                    </tr>
+                    <tr>
+                        <td>Real-time feature serving</td>
+                        <td>Query BigQuery directly</td>
+                        <td>Use Feature Store online serving</td>
+                    </tr>
+                    <tr>
+                        <td>Feature sharing across teams</td>
+                        <td>Duplicate feature pipelines</td>
+                        <td>Centralized Feature Store</td>
+                    </tr>
+                    <tr>
+                        <td>Training/serving skew</td>
+                        <td>Manual feature alignment</td>
+                        <td>Feature Store ensures consistency</td>
+                    </tr>
+                </table>
+
+                <h3>Pipeline & Experiment Traps</h3>
+                <ul>
+                    <li><strong>Experiments:</strong> Track runs, not deploy models. Use for comparison and artifact logging.</li>
+                    <li><strong>Pipelines:</strong> Orchestrate workflows, not one-time training jobs</li>
+                    <li><strong>Metadata:</strong> Automatic tracking of lineage, not manual logging</li>
+                    <li><strong>Model Registry:</strong> Centralized storage, not deployment</li>
+                </ul>
+
+                <div class="highlight warning">
+                    <strong>Monitoring Trap:</strong> Model Monitoring is for ML-specific metrics (drift, bias), not infrastructure monitoring (CPU, memory). Use Cloud Monitoring for infrastructure.
+                </div>
+            </div>
+        </details>
+
+        <details>
+            <summary>Quick Cheatsheet</summary>
+            <div class="content">
+                <div class="grid">
+                    <div>
+                        <h3>Training Decision Tree</h3>
+                        <ul>
+                            <li><strong>Standard ML task + No code:</strong> AutoML</li>
+                            <li><strong>Custom architecture:</strong> Custom Training</li>
+                            <li><strong>Foundation model:</strong> Model

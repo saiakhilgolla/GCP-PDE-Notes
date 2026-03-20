@@ -1,0 +1,377 @@
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GCP Database Migration Service - PDE Study Notes</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            background-color: #0f1117;
+            color: #e6edf3;
+            font-family: 'Outfit', sans-serif;
+            line-height: 1.6;
+            padding: 20px;
+        }
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+        h1 {
+            color: #1d9e75;
+            margin-bottom: 30px;
+            font-size: 2.2em;
+            border-bottom: 3px solid #1d9e75;
+            padding-bottom: 15px;
+        }
+        h2 {
+            color: #1d9e75;
+            margin-top: 40px;
+            margin-bottom: 20px;
+            font-size: 1.6em;
+        }
+        h3 {
+            color: #79c0ff;
+            margin-top: 20px;
+            margin-bottom: 12px;
+            font-size: 1.2em;
+        }
+        details {
+            background-color: #161b22;
+            border-left: 4px solid #1d9e75;
+            padding: 15px;
+            margin-bottom: 15px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        details summary {
+            color: #1d9e75;
+            font-weight: 600;
+            font-size: 1.05em;
+            user-select: none;
+        }
+        details summary:hover {
+            color: #2dd4a4;
+        }
+        details > * {
+            margin-top: 12px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            background-color: #0d1117;
+            border: 1px solid #30363d;
+        }
+        th {
+            background-color: #1d9e75;
+            color: #0f1117;
+            padding: 12px;
+            text-align: left;
+            font-weight: 700;
+        }
+        td {
+            padding: 12px;
+            border-bottom: 1px solid #30363d;
+        }
+        tr:hover {
+            background-color: #161b22;
+        }
+        .trap {
+            background-color: #3d2817;
+            border-left: 4px solid #fb8500;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 4px;
+        }
+        .trap strong {
+            color: #fb8500;
+        }
+        .cheatsheet {
+            background-color: #1d3a1d;
+            border-left: 4px solid #1d9e75;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 4px;
+        }
+        .cheatsheet li {
+            margin: 8px 0;
+            list-style-position: inside;
+        }
+        code {
+            background-color: #0d1117;
+            color: #79c0ff;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-family: 'Courier New', monospace;
+        }
+        .keyword {
+            background-color: #3d2817;
+            color: #ffd700;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-weight: 600;
+        }
+        .section-intro {
+            background-color: #161b22;
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 4px;
+            border-left: 4px solid #79c0ff;
+        }
+        ul, ol {
+            margin-left: 20px;
+            margin-bottom: 15px;
+        }
+        li {
+            margin-bottom: 8px;
+        }
+        p {
+            margin-bottom: 15px;
+        }
+        .highlight {
+            color: #79c0ff;
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🗄️ GCP Database Migration Service — PDE Study Notes</h1>
+        
+        <!-- SECTION 1: CORE CONCEPTS -->
+        <h2>1. Core Concepts</h2>
+        
+        <div class="section-intro">
+            <strong>Database Migration Service (DMS)</strong> is GCP's managed service for migrating RDBMS workloads. It handles schema conversion, data movement, and live change capture — enabling zero-downtime migrations from on-prem or other clouds to Cloud SQL or AlloyDB.
+        </div>
+
+        <details>
+            <summary>Migration Types: Homogeneous vs Heterogeneous</summary>
+            <table>
+                <tr>
+                    <th>Type</th>
+                    <th>Definition</th>
+                    <th>Examples</th>
+                    <th>Complexity</th>
+                </tr>
+                <tr>
+                    <td><strong>Homogeneous</strong></td>
+                    <td>Source and target are same RDBMS engine</td>
+                    <td>MySQL → Cloud SQL MySQL, PostgreSQL → Cloud SQL PostgreSQL</td>
+                    <td>Low — schema stays identical</td>
+                </tr>
+                <tr>
+                    <td><strong>Heterogeneous</strong></td>
+                    <td>Source and target are different RDBMS engines</td>
+                    <td>Oracle → PostgreSQL, SQL Server → MySQL, Oracle → AlloyDB</td>
+                    <td>High — requires schema conversion</td>
+                </tr>
+            </table>
+            <p><strong>Key insight:</strong> Heterogeneous migrations use <span class="highlight">Striped Schema Conversion Tool (SSCT)</span> to auto-convert source schema to target dialect. Manual fixes often needed.</p>
+        </details>
+
+        <details>
+            <summary>CDC (Change Data Capture)</summary>
+            <p><strong>Change Data Capture</strong> captures data modifications (INSERT, UPDATE, DELETE) from the source database after the initial full load.</p>
+            <table>
+                <tr>
+                    <th>Source DB</th>
+                    <th>CDC Method</th>
+                    <th>Behavior</th>
+                </tr>
+                <tr>
+                    <td>MySQL</td>
+                    <td>Binary logs (binlog)</td>
+                    <td>DMS reads binlog stream, applies changes to target in real-time</td>
+                </tr>
+                <tr>
+                    <td>PostgreSQL</td>
+                    <td>Logical replication slots</td>
+                    <td>DMS subscribes to logical decode stream</td>
+                </tr>
+                <tr>
+                    <td>Oracle</td>
+                    <td>Supplemental logging + redo logs</td>
+                    <td>DMS reads redo log stream via LogMiner</td>
+                </tr>
+                <tr>
+                    <td>SQL Server</td>
+                    <td>Native CDC (if enabled) or transaction log</td>
+                    <td>DMS reads change tracking or log scan</td>
+                </tr>
+            </table>
+            <p><strong>Exam point:</strong> CDC is always enabled during continuous migrations. Full load alone is not zero-downtime; CDC is what makes it zero-downtime.</p>
+        </details>
+
+        <details>
+            <summary>Migration Phases</summary>
+            <ol>
+                <li><strong>Schema</strong> — Source schema assessed & converted (for heterogeneous). Published to target.</li>
+                <li><strong>Full Load</strong> — All existing data copied from source to target. Can take hours/days for large databases.</li>
+                <li><strong>Change Sync (CDC)</strong> — DMS captures & applies ongoing changes from source. Near real-time.</li>
+                <li><strong>Validation</strong> — Row counts, checksums, constraint checks. Ensure source ≈ target.</li>
+                <li><strong>Switchover</strong> — Application points to target. Source becomes read-only (if desired).</li>
+            </ol>
+            <p><span class="keyword">Continuous migrations</span> run Full Load + Change Sync. <span class="keyword">One-time migrations</span> run Full Load only.</p>
+        </details>
+
+        <details>
+            <summary>Connection Profiles</summary>
+            <p>DMS uses <strong>Connection Profiles</strong> to store source & target database credentials and network config.</p>
+            <table>
+                <tr>
+                    <th>Field</th>
+                    <th>Purpose</th>
+                    <th>Example</th>
+                </tr>
+                <tr>
+                    <td>Host / IP</td>
+                    <td>Database server address</td>
+                    <td>10.0.0.5 (private) or 203.0.113.42 (public)</td>
+                </tr>
+                <tr>
+                    <td>Port</td>
+                    <td>Database port</td>
+                    <td>MySQL: 3306, PostgreSQL: 5432, Oracle: 1521</td>
+                </tr>
+                <tr>
+                    <td>Username / Password</td>
+                    <td>Authentication</td>
+                    <td>Stored in Secret Manager (encrypted)</td>
+                </tr>
+                <tr>
+                    <td>Database</td>
+                    <td>Default DB to connect (optional)</td>
+                    <td>For MySQL: "myapp_db"</td>
+                </tr>
+                <tr>
+                    <td>SSL</td>
+                    <td>Encryption in transit</td>
+                    <td>Required if source enforces SSL</td>
+                </tr>
+            </table>
+            <p><strong>Exam note:</strong> Connection profiles can be reused across multiple migration jobs. Test them before creating a job.</p>
+        </details>
+
+        <details>
+            <summary>Migration Jobs</summary>
+            <p>A <strong>Migration Job</strong> is a resource that defines a single migration, linking source & target connection profiles.</p>
+            <table>
+                <tr>
+                    <th>Job Type</th>
+                    <th>Full Load</th>
+                    <th>CDC</th>
+                    <th>Use Case</th>
+                </tr>
+                <tr>
+                    <td><strong>Full Only</strong></td>
+                    <td>✓</td>
+                    <td>✗</td>
+                    <td>One-time data copy. Acceptable downtime.</td>
+                </tr>
+                <tr>
+                    <td><strong>Continuous</strong></td>
+                    <td>✓</td>
+                    <td>✓ (auto-starts after full load)</td>
+                    <td>Zero-downtime migration. Production workloads.</td>
+                </tr>
+            </table>
+            <p><strong>States:</strong> CREATING → READY → RUNNING → COMPLETED | STOPPED | FAILED</p>
+        </details>
+
+        <!-- SECTION 2: ARCHITECTURE -->
+        <h2>2. Architecture & Components</h2>
+
+        <div class="section-intro">
+            DMS is a managed service. The control plane runs on Google infrastructure; the data path uses replication workers (running on Google Compute Engine in the same region as the target database).
+        </div>
+
+        <details>
+            <summary>High-Level Architecture</summary>
+            <table>
+                <tr>
+                    <th>Component</th>
+                    <th>Description</th>
+                    <th>Location</th>
+                </tr>
+                <tr>
+                    <td><strong>Source Database</strong></td>
+                    <td>On-prem, AWS, Azure, or other GCP region. RDBMS (MySQL, PostgreSQL, Oracle, SQL Server)</td>
+                    <td>External to GCP or different region</td>
+                </tr>
+                <tr>
+                    <td><strong>DMS Control Plane</strong></td>
+                    <td>Manages job lifecycle, schedules tasks, logs, monitoring</td>
+                    <td>Google infrastructure</td>
+                </tr>
+                <tr>
+                    <td><strong>Replication Workers</strong></td>
+                    <td>GCE instances that read from source, apply to target. Managed by DMS.</td>
+                    <td>Same region as target (Cloud SQL or AlloyDB)</td>
+                </tr>
+                <tr>
+                    <td><strong>Target Database</strong></td>
+                    <td>Cloud SQL MySQL, Cloud SQL PostgreSQL, or AlloyDB</td>
+                    <td>GCP region (same as workers)</td>
+                </tr>
+            </table>
+        </details>
+
+        <details>
+            <summary>Network Connectivity Options</summary>
+            <table>
+                <tr>
+                    <th>Method</th>
+                    <th>Source Access</th>
+                    <th>Security</th>
+                    <th>Best For</th>
+                </tr>
+                <tr>
+                    <td><strong>Public IP</strong></td>
+                    <td>Source has public IP; firewall allows DMS IPs</td>
+                    <td>Lower (requires source to be Internet-facing)</td>
+                    <td>AWS RDS, Azure SQL (with public IP)</td>
+                </tr>
+                <tr>
+                    <td><strong>VPC Peering</strong></td>
+                    <td>On-prem network peered with GCP VPC via VPN or Interconnect</td>
+                    <td>High (private network)</td>
+                    <td>On-prem database + VPN/Interconnect link</td>
+                </tr>
+                <tr>
+                    <td><strong>Cloud SQL Auth Proxy</strong></td>
+                    <td>N/A (for target only)</td>
+                    <td>High (uses mTLS)</td>
+                    <td>Connecting DMS to Cloud SQL via IAM auth</td>
+                </tr>
+                <tr>
+                    <td><strong>Private IP (RFC 1918)</strong></td>
+                    <td>Source on private subnet. DMS workers in same VPC/peered VPC.</td>
+                    <td>High</td>
+                    <td>GCP resources in same/peered VPC</td>
+                </tr>
+            </table>
+        </details>
+
+        <details>
+            <summary>DMS Data Flow Diagram (Text)</summary>
+            <pre style="background-color: #0d1117; color: #79c0ff; padding: 15px; border-radius: 4px; overflow-x: auto;">
+┌─────────────────────┐
+│ Source Database     │
+│ (MySQL / Postgres / │
+│  Oracle / SQL Svr)  │
+└──────────┬──────────┘
+           │
+           │ (Schema, Full Load, CDC)
+           │ [Over VPN/Peering/Public IP]
+           ▼
+┌─────────────────────────────────────┐
+│ DMS Replication Workers             │
+│ (G

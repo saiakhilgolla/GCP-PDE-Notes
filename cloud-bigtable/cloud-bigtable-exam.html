@@ -1,0 +1,274 @@
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GCP PDE - Cloud Bigtable Study Notes</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Outfit', sans-serif; background: #0f1117; color: #e8e9ea; line-height: 1.6; }
+        .container { max-width: 1200px; margin: 0 auto; padding: 20px; }
+        h1 { color: #1D9E75; font-size: 2.5rem; margin-bottom: 30px; text-align: center; }
+        h2 { color: #1D9E75; font-size: 1.8rem; margin: 25px 0 15px 0; border-bottom: 2px solid #1D9E75; padding-bottom: 8px; }
+        h3 { color: #1D9E75; font-size: 1.3rem; margin: 20px 0 10px 0; }
+        details { margin: 15px 0; background: #1a1d24; border-radius: 8px; border: 1px solid #2d3748; }
+        summary { padding: 15px; cursor: pointer; font-weight: 600; color: #1D9E75; background: #232831; border-radius: 8px; }
+        details[open] summary { border-bottom: 1px solid #2d3748; border-radius: 8px 8px 0 0; }
+        .content { padding: 20px; }
+        table { width: 100%; border-collapse: collapse; margin: 15px 0; background: #1a1d24; }
+        th, td { padding: 12px; text-align: left; border-bottom: 1px solid #2d3748; }
+        th { background: #232831; color: #1D9E75; font-weight: 600; }
+        .trap { background: #2d1b1b; border-left: 4px solid #dc2626; padding: 15px; margin: 15px 0; border-radius: 4px; }
+        .good { background: #1b2d1b; border-left: 4px solid #16a34a; padding: 15px; margin: 15px 0; border-radius: 4px; }
+        .bad { background: #2d1b1b; border-left: 4px solid #dc2626; padding: 15px; margin: 15px 0; border-radius: 4px; }
+        code { background: #232831; padding: 2px 6px; border-radius: 3px; font-family: 'Courier New', monospace; }
+        .key-point { background: #1b2d2d; border: 1px solid #1D9E75; padding: 15px; margin: 15px 0; border-radius: 6px; }
+        ul, ol { margin: 10px 0 10px 30px; }
+        li { margin: 5px 0; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Cloud Bigtable - GCP PDE Study Notes</h1>
+
+        <section>
+            <h2>1. Core Concepts</h2>
+            
+            <details>
+                <summary>Data Model & Storage Architecture</summary>
+                <div class="content">
+                    <div class="key-point">
+                        <strong>Row Key = Only Index:</strong> Bigtable has NO secondary indexes. All queries must use row key or row key ranges.
+                    </div>
+                    
+                    <table>
+                        <tr><th>Component</th><th>Description</th><th>Key Points</th></tr>
+                        <tr><td>Row Key</td><td>Unique string identifier</td><td>Only index, determines storage order</td></tr>
+                        <tr><td>Column Family</td><td>Named group of columns</td><td>Defined at table creation, stored together</td></tr>
+                        <tr><td>Column Qualifier</td><td>Dynamic column names</td><td>Created at write time, millions possible</td></tr>
+                        <tr><td>Cell</td><td>Row+Family+Qualifier intersection</td><td>Stores byte string with timestamp</td></tr>
+                        <tr><td>Tablet</td><td>Contiguous row key range</td><td>Unit of distribution, served by one node</td></tr>
+                    </table>
+                </div>
+            </details>
+
+            <details>
+                <summary>How Bigtable Works</summary>
+                <div class="content">
+                    <ul>
+                        <li><strong>Sorted Storage:</strong> All rows stored in lexicographic order by row key</li>
+                        <li><strong>Tablet Distribution:</strong> Tables split into tablets, each served by one node</li>
+                        <li><strong>Separation of Compute/Storage:</strong> Nodes serve requests, data stored in Colossus</li>
+                        <li><strong>Auto-scaling:</strong> Tablets split automatically, load balancing across nodes</li>
+                        <li><strong>Versioning:</strong> Multiple timestamped versions per cell</li>
+                    </ul>
+                </div>
+            </details>
+        </section>
+
+        <section>
+            <h2>2. Architecture</h2>
+            
+            <details>
+                <summary>Component Architecture</summary>
+                <div class="content">
+                    <table>
+                        <tr><th>Layer</th><th>Component</th><th>Function</th></tr>
+                        <tr><td>Client</td><td>Client Library</td><td>Caches tablet locations, direct node communication</td></tr>
+                        <tr><td>Compute</td><td>Bigtable Node</td><td>Serves tablets, handles reads/writes</td></tr>
+                        <tr><td>Control</td><td>Master</td><td>Assigns tablets to nodes, load balancing</td></tr>
+                        <tr><td>Metadata</td><td>Chubby</td><td>Stores tablet location metadata</td></tr>
+                        <tr><td>Storage</td><td>Colossus</td><td>Distributed filesystem, stores SSTable files</td></tr>
+                    </table>
+                </div>
+            </details>
+
+            <details>
+                <summary>Read/Write Paths</summary>
+                <div class="content">
+                    <h3>Write Path</h3>
+                    <ol>
+                        <li>Client determines tablet location (cache or metadata lookup)</li>
+                        <li>Write logged to commit log (WAL)</li>
+                        <li>Write added to memtable (in-memory)</li>
+                        <li>Memtable periodically flushed to SSTable in Colossus</li>
+                    </ol>
+
+                    <h3>Read Path</h3>
+                    <ol>
+                        <li>Client contacts appropriate Bigtable node</li>
+                        <li>Node checks memtable first</li>
+                        <li>If not found, reads from SSTables in Colossus</li>
+                        <li>Multiple SSTables may need merging</li>
+                    </ol>
+                </div>
+            </details>
+        </section>
+
+        <section>
+            <h2>3. Key Configs & Limits</h2>
+            
+            <details>
+                <summary>Performance & Scaling Limits</summary>
+                <div class="content">
+                    <table>
+                        <tr><th>Metric</th><th>Limit/Default</th><th>Notes</th></tr>
+                        <tr><td>Max table size</td><td>Petabytes</td><td>No practical limit</td></tr>
+                        <tr><td>Max row size</td><td>256 MB</td><td>Best practice: <1 MB</td></tr>
+                        <tr><td>Max cell size</td><td>100 MB</td><td>Best practice: <10 MB</td></tr>
+                        <tr><td>Column families</td><td>~100 max</td><td>Best practice: 1-10</td></tr>
+                        <tr><td>Nodes per cluster</td><td>1000</td><td>Linear scaling</td></tr>
+                        <tr><td>Read latency</td><td>1-5ms</td><td>Single row reads</td></tr>
+                        <tr><td>Write latency</td><td>1-5ms</td><td>Single row writes</td></tr>
+                        <tr><td>Throughput per node</td><td>10K QPS</td><td>Workload dependent</td></tr>
+                    </table>
+                </div>
+            </details>
+
+            <details>
+                <summary>Storage Options</summary>
+                <div class="content">
+                    <table>
+                        <tr><th>Storage Type</th><th>Performance</th><th>Cost</th><th>Use Case</th></tr>
+                        <tr><td>SSD</td><td>High IOPS, low latency</td><td>Higher</td><td>Interactive workloads</td></tr>
+                        <tr><td>HDD</td><td>Good throughput</td><td>Lower</td><td>Batch processing, archival</td></tr>
+                    </table>
+                </div>
+            </details>
+        </section>
+
+        <section>
+            <h2>4. Exam Traps</h2>
+            
+            <details>
+                <summary>Row Key Design Traps</summary>
+                <div class="content">
+                    <div class="trap">
+                        <strong>TRAP #1:</strong> Using timestamp as row key prefix causes ALL writes to go to same tablet (hotspot)
+                        <br><strong>Fix:</strong> Use reverse timestamp: <code>MAX_LONG - timestamp</code>
+                    </div>
+
+                    <div class="trap">
+                        <strong>TRAP #2:</strong> Sequential IDs (1,2,3...) create write hotspots
+                        <br><strong>Fix:</strong> Add hash prefix or use UUID
+                    </div>
+
+                    <div class="trap">
+                        <strong>TRAP #3:</strong> Domain names as-is cluster all .com together
+                        <br><strong>Fix:</strong> Reverse domain: com.google.www
+                    </div>
+
+                    <div class="trap">
+                        <strong>TRAP #4:</strong> Low cardinality prefixes (status: active/inactive)
+                        <br><strong>Fix:</strong> Use high-cardinality prefix like user_id
+                    </div>
+                </div>
+            </details>
+
+            <details>
+                <summary>Architecture & Scaling Traps</summary>
+                <div class="content">
+                    <div class="trap">
+                        <strong>TRAP #5:</strong> "Adding nodes immediately improves performance"
+                        <br><strong>Reality:</strong> Takes time for tablets to rebalance across new nodes
+                    </div>
+
+                    <div class="trap">
+                        <strong>TRAP #6:</strong> "Bigtable supports complex queries like SQL JOINs"
+                        <br><strong>Reality:</strong> Only supports single-table operations by row key
+                    </div>
+
+                    <div class="trap">
+                        <strong>TRAP #7:</strong> "Column families should be created dynamically"
+                        <br><strong>Reality:</strong> Must be defined at table creation time
+                    </div>
+                </div>
+            </details>
+
+            <details>
+                <summary>Replication & Consistency Traps</summary>
+                <div class="content">
+                    <div class="trap">
+                        <strong>TRAP #8:</strong> "Multi-cluster replication provides automatic failover"
+                        <br><strong>Reality:</strong> Application must handle cluster switching
+                    </div>
+
+                    <div class="trap">
+                        <strong>TRAP #9:</strong> "Reads can be eventually consistent"
+                        <br><strong>Reality:</strong> Single cluster is strongly consistent
+                    </div>
+                </div>
+            </details>
+        </section>
+
+        <section>
+            <h2>5. Quick Cheatsheet</h2>
+            
+            <details>
+                <summary>Row Key Design Patterns</summary>
+                <div class="content">
+                    <div class="good">
+                        <strong>GOOD PATTERNS:</strong>
+                        <ul>
+                            <li><strong>Reverse timestamp:</strong> <code>device_id + "#" + (MAX_LONG - timestamp)</code></li>
+                            <li><strong>Hash prefix:</strong> <code>md5(key)[:4] + "#" + key</code></li>
+                            <li><strong>Composite key:</strong> <code>user_id + "#" + event_type + "#" + timestamp</code></li>
+                            <li><strong>Reversed domain:</strong> <code>com.google.www</code></li>
+                        </ul>
+                    </div>
+
+                    <div class="bad">
+                        <strong>BAD PATTERNS:</strong>
+                        <ul>
+                            <li>Timestamp prefix: <code>timestamp + "#" + device_id</code></li>
+                            <li>Sequential IDs: <code>1, 2, 3, 4...</code></li>
+                            <li>Low cardinality prefix: <code>status + "#" + user_id</code></li>
+                        </ul>
+                    </div>
+                </div>
+            </details>
+
+            <details>
+                <summary>Performance Quick Facts</summary>
+                <div class="content">
+                    <ul>
+                        <li><strong>Scaling:</strong> Linear with nodes (10K QPS per node)</li>
+                        <li><strong>Latency:</strong> 1-5ms for single-row operations</li>
+                        <li><strong>Storage:</strong> SSD for low latency, HDD for throughput</li>
+                        <li><strong>Hotspots:</strong> Caused by poor row key design</li>
+                        <li><strong>Column families:</strong> Keep to 1-10, defined at creation</li>
+                        <li><strong>Compaction:</strong> Automatic, merges SSTables</li>
+                    </ul>
+                </div>
+            </details>
+
+            <details>
+                <summary>Use Cases & Anti-Patterns</summary>
+                <div class="content">
+                    <div class="good">
+                        <strong>IDEAL FOR:</strong>
+                        <ul>
+                            <li>Time-series data (IoT sensors, metrics)</li>
+                            <li>High-throughput analytics</li>
+                            <li>Real-time personalization</li>
+                            <li>Financial trading data</li>
+                        </ul>
+                    </div>
+
+                    <div class="bad">
+                        <strong>NOT GOOD FOR:</strong>
+                        <ul>
+                            <li>Small datasets (<1TB)</li>
+                            <li>Complex queries requiring JOINs</li>
+                            <li>OLTP with transactions</li>
+                            <li>Highly relational data</li>
+                        </ul>
+                    </div>
+                </div>
+            </details>
+        </section>
+
+        <section>
+            <h2>6. Question Patterns</h2

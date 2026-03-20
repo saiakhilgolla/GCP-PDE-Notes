@@ -1,0 +1,327 @@
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GCP Cloud Monitoring - PDE Study Notes</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            background-color: #0f1117;
+            color: #e6edf3;
+            font-family: 'Outfit', sans-serif;
+            line-height: 1.6;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        header {
+            border-bottom: 3px solid #1d9e75;
+            padding-bottom: 20px;
+            margin-bottom: 30px;
+        }
+        
+        h1 {
+            color: #1d9e75;
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+        
+        h2 {
+            color: #1d9e75;
+            font-size: 1.8em;
+            margin-top: 40px;
+            margin-bottom: 20px;
+            border-left: 4px solid #1d9e75;
+            padding-left: 15px;
+        }
+        
+        h3 {
+            color: #58a6ff;
+            font-size: 1.3em;
+            margin-top: 25px;
+            margin-bottom: 15px;
+        }
+        
+        details {
+            background-color: #161b22;
+            border: 1px solid #30363d;
+            border-radius: 6px;
+            padding: 15px;
+            margin: 15px 0;
+            cursor: pointer;
+        }
+        
+        summary {
+            color: #1d9e75;
+            font-weight: 600;
+            font-size: 1.1em;
+            user-select: none;
+            padding: 10px;
+            margin: -10px;
+        }
+        
+        summary:hover {
+            color: #79c0ff;
+        }
+        
+        details[open] summary {
+            color: #79c0ff;
+            margin-bottom: 15px;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            background-color: #161b22;
+            border-radius: 6px;
+            overflow: hidden;
+        }
+        
+        th {
+            background-color: #0d419a;
+            color: #79c0ff;
+            padding: 12px;
+            text-align: left;
+            font-weight: 600;
+            border-bottom: 2px solid #1d9e75;
+        }
+        
+        td {
+            padding: 12px;
+            border-bottom: 1px solid #30363d;
+        }
+        
+        tr:hover {
+            background-color: #1a262f;
+        }
+        
+        tr:last-child td {
+            border-bottom: none;
+        }
+        
+        .highlight {
+            background-color: #238636;
+            color: #fff;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-weight: 600;
+        }
+        
+        .trap {
+            background-color: #3d2621;
+            border-left: 4px solid #da3633;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 3px;
+        }
+        
+        .trap strong {
+            color: #ff7b72;
+        }
+        
+        .cheatsheet-item {
+            background-color: #161b22;
+            border-left: 4px solid #1d9e75;
+            padding: 12px;
+            margin: 10px 0;
+            border-radius: 3px;
+        }
+        
+        .cheatsheet-item code {
+            color: #79c0ff;
+            background-color: #0d1117;
+            padding: 2px 5px;
+            border-radius: 3px;
+            font-size: 0.9em;
+        }
+        
+        ul, ol {
+            margin-left: 20px;
+            margin-top: 10px;
+        }
+        
+        li {
+            margin: 8px 0;
+        }
+        
+        code {
+            background-color: #0d1117;
+            color: #79c0ff;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-family: 'Courier New', monospace;
+        }
+        
+        .decision-box {
+            background-color: #1a3a3a;
+            border: 2px solid #1d9e75;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 6px;
+        }
+        
+        .decision-box strong {
+            color: #1d9e75;
+        }
+        
+        footer {
+            margin-top: 50px;
+            padding-top: 20px;
+            border-top: 1px solid #30363d;
+            color: #8b949e;
+            font-size: 0.9em;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>☁️ GCP Cloud Monitoring</h1>
+            <p>Professional Data Engineer Exam Study Notes</p>
+            <p style="color: #8b949e; margin-top: 10px;">Focus: Core Concepts, Architecture, Key Configs & Limits</p>
+        </header>
+
+        <section>
+            <h2>1. Core Concepts</h2>
+            
+            <h3>What is Cloud Monitoring?</h3>
+            <p>Cloud Monitoring (formerly Stackdriver Monitoring) is GCP's fully managed observability platform. It collects metrics from GCP resources, AWS resources, and on-premises systems. Provides real-time dashboards, alerting, and uptime monitoring.</p>
+            
+            <details>
+                <summary>Metrics Fundamentals</summary>
+                <p><strong>Metric:</strong> A time-series measurement of a resource. Has a resource type, metric type, labels (key-value pairs), and timestamp.</p>
+                <p style="margin-top: 10px;"><strong>Metric Types:</strong></p>
+                <ul>
+                    <li><span class="highlight">Cumulative</span> — monotonically increasing (e.g., request count)</li>
+                    <li><span class="highlight">Gauge</span> — instantaneous measurement (e.g., CPU %, memory)</li>
+                    <li><span class="highlight">Delta</span> — counts events in fixed time window (less common)</li>
+                </ul>
+                <p style="margin-top: 10px;"><strong>Metric Resolution:</strong> 60 seconds for most resources. Custom metrics: 1 second minimum interval.</p>
+                <p style="margin-top: 10px;"><strong>Metric Retention:</strong> 6 weeks for all metrics at 1-minute granularity. Beyond 6 weeks, Monitoring downsamples. Cannot retrieve raw data older than 6 weeks.</p>
+            </details>
+
+            <details>
+                <summary>Alerting Policy Essentials</summary>
+                <p>An alerting policy defines WHEN to trigger an alert based on metric values or log content.</p>
+                <p style="margin-top: 10px;"><strong>Components:</strong></p>
+                <ul>
+                    <li><strong>Condition:</strong> threshold or threshold + duration (e.g., CPU > 80% for 5 minutes)</li>
+                    <li><strong>Notification Channel:</strong> email, SMS, PagerDuty, Slack, webhook, etc.</li>
+                    <li><strong>Documentation:</strong> markdown that displays when alert fires</li>
+                    <li><strong>Autoresolution:</strong> optional automatic clearing when condition clears</li>
+                </ul>
+                <p style="margin-top: 10px;"><strong>Alert State Transitions:</strong></p>
+                <ul>
+                    <li><span class="highlight">OK</span> → <span class="highlight">FIRING</span> when threshold breached for duration</li>
+                    <li><span class="highlight">FIRING</span> → <span class="highlight">OK</span> if autoresolution enabled and threshold clears</li>
+                    <li>Maximum 100 incidents open per alert policy at once</li>
+                </ul>
+            </details>
+
+            <details>
+                <summary>Custom Metrics</summary>
+                <p>Application-level metrics written directly to Cloud Monitoring API. Allows tracking business logic, latency, errors, feature usage.</p>
+                <p style="margin-top: 10px;"><strong>Write Path:</strong> Applications call <code>monitoring.googleapis.com/v3/projects/*/timeSeries</code> with ServiceAccount permission <code>monitoring.metricWriter</code>.</p>
+                <p style="margin-top: 10px;"><strong>Metric Descriptor:</strong> Defined once per custom metric type. Specifies labels, value type (INT64, DOUBLE, STRING), unit.</p>
+                <p style="margin-top: 10px;"><strong>Billing:</strong> Custom metrics billed per unique time series (resource + labels combination). Unbound cardinality is expensive.</p>
+                <p style="margin-top: 10px;"><strong>Best Practice:</strong> Limit custom metric label cardinality. Example: don't use user_id as label if millions of users. Use bucketing or aggregation first.</p>
+            </details>
+
+            <details>
+                <summary>Log-Based Metrics</summary>
+                <p>Metrics automatically extracted from log entries by pattern matching.</p>
+                <p style="margin-top: 10px;"><strong>Types:</strong></p>
+                <ul>
+                    <li><span class="highlight">Count</span> — increments for each matching log entry</li>
+                    <li><span class="highlight">Distribution</span> — histogram from values extracted by regex or JSON</li>
+                </ul>
+                <p style="margin-top: 10px;"><strong>Creation:</strong> In Cloud Logging, select logs → Create Metric → define filter + extraction pattern.</p>
+                <p style="margin-top: 10px;"><strong>Latency:</strong> ~1 minute delay from log creation to metric availability.</p>
+                <p style="margin-top: 10px;"><strong>Use Case:</strong> Extract error rates, latencies, business events from unstructured logs without application code changes.</p>
+            </details>
+
+            <details>
+                <summary>Service-Level Objectives (SLOs)</summary>
+                <p>Targets for system reliability. Defines acceptable performance/availability window.</p>
+                <p style="margin-top: 10px;"><strong>SLO = objective. SLI = indicator. Error budget = tolerance for failures.</strong></p>
+                <p style="margin-top: 10px;"><strong>Example:</strong> SLO = 99.9% availability. SLI = availability measurement. Error budget = 0.1% downtime allowed per month (~43 seconds).</p>
+                <p style="margin-top: 10px;"><strong>Cloud Monitoring SLO Features:</strong></p>
+                <ul>
+                    <li>Built on request/window-based indicators</li>
+                    <li>Tracks good requests vs. total requests</li>
+                    <li>Generates compliance report monthly</li>
+                    <li>Can alert when error budget approaching exhaustion</li>
+                </ul>
+            </details>
+
+            <details>
+                <summary>Uptime Checks</summary>
+                <p>Proactive monitoring from multiple global locations. Pings endpoint and records latency + response status.</p>
+                <p style="margin-top: 10px;"><strong>Protocols:</strong> HTTP/HTTPS, TCP, UDP, gRPC.</p>
+                <p style="margin-top: 10px;"><strong>Frequency:</strong> 1 minute minimum interval between checks.</p>
+                <p style="margin-top: 10px;"><strong>Locations:</strong> Check from 3+ geographic regions by default. Can customize.</p>
+                <p style="margin-top: 10px;"><strong>Billing:</strong> Per-check billed monthly. Regional redundancy increases cost.</p>
+                <p style="margin-top: 10px;"><strong>Use Case:</strong> Synthetic monitoring for public endpoints, SSL certificate validation, latency SLO tracking.</p>
+            </details>
+
+            <details>
+                <summary>Workspaces</summary>
+                <p>Organizational container for metrics, alerts, dashboards. One workspace per project. Can monitor multiple GCP projects + AWS + on-premises from single workspace.</p>
+                <p style="margin-top: 10px;"><strong>Workspace Project Types:</strong></p>
+                <ul>
+                    <li><span class="highlight">Host Project</span> — holds Monitoring workspace, receives all metrics</li>
+                    <li><span class="highlight">Monitored Projects</span> — linked projects whose metrics feed into host workspace</li>
+                </ul>
+                <p style="margin-top: 10px;"><strong>Setup:</strong> Host project must have <code>monitoring.metricWriter</code> IAM in each monitored project.</p>
+                <p style="margin-top: 10px;"><strong>Access Control:</strong> IAM in host project controls who sees all metrics. Cannot grant separate permissions per monitored project.</p>
+            </details>
+
+            <details>
+                <summary>Dashboards</summary>
+                <p>Custom visualizations of metrics. Shareable, filterable, support multiple chart types.</p>
+                <p style="margin-top: 10px;"><strong>Chart Types:</strong> Line, Stacked Area, Stacked Bar, Gauge, Scorecard, Pie, Table, Heatmap.</p>
+                <p style="margin-top: 10px;"><strong>Features:</strong></p>
+                <ul>
+                    <li>Templated variables for filtering (e.g., ${region}, ${resource})</li>
+                    <li>MQL (Monitoring Query Language) or legacy Monitoring Query Builder</li>
+                    <li>Dashboard code exported/imported as JSON</li>
+                </ul>
+                <p style="margin-top: 10px;"><strong>Performance:</strong> 1-minute refresh latency. Real-time isn't available; design for observability, not ops theater.</p>
+            </details>
+        </section>
+
+        <section>
+            <h2>2. Architecture & Components</h2>
+            
+            <h3>Cloud Monitoring Data Flow</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Stage</th>
+                        <th>Component</th>
+                        <th>Details</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Collection</strong></td>
+                        <td>Metrics Ingestion Agents</td>
+                        <td>Compute Engine guest agents, Kubernetes node agents, custom application SDKs collect & send metrics</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Ingestion</strong></td>
+                        <td>Monitoring API Endpoint</td>
+                        <td><code>monitoring.googleapis.com/v3/projects/*/timeSeries</code> receives metric writes, auth via IAM

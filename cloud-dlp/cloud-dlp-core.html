@@ -1,0 +1,403 @@
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GCP PDE: Cloud DLP Study Notes</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            background-color: #0f1117;
+            color: #e6edf3;
+            font-family: 'Outfit', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            line-height: 1.6;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        h1 {
+            color: #1D9E75;
+            border-bottom: 3px solid #1D9E75;
+            padding-bottom: 10px;
+            margin-bottom: 30px;
+            font-size: 2.5em;
+        }
+        
+        h2 {
+            color: #1D9E75;
+            margin-top: 40px;
+            margin-bottom: 20px;
+            font-size: 1.8em;
+        }
+        
+        h3 {
+            color: #58a6ff;
+            margin-top: 25px;
+            margin-bottom: 15px;
+            font-size: 1.3em;
+        }
+        
+        details {
+            background-color: #161b22;
+            border-left: 4px solid #1D9E75;
+            padding: 15px;
+            margin-bottom: 15px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        
+        details[open] {
+            background-color: #0d1117;
+        }
+        
+        summary {
+            color: #1D9E75;
+            font-weight: 600;
+            user-select: none;
+            padding: 5px;
+        }
+        
+        summary:hover {
+            color: #58a6ff;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+            background-color: #161b22;
+        }
+        
+        table th {
+            background-color: #1D9E75;
+            color: #0f1117;
+            padding: 12px;
+            text-align: left;
+            font-weight: 600;
+        }
+        
+        table td {
+            padding: 12px;
+            border-bottom: 1px solid #30363d;
+        }
+        
+        table tr:hover {
+            background-color: #1c2128;
+        }
+        
+        .section {
+            background-color: #161b22;
+            padding: 20px;
+            margin-bottom: 25px;
+            border-radius: 6px;
+            border-left: 4px solid #1D9E75;
+        }
+        
+        .trap {
+            background-color: #3d1f1a;
+            border-left: 4px solid #da3633;
+            padding: 15px;
+            margin-bottom: 15px;
+            border-radius: 4px;
+        }
+        
+        .trap strong {
+            color: #f85149;
+        }
+        
+        .cheatsheet {
+            background-color: #0d3b2a;
+            border-left: 4px solid #1D9E75;
+            padding: 15px;
+            margin-bottom: 15px;
+            border-radius: 4px;
+            font-size: 0.95em;
+        }
+        
+        code {
+            background-color: #0d1117;
+            color: #79c0ff;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-family: 'Courier New', monospace;
+        }
+        
+        ul, ol {
+            margin-left: 20px;
+            margin-bottom: 15px;
+        }
+        
+        li {
+            margin-bottom: 8px;
+        }
+        
+        .highlight {
+            color: #1D9E75;
+            font-weight: 600;
+        }
+        
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .card {
+            background-color: #161b22;
+            padding: 15px;
+            border-radius: 6px;
+            border-top: 3px solid #1D9E75;
+        }
+        
+        .card h4 {
+            color: #1D9E75;
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔐 Cloud DLP: Comprehensive Study Guide</h1>
+        
+        <!-- SECTION 1: CORE CONCEPTS -->
+        <h2>1. Core Concepts</h2>
+        
+        <div class="section">
+            <h3>What is Cloud DLP?</h3>
+            <p><strong>Cloud Data Loss Prevention (DLP)</strong> is a Google Cloud service that discovers, classifies, and protects sensitive data across Google Cloud and on-premises resources. It uses machine learning to identify personally identifiable information (PII), credentials, and other sensitive data types.</p>
+            
+            <details>
+                <summary>Key Capabilities</summary>
+                <ul>
+                    <li><strong>Data Discovery:</strong> Scan storage systems to find sensitive data</li>
+                    <li><strong>Classification:</strong> Identify data using built-in and custom info types</li>
+                    <li><strong>De-identification:</strong> Remove or mask sensitive data</li>
+                    <li><strong>Risk Analysis:</strong> Quantify re-identification risk</li>
+                    <li><strong>Monitoring:</strong> Track DLP activities and create alerts</li>
+                </ul>
+            </details>
+        </div>
+        
+        <div class="section">
+            <h3>Info Types</h3>
+            <p>Info types are patterns that Cloud DLP uses to identify sensitive data. They define what constitutes sensitive information in your organization.</p>
+            
+            <table>
+                <thead>
+                    <tr>
+                        <th>Info Type Category</th>
+                        <th>Examples</th>
+                        <th>Use Case</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Built-in PII</td>
+                        <td>EMAIL_ADDRESS, PHONE_NUMBER, PERSON_NAME</td>
+                        <td>Out-of-box detection for common PII</td>
+                    </tr>
+                    <tr>
+                        <td>Credentials</td>
+                        <td>API_KEY, AWS_CREDENTIALS, PRIVATE_KEY</td>
+                        <td>Detect exposed secrets</td>
+                    </tr>
+                    <tr>
+                        <td>Financial</td>
+                        <td>CREDIT_CARD_NUMBER, BANK_ACCOUNT</td>
+                        <td>Payment card and financial data</td>
+                    </tr>
+                    <tr>
+                        <td>Custom Info Types</td>
+                        <td>Employee IDs, internal reference numbers</td>
+                        <td>Organization-specific patterns</td>
+                    </tr>
+                </tbody>
+            </table>
+            
+            <details>
+                <summary>Custom Info Type Creation</summary>
+                <ul>
+                    <li><strong>Regex Pattern:</strong> Define patterns using regular expressions</li>
+                    <li><strong>Dictionary Matching:</strong> Match against word lists</li>
+                    <li><strong>Hybrid:</strong> Combine patterns with context clues</li>
+                    <li><strong>Likelihood:</strong> Adjust confidence scoring (VERY_UNLIKELY to VERY_LIKELY)</li>
+                </ul>
+            </details>
+        </div>
+        
+        <div class="section">
+            <h3>Core Operations</h3>
+            
+            <details>
+                <summary>Inspection</summary>
+                <p>Scans content to find matches against configured info types. Returns findings with location, matched text, and likelihood score.</p>
+                <ul>
+                    <li>Batch inspection: Cloud Storage, BigQuery, Datastore</li>
+                    <li>Streaming inspection: Real-time API calls</li>
+                    <li>Sample-based: Check % of data to reduce costs</li>
+                </ul>
+            </details>
+            
+            <details>
+                <summary>De-identification</summary>
+                <p>Removes or obfuscates sensitive data from content. Used in inspection jobs to transform matched findings.</p>
+                <ul>
+                    <li><strong>Redaction:</strong> Remove text entirely</li>
+                    <li><strong>Masking:</strong> Replace with symbols (e.g., X, *)</li>
+                    <li><strong>Pseudonymization:</strong> Replace with token or deterministic hash</li>
+                    <li><strong>Bucketing:</strong> Generalize values (e.g., age ranges)</li>
+                </ul>
+            </details>
+            
+            <details>
+                <summary>Pseudonymization</summary>
+                <p>Replaces sensitive data with reversible tokens, enabling analytics while protecting identity. Requires a cryptographic key or dictionary for reversal.</p>
+                <ul>
+                    <li><strong>Deterministic:</strong> Same input always produces same token</li>
+                    <li><strong>Reversible:</strong> Can be decrypted with the correct key</li>
+                    <li><strong>Supports FFX (Format-Preserving Encryption):</strong> Token maintains original format</li>
+                </ul>
+            </details>
+            
+            <details>
+                <summary>Risk Analysis</summary>
+                <p>Measures re-identification risk for quasi-identifiers. Quantifies privacy exposure after de-identification.</p>
+                <ul>
+                    <li><strong>K-anonymity:</strong> At least k records share the same quasi-identifier values</li>
+                    <li><strong>L-diversity:</strong> At least l distinct sensitive attribute values in each group</li>
+                    <li><strong>T-closeness:</strong> Distribution of sensitive values close to overall distribution</li>
+                    <li><strong>Delta-presence:</strong> Bounds presence of individuals in dataset</li>
+                </ul>
+            </details>
+        </div>
+        
+        <!-- SECTION 2: ARCHITECTURE -->
+        <h2>2. Architecture & Components</h2>
+        
+        <div class="section">
+            <h3>DLP Architecture Overview</h3>
+            
+            <table>
+                <thead>
+                    <tr>
+                        <th>Component</th>
+                        <th>Function</th>
+                        <th>Integration</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>DLP API</td>
+                        <td>Core service for inspect and de-identify operations</td>
+                        <td>REST/gRPC, called directly or via Cloud Functions</td>
+                    </tr>
+                    <tr>
+                        <td>DLP Job Monitoring</td>
+                        <td>Tracks batch job progress and completion</td>
+                        <td>Cloud Logging, Cloud Pub/Sub notifications</td>
+                    </tr>
+                    <tr>
+                        <td>Storage Connectors</td>
+                        <td>Interface with Cloud Storage, BigQuery, Datastore</td>
+                        <td>Automatic scanning, batching, parallelization</td>
+                    </tr>
+                    <tr>
+                        <td>Templates</td>
+                        <td>Reusable inspection and de-identification configs</td>
+                        <td>Store patterns, transformations, settings as YAML</td>
+                    </tr>
+                    <tr>
+                        <td>Stored Infotypes</td>
+                        <td>Library of custom info types for org</td>
+                        <td>Reference by name in inspection configs</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        
+        <div class="section">
+            <h3>Data Flow: Inspection + De-identification</h3>
+            
+            <ol>
+                <li><strong>Source:</strong> Data in Cloud Storage, BigQuery, or via API</li>
+                <li><strong>DLP Inspection:</strong> Content scanned against info types</li>
+                <li><strong>Finding Generation:</strong> Matches reported with confidence scores</li>
+                <li><strong>Transformation:</strong> De-identification rules applied to findings</li>
+                <li><strong>Output:</strong> Transformed content written to destination</li>
+                <li><strong>Logging:</strong> Results logged to Cloud Logging</li>
+            </ol>
+        </div>
+        
+        <div class="section">
+            <h3>BigQuery Integration</h3>
+            
+            <details>
+                <summary>DLP with BigQuery Scan</summary>
+                <ul>
+                    <li>DLP can scan BigQuery tables directly without exporting</li>
+                    <li>Automatically handles ARRAY and STRUCT columns</li>
+                    <li>Results include table, column, row position</li>
+                    <li>Supports sampling by row count or percentage</li>
+                    <li>Can exclude columns by name pattern</li>
+                </ul>
+            </details>
+            
+            <details>
+                <summary>BigQuery Export Formats for DLP</summary>
+                <table style="margin-top: 10px;">
+                    <thead>
+                        <tr>
+                            <th>Format</th>
+                            <th>Best For</th>
+                            <th>Use Case</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>CSV</td>
+                            <td>Human readability, Excel import</td>
+                            <td>De-identified exports for non-technical users</td>
+                        </tr>
+                        <tr>
+                            <td>JSON (newline-delimited)</td>
+                            <td>Human-readable inspection, schema preservation</td>
+                            <td>Inspect semi-structured data, nested objects</td>
+                        </tr>
+                        <tr>
+                            <td>Avro</td>
+                            <td>Dataflow intermediate storage, schema evolution</td>
+                            <td>Streaming processing, interchange formats</td>
+                        </tr>
+                        <tr>
+                            <td>Parquet</td>
+                            <td>Downstream Spark, BQ re-import, compression</td>
+                            <td>Analytics pipelines, efficient columnar storage</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </details>
+            
+            <details>
+                <summary>ARRAY and STRUCT Handling</summary>
+                <ul>
+                    <li><strong>ARRAY:</strong> Ordered list of same-type values. DLP inspects each element.</li>
+                    <li><strong>STRUCT:</strong> Named fields of mixed types. DLP traverses nested structure.</li>
+                    <li><strong>UNNEST:</strong> Flattens arrays for row-level analysis in DLP results</li>
+                    <li>DLP reports findings with array index or struct field path</li>
+                </ul>
+            </details>
+        </div>
+        
+        <!-- SECTION 3: KEY CONFIGS & LIMITS -->
+        <h2>3. Key Configurations & Limits</h

@@ -1,0 +1,303 @@
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GCP VPC — PDE Study Notes</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            background: #0f1117;
+            color: #e0e0e0;
+            font-family: 'Outfit', sans-serif;
+            line-height: 1.6;
+            padding: 2rem;
+        }
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+        h1 {
+            color: #1D9E75;
+            margin-bottom: 0.5rem;
+            font-size: 2.5rem;
+        }
+        h2 {
+            color: #1D9E75;
+            margin-top: 2rem;
+            margin-bottom: 1rem;
+            font-size: 1.8rem;
+            border-bottom: 2px solid #1D9E75;
+            padding-bottom: 0.5rem;
+        }
+        h3 {
+            color: #1D9E75;
+            margin-top: 1.5rem;
+            margin-bottom: 0.75rem;
+            font-size: 1.3rem;
+        }
+        p {
+            margin-bottom: 0.75rem;
+        }
+        .subtitle {
+            color: #888;
+            font-size: 0.95rem;
+            margin-bottom: 2rem;
+        }
+        details {
+            background: #161b22;
+            border-left: 3px solid #1D9E75;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        summary {
+            color: #1D9E75;
+            font-weight: 600;
+            padding: 0.5rem 0;
+            user-select: none;
+        }
+        summary:hover {
+            text-decoration: underline;
+        }
+        details[open] {
+            background: #0d1117;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1rem 0;
+            background: #161b22;
+            border: 1px solid #30363d;
+        }
+        th {
+            background: #0d1117;
+            color: #1D9E75;
+            padding: 0.75rem;
+            text-align: left;
+            font-weight: 600;
+            border-bottom: 2px solid #1D9E75;
+        }
+        td {
+            padding: 0.75rem;
+            border-bottom: 1px solid #30363d;
+        }
+        tr:last-child td {
+            border-bottom: none;
+        }
+        tr:nth-child(even) {
+            background: #0d1117;
+        }
+        code {
+            background: #0d1117;
+            color: #79c0ff;
+            padding: 0.2rem 0.4rem;
+            border-radius: 3px;
+            font-size: 0.9rem;
+        }
+        .trap {
+            background: #3d1f1f;
+            border-left: 4px solid #ff6b6b;
+            padding: 1rem;
+            margin: 1rem 0;
+            border-radius: 4px;
+        }
+        .trap strong {
+            color: #ff6b6b;
+        }
+        .cheatsheet {
+            background: #1f3a3a;
+            border-left: 4px solid #1D9E75;
+            padding: 1rem;
+            margin: 1rem 0;
+            border-radius: 4px;
+        }
+        .cheatsheet strong {
+            color: #1D9E75;
+        }
+        .key-point {
+            background: #1a2e2e;
+            padding: 0.75rem;
+            margin: 0.5rem 0;
+            border-radius: 3px;
+            border-left: 3px solid #1D9E75;
+        }
+        ul, ol {
+            margin-left: 1.5rem;
+            margin-bottom: 1rem;
+        }
+        li {
+            margin-bottom: 0.5rem;
+        }
+        .architecture-desc {
+            background: #161b22;
+            padding: 1rem;
+            margin: 1rem 0;
+            border-radius: 4px;
+            border: 1px solid #30363d;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>VPC — GCP PDE Study Notes</h1>
+        <p class="subtitle">Virtual Private Cloud: Core Concepts, Architecture, Configuration, and Exam Patterns</p>
+
+        <!-- CORE CONCEPTS -->
+        <h2>1. Core Concepts</h2>
+        
+        <details>
+            <summary>What is a VPC?</summary>
+            <p>A Virtual Private Cloud (VPC) is a logically isolated network within GCP. All resources (Compute Engine, GKE, Cloud SQL, etc.) must reside in a VPC. Each Google Cloud project has a default VPC, but you can create custom VPCs for isolation and control.</p>
+            <div class="key-point">
+                <strong>Key Fact:</strong> VPCs are global resources. Subnets are regional. A single VPC can span multiple regions with subnets in each region.
+            </div>
+        </details>
+
+        <details>
+            <summary>Subnets</summary>
+            <p>Subnets divide a VPC into regional segments. Each subnet uses a CIDR block (e.g., <code>10.0.1.0/24</code>). Within a subnet, VMs receive primary and optional secondary IP ranges for alias routing.</p>
+            <ul>
+                <li><strong>Primary range:</strong> Used for VM primary network interfaces.</li>
+                <li><strong>Secondary range:</strong> Used for pod CIDR in GKE or alias IPs for custom routing.</li>
+                <li><strong>Stack type:</strong> IPv4, IPv6 Dual Stack, or IPv6-only.</li>
+                <li><strong>Private Google Access (PGA):</strong> Allows resources without external IPs to reach Google APIs via private IP.</li>
+            </ul>
+        </details>
+
+        <details>
+            <summary>Firewall Rules</summary>
+            <p>Firewall rules control ingress and egress traffic at the VPC level. Rules are stateful for connections (established responses auto-permit) but rules themselves are stateless (both directions require explicit rules).</p>
+            <ul>
+                <li><strong>Direction:</strong> INGRESS or EGRESS.</li>
+                <li><strong>Action:</strong> ALLOW or DENY.</li>
+                <li><strong>Priority:</strong> 0–65535. Lower wins. Default deny is 65534.</li>
+                <li><strong>Match criteria:</strong> Source/destination IP, protocol, port.</li>
+                <li><strong>Target:</strong> All instances, service accounts, network tags.</li>
+                <li><strong>Deny rules:</strong> Explicitly block traffic (useful for policy exceptions).</li>
+            </ul>
+            <div class="key-point">
+                <strong>Exam Trap:</strong> Rules DO NOT filter traffic between VMs in the same subnet unless explicitly matched. Use VPC Service Controls (outside VPC scope) for data exfiltration prevention.
+            </div>
+        </details>
+
+        <details>
+            <summary>Routes</summary>
+            <p>Routes determine how packets are forwarded. Each route has a destination CIDR, next-hop (gateway, peering, VPN), and priority (20 for system default, up to 65535).</p>
+            <ul>
+                <li><strong>System routes:</strong> Auto-created for subnet ranges and metadata server (169.254.169.254).</li>
+                <li><strong>Custom routes:</strong> Point to Cloud VPN, Cloud Interconnect, peering, or a gateway.</li>
+                <li><strong>Default route:</strong> <code>0.0.0.0/0 → default-internet-gateway</code> (priority 1000).</li>
+                <li><strong>Next-hop types:</strong> IP address, VPN gateway, Cloud Router, peering connection.</li>
+            </ul>
+        </details>
+
+        <details>
+            <summary>VPC Peering</summary>
+            <p>VPC peering connects two VPCs (in same or different projects, same or different organizations) without routing traffic through the public internet. Low latency, no bandwidth costs, encrypted.</p>
+            <ul>
+                <li><strong>Bilateral:</strong> Both VPCs must accept the peering for traffic to flow.</li>
+                <li><strong>Transit peering not allowed:</strong> If VPC-A peers to VPC-B and VPC-B peers to VPC-C, VPC-A cannot reach VPC-C through VPC-B. Explicit peering required.</li>
+                <li><strong>Transitive routing:</strong> Use VPN gateway or Cloud Router to simulate multi-hop routing.</li>
+                <li><strong>Import/export custom routes:</strong> Enable flag to share custom routes (e.g., VPN routes) across peered VPCs.</li>
+            </ul>
+        </details>
+
+        <details>
+            <summary>Shared VPC</summary>
+            <p>Shared VPC allows a central admin project to host a VPC. Service projects attach to it and share subnets. Enables centralized network management across teams.</p>
+            <ul>
+                <li><strong>Host project:</strong> Owns the VPC and subnets.</li>
+                <li><strong>Service project:</strong> Attaches to host and launches resources in shared subnets.</li>
+                <li><strong>Subnet-level control:</strong> Admin can delegate which subnets service projects can use (per-subnet IAM).</li>
+                <li><strong>Billing:</strong> Resources in service projects bill to service project.</li>
+                <li><strong>No subnet sharing cost:</strong> Sharing a subnet across service projects is free; each project's resources use it.</li>
+            </ul>
+            <div class="key-point">
+                <strong>Use case:</strong> Multi-team enterprise. Finance owns network, engineering and sales teams attach service projects.
+            </div>
+        </details>
+
+        <details>
+            <summary>Private Google Access (PGA)</summary>
+            <p>PGA enables VMs without external IPs to reach Google APIs and services via a private endpoint over internal routes. Requires enabling PGA on the subnet and routing traffic to the Google VPC.</p>
+            <ul>
+                <li><strong>Prerequisite:</strong> Subnet must have PGA enabled.</li>
+                <li><strong>Reachable:</strong> Compute, Storage, Bigquery, Pub/Sub, Spanner, Cloud SQL (via private IP proxy).</li>
+                <li><strong>Route destination:</strong> <code>199.36.0.0/10</code> (Google internal range).</li>
+                <li><strong>No external IP needed:</strong> VMs securely access Google APIs without NAT or internet gateway.</li>
+            </ul>
+        </details>
+
+        <details>
+            <summary>Private Service Connect</summary>
+            <p>Private Service Connect (PSC) extends Private Google Access. Offers private endpoints for Google services (BigQuery, Cloud Storage, Pub/Sub, Spanner, etc.) and third-party services published via Service Attachment.</p>
+            <ul>
+                <li><strong>Service producer:</strong> Creates a Service Attachment, exporting a backend service.</li>
+                <li><strong>Service consumer:</strong> Creates a Private Service Connect endpoint in their VPC, pointing to the attachment.</li>
+                <li><strong>Replaces VPC peering:</strong> No need to peer for API access; endpoint appears as an internal IP.</li>
+                <li><strong>Use case:</strong> SaaS provider exposes service via PSC; customer reaches it securely over private link.</li>
+            </ul>
+        </details>
+
+        <details>
+            <summary>VPC Flow Logs</summary>
+            <p>VPC Flow Logs capture network traffic metadata (5-tuple: src/dst IP, port, protocol) for every flow in a VPC or subnet. Records both accepted and denied traffic. Essential for security auditing, troubleshooting, and compliance.</p>
+            <ul>
+                <li><strong>Sampling:</strong> 1/10,000 by default; tunable (1 = no sampling).</li>
+                <li><strong>Metadata:</strong> Source/dest IP, port, protocol, bytes/packets, round-trip time, TCP flags.</li>
+                <li><strong>Logging destination:</strong> Cloud Logging, Cloud Storage, BigQuery, Pub/Sub.</li>
+                <li><strong>Cost:</strong> Minimal; scales with VPC traffic volume.</li>
+                <li><strong>Enable at:</strong> VPC level (all subnets) or per-subnet.</li>
+            </ul>
+            <div class="key-point">
+                <strong>Exam Trap:</strong> Flow logs do NOT capture DNS, do NOT see internal firewall denies (only egress denies). Sampling makes high-volume traffic analysis incomplete.
+            </div>
+        </details>
+
+        <!-- ARCHITECTURE -->
+        <h2>2. Architecture & Components</h2>
+
+        <h3>VPC Topology Reference</h3>
+        <div class="architecture-desc">
+            <p><strong>Single Region, Multi-Subnet Layout:</strong></p>
+            <pre><code>Project-A (VPC: prod-vpc)
+├── Subnet: us-central1-app (10.0.1.0/24) [PGA enabled]
+│   └── VMs, GKE cluster
+├── Subnet: us-central1-db (10.0.2.0/24) [PGA enabled]
+│   └── Cloud SQL private service
+└── Firewall rules:
+    ├── allow-ssh-from-iap (0.0.0.0/0 → tcp:22, service account: prod-ssh)
+    ├── allow-http (0.0.0.0/0 → tcp:80, network tag: http-server)
+    └── deny-db-external (0.0.0.0/0 → 10.0.2.0/24:tcp:3306, priority 100)
+            </code></pre>
+        </div>
+
+        <div class="architecture-desc">
+            <p><strong>Multi-VPC with Peering:</strong></p>
+            <pre><code>Host Project (VPC: shared-vpc, subnets: us-central1, europe-west1)
+├── Service Project-A attached → launches VMs in shared subnets
+├── Service Project-B attached → launches GKE in shared subnets
+└── VPC Peering to Partner VPC (separate org)
+    └── route-exchange enabled (import custom routes)
+
+Separate Org (VPC: partner-vpc, 192.168.0.0/16)
+└── Peered to shared-vpc, can reach resources at 10.0.0.0/8
+            </code></pre>
+        </div>
+
+        <h3>Component Interaction Table</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>Component</th>
+                    <th>Scope</th

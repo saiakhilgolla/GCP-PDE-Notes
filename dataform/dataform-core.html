@@ -1,0 +1,374 @@
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GCP PDE: Dataform Core Concepts & Architecture</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            background-color: #0f1117;
+            color: #e6edf3;
+            font-family: 'Outfit', sans-serif;
+            line-height: 1.6;
+            padding: 20px;
+        }
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+        h1 {
+            color: #1D9E75;
+            margin-bottom: 10px;
+            font-size: 2.5em;
+            border-bottom: 3px solid #1D9E75;
+            padding-bottom: 10px;
+        }
+        h2 {
+            color: #1D9E75;
+            margin-top: 30px;
+            margin-bottom: 15px;
+            font-size: 1.8em;
+        }
+        h3 {
+            color: #58a6ff;
+            margin-top: 20px;
+            margin-bottom: 10px;
+            font-size: 1.3em;
+        }
+        h4 {
+            color: #79c0ff;
+            margin-top: 15px;
+            margin-bottom: 8px;
+            font-size: 1.1em;
+        }
+        p {
+            margin-bottom: 12px;
+            color: #c9d1d9;
+        }
+        details {
+            background-color: #161b22;
+            border-left: 4px solid #1D9E75;
+            padding: 15px;
+            margin: 12px 0;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        summary {
+            color: #1D9E75;
+            font-weight: 600;
+            font-size: 1.05em;
+            user-select: none;
+            padding: 5px 0;
+        }
+        summary:hover {
+            color: #58a6ff;
+        }
+        details[open] summary {
+            margin-bottom: 12px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 15px 0;
+            background-color: #161b22;
+        }
+        th {
+            background-color: #1D9E75;
+            color: #0f1117;
+            padding: 12px;
+            text-align: left;
+            font-weight: 600;
+        }
+        td {
+            padding: 10px 12px;
+            border-bottom: 1px solid #30363d;
+        }
+        tr:hover {
+            background-color: #0d1117;
+        }
+        .code {
+            background-color: #0d1117;
+            border-left: 3px solid #58a6ff;
+            padding: 12px;
+            margin: 10px 0;
+            font-family: 'Courier New', monospace;
+            font-size: 0.95em;
+            color: #79c0ff;
+            border-radius: 4px;
+            overflow-x: auto;
+        }
+        .highlight {
+            background-color: #1D9E75;
+            color: #0f1117;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-weight: 600;
+        }
+        .trap {
+            background-color: #3d2621;
+            border-left: 4px solid #f85149;
+            padding: 12px;
+            margin: 12px 0;
+            border-radius: 4px;
+            color: #f0883e;
+        }
+        .trap strong {
+            color: #f85149;
+        }
+        .cheatsheet-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin: 15px 0;
+        }
+        .cheat-card {
+            background-color: #161b22;
+            border: 1px solid #1D9E75;
+            padding: 12px;
+            border-radius: 4px;
+        }
+        .cheat-card strong {
+            color: #1D9E75;
+        }
+        ul, ol {
+            margin-left: 20px;
+            margin-bottom: 12px;
+        }
+        li {
+            margin-bottom: 8px;
+        }
+        .decision-tree {
+            background-color: #161b22;
+            padding: 15px;
+            margin: 12px 0;
+            border-radius: 4px;
+            border-left: 4px solid #58a6ff;
+        }
+        .decision-tree li {
+            margin-bottom: 12px;
+        }
+        .arch-box {
+            background-color: #161b22;
+            border: 2px solid #1D9E75;
+            padding: 12px;
+            margin: 10px 0;
+            border-radius: 4px;
+        }
+        .teal {
+            color: #1D9E75;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔷 Dataform: Core Concepts & Architecture</h1>
+        <p style="font-style: italic; color: #8b949e; margin-bottom: 25px;">GCP Professional Data Engineer Study Notes</p>
+
+        <!-- SECTION 1: CORE CONCEPTS -->
+        <h2>1. Core Concepts</h2>
+
+        <details>
+            <summary>What is Dataform?</summary>
+            <p>Dataform is a Git-integrated data transformation platform on Google Cloud that enables teams to manage data workflows using SQL and assertions. It provides version control, dependency management, and automated testing for data pipelines.</p>
+            <ul>
+                <li><span class="highlight">Git-native</span>: All code stored in Git; version history and collaboration built-in</li>
+                <li><span class="highlight">SQL-centric</span>: Write transformations primarily in SQL with SQLX syntax</li>
+                <li><span class="highlight">Dependency resolution</span>: Automatically determines execution order based on table references</li>
+                <li><span class="highlight">Data quality</span>: Built-in assertions validate data integrity</li>
+                <li><span class="highlight">Orchestration</span>: Integrated scheduling and execution via Cloud Scheduler or Cloud Composer</li>
+            </ul>
+        </details>
+
+        <details>
+            <summary>SQLX: The Dataform SQL Extension</summary>
+            <p>SQLX extends standard SQL with metadata and control flow instructions specific to Dataform. It compiles down to executable SQL statements.</p>
+            <h4>Core SQLX Directives</h4>
+            <table>
+                <tr>
+                    <th>Directive</th>
+                    <th>Purpose</th>
+                    <th>Example</th>
+                </tr>
+                <tr>
+                    <td><code>config()</code></td>
+                    <td>Set table/view properties: type, partition, cluster, tags</td>
+                    <td><code>config({type: 'table', partition_by: 'DATE(created_at)'})</code></td>
+                </tr>
+                <tr>
+                    <td><code>ref()</code></td>
+                    <td>Reference another Dataform object; creates explicit dependency</td>
+                    <td><code>SELECT * FROM ${ref('upstream_table')}</code></td>
+                </tr>
+                <tr>
+                    <td><code>source()</code></td>
+                    <td>Reference external data source outside Dataform</td>
+                    <td><code>SELECT * FROM ${source('raw', 'events')}</code></td>
+                </tr>
+                <tr>
+                    <td><code>declare</code></td>
+                    <td>Define variables for use in SQLX blocks</td>
+                    <td><code>declare cutoff_date = '2024-01-01'</code></td>
+                </tr>
+                <tr>
+                    <td><code>pre_operations</code></td>
+                    <td>SQL executed before main transformation</td>
+                    <td><code>pre_operations { DELETE FROM ${ref('table')} WHERE date < ... }</code></td>
+                </tr>
+                <tr>
+                    <td><code>post_operations</code></td>
+                    <td>SQL executed after main transformation completes</td>
+                    <td><code>post_operations { CALL `project.dataset.proc_cleanup`() }</code></td>
+                </tr>
+            </table>
+            <div class="code">
+-- Example SQLX file (mymodel.sqlx)
+config {
+  type: 'table',
+  materialized_as: 'view',
+  tags: ['daily', 'critical'],
+}
+
+declare cutoff = TIMESTAMP_SUB(CURRENT_TIMESTAMP(), INTERVAL 7 DAY);
+
+SELECT
+  id,
+  name,
+  created_at
+FROM ${ref('source_table')}
+WHERE created_at >= cutoff
+            </div>
+        </details>
+
+        <details>
+            <summary>Dependencies & Graph Execution</summary>
+            <p>Dataform automatically tracks data lineage and executes models in dependency order. The execution graph ensures downstream tables are built only after their upstreams complete successfully.</p>
+            <ul>
+                <li><span class="highlight">Implicit dependencies</span>: <code>ref()</code> calls inside SQL automatically register dependencies</li>
+                <li><span class="highlight">Explicit dependencies</span>: Use <code>depends_on</code> in config for non-SQL edges (e.g., external job completion)</li>
+                <li><span class="highlight">Circular dependency detection</span>: Dataform compilation fails if cycles are detected</li>
+                <li><span class="highlight">Topological sort</span>: Execution engine orders tasks to respect all dependencies</li>
+                <li><span class="highlight">Parallel execution</span>: Independent branches execute concurrently when possible</li>
+            </ul>
+            <div class="code">
+// model_a.sqlx
+config { type: 'table' }
+SELECT 1 as id
+
+// model_b.sqlx (depends on model_a)
+config { type: 'table' }
+SELECT id * 2 FROM ${ref('model_a')}
+
+// model_c.sqlx (depends on model_b)
+config { type: 'table' }
+SELECT id * 3 FROM ${ref('model_b')}
+
+// Execution order: model_a → model_b → model_c
+            </div>
+        </details>
+
+        <details>
+            <summary>Assertions: Data Quality Testing</summary>
+            <p>Assertions are queries that validate data correctness. They run after model execution and fail the pipeline if violations are detected, preventing bad data from propagating downstream.</p>
+            <h4>Assertion Types</h4>
+            <table>
+                <tr>
+                    <th>Type</th>
+                    <th>Use Case</th>
+                    <th>Syntax</th>
+                </tr>
+                <tr>
+                    <td>Row-level assertion</td>
+                    <td>Validate individual rows; returns rows that fail</td>
+                    <td><code>WHERE condition IS FALSE</code></td>
+                </tr>
+                <tr>
+                    <td>Table-level assertion</td>
+                    <td>Check aggregate properties; returns count of violations</td>
+                    <td><code>SELECT COUNT(*) FROM ${ref('table')} WHERE ...</code></td>
+                </tr>
+            </table>
+            <div class="code">
+// assertion_no_nulls.sqlx (row-level)
+config { type: 'assertion' }
+
+SELECT * FROM ${ref('users')}
+WHERE id IS NULL OR email IS NULL
+
+// assertion_row_count.sqlx (table-level)
+config { type: 'assertion' }
+
+SELECT
+  CASE WHEN row_count < 1000 THEN ERROR('Expected >= 1000 rows') END
+FROM (
+  SELECT COUNT(*) as row_count FROM ${ref('daily_events')}
+)
+
+// On compile: assertion runs after 'daily_events' table creation
+// If query returns rows, entire run fails and is marked as failed
+            </div>
+        </details>
+
+        <details>
+            <summary>Incremental Tables</summary>
+            <p>Incremental tables build new data only for updated rows or new partitions, rather than recomputing the entire table each run. This dramatically reduces compute and cost for large append-only fact tables.</p>
+            <h4>Incremental Pattern</h4>
+            <div class="code">
+config {
+  type: 'incremental',
+  uniqueKeys: ['id'],
+  partitionBy: 'DATE(created_at)',
+}
+
+SELECT
+  id,
+  name,
+  created_at,
+  revenue
+FROM ${source('warehouse', 'transactions')}
+
+%{
+  if (incremental()) {
+    WHERE created_at >= _dbt_internal_dbt_max_partition
+  }
+%}
+            </div>
+            <ul>
+                <li><span class="highlight">Full-refresh mode</span>: Clears table and rebuilds from scratch (first run or manual trigger)</li>
+                <li><span class="highlight">Incremental mode</span>: Appends only new/modified rows since last run</li>
+                <li><span class="highlight">uniqueKeys</span>: Column(s) that define row uniqueness; used for upsert logic</li>
+                <li><span class="highlight">Merge strategy</span>: Dataform uses MERGE to upsert or insert-only depending on config</li>
+                <li><span class="highlight">incremental() function</span>: Conditional SQL; true only on incremental runs</li>
+                <li><span class="highlight">Max partition tracking</span>: Dataform stores last processed partition timestamp</li>
+            </ul>
+        </details>
+
+        <details>
+            <summary>Tags & Metadata</summary>
+            <p>Tags organize models and control which subsets of the graph are compiled and executed. Useful for separating critical, daily, and weekly pipelines.</p>
+            <ul>
+                <li><span class="highlight">Tag assignment</span>: <code>config({ tags: ['daily', 'critical', 'pii'] })</code></li>
+                <li><span class="highlight">Tag inheritance</span>: Models inherit tags from parent config in directories</li>
+                <li><span class="highlight">Selective execution</span>: Run only models matching tag filter via CLI or UI</li>
+                <li><span class="highlight">Tag queries</span>: <code>--tags daily,critical</code> includes both daily AND critical</li>
+                <li><span class="highlight">Common patterns</span>: frequency (daily/weekly), criticality (critical/non-prod), compliance (pii/public)</li>
+            </ul>
+        </details>
+
+        <!-- SECTION 2: ARCHITECTURE -->
+        <h2>2. Architecture</h2>
+
+        <details>
+            <summary>Dataform System Architecture</summary>
+            <p>Dataform operates as a managed service integrating Git, SQL execution, and BigQuery orchestration.</p>
+            <table>
+                <tr>
+                    <th>Component</th>
+                    <th>Role</th>
+                    <th>Technology</th>

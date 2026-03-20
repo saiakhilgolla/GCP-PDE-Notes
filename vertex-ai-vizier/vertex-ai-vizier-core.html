@@ -1,0 +1,331 @@
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GCP PDE: Vertex AI Vizier Study Notes</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { 
+            font-family: 'Outfit', sans-serif; 
+            background: #0f1117; 
+            color: #e4e6ea; 
+            line-height: 1.6; 
+            padding: 20px; 
+        }
+        .container { max-width: 1200px; margin: 0 auto; }
+        h1 { color: #1D9E75; font-size: 2.2em; margin-bottom: 30px; text-align: center; }
+        h2 { color: #1D9E75; font-size: 1.5em; margin: 25px 0 15px 0; }
+        h3 { color: #58a6ff; font-size: 1.2em; margin: 15px 0 10px 0; }
+        
+        details { 
+            background: #1c2128; 
+            border: 1px solid #30363d; 
+            border-radius: 8px; 
+            margin: 15px 0; 
+            overflow: hidden;
+        }
+        summary { 
+            background: #21262d; 
+            padding: 15px 20px; 
+            cursor: pointer; 
+            font-weight: 600; 
+            color: #1D9E75;
+            border-bottom: 1px solid #30363d;
+        }
+        summary:hover { background: #262c36; }
+        details[open] summary { border-bottom: 1px solid #30363d; }
+        .content { padding: 20px; }
+        
+        table { 
+            width: 100%; 
+            border-collapse: collapse; 
+            margin: 15px 0; 
+            background: #1c2128;
+            border-radius: 6px;
+            overflow: hidden;
+        }
+        th { 
+            background: #1D9E75; 
+            color: white; 
+            padding: 12px; 
+            text-align: left; 
+            font-weight: 600;
+        }
+        td { 
+            padding: 12px; 
+            border-bottom: 1px solid #30363d; 
+        }
+        tr:last-child td { border-bottom: none; }
+        tr:nth-child(even) { background: #161b22; }
+        
+        .highlight { background: #1D9E75; color: white; padding: 2px 6px; border-radius: 4px; }
+        .warning { background: #f85149; color: white; padding: 2px 6px; border-radius: 4px; }
+        .code { background: #262c36; color: #79c0ff; padding: 2px 6px; border-radius: 4px; font-family: monospace; }
+        
+        ul, ol { margin: 10px 0 10px 30px; }
+        li { margin: 5px 0; }
+        
+        .exam-tip { 
+            background: #0d1117; 
+            border: 1px solid #1D9E75; 
+            border-radius: 6px; 
+            padding: 15px; 
+            margin: 15px 0;
+        }
+        .exam-tip::before { 
+            content: "💡 EXAM TIP: "; 
+            color: #1D9E75; 
+            font-weight: 600; 
+        }
+        
+        .cheat-grid { 
+            display: grid; 
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); 
+            gap: 15px; 
+            margin: 15px 0;
+        }
+        .cheat-card { 
+            background: #1c2128; 
+            border: 1px solid #30363d; 
+            border-radius: 6px; 
+            padding: 15px;
+        }
+        .cheat-card h4 { color: #1D9E75; margin-bottom: 10px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Vertex AI Vizier - Hyperparameter Tuning</h1>
+        
+        <details>
+            <summary>Core Concepts</summary>
+            <div class="content">
+                <h3>What is Vertex AI Vizier?</h3>
+                <p>Automated <span class="highlight">hyperparameter tuning</span> service that uses Bayesian optimization to find optimal model configurations without manual trial-and-error.</p>
+                
+                <h3>Key Components</h3>
+                <table>
+                    <tr><th>Component</th><th>Description</th><th>Example</th></tr>
+                    <tr>
+                        <td><strong>Study</strong></td>
+                        <td>Defines search space and optimization objective</td>
+                        <td>learning_rate: [0.0001, 0.1], batch_size: [32, 64, 128]</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Trial</strong></td>
+                        <td>Single training run with specific hyperparameter values</td>
+                        <td>lr=0.01, batch=64 → accuracy=0.92</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Parameter</strong></td>
+                        <td>Hyperparameter to optimize (double, integer, categorical)</td>
+                        <td>dropout_rate (double), num_layers (int), optimizer (categorical)</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Metric</strong></td>
+                        <td>Objective to maximize or minimize</td>
+                        <td>MAXIMIZE accuracy, MINIMIZE loss</td>
+                    </tr>
+                </table>
+                
+                <h3>Bayesian Optimization Process</h3>
+                <ol>
+                    <li>Start with random trials to explore search space</li>
+                    <li>Build probabilistic model of objective function</li>
+                    <li>Use acquisition function to select next promising parameters</li>
+                    <li>Train model, report metrics back to Vizier</li>
+                    <li>Update model and repeat until convergence</li>
+                </ol>
+                
+                <div class="exam-tip">
+                    Vizier is <strong>much more efficient</strong> than grid search or random search because it learns from previous trials to make smarter choices.
+                </div>
+            </div>
+        </details>
+
+        <details>
+            <summary>Architecture & Components</summary>
+            <div class="content">
+                <h3>Vizier Architecture Flow</h3>
+                <table>
+                    <tr><th>Stage</th><th>Component</th><th>Action</th></tr>
+                    <tr>
+                        <td>1. Setup</td>
+                        <td>Study Configuration</td>
+                        <td>Define parameter search spaces and optimization goal</td>
+                    </tr>
+                    <tr>
+                        <td>2. Suggest</td>
+                        <td>Suggestion Service</td>
+                        <td>Bayesian optimizer suggests next parameter combinations</td>
+                    </tr>
+                    <tr>
+                        <td>3. Train</td>
+                        <td>Training Job</td>
+                        <td>Custom Training or AutoML job runs with suggested params</td>
+                    </tr>
+                    <tr>
+                        <td>4. Report</td>
+                        <td>Trial Completion</td>
+                        <td>Report final metrics (accuracy, loss) back to Vizier</td>
+                    </tr>
+                    <tr>
+                        <td>5. Learn</td>
+                        <td>Model Update</td>
+                        <td>Update Bayesian model with new trial results</td>
+                    </tr>
+                </table>
+
+                <h3>Integration Patterns</h3>
+                <table>
+                    <tr><th>Training Type</th><th>Integration Method</th><th>Key API</th></tr>
+                    <tr>
+                        <td>Custom Training</td>
+                        <td>HyperparameterTuningJob</td>
+                        <td><span class="code">aiplatform.HyperparameterTuningJob</span></td>
+                    </tr>
+                    <tr>
+                        <td>Manual ML Code</td>
+                        <td>Vizier Python Client</td>
+                        <td><span class="code">from google.cloud import aiplatform_v1</span></td>
+                    </tr>
+                    <tr>
+                        <td>AutoML</td>
+                        <td>Built-in optimization</td>
+                        <td>Automatic - no manual setup needed</td>
+                    </tr>
+                </table>
+
+                <h3>Parallel Trial Execution</h3>
+                <ul>
+                    <li><strong>Sequential</strong>: max_parallel_trials=1 (default)</li>
+                    <li><strong>Parallel</strong>: max_parallel_trials=10+ for faster results</li>
+                    <li><strong>Resource sharing</strong>: Each trial gets separate compute resources</li>
+                    <li><strong>Early stopping</strong>: Terminate poor-performing trials automatically</li>
+                </ul>
+            </div>
+        </details>
+
+        <details>
+            <summary>Key Configurations & Limits</summary>
+            <div class="content">
+                <h3>Study Configuration Limits</h3>
+                <table>
+                    <tr><th>Parameter</th><th>Limit</th><th>Default</th><th>Notes</th></tr>
+                    <tr>
+                        <td>max_trial_count</td>
+                        <td>1000</td>
+                        <td>100</td>
+                        <td>Total trials in study</td>
+                    </tr>
+                    <tr>
+                        <td>max_parallel_trials</td>
+                        <td>100</td>
+                        <td>1</td>
+                        <td>Concurrent trials</td>
+                    </tr>
+                    <tr>
+                        <td>max_failed_trial_count</td>
+                        <td>1000</td>
+                        <td>3</td>
+                        <td>Failed trials before stopping</td>
+                    </tr>
+                    <tr>
+                        <td>study_stopping_config</td>
+                        <td>N/A</td>
+                        <td>None</td>
+                        <td>Early stopping criteria</td>
+                    </tr>
+                </table>
+
+                <h3>Parameter Types & Ranges</h3>
+                <table>
+                    <tr><th>Type</th><th>Config</th><th>Example</th></tr>
+                    <tr>
+                        <td>Double</td>
+                        <td>min_value, max_value, scale</td>
+                        <td>learning_rate: [0.0001, 0.1], LOG_SCALE</td>
+                    </tr>
+                    <tr>
+                        <td>Integer</td>
+                        <td>min_value, max_value, scale</td>
+                        <td>batch_size: [32, 512], LINEAR_SCALE</td>
+                    </tr>
+                    <tr>
+                        <td>Categorical</td>
+                        <td>values list</td>
+                        <td>optimizer: ["adam", "sgd", "rmsprop"]</td>
+                    </tr>
+                    <tr>
+                        <td>Discrete</td>
+                        <td>values list (numbers)</td>
+                        <td>num_layers: [2, 4, 6, 8, 10]</td>
+                    </tr>
+                </table>
+
+                <h3>Algorithm Options</h3>
+                <table>
+                    <tr><th>Algorithm</th><th>Use Case</th><th>Performance</th></tr>
+                    <tr>
+                        <td>GAUSSIAN_PROCESS_BANDIT</td>
+                        <td>Default - works for most cases</td>
+                        <td>Good exploration/exploitation balance</td>
+                    </tr>
+                    <tr>
+                        <td>RANDOM_SEARCH</td>
+                        <td>Baseline comparison</td>
+                        <td>Simple but inefficient</td>
+                    </tr>
+                    <tr>
+                        <td>GRID_SEARCH</td>
+                        <td>Small parameter spaces</td>
+                        <td>Exhaustive but expensive</td>
+                    </tr>
+                </table>
+
+                <div class="exam-tip">
+                    <span class="code">LOG_SCALE</span> is crucial for learning rates (0.0001 to 0.1). <span class="code">LINEAR_SCALE</span> for batch sizes (32 to 512).
+                </div>
+            </div>
+        </details>
+
+        <details>
+            <summary>Exam Traps & Gotchas</summary>
+            <div class="content">
+                <h3>Common Misconceptions</h3>
+                <table>
+                    <tr><th>Trap</th><th>Wrong Answer</th><th>Correct Answer</th></tr>
+                    <tr>
+                        <td>Manual vs Automated</td>
+                        <td>"Manually test different learning rates"</td>
+                        <td><span class="highlight">Use Vertex AI Vizier</span> for systematic optimization</td>
+                    </tr>
+                    <tr>
+                        <td>Grid Search Confusion</td>
+                        <td>"Use grid search for 10+ parameters"</td>
+                        <td><span class="highlight">Bayesian optimization</span> - exponentially more efficient</td>
+                    </tr>
+                    <tr>
+                        <td>AutoML Integration</td>
+                        <td>"Configure Vizier for AutoML training"</td>
+                        <td><span class="highlight">AutoML has built-in</span> hyperparameter optimization</td>
+                    </tr>
+                    <tr>
+                        <td>Resource Scaling</td>
+                        <td>"Single trial, increase compute"</td>
+                        <td><span class="highlight">Parallel trials</span> for faster optimization</td>
+                    </tr>
+                </table>
+
+                <h3>Decision Framework Traps</h3>
+                <ul>
+                    <li><span class="warning">Trap:</span> "Use Vizier for feature engineering" → <strong>Wrong</strong>. Vizier is for hyperparameters, not features.</li>
+                    <li><span class="warning">Trap:</span> "Vizier for model architecture search" → <strong>Partially wrong</strong>. Discrete parameters only (num_layers), not full NAS.</li>
+                    <li><span class="warning">Trap:</span> "Vizier optimizes training data" → <strong>Wrong</strong>. It optimizes training hyperparameters.</li>
+                    <li><span class="warning">Trap:</span> "Use for single parameter tuning" → <strong>Overkill</strong>. Manual testing may be faster for 1-2 parameters.</li>
+                </ul>
+
+                <h3>Scale

@@ -1,0 +1,406 @@
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GCP Cloud Workflows - PDE Exam Study Notes</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Outfit', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background-color: #0f1117;
+            color: #e6edf3;
+            line-height: 1.6;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        header {
+            border-bottom: 2px solid #1d9e75;
+            padding-bottom: 20px;
+            margin-bottom: 30px;
+        }
+
+        h1 {
+            color: #1d9e75;
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        h2 {
+            color: #1d9e75;
+            font-size: 1.8em;
+            margin-top: 30px;
+            margin-bottom: 15px;
+            border-left: 4px solid #1d9e75;
+            padding-left: 15px;
+        }
+
+        h3 {
+            color: #58a6ff;
+            font-size: 1.3em;
+            margin-top: 20px;
+            margin-bottom: 10px;
+        }
+
+        h4 {
+            color: #79c0ff;
+            font-size: 1.1em;
+            margin-top: 15px;
+            margin-bottom: 8px;
+        }
+
+        details {
+            background-color: #161b22;
+            border: 1px solid #30363d;
+            border-radius: 6px;
+            padding: 15px;
+            margin: 15px 0;
+        }
+
+        summary {
+            cursor: pointer;
+            color: #1d9e75;
+            font-weight: 600;
+            user-select: none;
+            padding: 5px 0;
+        }
+
+        summary:hover {
+            color: #2dd4ae;
+        }
+
+        details[open] summary {
+            margin-bottom: 15px;
+            color: #2dd4ae;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 15px 0;
+            background-color: #161b22;
+            border: 1px solid #30363d;
+            border-radius: 6px;
+            overflow: hidden;
+        }
+
+        th {
+            background-color: #0d419c;
+            color: #1d9e75;
+            padding: 12px;
+            text-align: left;
+            font-weight: 600;
+            border-bottom: 2px solid #1d9e75;
+        }
+
+        td {
+            padding: 12px;
+            border-bottom: 1px solid #30363d;
+        }
+
+        tr:last-child td {
+            border-bottom: none;
+        }
+
+        tr:hover {
+            background-color: #0d419c;
+        }
+
+        code {
+            background-color: #0d419c;
+            color: #79c0ff;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.95em;
+        }
+
+        pre {
+            background-color: #0d419c;
+            color: #79c0ff;
+            padding: 15px;
+            border-radius: 6px;
+            overflow-x: auto;
+            margin: 15px 0;
+            border-left: 4px solid #1d9e75;
+            font-family: 'Courier New', monospace;
+        }
+
+        .trap {
+            background-color: #3d2621;
+            border-left: 4px solid #f85149;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 3px;
+        }
+
+        .trap h4 {
+            color: #f85149;
+        }
+
+        .key-point {
+            background-color: #1f3a3d;
+            border-left: 4px solid #1d9e75;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 3px;
+        }
+
+        .cheatsheet {
+            background-color: #0d2b2a;
+            border: 2px solid #1d9e75;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 6px;
+        }
+
+        .cheatsheet-item {
+            margin: 10px 0;
+            padding: 8px;
+        }
+
+        .cheatsheet-item strong {
+            color: #1d9e75;
+        }
+
+        ul, ol {
+            margin-left: 20px;
+            margin-top: 10px;
+            margin-bottom: 10px;
+        }
+
+        li {
+            margin: 8px 0;
+        }
+
+        .section-intro {
+            font-style: italic;
+            color: #8b949e;
+            margin-bottom: 15px;
+            padding: 10px;
+            border-left: 2px solid #30363d;
+        }
+
+        .comparison-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin: 20px 0;
+        }
+
+        .comparison-card {
+            background-color: #161b22;
+            border: 1px solid #30363d;
+            padding: 15px;
+            border-radius: 6px;
+        }
+
+        .comparison-card h4 {
+            color: #1d9e75;
+            margin-bottom: 10px;
+        }
+
+        footer {
+            margin-top: 50px;
+            padding-top: 20px;
+            border-top: 1px solid #30363d;
+            text-align: center;
+            color: #8b949e;
+            font-size: 0.9em;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>☁️ Cloud Workflows</h1>
+            <p style="color: #8b949e; font-size: 1.1em;">GCP Professional Data Engineer Exam Study Notes</p>
+            <p style="color: #58a6ff; margin-top: 10px;">Core Concepts • Architecture • Key Configs • Exam Patterns</p>
+        </header>
+
+        <!-- SECTION 1: CORE CONCEPTS -->
+        <section>
+            <h2>1. Core Concepts</h2>
+            <p class="section-intro">Cloud Workflows is a GCP service for orchestrating Google Cloud services and HTTP endpoints using declarative YAML workflows. It's serverless, event-driven, and designed for multi-step automation.</p>
+
+            <details open>
+                <summary>What is Cloud Workflows?</summary>
+                <p>Cloud Workflows is a fully managed service that lets you orchestrate and automate Google Cloud services and APIs using a YAML-based workflow definition language. Key characteristics:</p>
+                <ul>
+                    <li><strong>Serverless:</strong> No infrastructure to manage; automatic scaling</li>
+                    <li><strong>YAML-based:</strong> Declarative syntax with steps, branches, loops, and error handling</li>
+                    <li><strong>Service Integration:</strong> Native connectors for Cloud Functions, Cloud Run, BigQuery, Firestore, Pub/Sub, etc.</li>
+                    <li><strong>HTTP Callbacks:</strong> Wait for external systems to call back with results</li>
+                    <li><strong>Managed Execution:</strong> GCP handles retries, timeouts, state management</li>
+                    <li><strong>Pricing:</strong> Per-step execution; first 1,000 steps/month free</li>
+                </ul>
+            </details>
+
+            <details>
+                <summary>Workflow Execution Model</summary>
+                <p>Cloud Workflows executes steps sequentially or in parallel, maintaining state across steps.</p>
+                <ul>
+                    <li><strong>Stateful:</strong> Each step's output is available to subsequent steps via variables</li>
+                    <li><strong>Deterministic:</strong> Same input produces same output; no random state</li>
+                    <li><strong>Fault Tolerant:</strong> Built-in retry logic with exponential backoff</li>
+                    <li><strong>Long-Running:</strong> Can run for up to 1 year (default 1 month timeout per execution)</li>
+                    <li><strong>Callback Support:</strong> Steps can pause and wait for external callbacks to resume</li>
+                </ul>
+            </details>
+
+            <details>
+                <summary>Core Language Concepts</summary>
+                <table>
+                    <tr>
+                        <th>Concept</th>
+                        <th>Description</th>
+                        <th>Example</th>
+                    </tr>
+                    <tr>
+                        <td><strong>Steps</strong></td>
+                        <td>Named execution units; execute sequentially unless parallelized</td>
+                        <td><code>- step_name: # step logic</code></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Variables</strong></td>
+                        <td>Mutable state; assigned with <code>assign</code> step; scoped to workflow</td>
+                        <td><code>- assign: [x: 5, y: 10]</code></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Expressions</strong></td>
+                        <td>${...} syntax; evaluated at runtime; supports math, string ops, conditionals</td>
+                        <td><code>${x + y}</code>, <code>${json.fieldname}</code></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Call Steps</strong></td>
+                        <td>Invoke external services (Cloud Run, Functions, Pub/Sub, HTTP endpoints)</td>
+                        <td><code>- call: googleapis.compute.v1.instances.list</code></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Return Values</strong></td>
+                        <td>Captured from API calls in <code>result</code> variable</td>
+                        <td><code>result: step_result.body</code></td>
+                    </tr>
+                </table>
+            </details>
+
+            <div class="key-point">
+                <h4>Key Point: Step vs Connector vs Native Binding</h4>
+                <p><strong>Native Bindings:</strong> Direct calls to Google APIs (e.g., <code>googleapis.compute.v1.instances.list</code>). No extra cost; uses service account credentials.</p>
+                <p><strong>Connectors:</strong> Pre-built integrations for third-party services (e.g., Salesforce, ServiceNow). Require connector setup and authentication.</p>
+                <p><strong>HTTP Steps:</strong> Generic HTTP calls to any endpoint with custom auth; most flexible.</p>
+            </div>
+        </section>
+
+        <!-- SECTION 2: ARCHITECTURE -->
+        <section>
+            <h2>2. Architecture</h2>
+            <p class="section-intro">Cloud Workflows architecture consists of the workflow definition, execution runtime, and integration points with GCP services.</p>
+
+            <details open>
+                <summary>Workflow Components</summary>
+                <table>
+                    <tr>
+                        <th>Component</th>
+                        <th>Role</th>
+                        <th>Details</th>
+                    </tr>
+                    <tr>
+                        <td><strong>Workflow Definition</strong></td>
+                        <td>YAML blueprint stored in Cloud Storage or inline</td>
+                        <td>Defines steps, triggers, IAM permissions, and service account</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Execution Runtime</strong></td>
+                        <td>GCP-managed service that parses and executes workflows</td>
+                        <td>Handles state, retries, timeouts, parallelism</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Service Account</strong></td>
+                        <td>Identity for workflow execution; assumed at runtime</td>
+                        <td>Must have IAM roles for called services (Compute, BigQuery, etc.)</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Triggers</strong></td>
+                        <td>Event sources that initiate workflow execution</td>
+                        <td>Cloud Pub/Sub, Cloud Tasks, Cloud Scheduler, HTTP, manual</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Connectors</strong></td>
+                        <td>Pre-built integration modules for external services</td>
+                        <td>Salesforce, Jira, ServiceNow, Slack, etc.</td>
+                    </tr>
+                </table>
+            </details>
+
+            <details>
+                <summary>Workflow Execution Flow</summary>
+                <pre>User/Trigger
+    ↓
+Workflow Definition (YAML)
+    ↓
+Execution Runtime
+    ├─ Parse YAML
+    ├─ Initialize Variables
+    ├─ Assume Service Account
+    ├─ Execute Steps (Sequential/Parallel)
+    │  ├─ Evaluate Expressions
+    │  ├─ Call External Services
+    │  ├─ Capture Results
+    │  └─ Apply Error Handlers
+    ├─ Manage State & Checkpoints
+    ├─ Handle Timeouts & Retries
+    └─ Return Results
+
+Output
+    ↓
+Logs (Cloud Logging)
+Variables (Exported)
+Status (Success/Failure)</pre>
+            </details>
+
+            <details>
+                <summary>Step Types & Patterns</summary>
+                <table>
+                    <tr>
+                        <th>Step Type</th>
+                        <th>Purpose</th>
+                        <th>Example Syntax</th>
+                    </tr>
+                    <tr>
+                        <td><code>assign</code></td>
+                        <td>Set/update variables</td>
+                        <td><code>assign: [count: 0, name: "test"]</code></td>
+                    </tr>
+                    <tr>
+                        <td><code>call</code></td>
+                        <td>Invoke service (API, Cloud Run, Functions, HTTP)</td>
+                        <td><code>call: googleapis.compute.v1.instances.list</code></td>
+                    </tr>
+                    <tr>
+                        <td><code>steps</code></td>
+                        <td>Parallel execution of multiple steps</td>
+                        <td><code>parallel: [step1, step2, step3]</code></td>
+                    </tr>
+                    <tr>
+                        <td><code>for</code></td>
+                        <td>Loop over collections</td>
+                        <td><code>for item in ${items}: ...</code></td>
+                    </tr>
+                    <tr>
+                        <td><code>if</code></td>
+                        <td>Conditional execution</td>
+                        <td><code>if ${x > 5}: ...</code></td>
+                    </tr>
+                    <tr>

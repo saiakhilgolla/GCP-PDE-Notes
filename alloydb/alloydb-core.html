@@ -1,0 +1,380 @@
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GCP PDE: AlloyDB Study Notes</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            background-color: #0f1117;
+            color: #e6edf3;
+            font-family: 'Outfit', sans-serif;
+            line-height: 1.6;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+        
+        h1 {
+            color: #1D9E75;
+            border-bottom: 3px solid #1D9E75;
+            padding-bottom: 15px;
+            margin-bottom: 30px;
+            font-size: 2.5em;
+        }
+        
+        h2 {
+            color: #1D9E75;
+            margin-top: 40px;
+            margin-bottom: 20px;
+            font-size: 1.8em;
+        }
+        
+        h3 {
+            color: #58a6ff;
+            margin-top: 25px;
+            margin-bottom: 15px;
+            font-size: 1.3em;
+        }
+        
+        p {
+            margin-bottom: 12px;
+            color: #c9d1d9;
+        }
+        
+        details {
+            background-color: #161b22;
+            border-left: 4px solid #1D9E75;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+        
+        summary {
+            color: #1D9E75;
+            font-weight: 600;
+            font-size: 1.1em;
+            margin-bottom: 10px;
+            user-select: none;
+        }
+        
+        summary:hover {
+            color: #2dbb7f;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            background-color: #161b22;
+            border-radius: 6px;
+            overflow: hidden;
+        }
+        
+        th {
+            background-color: #1D9E75;
+            color: #0f1117;
+            padding: 12px;
+            text-align: left;
+            font-weight: 600;
+        }
+        
+        td {
+            padding: 12px;
+            border-bottom: 1px solid #30363d;
+            color: #c9d1d9;
+        }
+        
+        tr:hover {
+            background-color: #0d1117;
+        }
+        
+        .cheatsheet {
+            background-color: #161b22;
+            border: 2px solid #1D9E75;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+        
+        .cheatsheet ul {
+            list-style: none;
+            padding-left: 0;
+        }
+        
+        .cheatsheet li {
+            padding: 8px 0;
+            color: #c9d1d9;
+            border-bottom: 1px solid #30363d;
+        }
+        
+        .cheatsheet li:before {
+            content: "▸ ";
+            color: #1D9E75;
+            font-weight: bold;
+            margin-right: 8px;
+        }
+        
+        .cheatsheet li:last-child {
+            border-bottom: none;
+        }
+        
+        .trap {
+            background-color: #3d2621;
+            border-left: 4px solid #da3633;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 6px;
+        }
+        
+        .trap strong {
+            color: #ff7b72;
+        }
+        
+        .key-point {
+            background-color: #1f3a3a;
+            border-left: 4px solid #1D9E75;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 6px;
+        }
+        
+        .key-point strong {
+            color: #1D9E75;
+        }
+        
+        code {
+            background-color: #0d1117;
+            color: #58a6ff;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-size: 0.95em;
+        }
+        
+        .comparison-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 15px;
+            margin: 20px 0;
+        }
+        
+        .comparison-card {
+            background-color: #161b22;
+            border: 2px solid #1D9E75;
+            padding: 15px;
+            border-radius: 6px;
+        }
+        
+        .comparison-card h4 {
+            color: #1D9E75;
+            margin-bottom: 10px;
+        }
+        
+        .comparison-card p {
+            font-size: 0.95em;
+            color: #c9d1d9;
+        }
+        
+        @media (max-width: 768px) {
+            .comparison-grid {
+                grid-template-columns: 1fr;
+            }
+            h1 {
+                font-size: 1.8em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🗄️ AlloyDB for PostgreSQL: PDE Study Guide</h1>
+        
+        <!-- CORE CONCEPTS -->
+        <h2>1. Core Concepts</h2>
+        
+        <details>
+            <summary>What is AlloyDB?</summary>
+            <p><strong>AlloyDB</strong> is Google Cloud's fully managed, PostgreSQL-compatible relational database with analytical capabilities. It combines OLTP (online transactional processing) and OLAP (online analytical processing) in a single system.</p>
+            <div class="key-point">
+                <strong>Key Innovation:</strong> Proprietary columnar engine alongside PostgreSQL row engine. Queries automatically route to the optimal engine.
+            </div>
+        </details>
+        
+        <details>
+            <summary>Columnar Engine Basics</summary>
+            <p>The columnar engine stores data column-by-column rather than row-by-row. This enables:</p>
+            <ul style="margin-left: 20px; color: #c9d1d9;">
+                <li>Faster analytical scans (read only needed columns)</li>
+                <li>Better compression ratios (similar data types compress together)</li>
+                <li>Parallel processing of large aggregations</li>
+                <li>Automatic query routing without manual hints</li>
+            </ul>
+            <p style="margin-top: 12px;"><strong>When used:</strong> Queries with aggregate functions (SUM, AVG, COUNT), GROUP BY, large table scans. NOT used for point lookups or small result sets.</p>
+        </details>
+        
+        <details>
+            <summary>PostgreSQL Compatibility Layer</summary>
+            <p>AlloyDB accepts standard PostgreSQL protocol and SQL syntax. You can:</p>
+            <ul style="margin-left: 20px; color: #c9d1d9;">
+                <li>Migrate existing PostgreSQL applications with minimal code changes</li>
+                <li>Use PostgreSQL drivers and tools (psql, pgAdmin, DBeaver)</li>
+                <li>Run PL/pgSQL stored procedures</li>
+                <li>Leverage PostgreSQL extensions (PostGIS, pgvector, UUID)</li>
+            </ul>
+            <p style="margin-top: 12px;"><strong>Exception:</strong> Not 100% compatible. Some advanced features unavailable (e.g., custom C extensions, certain replication modes).</p>
+        </details>
+
+        <details>
+            <summary>High Availability (HA) Architecture</summary>
+            <p>AlloyDB provides built-in HA across zones with zero data loss:</p>
+            <ul style="margin-left: 20px; color: #c9d1d9;">
+                <li><strong>Synchronous replication:</strong> Primary and 2 standby replicas in different zones</li>
+                <li><strong>Automatic failover:</strong> Detects primary failure, promotes standby in ~30 seconds</li>
+                <li><strong>Read-write endpoint:</strong> Always points to current primary (updated during failover)</li>
+                <li><strong>RPO = 0:</strong> Recovery Point Objective. No data loss on failover</li>
+                <li><strong>RTO &lt; 1 minute:</strong> Recovery Time Objective</li>
+            </ul>
+        </details>
+
+        <!-- ARCHITECTURE -->
+        <h2>2. Architecture & Components</h2>
+        
+        <table>
+            <thead>
+                <tr>
+                    <th>Component</th>
+                    <th>Role</th>
+                    <th>Details</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>Primary Cluster</strong></td>
+                    <td>Read-write workloads</td>
+                    <td>Single writer node. Handles all writes. Located in primary zone.</td>
+                </tr>
+                <tr>
+                    <td><strong>Replica Instances</strong></td>
+                    <td>HA & read scaling</td>
+                    <td>2+ read-only copies in standby zones. Receive replication stream synchronously.</td>
+                </tr>
+                <tr>
+                    <td><strong>Read Pool</strong></td>
+                    <td>Read scaling</td>
+                    <td>Additional read-only replicas (different regions). Eventual consistency (~100ms lag typical).</td>
+                </tr>
+                <tr>
+                    <td><strong>Columnar Engine</strong></td>
+                    <td>Analytics queries</td>
+                    <td>Proprietary format. Automatically materialized from row data. Managed transparently.</td>
+                </tr>
+                <tr>
+                    <td><strong>Shared Storage</strong></td>
+                    <td>Persistent storage</td>
+                    <td>Google-managed, replicates across zones. Similar to Spanner storage layer.</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <details>
+            <summary>Read Pools Deep Dive</summary>
+            <p>Read pools allow horizontal scaling of read capacity across regions without increasing write latency.</p>
+            <div class="key-point">
+                <strong>Characteristics:</strong>
+                <ul style="margin-left: 20px; margin-top: 10px;">
+                    <li><strong>Separate replicas:</strong> Not the same as HA replicas. Can be in different region.</li>
+                    <li><strong>Eventual consistency:</strong> Lag typically 100ms-500ms depending on write volume.</li>
+                    <li><strong>Dedicated endpoint:</strong> Route reads to read pool via separate connection string.</li>
+                    <li><strong>Per-query routing:</strong> Smart driver detects read intent and routes automatically (Psycopg3).</li>
+                    <li><strong>Cost:</strong> Additional nodes billed separately. Cheaper than larger primary.</li>
+                </ul>
+            </div>
+            <p style="margin-top: 15px;"><strong>Use case:</strong> Heavy analytics on fresh-but-not-real-time data, reporting dashboards, large batch reads.</p>
+        </details>
+
+        <details>
+            <summary>AlloyDB Omni (On-Premises & Edge)</summary>
+            <p><strong>AlloyDB Omni</strong> brings AlloyDB to your own data center or hybrid cloud environment.</p>
+            <ul style="margin-left: 20px; color: #c9d1d9;">
+                <li>Same PostgreSQL compatibility and columnar engine</li>
+                <li>Run on your own infrastructure (on-premises, VMware, Kubernetes)</li>
+                <li>Sync with AlloyDB clusters in Google Cloud (optional)</li>
+                <li>Fully managed by you (not SaaS). No Google management.</li>
+                <li>Use case: data residency requirements, low-latency local access, hybrid deployments</li>
+            </ul>
+        </details>
+
+        <!-- COMPARISON MATRIX -->
+        <div style="margin-top: 40px;">
+            <h3>AlloyDB vs Cloud SQL vs Spanner</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Feature</th>
+                        <th>AlloyDB</th>
+                        <th>Cloud SQL</th>
+                        <th>Spanner</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Database Type</strong></td>
+                        <td>PostgreSQL (OLTP + OLAP)</td>
+                        <td>PostgreSQL, MySQL, SQL Server</td>
+                        <td>Proprietary (NewSQL)</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Consistency</strong></td>
+                        <td>Strong (primary), eventual (read pools)</td>
+                        <td>Strong (within zone)</td>
+                        <td>Strong (global, ACID)</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Scale</strong></td>
+                        <td>Vertical (compute), horizontal reads</td>
+                        <td>Primarily vertical</td>
+                        <td>Horizontal (sharded globally)</td>
+                    </tr>
+                    <tr>
+                        <td><strong>HA Setup</strong></td>
+                        <td>Built-in (2 replicas)</td>
+                        <td>HA configurable (multi-zone)</td>
+                        <td>Built-in (multi-region)</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Analytical Performance</strong></td>
+                        <td>Excellent (columnar engine)</td>
+                        <td>Good (standard PostgreSQL)</td>
+                        <td>Good (no columnar)</td>
+                    </tr>
+                    <tr>
+                        <td><strong>ACID Transactions</strong></td>
+                        <td>Yes (PostgreSQL MVCC)</td>
+                        <td>Yes</td>
+                        <td>Yes (global)</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Time-to-ready</strong></td>
+                        <td>~5-10 min (cluster)</td>
+                        <td>~5-10 min (instance)</td>
+                        <td>~3-5 min (instance)</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Use Case</strong></td>
+                        <td>Mixed OLTP/OLAP, analytics-heavy</td>
+                        <td>Traditional databases, small-medium</td>
+                        <td>Global, strongly consistent, sharded</td>

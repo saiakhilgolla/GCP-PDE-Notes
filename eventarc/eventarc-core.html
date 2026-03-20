@@ -1,0 +1,360 @@
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GCP PDE: Eventarc - Core Concepts & Architecture</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            background-color: #0f1117;
+            color: #e6edf3;
+            font-family: 'Outfit', sans-serif;
+            line-height: 1.6;
+            padding: 20px;
+        }
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+        h1 {
+            color: #1D9E75;
+            border-bottom: 3px solid #1D9E75;
+            padding-bottom: 10px;
+            margin-bottom: 30px;
+            font-size: 2.5em;
+        }
+        h2 {
+            color: #1D9E75;
+            margin-top: 40px;
+            margin-bottom: 20px;
+            font-size: 1.8em;
+        }
+        h3 {
+            color: #58a6ff;
+            margin-top: 25px;
+            margin-bottom: 15px;
+            font-size: 1.3em;
+        }
+        details {
+            background-color: #161b22;
+            border: 1px solid #30363d;
+            border-radius: 6px;
+            padding: 15px;
+            margin-bottom: 15px;
+            cursor: pointer;
+        }
+        details summary {
+            color: #1D9E75;
+            font-weight: 600;
+            font-size: 1.1em;
+            outline: none;
+        }
+        details summary:hover {
+            color: #2dd4b4;
+        }
+        details[open] summary {
+            margin-bottom: 15px;
+        }
+        details p, details li {
+            color: #e6edf3;
+            margin-top: 10px;
+            margin-left: 20px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            background-color: #161b22;
+            border: 1px solid #30363d;
+            border-radius: 6px;
+            overflow: hidden;
+        }
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #30363d;
+        }
+        th {
+            background-color: #0d419f;
+            color: #1D9E75;
+            font-weight: 600;
+        }
+        tr:last-child td {
+            border-bottom: none;
+        }
+        tr:hover {
+            background-color: #21262d;
+        }
+        code {
+            background-color: #0d1117;
+            color: #79c0ff;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-family: 'Courier New', monospace;
+        }
+        .code-block {
+            background-color: #0d1117;
+            color: #79c0ff;
+            padding: 15px;
+            border-radius: 6px;
+            overflow-x: auto;
+            margin: 15px 0;
+            border-left: 3px solid #1D9E75;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9em;
+            line-height: 1.4;
+        }
+        .warning {
+            background-color: #2d1810;
+            border-left: 4px solid #d29922;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 4px;
+        }
+        .warning-title {
+            color: #d29922;
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+        .trap {
+            background-color: #3d1f1a;
+            border-left: 4px solid #f85149;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 4px;
+        }
+        .trap-title {
+            color: #f85149;
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+        .success {
+            background-color: #1a3a2a;
+            border-left: 4px solid #1D9E75;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 4px;
+        }
+        .success-title {
+            color: #1D9E75;
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+        ul, ol {
+            margin-left: 20px;
+            margin-top: 10px;
+        }
+        li {
+            margin-bottom: 8px;
+        }
+        .section-nav {
+            background-color: #161b22;
+            border: 1px solid #30363d;
+            border-radius: 6px;
+            padding: 20px;
+            margin-bottom: 30px;
+        }
+        .section-nav h3 {
+            margin-top: 0;
+        }
+        .section-nav ul {
+            list-style: none;
+            margin-left: 0;
+        }
+        .section-nav li {
+            padding: 5px 0;
+        }
+        .section-nav a {
+            color: #1D9E75;
+            text-decoration: none;
+        }
+        .section-nav a:hover {
+            text-decoration: underline;
+        }
+        .cheatsheet-item {
+            background-color: #161b22;
+            border: 1px solid #1D9E75;
+            border-radius: 4px;
+            padding: 12px;
+            margin-bottom: 10px;
+        }
+        .cheatsheet-key {
+            color: #1D9E75;
+            font-weight: 600;
+            font-size: 0.95em;
+        }
+        .cheatsheet-value {
+            color: #e6edf3;
+            font-size: 0.9em;
+            margin-top: 3px;
+        }
+        .decision-tree {
+            background-color: #161b22;
+            border: 1px solid #30363d;
+            border-radius: 6px;
+            padding: 15px;
+            margin: 15px 0;
+        }
+        .decision-tree p {
+            margin: 8px 0;
+        }
+        .decision-path {
+            margin-left: 20px;
+            padding-left: 15px;
+            border-left: 2px solid #1D9E75;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎯 GCP PDE: Eventarc Mastery</h1>
+        <p style="font-size: 1.1em; color: #58a6ff; margin-bottom: 30px;">Core Concepts, Architecture, Configuration & Exam Patterns</p>
+
+        <!-- Quick Navigation -->
+        <div class="section-nav">
+            <h3>📌 Quick Navigation</h3>
+            <ul>
+                <li><a href="#core-concepts">Core Concepts</a></li>
+                <li><a href="#architecture">Architecture & Components</a></li>
+                <li><a href="#config-limits">Configuration & Limits</a></li>
+                <li><a href="#exam-traps">Exam Traps</a></li>
+                <li><a href="#cheatsheet">Quick Cheatsheet</a></li>
+                <li><a href="#question-patterns">Question Patterns & Decision Frameworks</a></li>
+            </ul>
+        </div>
+
+        <!-- Section 1: Core Concepts -->
+        <h2 id="core-concepts">1. Core Concepts</h2>
+
+        <h3>What is Eventarc?</h3>
+        <p>Eventarc is a fully managed, serverless event routing and delivery platform on GCP. It enables you to:</p>
+        <ul>
+            <li><strong>Ingest events</strong> from multiple sources (Audit Logs, Pub/Sub, Cloud Storage, Dataflow, etc.)</li>
+            <li><strong>Route events</strong> based on filters and patterns</li>
+            <li><strong>Deliver events</strong> to targets (Cloud Run, Workflows, Pub/Sub, Cloud Functions)</li>
+            <li><strong>Transform and enrich</strong> events in transit using Cloud Run services</li>
+            <li><strong>Decouple producers from consumers</strong> — event sources need not know about targets</li>
+        </ul>
+
+        <details>
+            <summary>📋 How Eventarc Works: The Flow</summary>
+            <div>
+                <p><strong>Step 1: Event Source</strong></p>
+                <ul>
+                    <li>An event is emitted (e.g., file uploaded to GCS, API call logged in Audit Logs, message published to Pub/Sub)</li>
+                </ul>
+                <p><strong>Step 2: Event Matching</strong></p>
+                <ul>
+                    <li>Eventarc receives the event and checks all active triggers</li>
+                    <li>A trigger is a rule that matches events based on source, type, and optional attribute filters</li>
+                </ul>
+                <p><strong>Step 3: Routing & Transformation</strong></p>
+                <ul>
+                    <li>If an event matches a trigger, Eventarc retrieves the event details (headers, payload, attributes)</li>
+                    <li>Optional: Cloud Run service can enrich/transform the event</li>
+                </ul>
+                <p><strong>Step 4: Delivery</strong></p>
+                <ul>
+                    <li>Event is delivered to the target (Cloud Run, Pub/Sub, Cloud Workflows, Cloud Functions)</li>
+                    <li>Target processes the event synchronously or asynchronously</li>
+                </ul>
+                <p><strong>Step 5: Acknowledgment & Retry</strong></p>
+                <ul>
+                    <li>If target returns success (HTTP 200-299), event is marked delivered</li>
+                    <li>If target fails or times out, Eventarc retries (configurable retry policy)</li>
+                    <li>Events that fail after max retries are sent to a Dead Letter Queue (DLQ) if configured</li>
+                </ul>
+            </div>
+        </details>
+
+        <h3>Key Event Sources</h3>
+        <table>
+            <tr>
+                <th>Source</th>
+                <th>Description</th>
+                <th>Event Type Example</th>
+                <th>Use Case</th>
+            </tr>
+            <tr>
+                <td><strong>Pub/Sub</strong></td>
+                <td>Messages published to a Pub/Sub topic</td>
+                <td><code>google.pubsub.topic.publish</code></td>
+                <td>Decouple services; custom event streams</td>
+            </tr>
+            <tr>
+                <td><strong>Cloud Audit Logs</strong></td>
+                <td>Admin/Data/System activity logs</td>
+                <td><code>google.cloud.audit.log.v1.written</code></td>
+                <td>Compliance, governance, data lineage</td>
+            </tr>
+            <tr>
+                <td><strong>Cloud Storage</strong></td>
+                <td>Object created/deleted/modified</td>
+                <td><code>google.cloud.storage.object.finalized</code></td>
+                <td>Data pipeline trigger (file upload → process)</td>
+            </tr>
+            <tr>
+                <td><strong>Firestore</strong></td>
+                <td>Document created/updated/deleted</td>
+                <td><code>google.firebase.firestore.document.v1.written</code></td>
+                <td>Real-time data synchronization</td>
+            </tr>
+            <tr>
+                <td><strong>Cloud Tasks</strong></td>
+                <td>Task execution completion</td>
+                <td><code>google.cloud.tasks.task.completed</code></td>
+                <td>Trigger workflows from scheduled tasks</td>
+            </tr>
+            <tr>
+                <td><strong>Gmail/Chat API</strong></td>
+                <td>Push subscriptions (via Pub/Sub)</td>
+                <td><code>google.cloud.pubsub.topic.publish</code></td>
+                <td>Real-time message processing</td>
+            </tr>
+        </table>
+
+        <h3>Triggers: The Matching Rules</h3>
+        <p>A <strong>trigger</strong> is the configuration that matches events and routes them to targets. Key properties:</p>
+        <ul>
+            <li><strong>Event Filters</strong>: Match by event source, event type, and attribute filters (e.g., bucket name, resource name)</li>
+            <li><strong>Service Account</strong>: Used to authenticate to the target and call Eventarc APIs</li>
+            <li><strong>Destination</strong>: Cloud Run service, Pub/Sub topic, Cloud Workflows, or Cloud Function</li>
+            <li><strong>Retry Policy</strong>: Max retries, backoff strategy</li>
+            <li><strong>Dead Letter Queue</strong>: (Optional) Where failed events go after exhausting retries</li>
+        </ul>
+
+        <details>
+            <summary>🔍 Event Matching Logic: Filters & Patterns</summary>
+            <div>
+                <p><strong>Source-Based Filtering</strong></p>
+                <ul>
+                    <li>Specify the event source: <code>google.cloud.storage</code>, <code>google.cloud.pubsub.topic</code>, <code>google.cloud.audit.log</code>, etc.</li>
+                </ul>
+                <p><strong>Type-Based Filtering</strong></p>
+                <ul>
+                    <li>Match specific event types: <code>google.cloud.storage.object.finalized</code>, <code>google.cloud.audit.log.v1.written</code></li>
+                </ul>
+                <p><strong>Attribute Filtering (CEL Expressions)</strong></p>
+                <ul>
+                    <li>Use Common Expression Language (CEL) to match attributes</li>
+                    <li>Example: <code>match(bucket, "my-data-bucket")</code> — only trigger on uploads to a specific bucket</li>
+                    <li>Example: <code>match(resourceName, "projects/my-project/datasets/sensitive*")</code> — trigger on API calls to sensitive datasets</li>
+                    <li>Supports operators: <code>==</code>, <code>!=</code>, <code>match()</code>, <code>startsWith()</code>, <code>endsWith()</code></li>
+                </ul>
+                <p><strong>Multiple Filters (AND Logic)</strong></p>
+                <ul>
+                    <li>All filters must match for an event to trigger the destination</li>
+                    <li>No OR logic at the trigger level — use multiple triggers or post-processing in the target</li>
+                </ul>
+            </div>
+        </details>
+
+        <!-- Section 2: Architecture -->
