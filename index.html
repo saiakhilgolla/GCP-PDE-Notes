@@ -653,6 +653,38 @@ body.sb-closed { padding-left: var(--sb-w-collapsed) !important; }
 </style>
 </head>
 <body>
+
+<!-- ═══ LIGHTBOX ═══ -->
+<div class="ne-lightbox" id="neLightbox" onclick="this.classList.remove('open')">
+  <img id="neLightboxImg" src="" alt="note image">
+</div>
+
+<!-- ═══ GITHUB SETTINGS MODAL ═══ -->
+<div class="ne-settings-overlay" id="neSettingsOverlay">
+  <div class="ne-settings-modal">
+    <h3>GitHub Sync Settings</h3>
+    <p>Notes and images will auto-commit to your GitHub repo on every save. Your PAT is stored only in your browser's localStorage and never sent anywhere except GitHub's API.</p>
+    <div class="ne-field">
+      <label>Personal Access Token</label>
+      <input type="password" id="nePatInput" placeholder="ghp_xxxxxxxxxxxxxxxxxxxx">
+      <div class="ne-hint">Needs <strong>repo</strong> scope. <a href="https://github.com/settings/tokens/new" target="_blank">Create one here ↗</a></div>
+    </div>
+    <div class="ne-field">
+      <label>Repository (owner/repo)</label>
+      <input type="text" id="neRepoInput" placeholder="yourname/gcp-pde-notes">
+    </div>
+    <div class="ne-field">
+      <label>Branch</label>
+      <input type="text" id="neBranchInput" placeholder="main">
+    </div>
+    <div class="ne-modal-status" id="neModalStatus"></div>
+    <div class="ne-modal-actions">
+      <button class="ne-modal-cancel" onclick="neCloseSettings()">Cancel</button>
+      <button class="ne-modal-save" onclick="neTestAndSave()">Save &amp; Test</button>
+    </div>
+  </div>
+</div>
+
 <!-- ═══ SIDEBAR ═══ -->
 <div class="sb-overlay" id="sbOverlay" onclick="closeSidebar()"></div>
 <aside class="sidebar" id="sidebar">
@@ -772,6 +804,7 @@ body.sb-closed { padding-left: var(--sb-w-collapsed) !important; }
       </div>
     </div>
   </div>
+  <button class="sb-settings-btn" onclick="neOpenSettings()"><span class="sb-settings-icon">⚙</span><span class="sb-settings-label">GitHub Sync</span></button>
 </aside>
 <!-- ═══ END SIDEBAR ═══ -->
 
