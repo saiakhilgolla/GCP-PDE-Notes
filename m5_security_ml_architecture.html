@@ -1,0 +1,1358 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Module 5 — Security, ML & Architecture</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap');
+
+[data-theme="dark"] {
+  --bg:#0d0f14; --surface:#161920; --surface2:#1e2230;
+  --border:#2a2f3d; --text:#e8eaf0; --muted:#7a8099; --dim:#4a5168;
+  --prose-color:#c0c4d4; --kv-val-color:#9aa0b8; --code-color:#c8d0e8;
+  --accent:#4dff91; --accent-bg:#091a11; --accent-border:#0f4024; --accent-text:#4dff91; --num-fg:#0d0f14;
+  --alert-info-bg:#091a11;  --alert-info-text:#99ffcc;  --alert-info-border:#4dff91;
+  --alert-warn-bg:#1a1000;  --alert-warn-text:#ffd699;  --alert-warn-border:#ffb84d;
+  --alert-red-bg:#1a0a0a;   --alert-red-text:#ffaaaa;   --alert-red-border:#ff4d4d;
+  --alert-green-bg:#091a11; --alert-green-text:#99ffcc; --alert-green-border:#4dff91;
+  --code-bg:#0a0c10; --scenario-bg:#1e2230; --section-label-color:#2a6641;
+  --toggle-track:#0f4024; --toggle-border:#0f4024; --toggle-knob:#4dff91; --toggle-shadow:rgba(77,255,145,0.3);
+  --sun-op:0.35; --moon-op:1;
+  --mini-bg:#1e2230; --mini-good-bg:#091a11; --mini-bad-bg:#1a0a0a;
+  --mini-good-text:#4dff91; --mini-bad-text:#ff4d4d;
+  --table-head:#4a5168; --table-row-border:#1e2230; --table-td:#9aa0b8;
+  --dt-bg:#1e2230; --dt-q:#9aa0b8;
+  --pipe-bg:#1e2230; --pipe-border:#2a2f3d;
+  --arch-box-border:#2a2f3d; --arch-header-bg:#1e2230; --arch-val:#9aa0b8; --arch-label:#4a5168;
+  --note-bg:#091a11; --note-border:#0f4024; --note-text:#99ffcc;
+  --note-ts:#2a6641; --note-input-bg:#0a0c10; --note-input-border:#0f4024;
+  --note-trigger-color:#2a6641; --note-trigger-hover:#4dff91;
+}
+[data-theme="light"] {
+  --bg:#f7f8f4; --surface:#ffffff; --surface2:#f0f2ec;
+  --border:#dde0d8; --text:#1c1f18; --muted:#5a6052; --dim:#9aa090;
+  --prose-color:#4a5240; --kv-val-color:#5a6052; --code-color:#2a3820;
+  --accent:#1e8a45; --accent-bg:#eaf6ee; --accent-border:#9ed4b2; --accent-text:#1e8a45; --num-fg:#ffffff;
+  --alert-info-bg:#eaf6ee;  --alert-info-text:#155c2e;  --alert-info-border:#1e8a45;
+  --alert-warn-bg:#fdf6e8;  --alert-warn-text:#7a4400;  --alert-warn-border:#c08020;
+  --alert-red-bg:#fdf0f0;   --alert-red-text:#8a2020;   --alert-red-border:#c04040;
+  --alert-green-bg:#eaf6ee; --alert-green-text:#155c2e; --alert-green-border:#1e8a45;
+  --code-bg:#f0f2ec; --scenario-bg:#f4f6f0; --section-label-color:#1e8a45;
+  --toggle-track:#1e8a45; --toggle-border:#9ed4b2; --toggle-knob:#ffffff; --toggle-shadow:rgba(0,0,0,0.15);
+  --sun-op:1; --moon-op:0.4;
+  --mini-bg:#f0f2ec; --mini-good-bg:#eaf6ee; --mini-bad-bg:#fdf0f0;
+  --mini-good-text:#155c2e; --mini-bad-text:#8a2020;
+  --table-head:#9aa090; --table-row-border:#f0f2ec; --table-td:#5a6052;
+  --dt-bg:#f0f2ec; --dt-q:#5a6052;
+  --pipe-bg:#f0f2ec; --pipe-border:#dde0d8;
+  --arch-box-border:#dde0d8; --arch-header-bg:#f0f2ec; --arch-val:#5a6052; --arch-label:#9aa090;
+  --note-bg:#eaf6ee; --note-border:#9ed4b2; --note-text:#155c2e;
+  --note-ts:#9ed4b2; --note-input-bg:#f7f8f4; --note-input-border:#9ed4b2;
+  --note-trigger-color:#9ed4b2; --note-trigger-hover:#1e8a45;
+}
+
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'IBM Plex Sans',sans-serif;background:var(--bg);color:var(--text);padding:28px 20px;max-width:860px;margin:0 auto;line-height:1.6;transition:background .3s,color .3s}
+
+.page-header{margin-bottom:24px;padding-bottom:18px;border-bottom:1px solid var(--border);display:flex;align-items:flex-start;justify-content:space-between;gap:16px}
+.header-text .label{font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--accent);letter-spacing:.15em;text-transform:uppercase;margin-bottom:7px}
+.header-text h1{font-size:22px;font-weight:600;color:var(--text);margin-bottom:4px}
+.header-text p{font-size:13px;color:var(--muted)}
+
+.theme-toggle{display:flex;align-items:center;gap:7px;flex-shrink:0;margin-top:2px;cursor:pointer;user-select:none}
+.ti-sun,.ti-moon{font-size:14px;line-height:1;transition:opacity .3s}
+.ti-sun{opacity:var(--sun-op)}.ti-moon{opacity:var(--moon-op)}
+.toggle-track{position:relative;width:42px;height:24px;background:var(--toggle-track);border-radius:99px;border:1px solid var(--toggle-border);flex-shrink:0;transition:background .3s}
+.toggle-knob{position:absolute;top:3px;left:3px;width:16px;height:16px;border-radius:50%;background:var(--toggle-knob);box-shadow:0 1px 4px var(--toggle-shadow);transition:transform .25s cubic-bezier(.4,0,.2,1)}
+[data-theme="light"] .toggle-knob{transform:translateX(18px)}
+
+.tab-bar{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:20px;position:sticky;top:0;background:var(--bg);padding:10px 0;z-index:10;border-bottom:1px solid var(--border);transition:background .3s}
+.tab-btn{font-family:'IBM Plex Mono',monospace;font-size:11px;padding:5px 12px;border-radius:99px;border:1px solid var(--border);background:transparent;color:var(--muted);cursor:pointer;white-space:nowrap;transition:all .15s;letter-spacing:.03em}
+.tab-btn:hover{background:var(--surface2);color:var(--text)}
+.tab-btn.active{background:var(--accent-bg);color:var(--accent-text);border-color:var(--accent-border);font-weight:600}
+.tab-section{display:none}.tab-section.active{display:block}
+
+.gap{border:1px solid var(--border);border-radius:10px;margin-bottom:14px;overflow:hidden;background:var(--surface);transition:background .3s,border-color .3s}
+.gap-header{display:flex;align-items:center;gap:10px;padding:13px 16px;cursor:pointer;transition:background .15s}
+.gap-header:hover{background:var(--surface2)}
+.gap-num{font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:600;color:var(--num-fg);background:var(--accent);width:22px;height:22px;border-radius:5px;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:background .3s}
+.gap-title{flex:1;font-size:13.5px;font-weight:600;color:var(--text)}
+.gap-tag{font-family:'IBM Plex Mono',monospace;font-size:10px;padding:2px 8px;border-radius:99px;font-weight:600;letter-spacing:.04em;background:var(--accent-bg);color:var(--accent-text);border:1px solid var(--accent-border);white-space:nowrap;transition:all .3s}
+.chevron{font-size:10px;color:var(--dim);transition:transform .2s;margin-left:4px;flex-shrink:0}
+.chevron.open{transform:rotate(90deg)}
+.gap-body{display:none;border-top:1px solid var(--border);padding:16px 18px}
+.gap-body.open{display:block}
+
+.section-label{font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--section-label-color);margin:14px 0 7px;opacity:.85}
+.section-label:first-child{margin-top:0}
+p.prose{font-size:13px;color:var(--prose-color);line-height:1.7;margin-bottom:8px}
+p.prose:last-child{margin-bottom:0}
+.kv-row{display:flex;gap:12px;margin-bottom:8px;font-size:13px}
+.kv-key{font-weight:600;color:var(--text);min-width:200px;flex-shrink:0}
+.kv-val{color:var(--kv-val-color);line-height:1.55}
+.alert{padding:10px 14px;font-size:12.5px;line-height:1.6;border-left:3px solid;margin:10px 0;transition:background .3s,color .3s}
+.alert-blue  {background:var(--alert-info-bg);  color:var(--alert-info-text);  border-color:var(--alert-info-border)}
+.alert-amber {background:var(--alert-warn-bg);  color:var(--alert-warn-text);  border-color:var(--alert-warn-border)}
+.alert-red   {background:var(--alert-red-bg);   color:var(--alert-red-text);   border-color:var(--alert-red-border)}
+.alert-green {background:var(--alert-green-bg); color:var(--alert-green-text); border-color:var(--alert-green-border)}
+.code{font-family:'IBM Plex Mono',monospace;font-size:11.5px;background:var(--code-bg);border:1px solid var(--border);border-radius:6px;padding:12px 14px;color:var(--code-color);line-height:1.65;white-space:pre;overflow-x:auto;margin:8px 0;transition:background .3s,color .3s}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:8px 0}
+.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin:8px 0}
+.mini{background:var(--mini-bg);border:1px solid var(--border);border-radius:8px;padding:10px 12px;transition:background .3s}
+.mini.good{background:var(--mini-good-bg);border-color:var(--accent-border)}
+.mini.bad {background:var(--mini-bad-bg); border-color:var(--alert-red-border)}
+.mt{font-size:12px;font-weight:600;margin-bottom:4px;color:var(--text)}
+.mini.good .mt{color:var(--mini-good-text)}.mini.bad .mt{color:var(--mini-bad-text)}
+.mb{font-size:12px;color:var(--kv-val-color);line-height:1.5}
+.scenario-box{border:1px solid var(--border);border-radius:8px;padding:12px 14px;margin-bottom:10px;background:var(--scenario-bg);transition:background .3s,border-color .3s}
+.scenario-q{font-size:13px;font-weight:600;color:var(--text);margin-bottom:7px;line-height:1.5}
+.scenario-a{font-size:12.5px;color:var(--kv-val-color);line-height:1.6;white-space:pre-line}
+.scenario-a strong{color:var(--accent);font-weight:600}
+.dt{background:var(--dt-bg);border-radius:8px;padding:12px 14px;margin:8px 0;transition:background .3s}
+.dr{display:flex;align-items:center;gap:10px;margin-bottom:7px;font-size:13px}
+.dr:last-child{margin-bottom:0}
+.dq{flex:1;color:var(--dt-q);font-size:12.5px;line-height:1.45}
+.da{font-family:'IBM Plex Mono',monospace;font-weight:600;font-size:11px;white-space:nowrap;padding:3px 10px;border-radius:99px}
+.pipe{display:flex;align-items:center;flex-wrap:wrap;gap:4px;margin:10px 0}
+.ps{background:var(--pipe-bg);border:1px solid var(--pipe-border);border-radius:7px;padding:7px 11px;font-size:12px;font-weight:600;color:var(--text);white-space:nowrap;line-height:1.4;transition:background .3s}
+.pa{font-size:12px;color:var(--dim);padding:0 2px}
+.ps-sub{font-size:10px;font-weight:400;opacity:.7;display:block}
+.arch-box{border:1px solid var(--arch-box-border);border-radius:8px;overflow:hidden;margin:10px 0;transition:border-color .3s}
+.arch-header{padding:9px 14px;font-size:13px;font-weight:600;border-bottom:1px solid var(--arch-box-border);background:var(--arch-header-bg);color:var(--text);transition:background .3s}
+.arch-body{padding:10px 14px}
+.arch-row{display:flex;gap:10px;margin-bottom:6px;font-size:12.5px}
+.arch-label{font-weight:600;min-width:90px;flex-shrink:0;color:var(--arch-label);font-size:11px;text-transform:uppercase;letter-spacing:.05em;padding-top:1px;font-family:'IBM Plex Mono',monospace}
+.arch-val{color:var(--arch-val);line-height:1.5}
+.cmp-wrap{overflow-x:auto;margin:10px 0}
+.cmp{width:100%;border-collapse:collapse;font-size:12px}
+.cmp th{padding:7px 10px;text-align:left;font-weight:600;font-size:11px;text-transform:uppercase;letter-spacing:.05em;color:var(--table-head);border-bottom:1px solid var(--border);font-family:'IBM Plex Mono',monospace}
+.cmp td{padding:7px 10px;border-bottom:1px solid var(--table-row-border);vertical-align:top;color:var(--table-td);line-height:1.5;font-size:12px;transition:color .3s,border-color .3s}
+.cmp td:first-child{font-weight:600;color:var(--text);white-space:nowrap}
+.cmp tr:last-child td{border-bottom:none}
+
+/* ── NOTES ── */
+.note-zone{margin-top:14px;border-top:1px solid var(--border);padding-top:12px}
+.notes-list{display:flex;flex-direction:column;gap:8px;margin-bottom:8px}
+.note-item{background:var(--note-bg);border-left:2px solid var(--accent);border-radius:0 6px 6px 0;padding:9px 11px}
+.note-item-text{font-size:12.5px;color:var(--note-text);line-height:1.6;white-space:pre-wrap;word-break:break-word}
+.note-item-footer{display:flex;align-items:center;justify-content:space-between;margin-top:6px}
+.note-ts{font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--note-ts)}
+.note-item-actions{display:flex;gap:4px}
+.note-action-btn{font-size:10px;font-family:'IBM Plex Mono',monospace;padding:2px 8px;border-radius:99px;border:1px solid var(--border);background:transparent;color:var(--muted);cursor:pointer;transition:all .15s}
+.note-action-btn:hover{background:var(--surface2);color:var(--text)}
+.note-action-btn.del:hover{background:var(--alert-red-bg);color:var(--alert-red-text);border-color:var(--alert-red-border)}
+.note-form{margin-top:8px}
+.note-form textarea{width:100%;font-size:12.5px;font-family:'IBM Plex Sans',sans-serif;line-height:1.55;resize:vertical;min-height:68px;padding:8px 10px;border-radius:6px;border:1px solid var(--note-input-border);background:var(--note-input-bg);color:var(--text);transition:background .3s,border-color .3s}
+.note-form textarea:focus{outline:none;border-color:var(--accent)}
+.note-form-actions{display:flex;gap:6px;margin-top:6px}
+.note-save-btn{font-size:11px;font-family:'IBM Plex Mono',monospace;padding:4px 12px;border-radius:99px;border:1px solid var(--accent-border);background:var(--accent-bg);color:var(--accent-text);cursor:pointer;font-weight:600;transition:all .15s}
+.note-save-btn:hover{background:var(--accent);color:var(--num-fg)}
+.note-cancel-btn{font-size:11px;font-family:'IBM Plex Mono',monospace;padding:4px 12px;border-radius:99px;border:1px solid var(--border);background:transparent;color:var(--muted);cursor:pointer;transition:all .15s}
+.note-cancel-btn:hover{background:var(--surface2);color:var(--text)}
+.note-add-trigger{display:flex;align-items:center;gap:6px;font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--note-trigger-color);cursor:pointer;padding:4px 0;background:none;border:none;transition:color .15s;letter-spacing:.03em}
+.note-add-trigger:hover{color:var(--note-trigger-hover)}
+
+@media(max-width:600px){
+  body{padding:14px 12px}
+  .page-header{flex-direction:column;gap:12px}
+  .header-text h1{font-size:18px}
+  .tab-bar{gap:5px;padding:8px 0}
+  .tab-btn{font-size:10px;padding:4px 9px}
+  .gap-header{padding:11px 13px;gap:8px}
+  .gap-title{font-size:12.5px}
+  .gap-tag{display:none}
+  .gap-body{padding:13px 14px}
+  .kv-row{flex-direction:column;gap:3px}
+  .kv-key{min-width:unset}
+  .g2,.g3{grid-template-columns:1fr}
+  .dr{flex-direction:column;align-items:flex-start;gap:4px}
+  .arch-row{flex-direction:column;gap:2px}
+  .code{font-size:10.5px;padding:10px 11px}
+}
+
+
+
+
+/* ════════════════════════════════════════════════════════
+   SIDEBAR + BOTTOM BAR
+════════════════════════════════════════════════════════ */
+:root { --sb-w: 220px; --sb-w-collapsed: 48px; --bb-h: 56px; }
+
+[data-theme="dark"] {
+  --sb-bg: #0f1118;
+  --sb-border: #1e2230;
+  --sb-hover: #1a1f2e;
+  --sb-active-bg: #091a11;
+  --sb-active-text: #4dff91;
+  --sb-active-border: #0f4024;
+  --sb-text: #7a8099;
+  --sb-text-strong: #c0c4d4;
+  --sb-num: #3a3f52;
+  --sb-badge-bg: #091a11;
+  --sb-badge-text: #4dff91;
+  --sb-badge-border: #0f4024;
+  --sb-sub-text: #5a6070;
+  --sb-sub-hover: #1e2230;
+  --sb-section: #252b3a;
+  --sb-collapse-color: #4a5168;
+  --sb-overlay-bg: rgba(0,0,0,0.55);
+  --bb-bg: #0f1118;
+  --bb-border: #1e2230;
+  --bb-text: #5a6070;
+  --bb-active: #4dff91;
+}
+[data-theme="light"] {
+  --sb-bg: #ffffff;
+  --sb-border: #e4e8e0;
+  --sb-hover: #f4f6f0;
+  --sb-active-bg: #eaf6ee;
+  --sb-active-text: #1e8a45;
+  --sb-active-border: #9ed4b2;
+  --sb-text: #6a7060;
+  --sb-text-strong: #2a3020;
+  --sb-num: #c0c8b8;
+  --sb-badge-bg: #eaf6ee;
+  --sb-badge-text: #1e8a45;
+  --sb-badge-border: #9ed4b2;
+  --sb-sub-text: #9aa090;
+  --sb-sub-hover: #f0f4ec;
+  --sb-section: #eaeee6;
+  --sb-collapse-color: #b0b8a8;
+  --sb-overlay-bg: rgba(0,0,0,0.25);
+  --bb-bg: #ffffff;
+  --bb-border: #e4e8e0;
+  --bb-text: #9aa090;
+  --bb-active: #1e8a45;
+}
+
+/* ── LAYOUT SHIFT ── */
+body { transition: padding-left .25s cubic-bezier(.4,0,.2,1); }
+body.sb-open   { padding-left: var(--sb-w) !important; }
+body.sb-closed { padding-left: var(--sb-w-collapsed) !important; }
+
+/* ── SIDEBAR ── */
+.sidebar {
+  position: fixed;
+  top: 0; left: 0;
+  width: var(--sb-w);
+  height: 100vh;
+  background: var(--sb-bg);
+  border-right: 1px solid var(--sb-border);
+  display: flex;
+  flex-direction: column;
+  z-index: 200;
+  overflow: hidden;
+  transition: width .25s cubic-bezier(.4,0,.2,1), background .3s, border-color .3s;
+}
+.sidebar.collapsed { width: var(--sb-w-collapsed); }
+.sidebar.collapsed .sb-mod-label,
+.sidebar.collapsed .sb-expand-icon,
+.sidebar.collapsed .sb-brand,
+.sidebar.collapsed .sb-subtopics { display: none; }
+.sidebar.collapsed .sb-mod-num,
+.sidebar.collapsed .sb-mod-icon { margin: 0 auto; }
+.sidebar.collapsed .sb-mod-link { justify-content: center; padding: 10px 0; }
+.sidebar.collapsed .sb-nav { padding-top: 4px; }
+
+/* ── SIDEBAR HEAD ── */
+.sb-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 14px 12px;
+  border-bottom: 1px solid var(--sb-border);
+  flex-shrink: 0;
+  min-height: 52px;
+  gap: 8px;
+}
+.sb-brand {
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  overflow: hidden;
+}
+.sb-badge {
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 10px;
+  font-weight: 600;
+  background: var(--sb-badge-bg);
+  color: var(--sb-badge-text);
+  border: 1px solid var(--sb-badge-border);
+  border-radius: 5px;
+  padding: 3px 7px;
+  letter-spacing: .06em;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+.sb-collapse-btn {
+  background: none;
+  border: 1px solid var(--sb-border);
+  border-radius: 6px;
+  color: var(--sb-collapse-color);
+  font-size: 10px;
+  cursor: pointer;
+  padding: 4px 7px;
+  line-height: 1;
+  transition: all .15s;
+  flex-shrink: 0;
+  white-space: nowrap;
+}
+.sb-collapse-btn:hover { background: var(--sb-hover); color: var(--sb-text-strong); }
+.sidebar.collapsed .sb-collapse-btn { transform: rotate(180deg); }
+
+/* ── SIDEBAR NAV ── */
+.sb-nav {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 8px 0 24px;
+  scrollbar-width: thin;
+  scrollbar-color: var(--sb-border) transparent;
+}
+
+.sb-mod-link {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px 8px 14px;
+  text-decoration: none;
+  color: var(--sb-text);
+  font-size: 12.5px;
+  font-weight: 500;
+  border-left: 2px solid transparent;
+  transition: background .1s, color .1s, border-color .1s;
+  line-height: 1.3;
+}
+.sb-mod-link:hover {
+  background: var(--sb-hover);
+  color: var(--sb-text-strong);
+}
+.sb-mod-link.active {
+  background: var(--sb-active-bg);
+  color: var(--sb-active-text);
+  border-left-color: var(--sb-active-border);
+  font-weight: 600;
+}
+.sb-mod-num {
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 10px;
+  color: var(--sb-num);
+  flex-shrink: 0;
+  width: 20px;
+  text-align: right;
+  transition: color .1s;
+}
+.sb-mod-icon { font-size: 13px; flex-shrink: 0; width: 20px; text-align: center; }
+.sb-mod-label { flex: 1; }
+.sb-mod-link.active .sb-mod-num { color: var(--sb-active-text); opacity: .55; }
+
+.sb-expand-icon {
+  font-size: 9px;
+  color: var(--sb-num);
+  flex-shrink: 0;
+  transition: transform .18s;
+}
+.sb-mod-group.open > .sb-mod-link .sb-expand-icon { transform: rotate(90deg); }
+
+/* ── SUBTOPICS ── */
+.sb-subtopics {
+  display: none;
+  flex-direction: column;
+  border-left: 1px solid var(--sb-border);
+  margin: 0 0 2px 28px;
+}
+.sb-mod-group.open > .sb-subtopics { display: flex; }
+
+.sb-sub-link {
+  display: block;
+  padding: 5px 10px 5px 12px;
+  font-size: 11.5px;
+  color: var(--sb-sub-text);
+  text-decoration: none;
+  border-left: 2px solid transparent;
+  transition: background .1s, color .1s, border-color .1s;
+  line-height: 1.4;
+}
+.sb-sub-link:hover {
+  background: var(--sb-sub-hover);
+  color: var(--sb-text-strong);
+}
+.sb-sub-link.active {
+  color: var(--sb-active-text);
+  border-left-color: var(--sb-active-border);
+  font-weight: 600;
+}
+
+/* ── OVERLAY ── */
+.sb-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: var(--sb-overlay-bg);
+  z-index: 199;
+}
+
+/* ════════════════════════════════════════════════════════
+   MOBILE — BOTTOM TAB BAR (≤768px)
+════════════════════════════════════════════════════════ */
+.bottom-bar {
+  display: none;
+}
+
+@media (max-width: 768px) {
+  /* hide desktop sidebar entirely */
+  .sidebar, .sb-overlay { display: none !important; }
+
+  /* undo layout shift */
+  body.sb-open, body.sb-closed { padding-left: 0 !important; }
+
+  /* push content up so bottom bar doesn't overlap */
+  body { padding-bottom: calc(var(--bb-h) + 4px) !important; }
+
+  .bottom-bar {
+    display: flex;
+    position: fixed;
+    bottom: 0; left: 0; right: 0;
+    height: var(--bb-h);
+    background: var(--bb-bg);
+    border-top: 1px solid var(--bb-border);
+    z-index: 200;
+    align-items: stretch;
+    transition: background .3s, border-color .3s;
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+  .bottom-bar::-webkit-scrollbar { display: none; }
+
+  .bb-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 3px;
+    flex: 1;
+    min-width: 52px;
+    text-decoration: none;
+    color: var(--bb-text);
+    padding: 6px 4px;
+    border-top: 2px solid transparent;
+    transition: color .15s, border-color .15s;
+  }
+  .bb-item.active {
+    color: var(--bb-active);
+    border-top-color: var(--bb-active);
+  }
+  .bb-icon {
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 12px;
+    font-weight: 600;
+    line-height: 1;
+  }
+  .bb-label {
+    font-size: 9px;
+    font-family: "IBM Plex Mono", monospace;
+    letter-spacing: .02em;
+    white-space: nowrap;
+  }
+
+  /* keep tab-bar sticky above bottom bar on module pages */
+  .tab-bar { bottom: var(--bb-h) !important; }
+}
+
+/* also hide toggle button from index page header on desktop
+   (hamburger only needed on mobile, but we removed that approach) */
+.sb-menu-btn { display: none; }
+/* ════════════════════════════════════════════════════════
+   END SIDEBAR + BOTTOM BAR
+════════════════════════════════════════════════════════ */
+
+</style>
+</head>
+<body>
+<!-- ═══ SIDEBAR ═══ -->
+<div class="sb-overlay" id="sbOverlay" onclick="closeSidebar()"></div>
+<aside class="sidebar" id="sidebar">
+  <div class="sb-head">
+    <a href="index.html" class="sb-brand">
+      <span class="sb-badge">GCP PDE</span>
+    </a>
+    <button class="sb-collapse-btn" id="sbCollapseBtn" onclick="toggleSidebar()" title="Collapse sidebar">◀</button>
+  </div>
+  <div class="sb-nav">
+    <a href="index.html" class="sb-mod-link" data-page="index">
+      <span class="sb-mod-icon">⌂</span>
+      <span class="sb-mod-label">Home</span>
+    </a>
+    <div class="sb-mod-group" data-group="m1_bigquery">
+      <a href="m1_bigquery.html" class="sb-mod-link" data-page="m1_bigquery">
+        <span class="sb-mod-num">01</span>
+        <span class="sb-mod-label">BigQuery</span>
+        <span class="sb-expand-icon">▸</span>
+      </a>
+      <div class="sb-subtopics" id="sub-m1_bigquery">
+        <a href="m1_bigquery.html#partitioning" class="sb-sub-link" data-page="m1_bigquery" data-tab="partitioning">Partitioning & clustering</a>
+        <a href="m1_bigquery.html#pricing" class="sb-sub-link" data-page="m1_bigquery" data-tab="pricing">Pricing & slots</a>
+        <a href="m1_bigquery.html#bqml" class="sb-sub-link" data-page="m1_bigquery" data-tab="bqml">BigQuery ML</a>
+        <a href="m1_bigquery.html#security" class="sb-sub-link" data-page="m1_bigquery" data-tab="security">Security & access control</a>
+        <a href="m1_bigquery.html#external" class="sb-sub-link" data-page="m1_bigquery" data-tab="external">External tables & BigLake</a>
+        <a href="m1_bigquery.html#advanced" class="sb-sub-link" data-page="m1_bigquery" data-tab="advanced">Advanced SQL & features</a>
+        <a href="m1_bigquery.html#scenarios" class="sb-sub-link" data-page="m1_bigquery" data-tab="scenarios">Exam scenarios</a>
+      </div>
+    </div>
+    <div class="sb-mod-group" data-group="m2_dataflow_pubsub">
+      <a href="m2_dataflow_pubsub.html" class="sb-mod-link" data-page="m2_dataflow_pubsub">
+        <span class="sb-mod-num">02</span>
+        <span class="sb-mod-label">Dataflow & Pub/Sub</span>
+        <span class="sb-expand-icon">▸</span>
+      </a>
+      <div class="sb-subtopics" id="sub-m2_dataflow_pubsub">
+        <a href="m2_dataflow_pubsub.html#beam" class="sb-sub-link" data-page="m2_dataflow_pubsub" data-tab="beam">Apache Beam model</a>
+        <a href="m2_dataflow_pubsub.html#windowing" class="sb-sub-link" data-page="m2_dataflow_pubsub" data-tab="windowing">Windowing</a>
+        <a href="m2_dataflow_pubsub.html#dataflow" class="sb-sub-link" data-page="m2_dataflow_pubsub" data-tab="dataflow">Dataflow service</a>
+        <a href="m2_dataflow_pubsub.html#pubsub" class="sb-sub-link" data-page="m2_dataflow_pubsub" data-tab="pubsub">Pub/Sub</a>
+        <a href="m2_dataflow_pubsub.html#pipeline" class="sb-sub-link" data-page="m2_dataflow_pubsub" data-tab="pipeline">The canonical pipeline</a>
+        <a href="m2_dataflow_pubsub.html#scenarios" class="sb-sub-link" data-page="m2_dataflow_pubsub" data-tab="scenarios">Exam scenarios</a>
+      </div>
+    </div>
+    <div class="sb-mod-group" data-group="m3_storage_services">
+      <a href="m3_storage_services.html" class="sb-mod-link" data-page="m3_storage_services">
+        <span class="sb-mod-num">03</span>
+        <span class="sb-mod-label">Storage Services</span>
+        <span class="sb-expand-icon">▸</span>
+      </a>
+      <div class="sb-subtopics" id="sub-m3_storage_services">
+        <a href="m3_storage_services.html#decision" class="sb-sub-link" data-page="m3_storage_services" data-tab="decision">Decision Framework</a>
+        <a href="m3_storage_services.html#bigtable" class="sb-sub-link" data-page="m3_storage_services" data-tab="bigtable">Bigtable</a>
+        <a href="m3_storage_services.html#spanner" class="sb-sub-link" data-page="m3_storage_services" data-tab="spanner">Cloud Spanner</a>
+        <a href="m3_storage_services.html#firestore" class="sb-sub-link" data-page="m3_storage_services" data-tab="firestore">Firestore</a>
+        <a href="m3_storage_services.html#cloudsql" class="sb-sub-link" data-page="m3_storage_services" data-tab="cloudsql">Cloud SQL</a>
+        <a href="m3_storage_services.html#memorystore" class="sb-sub-link" data-page="m3_storage_services" data-tab="memorystore">Memorystore</a>
+        <a href="m3_storage_services.html#scenarios" class="sb-sub-link" data-page="m3_storage_services" data-tab="scenarios">Exam Scenarios</a>
+        <a href="m3_storage_services.html#traps" class="sb-sub-link" data-page="m3_storage_services" data-tab="traps">Traps & Cheatsheet</a>
+      </div>
+    </div>
+    <div class="sb-mod-group" data-group="m4_data_processing_governance">
+      <a href="m4_data_processing_governance.html" class="sb-mod-link" data-page="m4_data_processing_governance">
+        <span class="sb-mod-num">04</span>
+        <span class="sb-mod-label">Data Processing</span>
+        <span class="sb-expand-icon">▸</span>
+      </a>
+      <div class="sb-subtopics" id="sub-m4_data_processing_governance">
+        <a href="m4_data_processing_governance.html#dataproc" class="sb-sub-link" data-page="m4_data_processing_governance" data-tab="dataproc">Dataproc</a>
+        <a href="m4_data_processing_governance.html#datafusion" class="sb-sub-link" data-page="m4_data_processing_governance" data-tab="datafusion">Cloud Data Fusion</a>
+        <a href="m4_data_processing_governance.html#dataform" class="sb-sub-link" data-page="m4_data_processing_governance" data-tab="dataform">Dataform</a>
+        <a href="m4_data_processing_governance.html#datastream" class="sb-sub-link" data-page="m4_data_processing_governance" data-tab="datastream">Datastream</a>
+        <a href="m4_data_processing_governance.html#composer" class="sb-sub-link" data-page="m4_data_processing_governance" data-tab="composer">Cloud Composer</a>
+        <a href="m4_data_processing_governance.html#dataplex" class="sb-sub-link" data-page="m4_data_processing_governance" data-tab="dataplex">Dataplex</a>
+        <a href="m4_data_processing_governance.html#datacatalog" class="sb-sub-link" data-page="m4_data_processing_governance" data-tab="datacatalog">Data Catalog</a>
+        <a href="m4_data_processing_governance.html#dlp" class="sb-sub-link" data-page="m4_data_processing_governance" data-tab="dlp">Cloud DLP</a>
+        <a href="m4_data_processing_governance.html#analyticshub" class="sb-sub-link" data-page="m4_data_processing_governance" data-tab="analyticshub">Analytics Hub</a>
+        <a href="m4_data_processing_governance.html#decision" class="sb-sub-link" data-page="m4_data_processing_governance" data-tab="decision">Decision Reference</a>
+      </div>
+    </div>
+    <div class="sb-mod-group" data-group="m5_security_ml_architecture">
+      <a href="m5_security_ml_architecture.html" class="sb-mod-link" data-page="m5_security_ml_architecture">
+        <span class="sb-mod-num">05</span>
+        <span class="sb-mod-label">Security & ML</span>
+        <span class="sb-expand-icon">▸</span>
+      </a>
+      <div class="sb-subtopics" id="sub-m5_security_ml_architecture">
+        <a href="m5_security_ml_architecture.html#iam" class="sb-sub-link" data-page="m5_security_ml_architecture" data-tab="iam">IAM</a>
+        <a href="m5_security_ml_architecture.html#encryption" class="sb-sub-link" data-page="m5_security_ml_architecture" data-tab="encryption">Encryption</a>
+        <a href="m5_security_ml_architecture.html#vpcsc" class="sb-sub-link" data-page="m5_security_ml_architecture" data-tab="vpcsc">VPC Service Controls</a>
+        <a href="m5_security_ml_architecture.html#audit" class="sb-sub-link" data-page="m5_security_ml_architecture" data-tab="audit">Audit Logging</a>
+        <a href="m5_security_ml_architecture.html#ml" class="sb-sub-link" data-page="m5_security_ml_architecture" data-tab="ml">ML Fundamentals</a>
+        <a href="m5_security_ml_architecture.html#vertex" class="sb-sub-link" data-page="m5_security_ml_architecture" data-tab="vertex">Vertex AI</a>
+        <a href="m5_security_ml_architecture.html#batchstream" class="sb-sub-link" data-page="m5_security_ml_architecture" data-tab="batchstream">Batch vs Streaming</a>
+        <a href="m5_security_ml_architecture.html#refarch" class="sb-sub-link" data-page="m5_security_ml_architecture" data-tab="refarch">Reference Architecture</a>
+        <a href="m5_security_ml_architecture.html#scenarios" class="sb-sub-link" data-page="m5_security_ml_architecture" data-tab="scenarios">Architecture Scenarios</a>
+      </div>
+    </div>
+    <div class="sb-mod-group" data-group="m6_advanced_topics">
+      <a href="m6_advanced_topics.html" class="sb-mod-link" data-page="m6_advanced_topics">
+        <span class="sb-mod-num">06</span>
+        <span class="sb-mod-label">Advanced Topics</span>
+        <span class="sb-expand-icon">▸</span>
+      </a>
+      <div class="sb-subtopics" id="sub-m6_advanced_topics">
+        <a href="m6_advanced_topics.html#bq" class="sb-sub-link" data-page="m6_advanced_topics" data-tab="bq">BigQuery</a>
+        <a href="m6_advanced_topics.html#dataflow" class="sb-sub-link" data-page="m6_advanced_topics" data-tab="dataflow">Dataflow</a>
+        <a href="m6_advanced_topics.html#pubsub" class="sb-sub-link" data-page="m6_advanced_topics" data-tab="pubsub">Pub/Sub</a>
+        <a href="m6_advanced_topics.html#spanner" class="sb-sub-link" data-page="m6_advanced_topics" data-tab="spanner">Cloud Spanner</a>
+        <a href="m6_advanced_topics.html#dataproc" class="sb-sub-link" data-page="m6_advanced_topics" data-tab="dataproc">Dataproc</a>
+        <a href="m6_advanced_topics.html#vertex" class="sb-sub-link" data-page="m6_advanced_topics" data-tab="vertex">Vertex AI</a>
+        <a href="m6_advanced_topics.html#security" class="sb-sub-link" data-page="m6_advanced_topics" data-tab="security">Security</a>
+        <a href="m6_advanced_topics.html#exactlyonce" class="sb-sub-link" data-page="m6_advanced_topics" data-tab="exactlyonce">Exactly-Once Semantics</a>
+        <a href="m6_advanced_topics.html#signals" class="sb-sub-link" data-page="m6_advanced_topics" data-tab="signals">Signal Prioritization</a>
+        <a href="m6_advanced_topics.html#cheatsheet" class="sb-sub-link" data-page="m6_advanced_topics" data-tab="cheatsheet">Cheat Sheet</a>
+      </div>
+    </div>
+  </div>
+</aside>
+<!-- ═══ END SIDEBAR ═══ -->
+
+<!-- ═══ MOBILE BOTTOM BAR ═══ -->
+<nav class="bottom-bar" id="bottomBar">
+  <a href="index.html" class="bb-item" data-page="index">
+    <span class="bb-icon">⌂</span>
+    <span class="bb-label">Home</span>
+  </a>
+  <a href="m1_bigquery.html" class="bb-item" data-page="m1_bigquery">
+    <span class="bb-icon">01</span>
+    <span class="bb-label">BigQuery</span>
+  </a>
+  <a href="m2_dataflow_pubsub.html" class="bb-item" data-page="m2_dataflow_pubsub">
+    <span class="bb-icon">02</span>
+    <span class="bb-label">Dataflow</span>
+  </a>
+  <a href="m3_storage_services.html" class="bb-item" data-page="m3_storage_services">
+    <span class="bb-icon">03</span>
+    <span class="bb-label">Storage</span>
+  </a>
+  <a href="m4_data_processing_governance.html" class="bb-item" data-page="m4_data_processing_governance">
+    <span class="bb-icon">04</span>
+    <span class="bb-label">Data</span>
+  </a>
+  <a href="m5_security_ml_architecture.html" class="bb-item" data-page="m5_security_ml_architecture">
+    <span class="bb-icon">05</span>
+    <span class="bb-label">Security</span>
+  </a>
+  <a href="m6_advanced_topics.html" class="bb-item" data-page="m6_advanced_topics">
+    <span class="bb-icon">06</span>
+    <span class="bb-label">Advanced</span>
+  </a>
+</nav>
+<!-- ═══ END MOBILE BOTTOM BAR ═══ -->
+
+
+
+<div class="page-header">
+  <div class="header-text">
+    <div class="label">GCP PDE Study Notes — Module 5</div>
+    <h1>Security, ML &amp; Architecture</h1>
+    <p>9 subtopics · tap a tab to switch · tap cards to expand · add notes per card</p>
+  </div>
+  <div class="theme-toggle" onclick="toggleTheme()">
+    <span class="ti-sun">☀️</span>
+    <div class="toggle-track"><div class="toggle-knob"></div></div>
+    <span class="ti-moon">🌙</span>
+  </div>
+</div>
+
+<div class="tab-bar" id="tabBar"></div>
+<div id="tabContent"></div>
+
+<script>
+function toggleTheme(){
+  const h=document.documentElement;
+  h.setAttribute('data-theme',h.getAttribute('data-theme')==='dark'?'light':'dark');
+}
+
+const TABS = [
+
+/* ══ 1. IAM ══ */
+{id:'iam',label:'IAM',freq:'High',topics:[
+{title:'IAM hierarchy and how permissions flow',body:`
+<p class="prose">Google Cloud IAM controls who can do what on which resource. Permissions are granted through roles attached to members (identities) at a specific resource level. The resource hierarchy determines how permissions are inherited.</p>
+<div class="section-label">Resource hierarchy</div>
+<div class="kv-row"><div class="kv-key">Organization</div><div class="kv-val">Top level. Represents the company. IAM policies set here apply to ALL resources in the organization — all folders, projects, and resources within.</div></div>
+<div class="kv-row"><div class="kv-key">Folder</div><div class="kv-val">Optional grouping below Organization. Used to organize departments or teams. IAM policies set at Folder level apply to all projects and resources within the folder.</div></div>
+<div class="kv-row"><div class="kv-key">Project</div><div class="kv-val">Core organizational unit. Resources live in projects. IAM policies set at Project level apply to all resources in the project (GCS buckets, BQ datasets, Dataflow jobs, etc.).</div></div>
+<div class="kv-row"><div class="kv-key">Resource</div><div class="kv-val">Individual GCP resource (a specific GCS bucket, a BigQuery dataset, a single Pub/Sub topic). IAM policies can be set at the resource level for fine-grained control.</div></div>
+<div class="section-label">Inheritance rule</div>
+<p class="prose">Permissions are ADDITIVE and flow downward. If you grant a role at the Organization level, that role applies to every resource in the org. Permissions at a lower level ADD to higher-level permissions — they never restrict or remove inherited permissions.</p>
+<div class="alert alert-amber">Critical inheritance trap: you cannot use a lower-level IAM policy to RESTRICT a permission granted at a higher level. If a user is granted BigQuery Admin at the Organization level, granting them only BigQuery DataViewer on a specific project does NOT restrict their Admin access in that project. The Admin permission from the Org level still applies. To restrict, you must modify the higher-level binding or use IAM Deny policies.</div>
+<div class="section-label">Member types</div>
+<div class="kv-row"><div class="kv-key">Google Account</div><div class="kv-val">An individual human user. Most common for interactive access.</div></div>
+<div class="kv-row"><div class="kv-key">Service Account</div><div class="kv-val">An identity for applications, VMs, and services (not humans). Used by Dataflow, Dataproc, Cloud Functions, etc. to authenticate to GCP APIs.</div></div>
+<div class="kv-row"><div class="kv-key">Google Group</div><div class="kv-val">A collection of Google Accounts. Grant a role to a group to manage access for many users at once. Changes to group membership take effect immediately.</div></div>
+<div class="kv-row"><div class="kv-key">allAuthenticatedUsers</div><div class="kv-val">Any Google-authenticated user. Use with extreme caution — any Google account can access.</div></div>
+<div class="kv-row"><div class="kv-key">allUsers</div><div class="kv-val">Anyone on the internet, authenticated or not. Almost never appropriate for data resources.</div></div>`},
+
+{title:'Role types: primitive, predefined, custom',body:`
+<div class="g3">
+<div class="mini"><div class="mt">Primitive roles (legacy)</div><div class="mb">Owner, Editor, Viewer. Extremely broad — cover ALL services. Almost never appropriate for production. Owner = full control of project including IAM.</div></div>
+<div class="mini good"><div class="mt">Predefined roles</div><div class="mb">Service-specific roles curated by Google. E.g., roles/bigquery.dataViewer, roles/storage.objectCreator. Fine-grained, least-privilege. Always prefer predefined over primitive.</div></div>
+<div class="mini"><div class="mt">Custom roles</div><div class="mb">You define exactly which permissions to include. Maximum granularity. Use when predefined roles are too broad or too narrow for your specific use case.</div></div>
+</div>
+<div class="section-label">Key predefined roles for data engineering — BigQuery</div>
+<div class="kv-row"><div class="kv-key">bigquery.admin</div><div class="kv-val">Full control — create/delete datasets, manage IAM, run any job.</div></div>
+<div class="kv-row"><div class="kv-key">bigquery.dataEditor</div><div class="kv-val">Read + write data in tables. Cannot create/delete datasets or manage IAM.</div></div>
+<div class="kv-row"><div class="kv-key">bigquery.dataViewer</div><div class="kv-val">Read-only. Cannot run query jobs (needs jobUser too).</div></div>
+<div class="kv-row"><div class="kv-key">bigquery.jobUser</div><div class="kv-val">Can CREATE and run jobs. Cannot read data (needs dataViewer too). Common for service accounts.</div></div>
+<div class="kv-row"><div class="kv-key">bigquery.user</div><div class="kv-val">Can run jobs AND list datasets/tables. Superset of jobUser. Typical role for human analysts.</div></div>
+<div class="section-label">Cloud Storage</div>
+<div class="kv-row"><div class="kv-key">storage.admin</div><div class="kv-val">Full control — buckets and objects, IAM policies.</div></div>
+<div class="kv-row"><div class="kv-key">storage.objectCreator</div><div class="kv-val">Upload only. No read, list, or delete. For write-only ingestion service accounts.</div></div>
+<div class="kv-row"><div class="kv-key">storage.objectViewer</div><div class="kv-val">Read and list only. Cannot write or delete.</div></div>
+<div class="alert alert-red">Exam pattern: a service account that QUERIES BigQuery data needs BOTH bigquery.jobUser (to create the job) AND bigquery.dataViewer (to read data). Neither alone works. Alternatively, bigquery.user covers both. This two-role pattern is very commonly tested.</div>`},
+
+{title:'Service accounts — creation, impersonation, and Workload Identity',body:`
+<p class="prose">Service accounts are non-human identities for applications and services. They authenticate to GCP APIs using cryptographic keys or short-lived credentials. Understanding service account best practices is essential for the exam.</p>
+<div class="section-label">Service account key types</div>
+<div class="kv-row"><div class="kv-key">Google-managed keys</div><div class="kv-val">GCP services (Compute Engine, Cloud Functions, Cloud Run) automatically use Google-managed service account credentials. No key file management. Preferred for all GCP-native workloads.</div></div>
+<div class="kv-row"><div class="kv-key">User-managed keys (JSON key files)</div><div class="kv-val">Exported key files for use outside GCP. Security risk — key files can be leaked. Rotate regularly. Never commit to source code. Google recommends minimizing their use.</div></div>
+<div class="kv-row"><div class="kv-key">Short-lived credentials</div><div class="kv-val">Generate temporary OAuth 2.0 access tokens for a service account without a long-lived key file. More secure than key files — expire after a short window (1 hour default).</div></div>
+<div class="section-label">Service account impersonation</div>
+<div class="kv-row"><div class="kv-key">What it is</div><div class="kv-val">A principal (user or another service account) can impersonate a service account — act as that service account to call GCP APIs. Granted via the roles/iam.serviceAccountTokenCreator role on the target service account.</div></div>
+<div class="kv-row"><div class="kv-key">Use case</div><div class="kv-val">A developer needs to test a pipeline that runs as a service account, without exporting a key file. They impersonate the service account locally.</div></div>
+<div class="section-label">Workload Identity Federation</div>
+<div class="kv-row"><div class="kv-key">What it is</div><div class="kv-val">Allows workloads running OUTSIDE GCP (AWS, Azure, on-premises, GitHub Actions, Kubernetes) to authenticate to GCP APIs using their existing identity provider credentials — without a GCP service account key file.</div></div>
+<div class="kv-row"><div class="kv-key">How it works</div><div class="kv-val">The external workload exchanges its identity token (AWS role, GitHub Actions OIDC token) for a short-lived GCP access token via the Security Token Service. GCP trusts the external IdP. No key file required.</div></div>
+<div class="kv-row"><div class="kv-key">Workload Identity for GKE</div><div class="kv-val">Kubernetes service accounts in GKE can be linked to GCP service accounts. Pods authenticate as the GCP service account without key files. Standard practice for GKE workloads accessing GCP APIs.</div></div>
+<div class="alert alert-green">Security best practice hierarchy: (1) Use Google-managed credentials for GCP-native services. (2) Use Workload Identity Federation for external workloads. (3) Use short-lived credentials when a key is unavoidable. (4) Avoid user-managed JSON key files.</div>`},
+
+{title:'Org policies and IAM Deny',body:`
+<div class="kv-row"><div class="kv-key">Organization Policy</div><div class="kv-val">Centralized constraints on what GCP resources and configurations are allowed across an organization. Set at Org, Folder, or Project level. Examples: prevent creation of public GCS buckets (constraints/storage.publicAccessPrevention), restrict which regions resources can be created in (constraints/gcp.resourceLocations).</div></div>
+<div class="kv-row"><div class="kv-key">Constraint types</div><div class="kv-val">Boolean constraints (on/off toggle) and list constraints (allowed/denied values). E.g., constraints/compute.restrictCloudSQLRegions with allowedValues = ["us-central1", "us-east1"] prevents Cloud SQL creation in other regions.</div></div>
+<div class="kv-row"><div class="kv-key">IAM Deny policies</div><div class="kv-val">A newer IAM feature that explicitly DENIES specific permissions to specific principals, overriding any grants. Deny policies evaluate BEFORE allow policies. Use to prevent specific actions even if a role elsewhere grants them. Useful for: "no one can delete production BigQuery datasets, even admins."</div></div>
+<div class="alert alert-blue">Org policy exam pattern: "A security team wants to ensure no GCS bucket in the entire organization can be made publicly accessible." Answer: enforce the constraints/storage.publicAccessPrevention org policy at the Organization level. This overrides any individual bucket-level setting and applies to all current and future buckets.</div>`}
+]},
+
+/* ══ 2. ENCRYPTION ══ */
+{id:'encryption',label:'Encryption',freq:'High',topics:[
+{title:'Encryption at rest: GMEK, CMEK, CSEK',body:`
+<p class="prose">All data in GCP is encrypted at rest by default using Google-managed keys. Organizations with compliance requirements may need to control their own encryption keys.</p>
+<div class="cmp-wrap"><table class="cmp">
+<thead><tr><th>Type</th><th>Who manages</th><th>Where key lives</th><th>BigQuery</th><th>Cloud Storage</th><th>Use when</th></tr></thead>
+<tbody>
+<tr><td>GMEK (Google-managed)</td><td>Google</td><td>Google Key Management</td><td>Default</td><td>Default</td><td>No compliance requirement for customer key control</td></tr>
+<tr><td>CMEK (Customer-managed)</td><td>You (via Cloud KMS)</td><td>Cloud KMS</td><td>Supported</td><td>Supported</td><td>HIPAA, FedRAMP, PCI-DSS, internal policy requiring key control</td></tr>
+<tr><td>CSEK (Customer-supplied)</td><td>You (raw key material)</td><td>Your infrastructure (never Google)</td><td>NOT supported</td><td>Supported</td><td>Maximum key control; key never leaves your systems</td></tr>
+</tbody>
+</table></div>
+<div class="section-label">CMEK deep dive</div>
+<div class="kv-row"><div class="kv-key">How it works</div><div class="kv-val">You create a key in Cloud KMS. You grant the GCP service's service account the roles/cloudkms.cryptoKeyEncrypterDecrypter role on your KMS key. The service uses your key to encrypt/decrypt data — Google never has access to the raw plaintext key material.</div></div>
+<div class="kv-row"><div class="kv-key">Key rotation</div><div class="kv-val">Cloud KMS supports automatic key rotation on a configurable schedule (e.g., every 90 days). New data is encrypted with the new key version. Old data remains encrypted with the previous key version but can still be decrypted.</div></div>
+<div class="kv-row"><div class="kv-key">Key revocation (crypto-shredding)</div><div class="kv-val">If you disable or destroy a KMS key, the service CANNOT decrypt data encrypted with that key. The data becomes permanently inaccessible. This is intentional for "crypto-shredding" — making data unreadable by destroying the key rather than deleting every record.</div></div>
+<div class="kv-row"><div class="kv-key">Key Ring and Key</div><div class="kv-val">KMS keys are organized into Key Rings (regional or global containers). A Key can have multiple Key Versions. The primary version is used for new encryptions; non-primary versions can still decrypt previously encrypted data.</div></div>
+<div class="alert alert-red">CSEK in BigQuery = NOT SUPPORTED. BigQuery supports GMEK and CMEK only. Cloud Storage supports GMEK, CMEK, AND CSEK. This cross-service distinction is tested repeatedly. If an answer says "use CSEK for BigQuery" — it is wrong.</div>
+<div class="code">-- Apply CMEK at table creation in BigQuery
+CREATE TABLE project.dataset.secure_table (
+  id INT64,
+  sensitive_data STRING
+)
+OPTIONS (
+  kms_key_name = 'projects/my-proj/locations/us/keyRings/my-ring/cryptoKeys/my-key'
+);
+
+-- Apply CMEK at dataset creation
+CREATE SCHEMA project.secure_dataset
+OPTIONS (
+  default_kms_key_name = 'projects/my-proj/locations/us/keyRings/my-ring/cryptoKeys/my-key'
+);</div>`},
+
+{title:'Encryption in transit and key management',body:`
+<div class="kv-row"><div class="kv-key">Encryption in transit</div><div class="kv-val">All data in transit between GCP services and between clients and GCP is encrypted using TLS 1.2+ by default. No configuration required. Google also encrypts data in transit between its own data centers using application-layer encryption.</div></div>
+<div class="kv-row"><div class="kv-key">Cloud KMS</div><div class="kv-val">Cloud Key Management Service. Managed service for creating, importing, and managing cryptographic keys. Keys used for CMEK encryption of GCP services. Also used directly for encrypting/decrypting application data.</div></div>
+<div class="kv-row"><div class="kv-key">Cloud HSM</div><div class="kv-val">Hardware Security Module. Keys backed by FIPS 140-2 Level 3 certified hardware. More secure than software-backed KMS keys. Same API as Cloud KMS. Use for highest security compliance requirements (financial services, government).</div></div>
+<div class="kv-row"><div class="kv-key">Cloud EKM (External Key Manager)</div><div class="kv-val">Store and manage encryption keys outside of Google Cloud entirely — in your own key management infrastructure or a third-party key manager. CMEK keys reference external keys. Google never has access to the key material. For ultra-high compliance requirements.</div></div>
+<div class="alert alert-blue">KMS hierarchy for the exam: GMEK (no control needed) → CMEK via Cloud KMS (standard compliance) → CMEK via Cloud HSM (FIPS 140-2 L3 required) → CMEK via Cloud EKM (keys must never enter Google's infrastructure). Each level adds more control and more operational complexity.</div>`}
+]},
+
+/* ══ 3. VPC SERVICE CONTROLS ══ */
+{id:'vpcsc',label:'VPC Service Controls',freq:'Medium',topics:[
+{title:'VPC Service Controls — security perimeters',body:`
+<p class="prose">VPC Service Controls (VPC-SC) creates security perimeters around GCP resources. Even if an IAM policy grants access to a resource, VPC-SC can block the request if it originates from outside the defined perimeter. It is a network-level control layered on top of IAM.</p>
+<div class="section-label">Core concepts</div>
+<div class="kv-row"><div class="kv-key">Service perimeter</div><div class="kv-val">A logical boundary around a set of GCP projects and resources. Requests from outside the perimeter to resources inside are blocked — even with valid IAM credentials. Prevents data exfiltration: a compromised credential outside the perimeter cannot extract data from within it.</div></div>
+<div class="kv-row"><div class="kv-key">Access levels</div><div class="kv-val">Define conditions under which external access to the perimeter is allowed. Examples: "access is allowed from corporate network IP range," "access is allowed from devices with BeyondCorp device certificates," "access is allowed from specific service accounts."</div></div>
+<div class="kv-row"><div class="kv-key">Ingress and egress rules</div><div class="kv-val">Fine-grained rules controlling what can cross the perimeter boundary in each direction. Ingress rules: what external traffic can access perimeter resources. Egress rules: what perimeter resources can access outside the perimeter.</div></div>
+<div class="kv-row"><div class="kv-key">Dry run mode</div><div class="kv-val">Test VPC-SC policies without enforcing them. Violations are logged but not blocked. Use to validate policy impact before enforcement to avoid breaking legitimate traffic.</div></div>
+<div class="section-label">What VPC-SC protects against</div>
+<div class="kv-row"><div class="kv-key">Data exfiltration</div><div class="kv-val">An attacker with a stolen credential cannot copy BigQuery data out of the perimeter — the request comes from outside and is blocked.</div></div>
+<div class="kv-row"><div class="kv-key">Insider threats</div><div class="kv-val">An insider cannot copy data to a personal GCS bucket outside the perimeter — the copy request crosses the perimeter boundary and is blocked.</div></div>
+<div class="kv-row"><div class="kv-key">Confused deputy attacks</div><div class="kv-val">A GCP service inside the perimeter is prevented from accessing resources outside the perimeter unexpectedly.</div></div>
+<div class="alert alert-blue">VPC-SC exam pattern: "A company has sensitive financial data in BigQuery. Even with proper IAM, they want to ensure the data cannot be exfiltrated by a compromised credential or insider." Answer: implement VPC Service Controls with a service perimeter around the BigQuery project. Requests from outside the corporate network/perimeter are blocked regardless of IAM grants.</div>
+<div class="section-label">VPC-SC vs IAM — the relationship</div>
+<p class="prose">IAM controls WHAT an identity is allowed to do. VPC-SC controls WHERE requests can come from. Both must allow a request for it to succeed. A user with BigQuery Admin IAM role who is outside the VPC-SC perimeter will have their requests blocked. IAM without VPC-SC = identity-based control only. IAM + VPC-SC = identity + network-based control.</p>`}
+]},
+
+/* ══ 4. AUDIT LOGGING ══ */
+{id:'audit',label:'Audit Logging & Compliance',freq:'Medium',topics:[
+{title:'Cloud Audit Logs — who did what, when',body:`
+<p class="prose">Cloud Audit Logs record administrative and data access activity across GCP services. Audit logs are critical for security investigation, compliance reporting, and anomaly detection.</p>
+<div class="section-label">Four log types</div>
+<div class="kv-row"><div class="kv-key">Admin Activity logs</div><div class="kv-val">Records API calls that modify configuration or metadata — creating/deleting resources, modifying IAM policies, changing BigQuery datasets. Always ON, cannot be disabled. No cost for storage (up to 400 days).</div></div>
+<div class="kv-row"><div class="kv-key">Data Access logs</div><div class="kv-val">Records API calls that read configuration or user data — BigQuery query jobs, GCS object reads, Firestore document reads. Disabled by default (generate large volume). Must be explicitly enabled per service. Charged for log storage beyond retention limits.</div></div>
+<div class="kv-row"><div class="kv-key">System Event logs</div><div class="kv-val">Records Google-generated system events (e.g., a live migration of a VM). Always ON, cannot be disabled. No direct user action triggers these.</div></div>
+<div class="kv-row"><div class="kv-key">Policy Denied logs</div><div class="kv-val">Records requests denied by VPC-SC or org policies. Always ON for VPC-SC violations. Critical for detecting exfiltration attempts blocked by perimeters.</div></div>
+<div class="section-label">Log routing and analysis</div>
+<div class="kv-row"><div class="kv-key">Log sinks</div><div class="kv-val">Route logs to: Cloud Storage (archival), BigQuery (SQL analysis), Pub/Sub (real-time processing and alerting), Cloud Logging bucket (default). Create custom sinks with filters to route only relevant log types.</div></div>
+<div class="kv-row"><div class="kv-key">Log-based metrics</div><div class="kv-val">Create Cloud Monitoring metrics based on log entries. E.g., count of BigQuery Data Access log entries per user per hour — detect abnormal query patterns. Alert when a user runs more than 100 queries in 10 minutes.</div></div>
+<div class="kv-row"><div class="kv-key">BigQuery for log analysis</div><div class="kv-val">Route audit logs to a BigQuery dataset. Write SQL queries to analyze access patterns: "which users accessed PII tables in the last 30 days?" "Which service accounts ran more than 1TB of BigQuery queries this week?"</div></div>
+<div class="alert alert-blue">Data Access logs exam pattern: "The security team needs to audit all BigQuery query activity to detect users querying sensitive tables." Answer: enable BigQuery Data Access audit logs (disabled by default). Route to BigQuery via a log sink. Query the log dataset to detect abnormal access patterns.</div>`},
+
+{title:'Security exam scenarios',body:`
+<div class="scenario-box"><div class="scenario-q">A Dataflow pipeline running on GCP needs to read from BigQuery and write to Cloud Storage. What is the correct way to grant it the minimum necessary permissions?</div><div class="scenario-a"><strong>Answer:</strong> Create a dedicated service account for the Dataflow job. Grant it roles/bigquery.dataViewer + roles/bigquery.jobUser on the BigQuery dataset (to query data), and roles/storage.objectCreator on the target GCS bucket (to write output). Assign this service account to the Dataflow job at launch. Do NOT use the default Compute Engine service account which has broad project-level permissions.</div></div>
+<div class="scenario-box"><div class="scenario-q">A company's compliance team requires that all BigQuery data be encrypted with keys they control and can revoke. HIPAA audit requires the ability to prove who accessed which data. What do you implement?</div><div class="scenario-a"><strong>Answer:</strong> (1) Enable CMEK on all BigQuery datasets using Cloud KMS keys managed by the security team. (2) Enable BigQuery Data Access audit logs. (3) Route audit logs to a BigQuery dataset via a log sink. The security team can query the audit log dataset to prove access patterns, and can revoke/destroy KMS keys to render data inaccessible if needed (crypto-shredding).</div></div>
+<div class="scenario-box"><div class="scenario-q">Sensitive financial BigQuery data must only be accessible from within the corporate VPN, even from users with Admin IAM roles. What prevents access from outside the VPN?</div><div class="scenario-a"><strong>Answer:</strong> VPC Service Controls with a service perimeter around the BigQuery project. Define an access level that allows requests only from the corporate network IP range. Requests from outside the VPN — even from Admin-role users — are blocked at the perimeter. IAM alone cannot enforce network origin.</div></div>
+<div class="scenario-box"><div class="scenario-q">An organization's security policy requires that no service can use user-managed service account JSON key files. How do you enforce this?</div><div class="scenario-a"><strong>Answer:</strong> Create an Organization Policy with the constraint constraints/iam.disableServiceAccountKeyCreation set to True at the Organization level. This prevents creation of new user-managed service account keys across all projects. Existing keys should be rotated to use Workload Identity Federation or Google-managed credentials.</div></div>
+<div class="scenario-box"><div class="scenario-q">A CI/CD pipeline running on GitHub Actions needs to deploy Dataflow jobs to GCP. The security team does not want service account JSON key files stored in GitHub. How do you authenticate?</div><div class="scenario-a"><strong>Answer:</strong> Workload Identity Federation. Configure a Workload Identity Pool that trusts GitHub's OIDC identity provider. Map GitHub Actions OIDC tokens to a GCP service account. The pipeline exchanges its OIDC token for a short-lived GCP access token. No key file stored anywhere.</div></div>`}
+]},
+
+/* ══ 5. ML FUNDAMENTALS ══ */
+{id:'ml',label:'ML Fundamentals',freq:'Medium',topics:[
+{title:'Core ML concepts the exam tests',body:`
+<p class="prose">The exam does not require deep ML theory. It tests whether you understand the right approach for a given scenario and can identify problems with ML systems.</p>
+<div class="section-label">Supervised vs unsupervised learning</div>
+<div class="kv-row"><div class="kv-key">Supervised learning</div><div class="kv-val">Trains on labeled examples (input → known output). Learns a mapping from inputs to outputs. Types: Classification (predict a category) and Regression (predict a continuous value). Examples: spam detection (classification), revenue forecasting (regression).</div></div>
+<div class="kv-row"><div class="kv-key">Unsupervised learning</div><div class="kv-val">Trains on unlabeled data. Discovers hidden structure without predefined labels. Types: Clustering (group similar items), Dimensionality Reduction, Anomaly Detection. Examples: customer segmentation (clustering), fraud detection (anomaly).</div></div>
+<div class="kv-row"><div class="kv-key">Semi-supervised learning</div><div class="kv-val">A small amount of labeled data + a large amount of unlabeled data. The model learns from both. Useful when labeling is expensive but unlabeled data is abundant.</div></div>
+<div class="section-label">Key ML problem types — map to algorithms</div>
+<div class="kv-row"><div class="kv-key">Binary classification</div><div class="kv-val">Predict one of two classes. E.g., churn: yes/no, spam: yes/no. → Logistic Regression, XGBoost, Neural Network.</div></div>
+<div class="kv-row"><div class="kv-key">Multi-class classification</div><div class="kv-val">Predict one of many classes. E.g., image → dog/cat/bird. → Logistic Regression (multinomial), Neural Network.</div></div>
+<div class="kv-row"><div class="kv-key">Regression</div><div class="kv-val">Predict a continuous value. E.g., house price, next month's revenue. → Linear Regression, XGBoost Regressor.</div></div>
+<div class="kv-row"><div class="kv-key">Clustering</div><div class="kv-val">Group similar examples without labels. E.g., customer segments. → K-Means.</div></div>
+<div class="kv-row"><div class="kv-key">Time series forecasting</div><div class="kv-val">Predict future values based on historical sequence. E.g., demand forecasting. → ARIMA, ARIMA_PLUS (BigQuery ML), TFT.</div></div>
+<div class="kv-row"><div class="kv-key">Recommendation</div><div class="kv-val">Predict which items a user will like. → Matrix Factorization (collaborative filtering), neural recommendation.</div></div>`},
+
+{title:'Overfitting, underfitting, bias-variance tradeoff',body:`
+<div class="g3">
+<div class="mini bad"><div class="mt">Overfitting (high variance)</div><div class="mb">Model memorizes training data. Performs well on training set but poorly on new data. Training accuracy >> validation accuracy. Cause: too complex model, too little data, too many features.</div></div>
+<div class="mini good"><div class="mt">Good fit (balanced)</div><div class="mb">Model generalizes well. Training and validation accuracy are close and both high. This is the goal.</div></div>
+<div class="mini bad"><div class="mt">Underfitting (high bias)</div><div class="mb">Model is too simple to capture patterns. Poor performance on both training and validation. Cause: too simple model, too few features, too little training.</div></div>
+</div>
+<div class="section-label">Fixes for overfitting</div>
+<div class="kv-row"><div class="kv-key">More training data</div><div class="kv-val">The most effective fix. More data exposes the model to more variation, making it harder to simply memorize examples.</div></div>
+<div class="kv-row"><div class="kv-key">Regularization (L1/L2)</div><div class="kv-val">L1 (Lasso): adds penalty proportional to absolute weight values — drives some weights to exactly zero (feature selection). L2 (Ridge): adds penalty proportional to squared weights — shrinks all weights toward zero but rarely exactly zero.</div></div>
+<div class="kv-row"><div class="kv-key">Dropout (neural networks)</div><div class="kv-val">Randomly deactivate a fraction of neurons during each training step. Forces the network to learn redundant representations. Effective regularization for deep networks.</div></div>
+<div class="kv-row"><div class="kv-key">Reduce model complexity</div><div class="kv-val">Fewer layers (neural networks), lower max depth (decision trees), fewer features. Simpler models generalize better when data is limited.</div></div>
+<div class="kv-row"><div class="kv-key">Early stopping</div><div class="kv-val">Stop training when validation loss stops improving. Prevents continued memorization of the training set beyond the point of generalization.</div></div>
+<div class="section-label">Train / Validation / Test split</div>
+<div class="kv-row"><div class="kv-key">Training set (~70%)</div><div class="kv-val">Used to fit the model — adjust weights and parameters. Model sees this data during training.</div></div>
+<div class="kv-row"><div class="kv-key">Validation set (~15%)</div><div class="kv-val">Used to tune hyperparameters and select the best model. NOT used for training. Guides decisions like learning rate, number of layers. Also used to detect overfitting.</div></div>
+<div class="kv-row"><div class="kv-key">Test set (~15%)</div><div class="kv-val">Used ONLY once for final evaluation. Never touched during training or hyperparameter tuning. Provides an unbiased estimate of real-world performance.</div></div>
+<div class="alert alert-amber">Test set contamination trap: if you use the test set during model development (e.g., to select hyperparameters or choose between models), you have leaked information and your test accuracy estimate is overly optimistic. The test set must be held out completely until the very final evaluation.</div>`},
+
+{title:'Evaluation metrics — which to use when',body:`
+<div class="section-label">Classification metrics</div>
+<div class="kv-row"><div class="kv-key">Accuracy</div><div class="kv-val">Fraction of correct predictions. Misleading for imbalanced classes. E.g., 99% accuracy on a dataset where 99% of examples are negative — the model predicts negative always and achieves 99% without learning anything.</div></div>
+<div class="kv-row"><div class="kv-key">Precision</div><div class="kv-val">Of all positive predictions, what fraction is actually positive. High precision = few false positives. Use when false positives are costly (spam filter — don't want to incorrectly mark legitimate email as spam).</div></div>
+<div class="kv-row"><div class="kv-key">Recall (Sensitivity)</div><div class="kv-val">Of all actual positives, what fraction did the model predict correctly. High recall = few false negatives. Use when false negatives are costly (cancer detection — don't want to miss a real cancer).</div></div>
+<div class="kv-row"><div class="kv-key">F1 Score</div><div class="kv-val">Harmonic mean of precision and recall. Use when you need a single metric that balances both. Best for imbalanced datasets where accuracy is misleading.</div></div>
+<div class="kv-row"><div class="kv-key">AUC-ROC</div><div class="kv-val">Area Under the ROC Curve. Measures model's ability to distinguish between classes at all thresholds. 0.5 = random guessing, 1.0 = perfect. Threshold-independent. Good overall quality metric.</div></div>
+<div class="kv-row"><div class="kv-key">AUC-PR (Precision-Recall curve)</div><div class="kv-val">Better than AUC-ROC for heavily imbalanced datasets. Focuses on the minority positive class.</div></div>
+<div class="section-label">Regression metrics</div>
+<div class="kv-row"><div class="kv-key">MAE (Mean Absolute Error)</div><div class="kv-val">Average absolute difference between predicted and actual values. Intuitive units (same as target). Less sensitive to outliers than MSE.</div></div>
+<div class="kv-row"><div class="kv-key">MSE (Mean Squared Error)</div><div class="kv-val">Average squared difference. Penalizes large errors more heavily than MAE. Used as the loss function during training.</div></div>
+<div class="kv-row"><div class="kv-key">RMSE (Root MSE)</div><div class="kv-val">Square root of MSE. Same units as the target variable. More interpretable than MSE while still penalizing outliers.</div></div>
+<div class="kv-row"><div class="kv-key">R² (R-squared)</div><div class="kv-val">Proportion of variance in the target explained by the model. 1.0 = perfect, 0.0 = no better than predicting the mean. Can be negative if model is worse than the mean.</div></div>
+<div class="alert alert-blue">Metric selection rule: imbalanced classes → use F1 or AUC-PR, not accuracy. False negatives are more costly (medical diagnosis) → optimize for recall. False positives are more costly (spam filter for critical email) → optimize for precision. Regression with outliers → use MAE not RMSE.</div>`}
+]},
+
+/* ══ 6. VERTEX AI ══ */
+{id:'vertex',label:'Vertex AI',freq:'Medium',topics:[
+{title:'Vertex AI platform overview',body:`
+<p class="prose">Vertex AI is Google Cloud's unified ML platform. It consolidates all ML workflows — data preparation, training, evaluation, deployment, monitoring — into a single managed service. Understanding WHICH Vertex AI product to use for each scenario is the primary exam skill.</p>
+<div class="section-label">Vertex AI product map</div>
+<div class="kv-row"><div class="kv-key">AutoML</div><div class="kv-val">No-code/low-code training. Provide labeled data, AutoML selects the best model architecture and hyperparameters automatically. Supports tabular, image, text, and video data. Best for teams without ML expertise or for fast prototyping.</div></div>
+<div class="kv-row"><div class="kv-key">Custom Training</div><div class="kv-val">Full control training with your own code (TensorFlow, PyTorch, scikit-learn, XGBoost). Specify the training container, hardware (CPUs, GPUs, TPUs), and hyperparameters. Best for ML engineers with custom model requirements.</div></div>
+<div class="kv-row"><div class="kv-key">Vertex AI Workbench</div><div class="kv-val">Managed JupyterLab environment on GCP. Integrated with BigQuery, GCS, and Vertex AI services. For interactive data exploration and model development.</div></div>
+<div class="kv-row"><div class="kv-key">Model Registry</div><div class="kv-val">Central repository for all trained models. Store, version, and manage models across their lifecycle. Track which model version is deployed where.</div></div>
+<div class="kv-row"><div class="kv-key">Vertex AI Pipelines</div><div class="kv-val">Orchestrate end-to-end ML workflows as reproducible, auditable pipelines using Kubeflow Pipelines (KFP) or TFX. Each step is a pipeline component. Supports caching — skip steps whose inputs haven't changed.</div></div>
+<div class="kv-row"><div class="kv-key">Feature Store</div><div class="kv-val">Centralized repository for ML features. Store and serve precomputed features for both training and online serving. Ensures training/serving feature consistency — the same feature values used in training are served at prediction time.</div></div>
+<div class="kv-row"><div class="kv-key">Vertex AI Endpoints</div><div class="kv-val">Deploy models for online (real-time) prediction. Managed, auto-scaling REST API endpoint. Supports model versioning, traffic splitting (canary deployments), and prediction explanation.</div></div>
+<div class="kv-row"><div class="kv-key">Batch Prediction</div><div class="kv-val">Run predictions on a large dataset asynchronously. Input data from GCS or BigQuery; results written to GCS or BigQuery. No endpoint required. Cost-efficient for non-real-time scoring.</div></div>
+<div class="kv-row"><div class="kv-key">Vertex AI Model Monitoring</div><div class="kv-val">Monitor deployed models for data drift (input feature distribution changes) and prediction drift (output distribution changes). Alert when drift exceeds thresholds.</div></div>`},
+
+{title:'AutoML vs Custom Training — when to use which',body:`
+<div class="dt">
+<div class="dr"><div class="dq">No ML expertise on the team; need a working model quickly</div><div class="da" style="background:#100a1a;color:#b84dff;border:1px solid #3d1550">→ AutoML</div></div>
+<div class="dr"><div class="dq">Tabular data, standard classification/regression problem</div><div class="da" style="background:#100a1a;color:#b84dff;border:1px solid #3d1550">→ AutoML Tabular</div></div>
+<div class="dr"><div class="dq">Image classification, object detection without custom architecture</div><div class="da" style="background:#100a1a;color:#b84dff;border:1px solid #3d1550">→ AutoML Image</div></div>
+<div class="dr"><div class="dq">Text classification, sentiment analysis, entity extraction</div><div class="da" style="background:#100a1a;color:#b84dff;border:1px solid #3d1550">→ AutoML Text / Vertex AI NLP</div></div>
+<div class="dr"><div class="dq">Custom neural network architecture, specific loss function</div><div class="da" style="background:#091a11;color:#4dff91;border:1px solid #0f4024">→ Custom Training</div></div>
+<div class="dr"><div class="dq">Existing TensorFlow or PyTorch model to be trained on GCP</div><div class="da" style="background:#091a11;color:#4dff91;border:1px solid #0f4024">→ Custom Training</div></div>
+<div class="dr"><div class="dq">Need to tune specific hyperparameters with Vizier</div><div class="da" style="background:#091a11;color:#4dff91;border:1px solid #0f4024">→ Custom Training + Vizier</div></div>
+<div class="dr"><div class="dq">Reinforcement learning or custom training loop</div><div class="da" style="background:#091a11;color:#4dff91;border:1px solid #0f4024">→ Custom Training</div></div>
+</div>
+<div class="section-label">AutoML tabular data requirements</div>
+<div class="kv-row"><div class="kv-key">Minimum rows</div><div class="kv-val">1,000 rows minimum for training. More is better — 10,000+ rows for good results. 100,000+ rows for excellent results.</div></div>
+<div class="kv-row"><div class="kv-key">Target column</div><div class="kv-val">The column you want to predict (label for classification, value for regression). Must be specified explicitly.</div></div>
+<div class="kv-row"><div class="kv-key">Feature importance</div><div class="kv-val">AutoML provides feature importance scores after training — shows which input features had the most impact on predictions. Uses Shapley values (SHAP).</div></div>
+<div class="alert alert-blue">AutoML exam keyword: "no ML expertise," "automated model selection," "labeled data," "tabular/image/text/video," "fastest path to a working model." Any of these → Vertex AI AutoML. It handles feature engineering, model selection, and hyperparameter tuning automatically.</div>`},
+
+{title:'Feature Store — training/serving consistency',body:`
+<p class="prose">Training/serving skew is one of the most common causes of ML model performance degradation in production. It occurs when the features used during training are computed differently from those used at serving time.</p>
+<div class="section-label">What causes training/serving skew</div>
+<div class="kv-row"><div class="kv-key">Different code paths</div><div class="kv-val">Training uses a Spark job to compute features. Serving uses a Python microservice. Small differences in how missing values are handled, normalization applied, or aggregations computed lead to different feature values.</div></div>
+<div class="kv-row"><div class="kv-key">Stale features at serving</div><div class="kv-val">Training used features computed at a specific time. At serving, a different (stale or updated) version of the feature is used. The model's expectations don't match what it receives.</div></div>
+<div class="section-label">How Vertex AI Feature Store solves this</div>
+<div class="kv-row"><div class="kv-key">Single feature computation</div><div class="kv-val">Features are computed once and stored centrally. Both training (batch read) and serving (online lookup) read from the same Feature Store. One computation, two uses — eliminates skew.</div></div>
+<div class="kv-row"><div class="kv-key">Online serving</div><div class="kv-val">Feature Store provides a low-latency online serving API. At prediction time, look up the latest feature values for an entity (user_id, product_id) in milliseconds.</div></div>
+<div class="kv-row"><div class="kv-key">Historical batch serving</div><div class="kv-val">Create a training dataset by fetching feature values as they existed at specific points in time (point-in-time lookup). Prevents data leakage — training data doesn't include features computed after the label was observed.</div></div>
+<div class="kv-row"><div class="kv-key">Feature sharing</div><div class="kv-val">Multiple ML teams can discover and reuse features computed by other teams. A "days_since_last_purchase" feature computed by the recommendations team can be reused by the churn prediction team.</div></div>
+<div class="alert alert-green">Feature Store exam pattern: "Two different teams compute the same user features for training and serving in different ways, causing model accuracy degradation in production." Answer: Vertex AI Feature Store. Centralize feature computation — both training and serving consume from Feature Store, ensuring identical feature values.</div>`},
+
+{title:'MLOps, model monitoring, and BQML integration',body:`
+<p class="prose">MLOps applies DevOps principles to ML — automating the training, evaluation, deployment, and monitoring of models to make ML systems reliable and maintainable at scale.</p>
+<div class="section-label">Vertex AI Pipelines</div>
+<div class="kv-row"><div class="kv-key">What it does</div><div class="kv-val">Orchestrates ML workflows as reproducible pipelines using Kubeflow Pipelines (KFP) DSL. Each step (data validation, feature engineering, training, evaluation, deployment) is a containerized component. Steps can run in parallel or depend on each other.</div></div>
+<div class="kv-row"><div class="kv-key">Caching</div><div class="kv-val">Vertex AI Pipelines caches the outputs of each step. If you re-run the pipeline and the inputs to a step haven't changed, it reuses the cached output rather than re-executing. Dramatically speeds up iterative development.</div></div>
+<div class="kv-row"><div class="kv-key">Reproducibility</div><div class="kv-val">Every pipeline run is versioned and its artifacts are tracked. You can re-run any past pipeline run exactly — same data, same code, same parameters. Critical for debugging and regulatory compliance.</div></div>
+<div class="section-label">Types of drift</div>
+<div class="kv-row"><div class="kv-key">Data drift (feature drift / covariate shift)</div><div class="kv-val">The distribution of INPUT features changes. E.g., a model trained on pre-pandemic shopping behavior receives post-pandemic shopping data — feature distributions are completely different. The model's learned patterns no longer apply to the new distribution.</div></div>
+<div class="kv-row"><div class="kv-key">Concept drift</div><div class="kv-val">The relationship between features and the target CHANGES. E.g., a fraud detection model trained before a new fraud technique is introduced — the patterns that indicated fraud are different now. The model is looking for the old patterns.</div></div>
+<div class="section-label">Retraining strategies</div>
+<div class="kv-row"><div class="kv-key">Scheduled retraining</div><div class="kv-val">Retrain on a fixed schedule (weekly, monthly). Simple to implement. May retrain unnecessarily when the model is still accurate, or may be too slow when drift is rapid.</div></div>
+<div class="kv-row"><div class="kv-key">Triggered retraining</div><div class="kv-val">Retrain when Model Monitoring alerts on drift, or when offline evaluation metrics drop below a threshold. More efficient than scheduled — retrain only when needed.</div></div>
+<div class="kv-row"><div class="kv-key">Continuous training</div><div class="kv-val">Automatically trigger a Vertex AI Pipeline run when new labeled training data arrives or drift is detected. Fully automated ML lifecycle.</div></div>
+<div class="section-label">Online vs Batch prediction</div>
+<div class="kv-row"><div class="kv-key">Online prediction (Endpoints)</div><div class="kv-val">Deploy a model to a Vertex AI Endpoint. Returns predictions synchronously in milliseconds. Auto-scales based on traffic. Supports multiple model versions per endpoint for A/B testing via traffic splitting.</div></div>
+<div class="kv-row"><div class="kv-key">Batch prediction</div><div class="kv-val">Score a large dataset without a running endpoint. Submit a batch prediction job pointing to input in GCS/BQ. Results written to GCS/BQ when complete. No infrastructure to manage. Pay per prediction job.</div></div>
+<div class="alert alert-blue">Online vs Batch prediction: real-time predictions during a user session → Vertex AI Endpoint. Score all customers nightly for a campaign → Batch Prediction job.</div>
+<div class="section-label">BigQuery ML vs Vertex AI</div>
+<div class="dt">
+<div class="dr"><div class="dq">Data is in BigQuery, team knows SQL, simple model types needed</div><div class="da" style="background:#050f1a;color:#4d9fff;border:1px solid #0f3050">→ BigQuery ML</div></div>
+<div class="dr"><div class="dq">Need AutoML (no code) with more model types and better accuracy</div><div class="da" style="background:#100a1a;color:#b84dff;border:1px solid #3d1550">→ Vertex AI AutoML</div></div>
+<div class="dr"><div class="dq">Custom TensorFlow/PyTorch model training</div><div class="da" style="background:#100a1a;color:#b84dff;border:1px solid #3d1550">→ Vertex AI Custom Training</div></div>
+<div class="dr"><div class="dq">End-to-end MLOps pipeline with monitoring</div><div class="da" style="background:#100a1a;color:#b84dff;border:1px solid #3d1550">→ Vertex AI Pipelines + Monitoring</div></div>
+<div class="dr"><div class="dq">Feature store for training/serving consistency</div><div class="da" style="background:#100a1a;color:#b84dff;border:1px solid #3d1550">→ Vertex AI Feature Store</div></div>
+</div>`,},
+
+{title:'ML exam scenarios',body:`
+<div class="scenario-box"><div class="scenario-q">A retail team wants to predict which customers will churn next month. They have 500,000 rows of customer behavior data in BigQuery. The team has no ML engineers. Which tool?</div><div class="scenario-a"><strong>Answer: Vertex AI AutoML Tabular</strong> or BigQuery ML (LOGISTIC_REG or BOOSTED_TREE_CLASSIFIER). AutoML is preferred when the team has no ML expertise — AutoML handles feature engineering, model selection, and hyperparameter tuning. BQML is acceptable if the team knows SQL and wants to stay in BigQuery.</div></div>
+<div class="scenario-box"><div class="scenario-q">A fraud detection model was deployed 6 months ago. Its precision has dropped from 92% to 71% without any code changes. What is the likely cause and fix?</div><div class="scenario-a"><strong>Answer: Concept drift (or data drift).</strong> Fraudsters have changed their methods — the patterns the model learned 6 months ago no longer apply to current fraud. Fix: retrain the model with recent labeled data. Set up Vertex AI Model Monitoring with alerting to detect future drift automatically, and configure triggered retraining via Vertex AI Pipelines when drift thresholds are exceeded.</div></div>
+<div class="scenario-box"><div class="scenario-q">A recommendation system's training pipeline computes user features in Spark. The serving system computes the same features in Python microservices. The model's offline accuracy is high but online recommendations are poor. What is the problem?</div><div class="scenario-a"><strong>Answer: Training/serving skew.</strong> The same features are computed by two different code paths with subtle differences (null handling, normalization, aggregation windows). Fix: use Vertex AI Feature Store — compute features once, serve from Feature Store to both training and online serving.</div></div>
+<div class="scenario-box"><div class="scenario-q">A company needs to score 50 million customers every Sunday night to determine campaign targeting for the following week. Predictions are needed within 4 hours. Which Vertex AI feature?</div><div class="scenario-a"><strong>Answer: Vertex AI Batch Prediction.</strong> This is not a real-time use case — predictions are needed periodically on a large dataset. Submit a batch prediction job with BigQuery or GCS input. Results written back to BigQuery for campaign targeting. Much cheaper than running an online endpoint for 50M predictions.</div></div>
+<div class="scenario-box"><div class="scenario-q">An ML team wants to A/B test a new recommendation model v2 against the current v1. 10% of traffic should go to v2 during the test. Which Vertex AI feature?</div><div class="scenario-a"><strong>Answer: Traffic splitting on a Vertex AI Endpoint.</strong> Deploy both model versions to the same endpoint. Configure 90% traffic to v1 and 10% to v2. Monitor prediction quality metrics for both versions. Once v2 is validated, gradually shift traffic to 100% v2.</div></div>`}
+]},
+
+/* ══ 7. BATCH VS STREAMING ARCHITECTURE ══ */
+{id:'batchstream',label:'Batch vs Streaming Patterns',freq:'High',topics:[
+{title:'Lambda architecture — two processing paths',body:`
+<p class="prose">Lambda architecture maintains two separate processing pipelines: a batch layer that produces highly accurate results on historical data, and a speed layer that produces approximate real-time results. A serving layer merges results from both for queries.</p>
+<div class="arch-box">
+<div class="arch-header">Lambda Architecture</div>
+<div class="arch-body">
+<div class="arch-row"><div class="arch-label">Batch layer</div><div class="arch-val">Dataproc (Spark) or Dataflow batch — processes all historical data, produces high-accuracy results with full context. High latency (hours). Rewrites historical results periodically.</div></div>
+<div class="arch-row"><div class="arch-label">Speed layer</div><div class="arch-val">Dataflow streaming — processes new events in near-real-time, produces approximate/incomplete results quickly. Low latency (seconds). Results are less accurate due to incomplete data.</div></div>
+<div class="arch-row"><div class="arch-label">Serving layer</div><div class="arch-val">BigQuery — merges batch layer results (historical accuracy) with speed layer results (recent approximate data). Queries see complete picture: accurate history + approximate recent.</div></div>
+<div class="arch-row"><div class="arch-label">Data sources</div><div class="arch-val">All raw data → GCS (raw landing zone). Batch reads from GCS. Stream reads from Pub/Sub. Both write to BigQuery.</div></div>
+</div>
+</div>
+<div class="section-label">When Lambda is the right answer</div>
+<div class="kv-row"><div class="kv-key">Batch materially beats streaming</div><div class="kv-val">When batch processing (multi-pass joins, complex ML, full historical context) gives significantly more accurate results than streaming can achieve. The accuracy gap justifies maintaining two separate systems.</div></div>
+<div class="kv-row"><div class="kv-key">Regulatory requirement for batch view</div><div class="kv-val">Compliance requires a guaranteed, complete, auditable historical view produced by a batch process alongside a real-time operational view.</div></div>
+<div class="kv-row"><div class="kv-key">Legacy batch already exists</div><div class="kv-val">Team has an existing accurate batch system. Adding streaming for real-time results without replacing the batch system. Lambda is the pragmatic incremental approach.</div></div>
+<div class="section-label">Lambda challenges</div>
+<div class="kv-row"><div class="kv-key">Two codebases</div><div class="kv-val">Same business logic must be implemented twice — once for batch, once for streaming. Any bug fix or business rule change must be applied to both. Double the maintenance cost.</div></div>
+<div class="kv-row"><div class="kv-key">Reconciliation complexity</div><div class="kv-val">The serving layer must merge batch and streaming results correctly. Results may conflict — the serving layer logic to resolve conflicts can become complex.</div></div>
+<div class="alert alert-amber">Lambda is the answer only when the scenario explicitly requires both high batch accuracy AND real-time results, and streaming alone cannot match batch accuracy. If streaming can achieve acceptable accuracy, prefer Kappa (simpler, one codebase).</div>`},
+
+{title:'Kappa architecture — everything is a stream',body:`
+<p class="prose">Kappa architecture treats everything as a stream — both real-time processing and historical reprocessing use the same streaming pipeline. There is one codebase instead of two. Historical reprocessing is achieved by replaying events from the message bus.</p>
+<div class="arch-box">
+<div class="arch-header">Kappa Architecture</div>
+<div class="arch-body">
+<div class="arch-row"><div class="arch-label">All events</div><div class="arch-val">All data flows through Pub/Sub. Topic message retention is configured for replay window (up to 7 days default, configurable longer).</div></div>
+<div class="arch-row"><div class="arch-label">Single pipeline</div><div class="arch-val">Dataflow (Apache Beam) processes all events — the same pipeline handles both real-time events and historical reprocessing. One codebase.</div></div>
+<div class="arch-row"><div class="arch-label">Reprocessing</div><div class="arch-val">When a bug is fixed or business logic changes: use Pub/Sub Seek to rewind the subscription to a past timestamp. The pipeline reprocesses all events from that point with the corrected logic.</div></div>
+<div class="arch-row"><div class="arch-label">Output</div><div class="arch-val">BigQuery — all results (real-time and reprocessed) land in BigQuery. Partitioning by event time handles both fresh and historical data correctly.</div></div>
+</div>
+</div>
+<div class="section-label">When Kappa is the right answer</div>
+<div class="kv-row"><div class="kv-key">Streaming accuracy is sufficient</div><div class="kv-val">When the streaming pipeline can produce results as accurate as a batch pipeline — with appropriate windowing and late data handling. This covers most modern use cases.</div></div>
+<div class="kv-row"><div class="kv-key">Simplicity is valued</div><div class="kv-val">One codebase, one system, one operational team. When engineering simplicity is a priority over maximum accuracy, Kappa wins.</div></div>
+<div class="kv-row"><div class="kv-key">Google Cloud recommendation</div><div class="kv-val">GCP documentation and Google's architectural guidance favors Kappa for most new architectures using Dataflow, which handles both batch and streaming with the same Beam code.</div></div>
+<div class="alert alert-green">Lambda vs Kappa exam rule: if the scenario describes a team maintaining separate batch and streaming codebases and asks how to simplify → Kappa. If the scenario requires both high batch accuracy and real-time results, and streaming cannot match batch accuracy → Lambda. Google prefers Kappa for new GCP architectures.</div>`},
+
+{title:'Lambda vs Kappa side-by-side + HTAP',body:`
+<div class="cmp-wrap"><table class="cmp">
+<thead><tr><th>Dimension</th><th>Lambda</th><th>Kappa</th></tr></thead>
+<tbody>
+<tr><td>Processing paths</td><td>Two (batch + streaming)</td><td>One (streaming only)</td></tr>
+<tr><td>Codebases</td><td>Two (separate batch and stream logic)</td><td>One (Beam handles both)</td></tr>
+<tr><td>Historical reprocessing</td><td>Batch layer re-runs on historical data</td><td>Pub/Sub Seek replays events through streaming pipeline</td></tr>
+<tr><td>Result accuracy</td><td>Batch = high accuracy; Streaming = approximate</td><td>Single result with appropriate late data handling</td></tr>
+<tr><td>Operational complexity</td><td>Higher (two systems to operate)</td><td>Lower (one system)</td></tr>
+<tr><td>GCP services</td><td>Dataproc (batch) + Dataflow (stream) + BigQuery</td><td>Pub/Sub + Dataflow + BigQuery</td></tr>
+<tr><td>Choose when</td><td>Batch accuracy >> streaming; regulatory batch requirement</td><td>Streaming sufficient; simplicity valued; new GCP architecture</td></tr>
+</tbody>
+</table></div>
+<div class="section-label">HTAP — Hybrid Transactional and Analytical Processing</div>
+<p class="prose">HTAP serves both operational (low-latency transactional reads/writes) and analytical (complex aggregations, long-running SQL) workloads from the same or synchronized data. Traditional architectures separate OLTP and OLAP into different systems with ETL pipelines between them. HTAP reduces this latency gap.</p>
+<div class="pipe">
+<div class="ps" style="background:#100a1a;color:#b84dff;border-color:#3d1550">Cloud Spanner<span class="ps-sub">OLTP — transactions</span></div>
+<div class="pa">→</div>
+<div class="ps" style="background:#1a0d06;color:#ff7a4d;border-color:#4d2510">Spanner Change Streams<span class="ps-sub">CDC</span></div>
+<div class="pa">→</div>
+<div class="ps" style="background:#1a0d06;color:#ff7a4d;border-color:#4d2510">Dataflow<span class="ps-sub">transform</span></div>
+<div class="pa">→</div>
+<div class="ps" style="background:#050f1a;color:#4d9fff;border-color:#0f3050">BigQuery<span class="ps-sub">OLAP — analytics</span></div>
+</div>
+<div class="kv-row"><div class="kv-key">Operational layer</div><div class="kv-val">Cloud Spanner (global ACID transactions, low-latency reads/writes) or Cloud SQL/Firestore for single-region workloads. Serves the application's transactional needs.</div></div>
+<div class="kv-row"><div class="kv-key">CDC layer</div><div class="kv-val">Spanner Change Streams (or Datastream for MySQL/PostgreSQL) capture every change in near-real-time. Changes flow to Pub/Sub or directly to Dataflow.</div></div>
+<div class="kv-row"><div class="kv-key">Analytical layer</div><div class="kv-val">BigQuery receives the streamed changes. Analytical queries run against BigQuery's columnar storage — seconds to minutes latency for complex aggregations. Does not impact operational database performance.</div></div>
+<div class="alert alert-blue">HTAP exam pattern: "A company needs both low-latency transactional reads/writes (inventory management) AND complex analytical queries on historical data (trend analysis) from the same data source." Answer: Spanner (OLTP) → Change Streams → Dataflow → BigQuery (OLAP). Two services optimized for each workload, synchronized via CDC.</div>`}
+]},
+
+/* ══ 8. REFERENCE ARCHITECTURE PATTERNS ══ */
+{id:'refarch',label:'Reference Architecture Patterns',freq:'High',topics:[
+{title:'Data lake architecture — bronze/silver/gold zones',body:`
+<p class="prose">The medallion architecture (bronze/silver/gold) is a pattern for organizing data in a lake with progressively increasing quality and structure. Also called the raw/refined/curated pattern.</p>
+<div class="g3">
+<div class="mini" style="background:#1a1000;border-color:#4d3000"><div class="mt" style="color:#ffb84d">Bronze (Raw)</div><div class="mb">Exact copy of source data. Immutable append-only. JSON, CSV, Avro. No transformation. GCS bucket. All data is preserved for reprocessing. Owned by data engineering.</div></div>
+<div class="mini good"><div class="mt">Silver (Refined)</div><div class="mb">Cleaned and validated data. Parquet format, partitioned. Nulls handled, deduplication applied, schema enforced. GCS or BigQuery. Owned by data engineering.</div></div>
+<div class="mini" style="background:#050f1a;border-color:#0f3050"><div class="mt" style="color:#4d9fff">Gold (Curated / Serving)</div><div class="mb">Business-level aggregations and data products. Optimized for specific use cases (BI, ML). BigQuery tables, materialized views. Owned by data teams and served to business users.</div></div>
+</div>
+<div class="section-label">GCP implementation</div>
+<div class="kv-row"><div class="kv-key">Bronze zone</div><div class="kv-val">GCS bucket (Standard storage class). Raw files in native format (JSON, CSV, Avro). Pub/Sub → Dataflow or Pub/Sub Storage subscription to land raw events. Never overwrite — append only. Use Dataplex raw zone for governance.</div></div>
+<div class="kv-row"><div class="kv-key">Silver zone</div><div class="kv-val">GCS bucket (processed Parquet, hive-partitioned) or BigQuery raw tables. Dataflow or Dataproc applies cleaning, deduplication, schema validation. Dataplex curated zone for governance and quality checks.</div></div>
+<div class="kv-row"><div class="kv-key">Gold zone</div><div class="kv-val">BigQuery datasets with partitioned, clustered tables. Materialized views for common aggregations. BI Engine for dashboard acceleration. Dataform manages the SQL transformations from silver to gold with dependency management and assertions.</div></div>
+<div class="alert alert-blue">Bronze/Silver/Gold exam pattern: "A company ingests raw data from multiple sources into GCS. Analytics teams need clean, structured data in BigQuery. How do you structure the data lake?" Answer: Bronze (raw GCS) → Silver (cleaned GCS Parquet or BQ staging) → Gold (BQ analytics tables). Use Dataflow for bronze → silver, Dataform for silver → gold transformations.</div>`},
+
+{title:'Migration patterns — on-premises to GCP',body:`
+<div class="section-label">Hadoop/Spark migration</div>
+<div class="kv-row"><div class="kv-key">Lift and shift</div><div class="kv-val">Move existing Spark/Hadoop jobs to Dataproc with minimal code changes. Replace HDFS with GCS (gs:// paths). Replace on-prem Hive Metastore with Dataproc Metastore Service. Use ephemeral clusters for cost optimization. First phase of most migrations.</div></div>
+<div class="kv-row"><div class="kv-key">Modernize to serverless</div><div class="kv-val">After lift-and-shift, progressively rewrite Spark jobs as Dataflow pipelines or Serverless Dataproc. Eliminates cluster management. Better for new streaming requirements. Second phase for teams ready to invest in modernization.</div></div>
+<div class="section-label">Data warehouse migration</div>
+<div class="kv-row"><div class="kv-key">On-prem Teradata/Netezza/Redshift → BigQuery</div><div class="kv-val">Use BigQuery Migration Service to automatically translate SQL dialects. Use Datastream or Storage Transfer Service to migrate historical data. Run parallel validation (compare query results between old and new systems) before cutover.</div></div>
+<div class="kv-row"><div class="kv-key">Schema translation challenges</div><div class="kv-val">Proprietary SQL functions differ across databases. BigQuery uses standard SQL — some Oracle/Teradata-specific functions have no direct equivalent. Migration Service handles many automatically; some require manual rewriting.</div></div>
+<div class="section-label">Database migration</div>
+<div class="kv-row"><div class="kv-key">MySQL/PostgreSQL → Cloud SQL</div><div class="kv-val">Use Database Migration Service (DMS). Continuous replication keeps source and destination in sync. Minimal downtime cutover. Application connection string change only.</div></div>
+<div class="kv-row"><div class="kv-key">MySQL → Cloud Spanner</div><div class="kv-val">Use Harboring Tool (Google's Spanner migration tool) for schema conversion and data migration. Required when outgrowing MySQL's vertical scaling limit and need horizontal scale.</div></div>
+<div class="section-label">Portability and hybrid cloud</div>
+<div class="kv-row"><div class="kv-key">BigQuery Omni</div><div class="kv-val">Query data stored in AWS S3 or Azure Blob Storage from BigQuery without moving the data. Useful for multi-cloud analytics or during migration when data still lives in other clouds.</div></div>
+<div class="kv-row"><div class="kv-key">Anthos</div><div class="kv-val">Run GKE workloads on-premises or across multiple clouds. For containerized data processing applications that need to span on-prem and cloud.</div></div>`},
+
+{title:'Reliability, cost optimization, and SLA patterns',body:`
+<div class="section-label">Reliability patterns</div>
+<div class="kv-row"><div class="kv-key">Dead-letter queues</div><div class="kv-val">Configure Pub/Sub dead-letter topics for unprocessable messages. Configure Dataflow dead-letter outputs (side outputs) for invalid records. Never lose data — quarantine failures for inspection and reprocessing.</div></div>
+<div class="kv-row"><div class="kv-key">Retry with exponential backoff</div><div class="kv-val">Transient failures (network timeout, rate limit) should be retried with increasing delay intervals. Prevents thundering herd when services recover from outages. All GCP client libraries implement this by default.</div></div>
+<div class="kv-row"><div class="kv-key">Idempotent consumers</div><div class="kv-val">Design consumers to safely process the same message multiple times with the same result. Required because Pub/Sub guarantees at-least-once delivery. Use Dataflow's exactly-once mode or design idempotent sinks (e.g., BQ MERGE instead of INSERT).</div></div>
+<div class="kv-row"><div class="kv-key">Regional vs multi-regional resources</div><div class="kv-val">BigQuery multi-region (US, EU) provides higher availability and durability at higher cost. For DR: use BigQuery cross-region dataset replication. GCS dual-region or multi-region for critical data lake storage.</div></div>
+<div class="section-label">Cost optimization patterns</div>
+<div class="kv-row"><div class="kv-key">BigQuery</div><div class="kv-val">Partition + cluster tables to minimize bytes scanned. Use materialized views for repeated aggregations. Use BI Engine for dashboard queries. Use scheduled queries instead of Dataflow for simple SQL aggregations. Set require_partition_filter to prevent full table scans.</div></div>
+<div class="kv-row"><div class="kv-key">Dataproc</div><div class="kv-val">Ephemeral clusters (biggest saving). Preemptible secondary workers. Autoscaling policies. Store data in GCS not HDFS.</div></div>
+<div class="kv-row"><div class="kv-key">Cloud Storage</div><div class="kv-val">Lifecycle rules for automatic tiering (Standard → Nearline → Coldline → Archive). Autoclass for unpredictable access patterns. Delete old noncurrent versions of versioned objects.</div></div>
+<div class="kv-row"><div class="kv-key">Dataflow</div><div class="kv-val">FlexRS for batch jobs tolerating 6-hour delay. Streaming Engine to reduce worker count. Right-size worker types for the workload.</div></div>
+<div class="section-label">Monitoring and SLA patterns</div>
+<div class="kv-row"><div class="kv-key">Cloud Monitoring</div><div class="kv-val">Set alerting policies on: BigQuery job duration (SLA breach), Pub/Sub subscription oldest unacked message age (consumer lag), Dataflow backlog (processing falling behind), Dataproc job failures, GCS lifecycle actions.</div></div>
+<div class="kv-row"><div class="kv-key">Cloud Logging + BigQuery</div><div class="kv-val">Route audit logs to BigQuery for SQL-based analysis. Detect anomalies: users running >1TB queries, unusual access patterns on sensitive tables, service account activity outside business hours.</div></div>`}
+]},
+
+/* ══ 9. FULL ARCHITECTURE EXAM SCENARIOS ══ */
+{id:'scenarios',label:'Full Architecture Scenarios',freq:'Practice',topics:[
+{title:'End-to-end architecture scenarios',body:`
+<div class="scenario-box">
+<div class="scenario-q">Design a real-time IoT platform for 100,000 devices sending sensor readings every second. The platform must: (1) store all readings for 5 years, (2) alert within 5 seconds if any device exceeds a threshold, (3) provide daily aggregation dashboards, (4) allow ad-hoc SQL analysis on historical data.</div>
+<div class="scenario-a"><strong>Answer:</strong>
+Devices → Pub/Sub (ingest, buffer spikes)
+→ Dataflow pipeline 1: window by device+minute, write aggregated metrics to BigQuery (for dashboards) via Storage Write API
+→ Dataflow pipeline 2: threshold check per reading, trigger Cloud Functions alert if exceeded (5-second latency requirement)
+→ BigQuery: partitioned by date, clustered by device_id (historical analysis, daily dashboards via BI Engine)
+→ GCS Archive: export 5-year-old data from BigQuery to GCS Archive class via scheduled export job
+
+For Bigtable consideration: if sub-millisecond per-device lookup is needed (not in this scenario — BigQuery seconds is fine for dashboards), add Bigtable as a hot-path store for latest readings.</div>
+</div>
+
+<div class="scenario-box">
+<div class="scenario-q">A company runs 10 years of Spark jobs on an on-premises Hadoop cluster (500TB data). They need to migrate to GCP, reduce operational cost, and enable the analytics team to run ad-hoc SQL on the data. The Spark jobs must continue running during migration.</div>
+<div class="scenario-a"><strong>Answer:</strong>
+Phase 1 (lift and shift): Transfer Appliance to move 500TB to GCS. Dataproc replaces Hadoop cluster — Spark jobs run unchanged with gs:// paths replacing hdfs://. Dataproc Metastore Service replaces Hive Metastore.
+Phase 2 (optimize): Switch to ephemeral Dataproc clusters per job (eliminate idle cost). Add preemptible secondary workers for batch jobs. Orchestrate via Cloud Composer.
+Phase 3 (enable analytics): Create BigQuery external tables or BigLake tables pointing to GCS Parquet files for ad-hoc SQL. Or load processed Parquet to BigQuery for best query performance. Analytics team queries BigQuery without Spark.
+Parallel validation: run both on-prem and Dataproc for critical jobs, comparing results before full cutover.</div>
+</div>
+
+<div class="scenario-box">
+<div class="scenario-q">Design a secure, governed data platform for a healthcare company. Requirements: (1) PII must never appear in analytics systems, (2) only authorized roles can access patient data, (3) all data access must be auditable, (4) data must be encrypted with company-controlled keys, (5) data cannot leave the company's GCP perimeter.</div>
+<div class="scenario-a"><strong>Answer:</strong>
+Ingestion: Pub/Sub → Dataflow pipeline with Cloud DLP de-identification. PII is masked/tokenized before any data reaches BigQuery or GCS.
+Encryption: CMEK via Cloud KMS on all BigQuery datasets and GCS buckets. Security team controls KMS keys — can revoke access via key destruction.
+Access control: Policy tags on any remaining sensitive BigQuery columns. Row access policies for region-based data partitioning. Authorized views for external analyst teams.
+Network security: VPC Service Controls perimeter around all BigQuery and GCS projects. Requests from outside the perimeter (even with Admin IAM) are blocked.
+Audit: Enable BigQuery Data Access audit logs. Route all audit logs to a BigQuery dataset via a log sink. Security team runs SQL queries to prove access compliance. Cloud Monitoring alerts on anomalous query volumes.
+Governance: Dataplex lakes and zones. Data Catalog with PII policy tags and custom tag templates for data owner, retention period, and data classification.</div>
+</div>
+
+<div class="scenario-box">
+<div class="scenario-q">A streaming pipeline processes e-commerce order events. After a code bug, incorrect discount calculations were written to BigQuery for 3 hours. The pipeline is fixed. How do you recover?</div>
+<div class="scenario-a"><strong>Answer:</strong>
+(1) BigQuery time travel: restore the affected BigQuery table to its state 3 hours ago: CREATE OR REPLACE TABLE dataset.orders AS SELECT * FROM dataset.orders FOR SYSTEM_TIME AS OF [3-hours-ago timestamp].
+(2) Pub/Sub Seek: rewind the Pub/Sub subscription cursor to 3 hours ago. The fixed Dataflow pipeline reprocesses all events from that point, recomputing correct discount calculations and writing them to BigQuery. Requires Pub/Sub topic message retention ≥ 3 hours.
+(3) Validate: compare record counts and key metrics between recovered and original data to confirm correctness.</div>
+</div>
+
+<div class="scenario-box">
+<div class="scenario-q">A company's analytics team and finance team both need access to sales data. Analytics needs all columns. Finance needs only revenue columns but NOT cost or margin data. External auditors need a read-only view for compliance without seeing customer PII. How do you serve all three groups from one underlying dataset?</div>
+<div class="scenario-a"><strong>Answer:</strong>
+Analytics team: grant bigquery.dataViewer directly on the full dataset. All columns accessible.
+Finance team: create an authorized view in a separate dataset selecting only revenue columns (no cost, no margin, no PII). Grant finance team access to the authorized view dataset only — they cannot query the base tables.
+External auditors: create a second authorized view selecting compliance-relevant columns with customer PII replaced by pseudonymized IDs. Apply policy tags to any remaining sensitive columns. Grant auditors access to the auditor view dataset with very limited IAM. Enable Data Access audit logs to track every query the auditors run.
+Row access policies: if different team members should see different customer regions, add row access policies filtering by region based on the querying user's group membership.</div>
+</div>`},
+
+{title:'Module 5 complete decision reference',body:`
+<div class="section-label">Security decisions</div>
+<div class="kv-row"><div class="kv-key">Service account for GCP-native service</div><div class="kv-val">→ Google-managed credentials (no key file)</div></div>
+<div class="kv-row"><div class="kv-key">External workload (GitHub Actions, AWS, on-prem)</div><div class="kv-val">→ Workload Identity Federation (no key file)</div></div>
+<div class="kv-row"><div class="kv-key">Compliance requires customer-controlled encryption</div><div class="kv-val">→ CMEK via Cloud KMS</div></div>
+<div class="kv-row"><div class="kv-key">Keys must never enter Google infrastructure</div><div class="kv-val">→ CMEK via Cloud External Key Manager (EKM)</div></div>
+<div class="kv-row"><div class="kv-key">Prevent data exfiltration by compromised credentials</div><div class="kv-val">→ VPC Service Controls perimeter</div></div>
+<div class="kv-row"><div class="kv-key">Column-level security in BigQuery</div><div class="kv-val">→ Data Catalog policy tags (returns ACCESS DENIED)</div></div>
+<div class="kv-row"><div class="kv-key">PII de-identification before analytics</div><div class="kv-val">→ Cloud DLP (in Dataflow pipeline or batch scan)</div></div>
+<div class="kv-row"><div class="kv-key">Audit who accessed which BQ data</div><div class="kv-val">→ Enable Data Access audit logs + route to BigQuery</div></div>
+<div class="kv-row"><div class="kv-key">Prevent public GCS buckets org-wide</div><div class="kv-val">→ Org Policy: constraints/storage.publicAccessPrevention</div></div>
+<div class="section-label">ML decisions</div>
+<div class="kv-row"><div class="kv-key">No ML expertise, labeled tabular data</div><div class="kv-val">→ Vertex AI AutoML Tabular</div></div>
+<div class="kv-row"><div class="kv-key">SQL team, data in BigQuery, standard models</div><div class="kv-val">→ BigQuery ML</div></div>
+<div class="kv-row"><div class="kv-key">Custom neural network, TensorFlow/PyTorch</div><div class="kv-val">→ Vertex AI Custom Training</div></div>
+<div class="kv-row"><div class="kv-key">Training/serving skew (different feature computation)</div><div class="kv-val">→ Vertex AI Feature Store</div></div>
+<div class="kv-row"><div class="kv-key">Real-time predictions (milliseconds)</div><div class="kv-val">→ Vertex AI Endpoint (online prediction)</div></div>
+<div class="kv-row"><div class="kv-key">Score large dataset periodically</div><div class="kv-val">→ Vertex AI Batch Prediction</div></div>
+<div class="kv-row"><div class="kv-key">Model accuracy degrading over time</div><div class="kv-val">→ Concept/data drift → retrain with recent data; set up Vertex AI Model Monitoring</div></div>
+<div class="kv-row"><div class="kv-key">A/B test two model versions</div><div class="kv-val">→ Vertex AI Endpoint traffic splitting</div></div>
+<div class="kv-row"><div class="kv-key">Automate end-to-end ML lifecycle</div><div class="kv-val">→ Vertex AI Pipelines (KFP)</div></div>
+<div class="section-label">Architecture decisions</div>
+<div class="kv-row"><div class="kv-key">Real-time + historical from one pipeline</div><div class="kv-val">→ Kappa (Dataflow + Pub/Sub Seek for reprocessing)</div></div>
+<div class="kv-row"><div class="kv-key">Batch accuracy >> streaming, need both</div><div class="kv-val">→ Lambda (Dataproc batch + Dataflow stream + BQ merge)</div></div>
+<div class="kv-row"><div class="kv-key">OLTP + OLAP from same data</div><div class="kv-val">→ HTAP: Spanner/Cloud SQL → Change Streams/Datastream → Dataflow → BigQuery</div></div>
+<div class="kv-row"><div class="kv-key">Reprocess last N hours after a bug fix</div><div class="kv-val">→ Pub/Sub Seek + fixed Dataflow pipeline; BQ time travel to restore tables</div></div>
+<div class="kv-row"><div class="kv-key">Migrate Hadoop to GCP</div><div class="kv-val">→ Dataproc (lift-and-shift) → ephemeral clusters → optionally migrate to Dataflow</div></div>
+<div class="kv-row"><div class="kv-key">Data lake organization</div><div class="kv-val">→ Bronze/Silver/Gold on GCS + BigQuery with Dataplex governance</div></div>
+<div class="section-label">Key exam traps for Module 5</div>
+<div class="kv-row"><div class="kv-key">CSEK in BigQuery</div><div class="kv-val">NOT supported. BigQuery = GMEK + CMEK only.</div></div>
+<div class="kv-row"><div class="kv-key">IAM inheritance direction</div><div class="kv-val">Permissions flow downward and are additive. Cannot restrict inherited permissions at a lower level (without IAM Deny).</div></div>
+<div class="kv-row"><div class="kv-key">VPC-SC vs IAM</div><div class="kv-val">IAM = who can do what. VPC-SC = where requests can come from. Both must allow a request. VPC-SC blocks even Admin-role users if they're outside the perimeter.</div></div>
+<div class="kv-row"><div class="kv-key">Data Access logs disabled by default</div><div class="kv-val">Admin Activity logs are always on. Data Access logs (BigQuery queries, GCS reads) must be explicitly enabled.</div></div>
+<div class="kv-row"><div class="kv-key">Policy tags return ACCESS DENIED</div><div class="kv-val">Not NULL, not masked — a hard error. For masking → BQ managed masking or Cloud DLP.</div></div>
+<div class="kv-row"><div class="kv-key">Kappa requires sufficient Pub/Sub retention</div><div class="kv-val">Historical reprocessing via Pub/Sub Seek requires the topic to have retained messages for the replay window. Default 7 days — configure longer if needed.</div></div>`}
+]}
+
+]; // END TABS
+
+/* ── BUILD TABS ── */
+const tabBar = document.getElementById('tabBar');
+const tabContent = document.getElementById('tabContent');
+
+TABS.forEach((tab, ti) => {
+  const btn = document.createElement('button');
+  btn.className = 'tab-btn' + (ti === 0 ? ' active' : '');
+  btn.textContent = tab.label;
+  btn.onclick = () => {
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.tab-section').forEach(s => s.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById('sec-' + ti).classList.add('active');
+  };
+  tabBar.appendChild(btn);
+
+  const sec = document.createElement('div');
+  sec.className = 'tab-section' + (ti === 0 ? ' active' : '');
+  sec.id = 'sec-' + ti;
+
+  tab.topics.forEach((topic, tpi) => {
+    const gid = `g${ti}_${tpi}`;
+    const cid = `c${ti}_${tpi}`;
+    const cardId = `${tab.id}_${tpi}`;
+    const div = document.createElement('div');
+    div.className = 'gap';
+    div.innerHTML = `
+      <div class="gap-header" onclick="tog('${gid}','${cid}')">
+        <div class="gap-num">${tpi + 1}</div>
+        <div class="gap-title">${topic.title}</div>
+        <span class="gap-tag">${tab.freq}</span>
+        <span class="chevron${tpi === 0 ? ' open' : ''}" id="${cid}">▶</span>
+      </div>
+      <div class="gap-body${tpi === 0 ? ' open' : ''}" id="${gid}">${topic.body}${buildNoteZone(cardId)}</div>`;
+    sec.appendChild(div);
+  });
+  tabContent.appendChild(sec);
+});
+
+TABS.forEach((tab, ti) => {
+  tab.topics.forEach((_, tpi) => { initNotes(`${tab.id}_${tpi}`); });
+});
+
+function tog(b, c) {
+  document.getElementById(b).classList.toggle('open');
+  document.getElementById(c).classList.toggle('open');
+}
+
+/* ── NOTES ENGINE ── */
+const NOTES_PREFIX = 'gcp_pde_notes_';
+function getCardNotes(id) {
+  try { const r = localStorage.getItem(NOTES_PREFIX + id); return r ? JSON.parse(r) : []; } catch(e) { return []; }
+}
+function saveCardNotes(id, notes) {
+  try { localStorage.setItem(NOTES_PREFIX + id, JSON.stringify(notes)); } catch(e) {}
+  try { window.storage && window.storage.set(NOTES_PREFIX + id, JSON.stringify(notes), false); } catch(e) {}
+}
+async function initNotes(id) {
+  try { if (window.storage) { const r = await window.storage.get(NOTES_PREFIX + id, false); if (r) { try { localStorage.setItem(NOTES_PREFIX + id, r.value); } catch(e) {} } } } catch(e) {}
+  renderNotes(id);
+}
+function formatTs(ts) {
+  const d = new Date(ts);
+  return d.toLocaleDateString('en-CA',{month:'short',day:'numeric',year:'numeric'})+' '+d.toLocaleTimeString('en-CA',{hour:'2-digit',minute:'2-digit'});
+}
+function escHtml(s) { return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\n/g,'<br>'); }
+function buildNoteZone(id) {
+  return `<div class="note-zone" id="notes-zone-${id}">
+    <div class="notes-list"></div>
+    <div class="note-form" style="display:none" data-edit-idx="">
+      <textarea placeholder="Add your study note…" rows="3"></textarea>
+      <div class="note-form-actions">
+        <button class="note-save-btn" onclick="saveNote('${id}')">save note</button>
+        <button class="note-cancel-btn" onclick="cancelNote('${id}')">cancel</button>
+      </div>
+    </div>
+    <button class="note-add-trigger" onclick="showNoteForm('${id}')">
+      <svg width="13" height="13" viewBox="0 0 13 13" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="1" y="1" width="11" height="11" rx="2"/><line x1="3.5" y1="4" x2="9.5" y2="4"/><line x1="3.5" y1="6.5" x2="9.5" y2="6.5"/><line x1="3.5" y1="9" x2="6.5" y2="9"/><line x1="9.5" y1="7.5" x2="9.5" y2="11"/><line x1="7.5" y1="9.5" x2="11.5" y2="9.5"/></svg>
+      add note
+    </button>
+  </div>`;
+}
+function renderNotes(id) {
+  const zone = document.getElementById('notes-zone-' + id);
+  if (!zone) return;
+  const notes = getCardNotes(id);
+  const list = zone.querySelector('.notes-list');
+  list.innerHTML = '';
+  notes.forEach((note, idx) => {
+    const item = document.createElement('div');
+    item.className = 'note-item';
+    item.innerHTML = `<div class="note-item-text">${escHtml(note.text)}</div>
+      <div class="note-item-footer">
+        <span class="note-ts">${formatTs(note.ts)}</span>
+        <div class="note-item-actions">
+          <button class="note-action-btn" onclick="editNote('${id}',${idx})">edit</button>
+          <button class="note-action-btn del" onclick="deleteNote('${id}',${idx})">delete</button>
+        </div>
+      </div>`;
+    list.appendChild(item);
+  });
+}
+function showNoteForm(id) {
+  const zone = document.getElementById('notes-zone-' + id);
+  const form = zone.querySelector('.note-form');
+  form.dataset.editIdx = '';
+  form.querySelector('textarea').value = '';
+  form.style.display = 'block';
+  zone.querySelector('.note-add-trigger').style.display = 'none';
+  form.querySelector('textarea').focus();
+}
+function cancelNote(id) {
+  const zone = document.getElementById('notes-zone-' + id);
+  zone.querySelector('.note-form').style.display = 'none';
+  zone.querySelector('.note-add-trigger').style.display = 'flex';
+}
+function saveNote(id) {
+  const zone = document.getElementById('notes-zone-' + id);
+  const form = zone.querySelector('.note-form');
+  const text = form.querySelector('textarea').value.trim();
+  if (!text) return;
+  const notes = getCardNotes(id);
+  const idx = form.dataset.editIdx;
+  if (idx !== '') { notes[parseInt(idx)] = {text, ts: notes[parseInt(idx)].ts}; }
+  else { notes.push({text, ts: Date.now()}); }
+  saveCardNotes(id, notes);
+  renderNotes(id);
+  form.style.display = 'none';
+  zone.querySelector('.note-add-trigger').style.display = 'flex';
+}
+function editNote(id, idx) {
+  const zone = document.getElementById('notes-zone-' + id);
+  const form = zone.querySelector('.note-form');
+  form.dataset.editIdx = idx;
+  form.querySelector('textarea').value = getCardNotes(id)[idx].text;
+  form.style.display = 'block';
+  zone.querySelector('.note-add-trigger').style.display = 'none';
+  form.querySelector('textarea').focus();
+}
+function deleteNote(id, idx) {
+  const notes = getCardNotes(id);
+  notes.splice(idx, 1);
+  saveCardNotes(id, notes);
+  renderNotes(id);
+}
+
+
+
+
+/* ════ SIDEBAR + BOTTOM BAR JS ════ */
+(function () {
+  var sidebar = document.getElementById('sidebar');
+  var btn     = document.getElementById('sbCollapseBtn');
+  var overlay = document.getElementById('sbOverlay');
+  if (!sidebar) return;
+
+  // ── Restore collapsed state from localStorage ──
+  var isCollapsed = localStorage.getItem('sbCollapsed') === '1';
+  if (isCollapsed) {
+    sidebar.classList.add('collapsed');
+    document.body.classList.add('sb-closed');
+  } else {
+    document.body.classList.add('sb-open');
+  }
+
+  // ── Mark active page ──
+  var path    = window.location.pathname.split('/').pop().replace('.html', '') || 'index';
+  var hash    = window.location.hash.replace('#', '');
+
+  // Activate module links
+  document.querySelectorAll('.sb-mod-link[data-page]').forEach(function (el) {
+    if (el.getAttribute('data-page') === path) el.classList.add('active');
+  });
+  // Activate bottom bar items
+  document.querySelectorAll('.bb-item[data-page]').forEach(function (el) {
+    if (el.getAttribute('data-page') === path) el.classList.add('active');
+  });
+
+  // ── Open subtopic group for current page ──
+  var grp = document.querySelector('.sb-mod-group[data-group="' + path + '"]');
+  if (grp) {
+    grp.classList.add('open');
+    // Highlight active subtopic if hash present
+    if (hash) {
+      var sub = grp.querySelector('.sb-sub-link[data-tab="' + hash + '"]');
+      if (sub) sub.classList.add('active');
+    }
+  }
+
+  // ── Expand/collapse on group header click (toggle subtopics) ──
+  document.querySelectorAll('.sb-mod-group').forEach(function (grp) {
+    var link = grp.querySelector(':scope > .sb-mod-link');
+    if (!link) return;
+    link.addEventListener('click', function (e) {
+      // Only intercept the expand toggle, not navigation to other pages
+      var targetPage = link.getAttribute('data-page');
+      if (targetPage && targetPage !== path) return; // let it navigate
+      // Same page or no page change — toggle subtopics
+      e.preventDefault();
+      grp.classList.toggle('open');
+    });
+  });
+
+  // ── Hash change: update active subtopic ──
+  window.addEventListener('hashchange', function () {
+    var h = window.location.hash.replace('#', '');
+    document.querySelectorAll('.sb-sub-link').forEach(function (el) { el.classList.remove('active'); });
+    if (h && grp) {
+      var sub = grp.querySelector('.sb-sub-link[data-tab="' + h + '"]');
+      if (sub) sub.classList.add('active');
+    }
+  });
+})();
+
+function toggleSidebar() {
+  var sidebar = document.getElementById('sidebar');
+  if (!sidebar) return;
+  var collapsed = sidebar.classList.toggle('collapsed');
+  document.body.classList.toggle('sb-open',   !collapsed);
+  document.body.classList.toggle('sb-closed', collapsed);
+  localStorage.setItem('sbCollapsed', collapsed ? '1' : '0');
+}
+function closeSidebar() {
+  // no-op on desktop; overlay not shown
+}
+/* ════ END SIDEBAR JS ════ */
+
+</script>
+</body>
+</html>

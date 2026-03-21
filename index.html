@@ -1,432 +1,1089 @@
-```html
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="dark">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GCP PDE Study Hub</title>
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GCP PDE Study Notes</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap');
 
-        body {
-            font-family: 'Outfit', sans-serif;
-            background: #0f0f0f;
-            color: #e0e0e0;
-            line-height: 1.6;
-        }
+[data-theme="dark"] {
+  --bg: #0d0f14;
+  --surface: #161920;
+  --surface2: #1e2230;
+  --border: #2a2f3d;
+  --text: #e8eaf0;
+  --muted: #7a8099;
+  --dim: #4a5168;
+  --accent: #4dff91;
+  --accent-bg: #091a11;
+  --accent-border: #0f4024;
+  --accent-text: #4dff91;
+  --num-fg: #0d0f14;
+  --toggle-track: #0f4024;
+  --toggle-border: #0f4024;
+  --toggle-knob: #4dff91;
+  --toggle-shadow: rgba(77,255,145,0.3);
+  --sun-op: 0.35;
+  --moon-op: 1;
+  --card-hover: #1e2230;
+  --tag-1-bg: #091a11; --tag-1-text: #4dff91; --tag-1-border: #0f4024;
+  --tag-2-bg: #050f1a; --tag-2-text: #4d9fff; --tag-2-border: #0f3050;
+  --tag-3-bg: #100a1a; --tag-3-text: #b84dff; --tag-3-border: #3d1550;
+  --tag-4-bg: #1a1000; --tag-4-text: #ffb84d; --tag-4-border: #4d3000;
+  --tag-5-bg: #061515; --tag-5-text: #4deeff; --tag-5-border: #0f3535;
+  --tag-6-bg: #1a0a0a; --tag-6-text: #ff7a7a; --tag-6-border: #4d1515;
+  --hero-rule: #2a2f3d;
+  --progress-bg: #1e2230;
+}
+[data-theme="light"] {
+  --bg: #f7f8f4;
+  --surface: #ffffff;
+  --surface2: #f0f2ec;
+  --border: #dde0d8;
+  --text: #1c1f18;
+  --muted: #5a6052;
+  --dim: #9aa090;
+  --accent: #1e8a45;
+  --accent-bg: #eaf6ee;
+  --accent-border: #9ed4b2;
+  --accent-text: #1e8a45;
+  --num-fg: #ffffff;
+  --toggle-track: #1e8a45;
+  --toggle-border: #9ed4b2;
+  --toggle-knob: #ffffff;
+  --toggle-shadow: rgba(0,0,0,0.15);
+  --sun-op: 1;
+  --moon-op: 0.4;
+  --card-hover: #f0f2ec;
+  --tag-1-bg: #eaf6ee; --tag-1-text: #1e8a45; --tag-1-border: #9ed4b2;
+  --tag-2-bg: #eaf0fc; --tag-2-text: #1a4a8a; --tag-2-border: #9ec4f0;
+  --tag-3-bg: #f5eeff; --tag-3-text: #4a2090; --tag-3-border: #c4a8f0;
+  --tag-4-bg: #fdf6e8; --tag-4-text: #7a4400; --tag-4-border: #f0d4b0;
+  --tag-5-bg: #edf7f7; --tag-5-text: #0d5c5c; --tag-5-border: #a8d8d8;
+  --tag-6-bg: #fdf0f0; --tag-6-text: #8a2020; --tag-6-border: #f0c0c0;
+  --hero-rule: #dde0d8;
+  --progress-bg: #f0f2ec;
+}
 
-        .container {
-            max-width: 1400px;
-            margin: 0 auto;
-            padding: 2rem;
-        }
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: 'IBM Plex Sans', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  transition: background .3s, color .3s;
+}
 
-        .header {
-            text-align: center;
-            margin-bottom: 3rem;
-        }
+/* ── SITE HEADER ── */
+.site-header {
+  padding: 18px 32px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: sticky;
+  top: 0;
+  background: var(--bg);
+  z-index: 20;
+  transition: background .3s, border-color .3s;
+}
+.site-logo {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  text-decoration: none;
+}
+.logo-badge {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 11px;
+  font-weight: 600;
+  background: var(--accent-bg);
+  color: var(--accent-text);
+  border: 1px solid var(--accent-border);
+  border-radius: 6px;
+  padding: 4px 9px;
+  letter-spacing: .08em;
+}
+.logo-name {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text);
+}
+.theme-toggle {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  cursor: pointer;
+  user-select: none;
+}
+.ti-sun, .ti-moon { font-size: 14px; line-height: 1; transition: opacity .3s; }
+.ti-sun  { opacity: var(--sun-op); }
+.ti-moon { opacity: var(--moon-op); }
+.toggle-track {
+  position: relative;
+  width: 42px; height: 24px;
+  background: var(--toggle-track);
+  border-radius: 99px;
+  border: 1px solid var(--toggle-border);
+  flex-shrink: 0;
+  transition: background .3s;
+}
+.toggle-knob {
+  position: absolute;
+  top: 3px; left: 3px;
+  width: 16px; height: 16px;
+  border-radius: 50%;
+  background: var(--toggle-knob);
+  box-shadow: 0 1px 4px var(--toggle-shadow);
+  transition: transform .25s cubic-bezier(.4,0,.2,1);
+}
+[data-theme="light"] .toggle-knob { transform: translateX(18px); }
 
-        .header h1 {
-            font-size: 3rem;
-            font-weight: 700;
-            color: #1D9E75;
-            margin-bottom: 0.5rem;
-        }
+/* ── HERO ── */
+.hero {
+  max-width: 860px;
+  margin: 0 auto;
+  padding: 52px 24px 40px;
+  border-bottom: 1px solid var(--hero-rule);
+}
+.hero-eyebrow {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 11px;
+  color: var(--accent);
+  letter-spacing: .18em;
+  text-transform: uppercase;
+  margin-bottom: 14px;
+}
+.hero h1 {
+  font-size: 32px;
+  font-weight: 600;
+  line-height: 1.2;
+  color: var(--text);
+  margin-bottom: 12px;
+}
+.hero-sub {
+  font-size: 14px;
+  color: var(--muted);
+  line-height: 1.6;
+  max-width: 520px;
+  margin-bottom: 28px;
+}
+.hero-stats {
+  display: flex;
+  gap: 28px;
+  flex-wrap: wrap;
+}
+.stat {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.stat-n {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 22px;
+  font-weight: 600;
+  color: var(--accent);
+}
+.stat-l {
+  font-size: 11px;
+  color: var(--muted);
+  letter-spacing: .04em;
+}
 
-        .header p {
-            font-size: 1.2rem;
-            color: #888;
-        }
+/* ── MODULE GRID ── */
+.modules-section {
+  max-width: 860px;
+  margin: 0 auto;
+  padding: 40px 24px 80px;
+}
+.section-header {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  margin-bottom: 22px;
+}
+.section-header h2 {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--muted);
+  font-family: 'IBM Plex Mono', monospace;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+}
 
-        .stats {
-            display: flex;
-            justify-content: center;
-            gap: 2rem;
-            margin-bottom: 3rem;
-            flex-wrap: wrap;
-        }
+.modules-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
 
-        .stat-card {
-            background: #1a1a1a;
-            border: 1px solid #333;
-            border-radius: 12px;
-            padding: 1.5rem;
-            min-width: 150px;
-            text-align: center;
-        }
+/* ── MODULE CARD ── */
+.module-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  overflow: hidden;
+  text-decoration: none;
+  display: flex;
+  flex-direction: column;
+  transition: background .15s, border-color .2s, transform .15s, box-shadow .15s;
+  cursor: pointer;
+}
+.module-card:hover {
+  background: var(--card-hover);
+  border-color: var(--accent-border);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 24px rgba(0,0,0,.18);
+}
+[data-theme="light"] .module-card:hover {
+  box-shadow: 0 6px 24px rgba(0,0,0,.08);
+}
 
-        .stat-value {
-            font-size: 2rem;
-            font-weight: 600;
-            color: #1D9E75;
-            margin-bottom: 0.5rem;
-        }
+.card-top {
+  padding: 20px 20px 0;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+.module-num {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 11px;
+  font-weight: 600;
+  width: 26px; height: 26px;
+  border-radius: 7px;
+  background: var(--accent);
+  color: var(--num-fg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.card-tag {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 10px;
+  font-weight: 600;
+  padding: 3px 8px;
+  border-radius: 99px;
+  letter-spacing: .04em;
+  white-space: nowrap;
+}
 
-        .stat-label {
-            color: #888;
-            font-size: 0.9rem;
-        }
+.card-body {
+  padding: 14px 20px 0;
+  flex: 1;
+}
+.card-title {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--text);
+  margin-bottom: 6px;
+  line-height: 1.3;
+}
+.card-desc {
+  font-size: 12.5px;
+  color: var(--muted);
+  line-height: 1.6;
+  margin-bottom: 14px;
+}
 
-        .progress-bar {
-            background: #333;
-            border-radius: 10px;
-            height: 8px;
-            margin-top: 0.5rem;
-        }
+.card-topics {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+  margin-bottom: 16px;
+}
+.topic-chip {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 10px;
+  padding: 2px 8px;
+  border-radius: 99px;
+  border: 1px solid var(--border);
+  color: var(--dim);
+  background: var(--surface2);
+  white-space: nowrap;
+}
 
-        .progress-fill {
-            background: #1D9E75;
-            height: 100%;
-            border-radius: 10px;
-            transition: width 0.3s ease;
-        }
+.card-footer {
+  border-top: 1px solid var(--border);
+  padding: 12px 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  transition: border-color .3s;
+}
+.card-count {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 11px;
+  color: var(--dim);
+}
+.card-arrow {
+  font-size: 12px;
+  color: var(--accent);
+  font-family: 'IBM Plex Mono', monospace;
+  font-weight: 600;
+  letter-spacing: .05em;
+  transition: transform .15s;
+}
+.module-card:hover .card-arrow {
+  transform: translateX(4px);
+}
 
-        .section {
-            margin-bottom: 3rem;
-        }
+/* ── FOOTER ── */
+.site-footer {
+  border-top: 1px solid var(--border);
+  padding: 22px 32px;
+  text-align: center;
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 11px;
+  color: var(--dim);
+  letter-spacing: .05em;
+  transition: border-color .3s;
+}
 
-        .section-title {
-            font-size: 1.8rem;
-            font-weight: 600;
-            color: #1D9E75;
-            margin-bottom: 1.5rem;
-            border-bottom: 2px solid #333;
-            padding-bottom: 0.5rem;
-        }
+/* ── MOBILE ── */
+@media (max-width: 620px) {
+  .site-header { padding: 14px 16px; }
+  .hero { padding: 36px 16px 28px; }
+  .hero h1 { font-size: 24px; }
+  .modules-section { padding: 28px 16px 60px; }
+  .modules-grid { grid-template-columns: 1fr; }
+  .hero-stats { gap: 20px; }
+  .logo-name { display: none; }
+}
 
-        .card-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
-            gap: 1.5rem;
-        }
 
-        .service-card {
-            background: #1a1a1a;
-            border: 1px solid #333;
-            border-radius: 12px;
-            padding: 1.5rem;
-            transition: all 0.3s ease;
-        }
 
-        .service-card:hover {
-            border-color: #1D9E75;
-            transform: translateY(-2px);
-            box-shadow: 0 10px 30px rgba(29, 158, 117, 0.1);
-        }
 
-        .service-name {
-            font-size: 1.3rem;
-            font-weight: 600;
-            color: #e0e0e0;
-            margin-bottom: 1rem;
-            display: flex;
-            align-items: center;
-        }
+/* ════════════════════════════════════════════════════════
+   SIDEBAR + BOTTOM BAR
+════════════════════════════════════════════════════════ */
+:root { --sb-w: 220px; --sb-w-collapsed: 48px; --bb-h: 56px; }
 
-        .service-icon {
-            width: 24px;
-            height: 24px;
-            background: #1D9E75;
-            border-radius: 4px;
-            margin-right: 0.8rem;
-        }
+[data-theme="dark"] {
+  --sb-bg: #0f1118;
+  --sb-border: #1e2230;
+  --sb-hover: #1a1f2e;
+  --sb-active-bg: #091a11;
+  --sb-active-text: #4dff91;
+  --sb-active-border: #0f4024;
+  --sb-text: #7a8099;
+  --sb-text-strong: #c0c4d4;
+  --sb-num: #3a3f52;
+  --sb-badge-bg: #091a11;
+  --sb-badge-text: #4dff91;
+  --sb-badge-border: #0f4024;
+  --sb-sub-text: #5a6070;
+  --sb-sub-hover: #1e2230;
+  --sb-section: #252b3a;
+  --sb-collapse-color: #4a5168;
+  --sb-overlay-bg: rgba(0,0,0,0.55);
+  --bb-bg: #0f1118;
+  --bb-border: #1e2230;
+  --bb-text: #5a6070;
+  --bb-active: #4dff91;
+}
+[data-theme="light"] {
+  --sb-bg: #ffffff;
+  --sb-border: #e4e8e0;
+  --sb-hover: #f4f6f0;
+  --sb-active-bg: #eaf6ee;
+  --sb-active-text: #1e8a45;
+  --sb-active-border: #9ed4b2;
+  --sb-text: #6a7060;
+  --sb-text-strong: #2a3020;
+  --sb-num: #c0c8b8;
+  --sb-badge-bg: #eaf6ee;
+  --sb-badge-text: #1e8a45;
+  --sb-badge-border: #9ed4b2;
+  --sb-sub-text: #9aa090;
+  --sb-sub-hover: #f0f4ec;
+  --sb-section: #eaeee6;
+  --sb-collapse-color: #b0b8a8;
+  --sb-overlay-bg: rgba(0,0,0,0.25);
+  --bb-bg: #ffffff;
+  --bb-border: #e4e8e0;
+  --bb-text: #9aa090;
+  --bb-active: #1e8a45;
+}
 
-        .service-links {
-            display: flex;
-            flex-direction: column;
-            gap: 0.8rem;
-        }
+/* ── LAYOUT SHIFT ── */
+body { transition: padding-left .25s cubic-bezier(.4,0,.2,1); }
+body.sb-open   { padding-left: var(--sb-w) !important; }
+body.sb-closed { padding-left: var(--sb-w-collapsed) !important; }
 
-        .service-link {
-            display: flex;
-            align-items: center;
-            text-decoration: none;
-            color: #888;
-            transition: color 0.3s ease;
-            padding: 0.5rem 0.8rem;
-            border-radius: 8px;
-            background: rgba(255, 255, 255, 0.05);
-        }
+/* ── SIDEBAR ── */
+.sidebar {
+  position: fixed;
+  top: 0; left: 0;
+  width: var(--sb-w);
+  height: 100vh;
+  background: var(--sb-bg);
+  border-right: 1px solid var(--sb-border);
+  display: flex;
+  flex-direction: column;
+  z-index: 200;
+  overflow: hidden;
+  transition: width .25s cubic-bezier(.4,0,.2,1), background .3s, border-color .3s;
+}
+.sidebar.collapsed { width: var(--sb-w-collapsed); }
+.sidebar.collapsed .sb-mod-label,
+.sidebar.collapsed .sb-expand-icon,
+.sidebar.collapsed .sb-brand,
+.sidebar.collapsed .sb-subtopics { display: none; }
+.sidebar.collapsed .sb-mod-num,
+.sidebar.collapsed .sb-mod-icon { margin: 0 auto; }
+.sidebar.collapsed .sb-mod-link { justify-content: center; padding: 10px 0; }
+.sidebar.collapsed .sb-nav { padding-top: 4px; }
 
-        .service-link:hover {
-            color: #1D9E75;
-            background: rgba(29, 158, 117, 0.1);
-        }
+/* ── SIDEBAR HEAD ── */
+.sb-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 14px 12px;
+  border-bottom: 1px solid var(--sb-border);
+  flex-shrink: 0;
+  min-height: 52px;
+  gap: 8px;
+}
+.sb-brand {
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  overflow: hidden;
+}
+.sb-badge {
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 10px;
+  font-weight: 600;
+  background: var(--sb-badge-bg);
+  color: var(--sb-badge-text);
+  border: 1px solid var(--sb-badge-border);
+  border-radius: 5px;
+  padding: 3px 7px;
+  letter-spacing: .06em;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+.sb-collapse-btn {
+  background: none;
+  border: 1px solid var(--sb-border);
+  border-radius: 6px;
+  color: var(--sb-collapse-color);
+  font-size: 10px;
+  cursor: pointer;
+  padding: 4px 7px;
+  line-height: 1;
+  transition: all .15s;
+  flex-shrink: 0;
+  white-space: nowrap;
+}
+.sb-collapse-btn:hover { background: var(--sb-hover); color: var(--sb-text-strong); }
+.sidebar.collapsed .sb-collapse-btn { transform: rotate(180deg); }
 
-        .checkbox {
-            width: 18px;
-            height: 18px;
-            margin-right: 0.8rem;
-            accent-color: #1D9E75;
-            cursor: pointer;
-        }
+/* ── SIDEBAR NAV ── */
+.sb-nav {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 8px 0 24px;
+  scrollbar-width: thin;
+  scrollbar-color: var(--sb-border) transparent;
+}
 
-        .exam-section {
-            background: linear-gradient(135deg, rgba(29, 158, 117, 0.1), rgba(29, 158, 117, 0.05));
-            border: 1px solid rgba(29, 158, 117, 0.2);
-            border-radius: 16px;
-            padding: 2rem;
-            margin-top: 2rem;
-        }
+.sb-mod-link {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px 8px 14px;
+  text-decoration: none;
+  color: var(--sb-text);
+  font-size: 12.5px;
+  font-weight: 500;
+  border-left: 2px solid transparent;
+  transition: background .1s, color .1s, border-color .1s;
+  line-height: 1.3;
+}
+.sb-mod-link:hover {
+  background: var(--sb-hover);
+  color: var(--sb-text-strong);
+}
+.sb-mod-link.active {
+  background: var(--sb-active-bg);
+  color: var(--sb-active-text);
+  border-left-color: var(--sb-active-border);
+  font-weight: 600;
+}
+.sb-mod-num {
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 10px;
+  color: var(--sb-num);
+  flex-shrink: 0;
+  width: 20px;
+  text-align: right;
+  transition: color .1s;
+}
+.sb-mod-icon { font-size: 13px; flex-shrink: 0; width: 20px; text-align: center; }
+.sb-mod-label { flex: 1; }
+.sb-mod-link.active .sb-mod-num { color: var(--sb-active-text); opacity: .55; }
 
-        .exam-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 1rem;
-        }
+.sb-expand-icon {
+  font-size: 9px;
+  color: var(--sb-num);
+  flex-shrink: 0;
+  transition: transform .18s;
+}
+.sb-mod-group.open > .sb-mod-link .sb-expand-icon { transform: rotate(90deg); }
 
-        .exam-link {
-            display: flex;
-            align-items: center;
-            text-decoration: none;
-            color: #e0e0e0;
-            padding: 1rem;
-            background: rgba(0, 0, 0, 0.3);
-            border-radius: 8px;
-            transition: all 0.3s ease;
-        }
+/* ── SUBTOPICS ── */
+.sb-subtopics {
+  display: none;
+  flex-direction: column;
+  border-left: 1px solid var(--sb-border);
+  margin: 0 0 2px 28px;
+}
+.sb-mod-group.open > .sb-subtopics { display: flex; }
 
-        .exam-link:hover {
-            background: rgba(29, 158, 117, 0.2);
-            transform: translateX(5px);
-        }
+.sb-sub-link {
+  display: block;
+  padding: 5px 10px 5px 12px;
+  font-size: 11.5px;
+  color: var(--sb-sub-text);
+  text-decoration: none;
+  border-left: 2px solid transparent;
+  transition: background .1s, color .1s, border-color .1s;
+  line-height: 1.4;
+}
+.sb-sub-link:hover {
+  background: var(--sb-sub-hover);
+  color: var(--sb-text-strong);
+}
+.sb-sub-link.active {
+  color: var(--sb-active-text);
+  border-left-color: var(--sb-active-border);
+  font-weight: 600;
+}
 
-        @media (max-width: 768px) {
-            .container {
-                padding: 1rem;
-            }
+/* ── OVERLAY ── */
+.sb-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: var(--sb-overlay-bg);
+  z-index: 199;
+}
 
-            .header h1 {
-                font-size: 2rem;
-            }
+/* ════════════════════════════════════════════════════════
+   MOBILE — BOTTOM TAB BAR (≤768px)
+════════════════════════════════════════════════════════ */
+.bottom-bar {
+  display: none;
+}
 
-            .stats {
-                gap: 1rem;
-            }
+@media (max-width: 768px) {
+  /* hide desktop sidebar entirely */
+  .sidebar, .sb-overlay { display: none !important; }
 
-            .card-grid {
-                grid-template-columns: 1fr;
-            }
-        }
-    </style>
+  /* undo layout shift */
+  body.sb-open, body.sb-closed { padding-left: 0 !important; }
+
+  /* push content up so bottom bar doesn't overlap */
+  body { padding-bottom: calc(var(--bb-h) + 4px) !important; }
+
+  .bottom-bar {
+    display: flex;
+    position: fixed;
+    bottom: 0; left: 0; right: 0;
+    height: var(--bb-h);
+    background: var(--bb-bg);
+    border-top: 1px solid var(--bb-border);
+    z-index: 200;
+    align-items: stretch;
+    transition: background .3s, border-color .3s;
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+  .bottom-bar::-webkit-scrollbar { display: none; }
+
+  .bb-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 3px;
+    flex: 1;
+    min-width: 52px;
+    text-decoration: none;
+    color: var(--bb-text);
+    padding: 6px 4px;
+    border-top: 2px solid transparent;
+    transition: color .15s, border-color .15s;
+  }
+  .bb-item.active {
+    color: var(--bb-active);
+    border-top-color: var(--bb-active);
+  }
+  .bb-icon {
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 12px;
+    font-weight: 600;
+    line-height: 1;
+  }
+  .bb-label {
+    font-size: 9px;
+    font-family: "IBM Plex Mono", monospace;
+    letter-spacing: .02em;
+    white-space: nowrap;
+  }
+
+  /* keep tab-bar sticky above bottom bar on module pages */
+  .tab-bar { bottom: var(--bb-h) !important; }
+}
+
+/* also hide toggle button from index page header on desktop
+   (hamburger only needed on mobile, but we removed that approach) */
+.sb-menu-btn { display: none; }
+/* ════════════════════════════════════════════════════════
+   END SIDEBAR + BOTTOM BAR
+════════════════════════════════════════════════════════ */
+
+</style>
 </head>
 <body>
-    <div class="container">
-        <header class="header">
-            <h1>GCP Professional Data Engineer</h1>
-            <p>Complete Study Hub & Certification Guide</p>
-        </header>
+<!-- ═══ SIDEBAR ═══ -->
+<div class="sb-overlay" id="sbOverlay" onclick="closeSidebar()"></div>
+<aside class="sidebar" id="sidebar">
+  <div class="sb-head">
+    <a href="index.html" class="sb-brand">
+      <span class="sb-badge">GCP PDE</span>
+    </a>
+    <button class="sb-collapse-btn" id="sbCollapseBtn" onclick="toggleSidebar()" title="Collapse sidebar">◀</button>
+  </div>
+  <div class="sb-nav">
+    <a href="index.html" class="sb-mod-link" data-page="index">
+      <span class="sb-mod-icon">⌂</span>
+      <span class="sb-mod-label">Home</span>
+    </a>
+    <div class="sb-mod-group" data-group="m1_bigquery">
+      <a href="m1_bigquery.html" class="sb-mod-link" data-page="m1_bigquery">
+        <span class="sb-mod-num">01</span>
+        <span class="sb-mod-label">BigQuery</span>
+        <span class="sb-expand-icon">▸</span>
+      </a>
+      <div class="sb-subtopics" id="sub-m1_bigquery">
+        <a href="m1_bigquery.html#partitioning" class="sb-sub-link" data-page="m1_bigquery" data-tab="partitioning">Partitioning & clustering</a>
+        <a href="m1_bigquery.html#pricing" class="sb-sub-link" data-page="m1_bigquery" data-tab="pricing">Pricing & slots</a>
+        <a href="m1_bigquery.html#bqml" class="sb-sub-link" data-page="m1_bigquery" data-tab="bqml">BigQuery ML</a>
+        <a href="m1_bigquery.html#security" class="sb-sub-link" data-page="m1_bigquery" data-tab="security">Security & access control</a>
+        <a href="m1_bigquery.html#external" class="sb-sub-link" data-page="m1_bigquery" data-tab="external">External tables & BigLake</a>
+        <a href="m1_bigquery.html#advanced" class="sb-sub-link" data-page="m1_bigquery" data-tab="advanced">Advanced SQL & features</a>
+        <a href="m1_bigquery.html#scenarios" class="sb-sub-link" data-page="m1_bigquery" data-tab="scenarios">Exam scenarios</a>
+      </div>
+    </div>
+    <div class="sb-mod-group" data-group="m2_dataflow_pubsub">
+      <a href="m2_dataflow_pubsub.html" class="sb-mod-link" data-page="m2_dataflow_pubsub">
+        <span class="sb-mod-num">02</span>
+        <span class="sb-mod-label">Dataflow & Pub/Sub</span>
+        <span class="sb-expand-icon">▸</span>
+      </a>
+      <div class="sb-subtopics" id="sub-m2_dataflow_pubsub">
+        <a href="m2_dataflow_pubsub.html#beam" class="sb-sub-link" data-page="m2_dataflow_pubsub" data-tab="beam">Apache Beam model</a>
+        <a href="m2_dataflow_pubsub.html#windowing" class="sb-sub-link" data-page="m2_dataflow_pubsub" data-tab="windowing">Windowing</a>
+        <a href="m2_dataflow_pubsub.html#dataflow" class="sb-sub-link" data-page="m2_dataflow_pubsub" data-tab="dataflow">Dataflow service</a>
+        <a href="m2_dataflow_pubsub.html#pubsub" class="sb-sub-link" data-page="m2_dataflow_pubsub" data-tab="pubsub">Pub/Sub</a>
+        <a href="m2_dataflow_pubsub.html#pipeline" class="sb-sub-link" data-page="m2_dataflow_pubsub" data-tab="pipeline">The canonical pipeline</a>
+        <a href="m2_dataflow_pubsub.html#scenarios" class="sb-sub-link" data-page="m2_dataflow_pubsub" data-tab="scenarios">Exam scenarios</a>
+      </div>
+    </div>
+    <div class="sb-mod-group" data-group="m3_storage_services">
+      <a href="m3_storage_services.html" class="sb-mod-link" data-page="m3_storage_services">
+        <span class="sb-mod-num">03</span>
+        <span class="sb-mod-label">Storage Services</span>
+        <span class="sb-expand-icon">▸</span>
+      </a>
+      <div class="sb-subtopics" id="sub-m3_storage_services">
+        <a href="m3_storage_services.html#decision" class="sb-sub-link" data-page="m3_storage_services" data-tab="decision">Decision Framework</a>
+        <a href="m3_storage_services.html#bigtable" class="sb-sub-link" data-page="m3_storage_services" data-tab="bigtable">Bigtable</a>
+        <a href="m3_storage_services.html#spanner" class="sb-sub-link" data-page="m3_storage_services" data-tab="spanner">Cloud Spanner</a>
+        <a href="m3_storage_services.html#firestore" class="sb-sub-link" data-page="m3_storage_services" data-tab="firestore">Firestore</a>
+        <a href="m3_storage_services.html#cloudsql" class="sb-sub-link" data-page="m3_storage_services" data-tab="cloudsql">Cloud SQL</a>
+        <a href="m3_storage_services.html#memorystore" class="sb-sub-link" data-page="m3_storage_services" data-tab="memorystore">Memorystore</a>
+        <a href="m3_storage_services.html#scenarios" class="sb-sub-link" data-page="m3_storage_services" data-tab="scenarios">Exam Scenarios</a>
+        <a href="m3_storage_services.html#traps" class="sb-sub-link" data-page="m3_storage_services" data-tab="traps">Traps & Cheatsheet</a>
+      </div>
+    </div>
+    <div class="sb-mod-group" data-group="m4_data_processing_governance">
+      <a href="m4_data_processing_governance.html" class="sb-mod-link" data-page="m4_data_processing_governance">
+        <span class="sb-mod-num">04</span>
+        <span class="sb-mod-label">Data Processing</span>
+        <span class="sb-expand-icon">▸</span>
+      </a>
+      <div class="sb-subtopics" id="sub-m4_data_processing_governance">
+        <a href="m4_data_processing_governance.html#dataproc" class="sb-sub-link" data-page="m4_data_processing_governance" data-tab="dataproc">Dataproc</a>
+        <a href="m4_data_processing_governance.html#datafusion" class="sb-sub-link" data-page="m4_data_processing_governance" data-tab="datafusion">Cloud Data Fusion</a>
+        <a href="m4_data_processing_governance.html#dataform" class="sb-sub-link" data-page="m4_data_processing_governance" data-tab="dataform">Dataform</a>
+        <a href="m4_data_processing_governance.html#datastream" class="sb-sub-link" data-page="m4_data_processing_governance" data-tab="datastream">Datastream</a>
+        <a href="m4_data_processing_governance.html#composer" class="sb-sub-link" data-page="m4_data_processing_governance" data-tab="composer">Cloud Composer</a>
+        <a href="m4_data_processing_governance.html#dataplex" class="sb-sub-link" data-page="m4_data_processing_governance" data-tab="dataplex">Dataplex</a>
+        <a href="m4_data_processing_governance.html#datacatalog" class="sb-sub-link" data-page="m4_data_processing_governance" data-tab="datacatalog">Data Catalog</a>
+        <a href="m4_data_processing_governance.html#dlp" class="sb-sub-link" data-page="m4_data_processing_governance" data-tab="dlp">Cloud DLP</a>
+        <a href="m4_data_processing_governance.html#analyticshub" class="sb-sub-link" data-page="m4_data_processing_governance" data-tab="analyticshub">Analytics Hub</a>
+        <a href="m4_data_processing_governance.html#decision" class="sb-sub-link" data-page="m4_data_processing_governance" data-tab="decision">Decision Reference</a>
+      </div>
+    </div>
+    <div class="sb-mod-group" data-group="m5_security_ml_architecture">
+      <a href="m5_security_ml_architecture.html" class="sb-mod-link" data-page="m5_security_ml_architecture">
+        <span class="sb-mod-num">05</span>
+        <span class="sb-mod-label">Security & ML</span>
+        <span class="sb-expand-icon">▸</span>
+      </a>
+      <div class="sb-subtopics" id="sub-m5_security_ml_architecture">
+        <a href="m5_security_ml_architecture.html#iam" class="sb-sub-link" data-page="m5_security_ml_architecture" data-tab="iam">IAM</a>
+        <a href="m5_security_ml_architecture.html#encryption" class="sb-sub-link" data-page="m5_security_ml_architecture" data-tab="encryption">Encryption</a>
+        <a href="m5_security_ml_architecture.html#vpcsc" class="sb-sub-link" data-page="m5_security_ml_architecture" data-tab="vpcsc">VPC Service Controls</a>
+        <a href="m5_security_ml_architecture.html#audit" class="sb-sub-link" data-page="m5_security_ml_architecture" data-tab="audit">Audit Logging</a>
+        <a href="m5_security_ml_architecture.html#ml" class="sb-sub-link" data-page="m5_security_ml_architecture" data-tab="ml">ML Fundamentals</a>
+        <a href="m5_security_ml_architecture.html#vertex" class="sb-sub-link" data-page="m5_security_ml_architecture" data-tab="vertex">Vertex AI</a>
+        <a href="m5_security_ml_architecture.html#batchstream" class="sb-sub-link" data-page="m5_security_ml_architecture" data-tab="batchstream">Batch vs Streaming</a>
+        <a href="m5_security_ml_architecture.html#refarch" class="sb-sub-link" data-page="m5_security_ml_architecture" data-tab="refarch">Reference Architecture</a>
+        <a href="m5_security_ml_architecture.html#scenarios" class="sb-sub-link" data-page="m5_security_ml_architecture" data-tab="scenarios">Architecture Scenarios</a>
+      </div>
+    </div>
+    <div class="sb-mod-group" data-group="m6_advanced_topics">
+      <a href="m6_advanced_topics.html" class="sb-mod-link" data-page="m6_advanced_topics">
+        <span class="sb-mod-num">06</span>
+        <span class="sb-mod-label">Advanced Topics</span>
+        <span class="sb-expand-icon">▸</span>
+      </a>
+      <div class="sb-subtopics" id="sub-m6_advanced_topics">
+        <a href="m6_advanced_topics.html#bq" class="sb-sub-link" data-page="m6_advanced_topics" data-tab="bq">BigQuery</a>
+        <a href="m6_advanced_topics.html#dataflow" class="sb-sub-link" data-page="m6_advanced_topics" data-tab="dataflow">Dataflow</a>
+        <a href="m6_advanced_topics.html#pubsub" class="sb-sub-link" data-page="m6_advanced_topics" data-tab="pubsub">Pub/Sub</a>
+        <a href="m6_advanced_topics.html#spanner" class="sb-sub-link" data-page="m6_advanced_topics" data-tab="spanner">Cloud Spanner</a>
+        <a href="m6_advanced_topics.html#dataproc" class="sb-sub-link" data-page="m6_advanced_topics" data-tab="dataproc">Dataproc</a>
+        <a href="m6_advanced_topics.html#vertex" class="sb-sub-link" data-page="m6_advanced_topics" data-tab="vertex">Vertex AI</a>
+        <a href="m6_advanced_topics.html#security" class="sb-sub-link" data-page="m6_advanced_topics" data-tab="security">Security</a>
+        <a href="m6_advanced_topics.html#exactlyonce" class="sb-sub-link" data-page="m6_advanced_topics" data-tab="exactlyonce">Exactly-Once Semantics</a>
+        <a href="m6_advanced_topics.html#signals" class="sb-sub-link" data-page="m6_advanced_topics" data-tab="signals">Signal Prioritization</a>
+        <a href="m6_advanced_topics.html#cheatsheet" class="sb-sub-link" data-page="m6_advanced_topics" data-tab="cheatsheet">Cheat Sheet</a>
+      </div>
+    </div>
+  </div>
+</aside>
+<!-- ═══ END SIDEBAR ═══ -->
 
-        <div class="stats">
-            <div class="stat-card">
-                <div class="stat-value" id="totalFiles">82</div>
-                <div class="stat-label">Total Resources</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-value" id="completedFiles">0</div>
-                <div class="stat-label">Completed</div>
-                <div class="progress-bar">
-                    <div class="progress-fill" id="progressFill"></div>
-                </div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-value" id="progressPercent">0%</div>
-                <div class="stat-label">Progress</div>
-            </div>
+<!-- ═══ MOBILE BOTTOM BAR ═══ -->
+<nav class="bottom-bar" id="bottomBar">
+  <a href="index.html" class="bb-item" data-page="index">
+    <span class="bb-icon">⌂</span>
+    <span class="bb-label">Home</span>
+  </a>
+  <a href="m1_bigquery.html" class="bb-item" data-page="m1_bigquery">
+    <span class="bb-icon">01</span>
+    <span class="bb-label">BigQuery</span>
+  </a>
+  <a href="m2_dataflow_pubsub.html" class="bb-item" data-page="m2_dataflow_pubsub">
+    <span class="bb-icon">02</span>
+    <span class="bb-label">Dataflow</span>
+  </a>
+  <a href="m3_storage_services.html" class="bb-item" data-page="m3_storage_services">
+    <span class="bb-icon">03</span>
+    <span class="bb-label">Storage</span>
+  </a>
+  <a href="m4_data_processing_governance.html" class="bb-item" data-page="m4_data_processing_governance">
+    <span class="bb-icon">04</span>
+    <span class="bb-label">Data</span>
+  </a>
+  <a href="m5_security_ml_architecture.html" class="bb-item" data-page="m5_security_ml_architecture">
+    <span class="bb-icon">05</span>
+    <span class="bb-label">Security</span>
+  </a>
+  <a href="m6_advanced_topics.html" class="bb-item" data-page="m6_advanced_topics">
+    <span class="bb-icon">06</span>
+    <span class="bb-label">Advanced</span>
+  </a>
+</nav>
+<!-- ═══ END MOBILE BOTTOM BAR ═══ -->
+
+
+
+<!-- SITE HEADER -->
+<header class="site-header">
+  <div class="site-logo">
+    <span class="logo-badge">GCP PDE</span>
+    <span class="logo-name">Study Notes</span>
+  </div>
+  <div class="theme-toggle" onclick="toggleTheme()">
+    <span class="ti-sun">☀️</span>
+    <div class="toggle-track"><div class="toggle-knob"></div></div>
+    <span class="ti-moon">🌙</span>
+  </div>
+</header>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-eyebrow">Professional Data Engineer Exam Prep</div>
+  <h1>GCP PDE Study Notes</h1>
+  <p class="hero-sub">Six modules covering every topic on the Professional Data Engineer exam. Collapsible cards, dark &amp; light themes, and personal notes on every card.</p>
+  <div class="hero-stats">
+    <div class="stat"><span class="stat-n">6</span><span class="stat-l">Modules</span></div>
+    <div class="stat"><span class="stat-n">52</span><span class="stat-l">Subtopics</span></div>
+    <div class="stat"><span class="stat-n">150+</span><span class="stat-l">Cards</span></div>
+    <div class="stat"><span class="stat-n">∞</span><span class="stat-l">Personal notes</span></div>
+  </div>
+</div>
+
+<!-- MODULE GRID -->
+<div class="modules-section">
+  <div class="section-header">
+    <h2>All modules</h2>
+  </div>
+
+  <div class="modules-grid">
+
+    <!-- M1 -->
+    <a class="module-card" href="m1_bigquery.html">
+      <div class="card-top">
+        <div class="module-num">1</div>
+        <span class="card-tag" style="background:var(--tag-2-bg);color:var(--tag-2-text);border:1px solid var(--tag-2-border)">BigQuery</span>
+      </div>
+      <div class="card-body">
+        <div class="card-title">BigQuery Deep Dive</div>
+        <div class="card-desc">Partitioning &amp; clustering, pricing &amp; slots, BigQuery ML, security &amp; access control, external tables, advanced SQL, and exam scenarios.</div>
+        <div class="card-topics">
+          <span class="topic-chip">Partitioning</span>
+          <span class="topic-chip">Clustering</span>
+          <span class="topic-chip">BQML</span>
+          <span class="topic-chip">IAM &amp; policy tags</span>
+          <span class="topic-chip">External tables</span>
+          <span class="topic-chip">Materialized views</span>
+          <span class="topic-chip">BI Engine</span>
         </div>
+      </div>
+      <div class="card-footer">
+        <span class="card-count">7 subtopics</span>
+        <span class="card-arrow">open →</span>
+      </div>
+    </a>
 
-        <section class="section">
-            <h2 class="section-title">Data Processing & Analytics</h2>
-            <div class="card-grid">
-                <div class="service-card">
-                    <div class="service-name">
-                        <div class="service-icon"></div>
-                        BigQuery
-                    </div>
-                    <div class="service-links">
-                        <a href="bigquery/bigquery-core.html" class="service-link">
-                            <input type="checkbox" class="checkbox" data-file="bigquery-core">
-                            Core Concepts & Architecture
-                        </a>
-                        <a href="bigquery/bigquery-exam.html" class="service-link">
-                            <input type="checkbox" class="checkbox" data-file="bigquery-exam">
-                            Exam Traps & Cheatsheet
-                        </a>
-                    </div>
-                </div>
+    <!-- M2 -->
+    <a class="module-card" href="m2_dataflow_pubsub.html">
+      <div class="card-top">
+        <div class="module-num">2</div>
+        <span class="card-tag" style="background:var(--tag-1-bg);color:var(--tag-1-text);border:1px solid var(--tag-1-border)">Streaming</span>
+      </div>
+      <div class="card-body">
+        <div class="card-title">Dataflow &amp; Pub/Sub Deep Dive</div>
+        <div class="card-desc">Apache Beam model, windowing &amp; triggers, Dataflow service internals, Pub/Sub patterns, and the canonical streaming pipeline.</div>
+        <div class="card-topics">
+          <span class="topic-chip">Apache Beam</span>
+          <span class="topic-chip">Windowing</span>
+          <span class="topic-chip">Watermarks</span>
+          <span class="topic-chip">Pub/Sub ordering</span>
+          <span class="topic-chip">Dead-letter topics</span>
+          <span class="topic-chip">Lambda vs Kappa</span>
+        </div>
+      </div>
+      <div class="card-footer">
+        <span class="card-count">6 subtopics</span>
+        <span class="card-arrow">open →</span>
+      </div>
+    </a>
 
-                <div class="service-card">
-                    <div class="service-name">
-                        <div class="service-icon"></div>
-                        Dataflow
-                    </div>
-                    <div class="service-links">
-                        <a href="dataflow/dataflow-core.html" class="service-link">
-                            <input type="checkbox" class="checkbox" data-file="dataflow-core">
-                            Core Concepts & Architecture
-                        </a>
-                        <a href="dataflow/dataflow-exam.html" class="service-link">
-                            <input type="checkbox" class="checkbox" data-file="dataflow-exam">
-                            Exam Traps & Cheatsheet
-                        </a>
-                    </div>
-                </div>
+    <!-- M3 -->
+    <a class="module-card" href="m3_storage_services.html">
+      <div class="card-top">
+        <div class="module-num">3</div>
+        <span class="card-tag" style="background:var(--tag-4-bg);color:var(--tag-4-text);border:1px solid var(--tag-4-border)">Storage</span>
+      </div>
+      <div class="card-body">
+        <div class="card-title">Storage Services Deep Dive</div>
+        <div class="card-desc">Decision framework for all storage services, Bigtable, Cloud Spanner, Firestore, Cloud SQL, and Memorystore with row key design and traps.</div>
+        <div class="card-topics">
+          <span class="topic-chip">Bigtable row keys</span>
+          <span class="topic-chip">Spanner TrueTime</span>
+          <span class="topic-chip">Firestore modes</span>
+          <span class="topic-chip">Cloud SQL HA</span>
+          <span class="topic-chip">Memorystore Redis</span>
+          <span class="topic-chip">Decision framework</span>
+        </div>
+      </div>
+      <div class="card-footer">
+        <span class="card-count">8 subtopics</span>
+        <span class="card-arrow">open →</span>
+      </div>
+    </a>
 
-                <div class="service-card">
-                    <div class="service-name">
-                        <div class="service-icon"></div>
-                        Dataproc
-                    </div>
-                    <div class="service-links">
-                        <a href="dataproc/dataproc-core.html" class="service-link">
-                            <input type="checkbox" class="checkbox" data-file="dataproc-core">
-                            Core Concepts & Architecture
-                        </a>
-                        <a href="dataproc/dataproc-exam.html" class="service-link">
-                            <input type="checkbox" class="checkbox" data-file="dataproc-exam">
-                            Exam Traps & Cheatsheet
-                        </a>
-                    </div>
-                </div>
+    <!-- M4 -->
+    <a class="module-card" href="m4_data_processing_governance.html">
+      <div class="card-top">
+        <div class="module-num">4</div>
+        <span class="card-tag" style="background:var(--tag-5-bg);color:var(--tag-5-text);border:1px solid var(--tag-5-border)">Pipelines</span>
+      </div>
+      <div class="card-body">
+        <div class="card-title">Data Processing &amp; Governance</div>
+        <div class="card-desc">Dataproc, Cloud Data Fusion, Dataform, Datastream, Cloud Composer, Dataplex, Data Catalog, Cloud DLP, and Analytics Hub.</div>
+        <div class="card-topics">
+          <span class="topic-chip">Dataproc ephemeral</span>
+          <span class="topic-chip">Composer DAGs</span>
+          <span class="topic-chip">Dataform SQLX</span>
+          <span class="topic-chip">CDC / Datastream</span>
+          <span class="topic-chip">Cloud DLP</span>
+          <span class="topic-chip">Dataplex zones</span>
+        </div>
+      </div>
+      <div class="card-footer">
+        <span class="card-count">10 subtopics</span>
+        <span class="card-arrow">open →</span>
+      </div>
+    </a>
 
-                <div class="service-card">
-                    <div class="service-name">
-                        <div class="service-icon"></div>
-                        Cloud Data Fusion
-                    </div>
-                    <div class="service-links">
-                        <a href="cloud-data-fusion/cloud-data-fusion-core.html" class="service-link">
-                            <input type="checkbox" class="checkbox" data-file="cloud-data-fusion-core">
-                            Core Concepts & Architecture
-                        </a>
-                    </div>
-                </div>
+    <!-- M5 -->
+    <a class="module-card" href="m5_security_ml_architecture.html">
+      <div class="card-top">
+        <div class="module-num">5</div>
+        <span class="card-tag" style="background:var(--tag-6-bg);color:var(--tag-6-text);border:1px solid var(--tag-6-border)">Security · ML</span>
+      </div>
+      <div class="card-body">
+        <div class="card-title">Security, ML &amp; Architecture</div>
+        <div class="card-desc">IAM hierarchy, encryption, VPC Service Controls, audit logging, ML fundamentals, Vertex AI, Lambda/Kappa/HTAP patterns, and full architecture scenarios.</div>
+        <div class="card-topics">
+          <span class="topic-chip">IAM + CMEK</span>
+          <span class="topic-chip">VPC-SC</span>
+          <span class="topic-chip">Vertex AI</span>
+          <span class="topic-chip">Feature Store</span>
+          <span class="topic-chip">Lambda / Kappa</span>
+          <span class="topic-chip">Bronze/Silver/Gold</span>
+        </div>
+      </div>
+      <div class="card-footer">
+        <span class="card-count">9 subtopics</span>
+        <span class="card-arrow">open →</span>
+      </div>
+    </a>
 
-                <div class="service-card">
-                    <div class="service-name">
-                        <div class="service-icon"></div>
-                        Dataform
-                    </div>
-                    <div class="service-links">
-                        <a href="dataform/dataform-core.html" class="service-link">
-                            <input type="checkbox" class="checkbox" data-file="dataform-core">
-                            Core Concepts & Architecture
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </section>
+    <!-- M6 -->
+    <a class="module-card" href="m6_advanced_topics.html">
+      <div class="card-top">
+        <div class="module-num">6</div>
+        <span class="card-tag" style="background:var(--tag-3-bg);color:var(--tag-3-text);border:1px solid var(--tag-3-border)">Advanced</span>
+      </div>
+      <div class="card-body">
+        <div class="card-title">Advanced Topics</div>
+        <div class="card-desc">Slot reservations, partition pruning edge cases, Dataflow fusion, Pub/Sub schema validation, Spanner stale reads, exactly-once semantics, signal prioritization drills, and a full cheat sheet.</div>
+        <div class="card-topics">
+          <span class="topic-chip">Signal prioritization</span>
+          <span class="topic-chip">Exactly-once</span>
+          <span class="topic-chip">Pruning edge cases</span>
+          <span class="topic-chip">Vizier + XAI</span>
+          <span class="topic-chip">Drill bank</span>
+          <span class="topic-chip">Cheat sheet</span>
+        </div>
+      </div>
+      <div class="card-footer">
+        <span class="card-count">10 subtopics</span>
+        <span class="card-arrow">open →</span>
+      </div>
+    </a>
 
-        <section class="section">
-            <h2 class="section-title">Machine Learning</h2>
-            <div class="card-grid">
-                <div class="service-card">
-                    <div class="service-name">
-                        <div class="service-icon"></div>
-                        BigQuery ML
-                    </div>
-                    <div class="service-links">
-                        <a href="bigquery-ml/bigquery-ml-core.html" class="service-link">
-                            <input type="checkbox" class="checkbox" data-file="bigquery-ml-core">
-                            Core Concepts & Architecture
-                        </a>
-                        <a href="bigquery-ml/bigquery-ml-exam.html" class="service-link">
-                            <input type="checkbox" class="checkbox" data-file="bigquery-ml-exam">
-                            Exam Traps & Cheatsheet
-                        </a>
-                    </div>
-                </div>
+  </div>
+</div>
 
-                <div class="service-card">
-                    <div class="service-name">
-                        <div class="service-icon"></div>
-                        Vertex AI
-                    </div>
-                    <div class="service-links">
-                        <a href="vertex-ai/vertex-ai-core.html" class="service-link">
-                            <input type="checkbox" class="checkbox" data-file="vertex-ai-core">
-                            Core Concepts & Architecture
-                        </a>
-                        <a href="vertex-ai/vertex-ai-exam.html" class="service-link">
-                            <input type="checkbox" class="checkbox" data-file="vertex-ai-exam">
-                            Exam Traps & Cheatsheet
-                        </a>
-                    </div>
-                </div>
+<!-- FOOTER -->
+<footer class="site-footer">
+  GCP Professional Data Engineer · Study Notes · All notes persist locally per card
+</footer>
 
-                <div class="service-card">
-                    <div class="service-name">
-                        <div class="service-icon"></div>
-                        Vertex AI AutoML
-                    </div>
-                    <div class="service-links">
-                        <a href="vertex-ai-automl/vertex-ai-automl-core.html" class="service-link">
-                            <input type="checkbox" class="checkbox" data-file="vertex-ai-automl-core">
-                            Core Concepts & Architecture
-                        </a>
-                    </div>
-                </div>
+<script>
+function toggleTheme() {
+  const h = document.documentElement;
+  h.setAttribute('data-theme', h.getAttribute('data-theme') === 'dark' ? 'light' : 'dark');
+}
 
-                <div class="service-card">
-                    <div class="service-name">
-                        <div class="service-icon"></div>
-                        Vertex AI Custom Training
-                    </div>
-                    <div class="service-links">
-                        <a href="vertex-ai-custom-training/vertex-ai-custom-training-core.html" class="service-link">
-                            <input type="checkbox" class="checkbox" data-file="vertex-ai-custom-training-core">
-                            Core Concepts & Architecture
-                        </a>
-                    </div>
-                </div>
 
-                <div class="service-card">
-                    <div class="service-name">
-                        <div class="service-icon"></div>
-                        Vertex AI Workbench
-                    </div>
-                    <div class="service-links">
-                        <a href="vertex-ai-workbench/vertex-ai-workbench-core.html" class="service-link">
-                            <input type="checkbox" class="checkbox" data-file="vertex-ai-workbench-core">
-                            Core Concepts & Architecture
-                        </a>
-                    </div>
-                </div>
 
-                <div class="service-card">
-                    <div class="service-name">
-                        <div class="service-icon"></div>
-                        Vertex AI Pipelines
-                    </div>
-                    <div class="service-links">
-                        <a href="vertex-ai-pipelines/vertex-ai-pipelines-core.html" class="service-link">
-                            <input type="checkbox" class="checkbox" data-file="vertex-ai-pipelines-core">
-                            Core Concepts & Architecture
-                        </a>
-                    </div>
-                </div>
 
-                <div class="service-card">
-                    <div class="service-name">
-                        <div class="service-icon"></div>
-                        Vertex AI Feature Store
-                    </div>
-                    <div class="service-links">
-                        <a href="vertex-ai-feature-store/vertex-ai-feature-store-core.html" class="service-link">
-                            <input type="checkbox" class="checkbox" data-file="vertex-ai-feature-store-core">
-                            Core Concepts & Architecture
-                        </a>
-                    </div>
-                </div>
+/* ════ SIDEBAR + BOTTOM BAR JS ════ */
+(function () {
+  var sidebar = document.getElementById('sidebar');
+  var btn     = document.getElementById('sbCollapseBtn');
+  var overlay = document.getElementById('sbOverlay');
+  if (!sidebar) return;
 
-                <div class="service-card">
-                    <div class="service-name">
-                        <div class="service-icon"></div>
-                        Vertex AI Endpoints
-                    </div>
-                
+  // ── Restore collapsed state from localStorage ──
+  var isCollapsed = localStorage.getItem('sbCollapsed') === '1';
+  if (isCollapsed) {
+    sidebar.classList.add('collapsed');
+    document.body.classList.add('sb-closed');
+  } else {
+    document.body.classList.add('sb-open');
+  }
+
+  // ── Mark active page ──
+  var path    = window.location.pathname.split('/').pop().replace('.html', '') || 'index';
+  var hash    = window.location.hash.replace('#', '');
+
+  // Activate module links
+  document.querySelectorAll('.sb-mod-link[data-page]').forEach(function (el) {
+    if (el.getAttribute('data-page') === path) el.classList.add('active');
+  });
+  // Activate bottom bar items
+  document.querySelectorAll('.bb-item[data-page]').forEach(function (el) {
+    if (el.getAttribute('data-page') === path) el.classList.add('active');
+  });
+
+  // ── Open subtopic group for current page ──
+  var grp = document.querySelector('.sb-mod-group[data-group="' + path + '"]');
+  if (grp) {
+    grp.classList.add('open');
+    // Highlight active subtopic if hash present
+    if (hash) {
+      var sub = grp.querySelector('.sb-sub-link[data-tab="' + hash + '"]');
+      if (sub) sub.classList.add('active');
+    }
+  }
+
+  // ── Expand/collapse on group header click (toggle subtopics) ──
+  document.querySelectorAll('.sb-mod-group').forEach(function (grp) {
+    var link = grp.querySelector(':scope > .sb-mod-link');
+    if (!link) return;
+    link.addEventListener('click', function (e) {
+      // Only intercept the expand toggle, not navigation to other pages
+      var targetPage = link.getAttribute('data-page');
+      if (targetPage && targetPage !== path) return; // let it navigate
+      // Same page or no page change — toggle subtopics
+      e.preventDefault();
+      grp.classList.toggle('open');
+    });
+  });
+
+  // ── Hash change: update active subtopic ──
+  window.addEventListener('hashchange', function () {
+    var h = window.location.hash.replace('#', '');
+    document.querySelectorAll('.sb-sub-link').forEach(function (el) { el.classList.remove('active'); });
+    if (h && grp) {
+      var sub = grp.querySelector('.sb-sub-link[data-tab="' + h + '"]');
+      if (sub) sub.classList.add('active');
+    }
+  });
+})();
+
+function toggleSidebar() {
+  var sidebar = document.getElementById('sidebar');
+  if (!sidebar) return;
+  var collapsed = sidebar.classList.toggle('collapsed');
+  document.body.classList.toggle('sb-open',   !collapsed);
+  document.body.classList.toggle('sb-closed', collapsed);
+  localStorage.setItem('sbCollapsed', collapsed ? '1' : '0');
+}
+function closeSidebar() {
+  // no-op on desktop; overlay not shown
+}
+/* ════ END SIDEBAR JS ════ */
+
+</script>
+</body>
+</html>

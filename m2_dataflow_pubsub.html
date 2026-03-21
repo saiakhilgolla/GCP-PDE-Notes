@@ -1,0 +1,1432 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Module 2 — Dataflow & Pub/Sub Deep Dive</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap');
+
+/* ── DARK THEME ── */
+[data-theme="dark"] {
+  --bg: #0d0f14;
+  --surface: #161920;
+  --surface2: #1e2230;
+  --border: #2a2f3d;
+  --border2: #373d52;
+  --text: #e8eaf0;
+  --muted: #7a8099;
+  --dim: #4a5168;
+  --prose-color: #c0c4d4;
+  --kv-val-color: #9aa0b8;
+  --signal-color: #c0c4d4;
+  --code-color: #c8d0e8;
+
+  --accent: #4dff91;
+  --accent-bg: #091a11;
+  --accent-border: #0f4024;
+  --accent-text: #4dff91;
+  --num-fg: #0d0f14;
+
+  --amber: #ffb84d; --amber-bg: #1a1000; --amber-border: #4d3000;
+  --red: #ff4d4d;   --red-bg: #1a0a0a;   --red-border: #4d1515;
+
+  --alert-info-bg: #091a11;   --alert-info-text: #99ffcc;    --alert-info-border: #4dff91;
+  --alert-warn-bg: #1a1000;   --alert-warn-text: #ffd699;    --alert-warn-border: #ffb84d;
+  --alert-red-bg:  #1a0a0a;   --alert-red-text:  #ffaaaa;    --alert-red-border:  #ff4d4d;
+  --alert-green-bg:#091a11;   --alert-green-text:#99ffcc;    --alert-green-border:#4dff91;
+  --alert-purple-bg:#100a1a;  --alert-purple-text:#ddb3ff;   --alert-purple-border:#b84dff;
+
+  --code-bg: #0a0c10;
+  --scenario-bg: #1e2230;
+  --section-label-color: #2a6641;
+  --note-bg: #091a11; --note-border: #0f4024; --note-text: #99ffcc;
+  --note-ts: #2a6641; --note-input-bg: #0a0c10; --note-input-border: #0f4024;
+  --note-trigger-color: #2a6641; --note-trigger-hover: #4dff91;
+  --toggle-track-on: #0f4024;
+  --toggle-border: #0f4024;
+  --toggle-knob: #4dff91;
+  --toggle-knob-shadow: rgba(77,255,145,0.3);
+  --sun-opacity: 0.35;
+  --moon-opacity: 1;
+  --pf-box-bg: #1e2230;
+  --pf-box-border: #2a2f3d;
+  --pf-highlight-bg: #091a11;
+  --pf-highlight-border: #0f4024;
+  --pf-highlight-text: #4dff91;
+  --pf-arrow-color: #4a5168;
+  --window-card-bg: #1e2230;
+  --window-title-color: #e8eaf0;
+  --window-desc-color: #9aa0b8;
+  --window-ex-color: #4a5168;
+}
+
+/* ── LIGHT THEME ── */
+[data-theme="light"] {
+  --bg: #f7f8f4;
+  --surface: #ffffff;
+  --surface2: #f0f2ec;
+  --border: #dde0d8;
+  --border2: #c8ccc2;
+  --text: #1c1f18;
+  --muted: #5a6052;
+  --dim: #9aa090;
+  --prose-color: #4a5240;
+  --kv-val-color: #5a6052;
+  --signal-color: #4a5240;
+  --code-color: #2a3820;
+
+  --accent: #1e8a45;
+  --accent-bg: #eaf6ee;
+  --accent-border: #9ed4b2;
+  --accent-text: #1e8a45;
+  --num-fg: #ffffff;
+
+  --amber: #9a5800; --amber-bg: #fdf6e8; --amber-border: #e8c070;
+  --red: #b83030;   --red-bg: #fdf0f0;   --red-border: #e8a0a0;
+
+  --alert-info-bg: #eaf6ee;   --alert-info-text: #155c2e;   --alert-info-border: #1e8a45;
+  --alert-warn-bg: #fdf6e8;   --alert-warn-text: #7a4400;   --alert-warn-border: #c08020;
+  --alert-red-bg:  #fdf0f0;   --alert-red-text:  #8a2020;   --alert-red-border:  #c04040;
+  --alert-green-bg:#eaf6ee;   --alert-green-text:#155c2e;   --alert-green-border:#1e8a45;
+  --alert-purple-bg:#f5eeff;  --alert-purple-text:#4a2090;  --alert-purple-border:#7a40c0;
+
+  --code-bg: #f0f2ec;
+  --scenario-bg: #f4f6f0;
+  --section-label-color: #1e8a45;
+  --note-bg: #eaf6ee; --note-border: #9ed4b2; --note-text: #155c2e;
+  --note-ts: #9ed4b2; --note-input-bg: #f7f8f4; --note-input-border: #9ed4b2;
+  --note-trigger-color: #9ed4b2; --note-trigger-hover: #1e8a45;
+  --toggle-track-on: #1e8a45;
+  --toggle-border: #9ed4b2;
+  --toggle-knob: #ffffff;
+  --toggle-knob-shadow: rgba(0,0,0,0.15);
+  --sun-opacity: 1;
+  --moon-opacity: 0.4;
+  --pf-box-bg: #f0f2ec;
+  --pf-box-border: #dde0d8;
+  --pf-highlight-bg: #eaf6ee;
+  --pf-highlight-border: #9ed4b2;
+  --pf-highlight-text: #1e8a45;
+  --pf-arrow-color: #9aa090;
+  --window-card-bg: #f0f2ec;
+  --window-title-color: #1c1f18;
+  --window-desc-color: #5a6052;
+  --window-ex-color: #9aa090;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: 'IBM Plex Sans', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  padding: 28px 20px;
+  max-width: 860px;
+  margin: 0 auto;
+  line-height: 1.6;
+  transition: background 0.3s, color 0.3s;
+}
+
+/* ── PAGE HEADER ── */
+.page-header {
+  margin-bottom: 24px;
+  padding-bottom: 18px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  transition: border-color 0.3s;
+}
+.header-text .label {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 11px;
+  color: var(--accent);
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  margin-bottom: 7px;
+}
+.header-text h1 { font-size: 22px; font-weight: 600; color: var(--text); margin-bottom: 4px; }
+.header-text p  { font-size: 13px; color: var(--muted); }
+
+/* ── THEME TOGGLE ── */
+.theme-toggle {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  flex-shrink: 0;
+  margin-top: 2px;
+  cursor: pointer;
+  user-select: none;
+}
+.toggle-icon-sun, .toggle-icon-moon {
+  font-size: 14px;
+  line-height: 1;
+  transition: opacity 0.3s;
+}
+.toggle-icon-sun  { opacity: var(--sun-opacity); }
+.toggle-icon-moon { opacity: var(--moon-opacity); }
+.toggle-track {
+  position: relative;
+  width: 42px;
+  height: 24px;
+  background: var(--toggle-track-on);
+  border-radius: 99px;
+  border: 1px solid var(--toggle-border);
+  transition: background 0.3s, border-color 0.3s;
+  flex-shrink: 0;
+}
+.toggle-knob {
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: var(--toggle-knob);
+  box-shadow: 0 1px 4px var(--toggle-knob-shadow);
+  transition: transform 0.25s cubic-bezier(.4,0,.2,1), background 0.3s;
+}
+[data-theme="light"] .toggle-knob { transform: translateX(18px); }
+
+/* ── TAB BAR ── */
+.tab-bar {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  margin-bottom: 20px;
+  position: sticky;
+  top: 0;
+  background: var(--bg);
+  padding: 10px 0;
+  z-index: 10;
+  border-bottom: 1px solid var(--border);
+  transition: background 0.3s, border-color 0.3s;
+}
+.tab-btn {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 11px;
+  padding: 5px 12px;
+  border-radius: 99px;
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--muted);
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.15s;
+  letter-spacing: 0.03em;
+}
+.tab-btn:hover { background: var(--surface2); color: var(--text); }
+.tab-btn.active {
+  background: var(--accent-bg);
+  color: var(--accent-text);
+  border-color: var(--accent-border);
+  font-weight: 600;
+}
+.tab-section { display: none; }
+.tab-section.active { display: block; }
+
+/* ── GAP CARDS ── */
+.gap {
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  margin-bottom: 14px;
+  overflow: hidden;
+  background: var(--surface);
+  transition: background 0.3s, border-color 0.3s;
+}
+.gap-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 13px 16px;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+.gap-header:hover { background: var(--surface2); }
+.gap-num {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--num-fg);
+  background: var(--accent);
+  width: 22px;
+  height: 22px;
+  border-radius: 5px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: background 0.3s, color 0.3s;
+}
+.gap-title { flex: 1; font-size: 13.5px; font-weight: 600; color: var(--text); }
+.gap-tag {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 10px;
+  padding: 2px 8px;
+  border-radius: 99px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  background: var(--accent-bg);
+  color: var(--accent-text);
+  border: 1px solid var(--accent-border);
+  white-space: nowrap;
+  transition: background 0.3s, color 0.3s, border-color 0.3s;
+}
+.chevron { font-size: 10px; color: var(--dim); transition: transform 0.2s; margin-left: 4px; flex-shrink: 0; }
+.chevron.open { transform: rotate(90deg); }
+.gap-body { display: none; border-top: 1px solid var(--border); padding: 16px 18px; transition: border-color 0.3s; }
+.gap-body.open { display: block; }
+
+/* ── CONTENT ELEMENTS ── */
+.section-label {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--section-label-color);
+  margin: 14px 0 7px;
+  opacity: 0.85;
+  transition: color 0.3s;
+}
+.section-label:first-child { margin-top: 0; }
+
+p.prose { font-size: 13px; color: var(--prose-color); line-height: 1.7; margin-bottom: 8px; transition: color 0.3s; }
+p.prose:last-child { margin-bottom: 0; }
+
+.kv-row { display: flex; gap: 12px; margin-bottom: 8px; font-size: 13px; }
+.kv-key { font-weight: 600; color: var(--text); min-width: 185px; flex-shrink: 0; }
+.kv-val { color: var(--kv-val-color); line-height: 1.55; transition: color 0.3s; }
+
+.alert {
+  padding: 10px 14px;
+  font-size: 12.5px;
+  line-height: 1.6;
+  border-left: 3px solid;
+  margin: 10px 0;
+  transition: background 0.3s, color 0.3s;
+}
+.alert-blue   { background: var(--alert-info-bg);   color: var(--alert-info-text);   border-color: var(--alert-info-border); }
+.alert-amber  { background: var(--alert-warn-bg);   color: var(--alert-warn-text);   border-color: var(--alert-warn-border); }
+.alert-red    { background: var(--alert-red-bg);    color: var(--alert-red-text);    border-color: var(--alert-red-border); }
+.alert-green  { background: var(--alert-green-bg);  color: var(--alert-green-text);  border-color: var(--alert-green-border); }
+
+.code {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 11.5px;
+  background: var(--code-bg);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 12px 14px;
+  color: var(--code-color);
+  line-height: 1.65;
+  white-space: pre;
+  overflow-x: auto;
+  margin: 8px 0;
+  transition: background 0.3s, color 0.3s, border-color 0.3s;
+}
+
+.scenario-box {
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 12px 14px;
+  margin-bottom: 10px;
+  background: var(--scenario-bg);
+  transition: background 0.3s, border-color 0.3s;
+}
+.scenario-q { font-size: 13px; font-weight: 600; color: var(--text); margin-bottom: 7px; line-height: 1.5; }
+.scenario-a { font-size: 12.5px; color: var(--kv-val-color); line-height: 1.6; }
+.scenario-a strong { color: var(--accent); font-weight: 600; }
+
+/* ── PIPELINE FLOW ── */
+.pipeline-flow {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0;
+  margin: 12px 0;
+}
+.pf-box {
+  background: var(--pf-box-bg);
+  border: 1px solid var(--pf-box-border);
+  border-radius: 7px;
+  padding: 8px 12px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text);
+  white-space: nowrap;
+  transition: background 0.3s, border-color 0.3s;
+  line-height: 1.4;
+}
+.pf-box.highlight {
+  background: var(--pf-highlight-bg);
+  border-color: var(--pf-highlight-border);
+  color: var(--pf-highlight-text);
+}
+.pf-sub {
+  font-size: 11px;
+  font-weight: 400;
+  color: var(--muted);
+  display: block;
+}
+.pf-box.highlight .pf-sub { color: var(--accent-text); opacity: 0.8; }
+.pf-arrow {
+  font-size: 14px;
+  color: var(--pf-arrow-color);
+  padding: 0 6px;
+  transition: color 0.3s;
+}
+
+/* ── WINDOW GRID ── */
+.window-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin: 10px 0;
+}
+.window-card {
+  background: var(--window-card-bg);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 11px 13px;
+  transition: background 0.3s, border-color 0.3s;
+}
+.wc-title { font-size: 12px; font-weight: 600; color: var(--window-title-color); margin-bottom: 4px; }
+.wc-desc  { font-size: 12px; color: var(--window-desc-color); line-height: 1.5; }
+.wc-ex    { font-size: 11px; color: var(--window-ex-color); margin-top: 5px; font-style: italic; }
+
+.divider { height: 1px; background: var(--border); margin: 12px 0; }
+
+/* ── MOBILE ── */
+@media (max-width: 600px) {
+  body { padding: 14px 12px; }
+  .page-header { flex-direction: column; gap: 12px; }
+  .header-text h1 { font-size: 18px; }
+  .tab-bar { gap: 5px; padding: 8px 0; }
+  .tab-btn { font-size: 10px; padding: 4px 9px; }
+  .gap-header { padding: 11px 13px; gap: 8px; }
+  .gap-title { font-size: 12.5px; }
+  .gap-tag { display: none; }
+  .gap-body { padding: 13px 14px; }
+  .kv-row { flex-direction: column; gap: 3px; }
+  .kv-key { min-width: unset; }
+  .window-grid { grid-template-columns: 1fr; }
+  .pipeline-flow { gap: 4px; }
+  .pf-arrow { padding: 0 3px; }
+  .code { font-size: 10.5px; padding: 10px 11px; }
+}
+
+/* ── NOTES ── */
+.note-zone { margin-top: 14px; border-top: 1px solid var(--border); padding-top: 12px; }
+.notes-list { display: flex; flex-direction: column; gap: 8px; margin-bottom: 8px; }
+.note-item { background: var(--note-bg); border-left: 2px solid var(--accent); border-radius: 0 6px 6px 0; padding: 9px 11px; }
+.note-item-text { font-size: 12.5px; color: var(--note-text); line-height: 1.6; white-space: pre-wrap; word-break: break-word; }
+.note-item-footer { display: flex; align-items: center; justify-content: space-between; margin-top: 6px; }
+.note-ts { font-family: 'IBM Plex Mono', monospace; font-size: 10px; color: var(--note-ts); }
+.note-item-actions { display: flex; gap: 4px; }
+.note-action-btn { font-size: 10px; font-family: 'IBM Plex Mono', monospace; padding: 2px 8px; border-radius: 99px; border: 1px solid var(--border); background: transparent; color: var(--muted); cursor: pointer; transition: all .15s; }
+.note-action-btn:hover { background: var(--surface2); color: var(--text); }
+.note-action-btn.del:hover { background: var(--alert-red-bg); color: var(--alert-red-text); border-color: var(--alert-red-border); }
+.note-form { margin-top: 8px; }
+.note-form textarea { width: 100%; font-size: 12.5px; font-family: 'IBM Plex Sans', sans-serif; line-height: 1.55; resize: vertical; min-height: 68px; padding: 8px 10px; border-radius: 6px; border: 1px solid var(--note-input-border); background: var(--note-input-bg); color: var(--text); transition: background .3s, border-color .3s; }
+.note-form textarea:focus { outline: none; border-color: var(--accent); }
+.note-form-actions { display: flex; gap: 6px; margin-top: 6px; }
+.note-save-btn { font-size: 11px; font-family: 'IBM Plex Mono', monospace; padding: 4px 12px; border-radius: 99px; border: 1px solid var(--accent-border); background: var(--accent-bg); color: var(--accent-text); cursor: pointer; font-weight: 600; transition: all .15s; }
+.note-save-btn:hover { background: var(--accent); color: var(--num-fg); }
+.note-cancel-btn { font-size: 11px; font-family: 'IBM Plex Mono', monospace; padding: 4px 12px; border-radius: 99px; border: 1px solid var(--border); background: transparent; color: var(--muted); cursor: pointer; transition: all .15s; }
+.note-cancel-btn:hover { background: var(--surface2); color: var(--text); }
+.note-add-trigger { display: flex; align-items: center; gap: 6px; font-family: 'IBM Plex Mono', monospace; font-size: 11px; color: var(--note-trigger-color); cursor: pointer; padding: 4px 0; background: none; border: none; transition: color .15s; letter-spacing: .03em; }
+.note-add-trigger:hover { color: var(--note-trigger-hover); }
+
+
+
+
+/* ════════════════════════════════════════════════════════
+   SIDEBAR + BOTTOM BAR
+════════════════════════════════════════════════════════ */
+:root { --sb-w: 220px; --sb-w-collapsed: 48px; --bb-h: 56px; }
+
+[data-theme="dark"] {
+  --sb-bg: #0f1118;
+  --sb-border: #1e2230;
+  --sb-hover: #1a1f2e;
+  --sb-active-bg: #091a11;
+  --sb-active-text: #4dff91;
+  --sb-active-border: #0f4024;
+  --sb-text: #7a8099;
+  --sb-text-strong: #c0c4d4;
+  --sb-num: #3a3f52;
+  --sb-badge-bg: #091a11;
+  --sb-badge-text: #4dff91;
+  --sb-badge-border: #0f4024;
+  --sb-sub-text: #5a6070;
+  --sb-sub-hover: #1e2230;
+  --sb-section: #252b3a;
+  --sb-collapse-color: #4a5168;
+  --sb-overlay-bg: rgba(0,0,0,0.55);
+  --bb-bg: #0f1118;
+  --bb-border: #1e2230;
+  --bb-text: #5a6070;
+  --bb-active: #4dff91;
+}
+[data-theme="light"] {
+  --sb-bg: #ffffff;
+  --sb-border: #e4e8e0;
+  --sb-hover: #f4f6f0;
+  --sb-active-bg: #eaf6ee;
+  --sb-active-text: #1e8a45;
+  --sb-active-border: #9ed4b2;
+  --sb-text: #6a7060;
+  --sb-text-strong: #2a3020;
+  --sb-num: #c0c8b8;
+  --sb-badge-bg: #eaf6ee;
+  --sb-badge-text: #1e8a45;
+  --sb-badge-border: #9ed4b2;
+  --sb-sub-text: #9aa090;
+  --sb-sub-hover: #f0f4ec;
+  --sb-section: #eaeee6;
+  --sb-collapse-color: #b0b8a8;
+  --sb-overlay-bg: rgba(0,0,0,0.25);
+  --bb-bg: #ffffff;
+  --bb-border: #e4e8e0;
+  --bb-text: #9aa090;
+  --bb-active: #1e8a45;
+}
+
+/* ── LAYOUT SHIFT ── */
+body { transition: padding-left .25s cubic-bezier(.4,0,.2,1); }
+body.sb-open   { padding-left: var(--sb-w) !important; }
+body.sb-closed { padding-left: var(--sb-w-collapsed) !important; }
+
+/* ── SIDEBAR ── */
+.sidebar {
+  position: fixed;
+  top: 0; left: 0;
+  width: var(--sb-w);
+  height: 100vh;
+  background: var(--sb-bg);
+  border-right: 1px solid var(--sb-border);
+  display: flex;
+  flex-direction: column;
+  z-index: 200;
+  overflow: hidden;
+  transition: width .25s cubic-bezier(.4,0,.2,1), background .3s, border-color .3s;
+}
+.sidebar.collapsed { width: var(--sb-w-collapsed); }
+.sidebar.collapsed .sb-mod-label,
+.sidebar.collapsed .sb-expand-icon,
+.sidebar.collapsed .sb-brand,
+.sidebar.collapsed .sb-subtopics { display: none; }
+.sidebar.collapsed .sb-mod-num,
+.sidebar.collapsed .sb-mod-icon { margin: 0 auto; }
+.sidebar.collapsed .sb-mod-link { justify-content: center; padding: 10px 0; }
+.sidebar.collapsed .sb-nav { padding-top: 4px; }
+
+/* ── SIDEBAR HEAD ── */
+.sb-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 14px 12px;
+  border-bottom: 1px solid var(--sb-border);
+  flex-shrink: 0;
+  min-height: 52px;
+  gap: 8px;
+}
+.sb-brand {
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  overflow: hidden;
+}
+.sb-badge {
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 10px;
+  font-weight: 600;
+  background: var(--sb-badge-bg);
+  color: var(--sb-badge-text);
+  border: 1px solid var(--sb-badge-border);
+  border-radius: 5px;
+  padding: 3px 7px;
+  letter-spacing: .06em;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+.sb-collapse-btn {
+  background: none;
+  border: 1px solid var(--sb-border);
+  border-radius: 6px;
+  color: var(--sb-collapse-color);
+  font-size: 10px;
+  cursor: pointer;
+  padding: 4px 7px;
+  line-height: 1;
+  transition: all .15s;
+  flex-shrink: 0;
+  white-space: nowrap;
+}
+.sb-collapse-btn:hover { background: var(--sb-hover); color: var(--sb-text-strong); }
+.sidebar.collapsed .sb-collapse-btn { transform: rotate(180deg); }
+
+/* ── SIDEBAR NAV ── */
+.sb-nav {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 8px 0 24px;
+  scrollbar-width: thin;
+  scrollbar-color: var(--sb-border) transparent;
+}
+
+.sb-mod-link {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px 8px 14px;
+  text-decoration: none;
+  color: var(--sb-text);
+  font-size: 12.5px;
+  font-weight: 500;
+  border-left: 2px solid transparent;
+  transition: background .1s, color .1s, border-color .1s;
+  line-height: 1.3;
+}
+.sb-mod-link:hover {
+  background: var(--sb-hover);
+  color: var(--sb-text-strong);
+}
+.sb-mod-link.active {
+  background: var(--sb-active-bg);
+  color: var(--sb-active-text);
+  border-left-color: var(--sb-active-border);
+  font-weight: 600;
+}
+.sb-mod-num {
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 10px;
+  color: var(--sb-num);
+  flex-shrink: 0;
+  width: 20px;
+  text-align: right;
+  transition: color .1s;
+}
+.sb-mod-icon { font-size: 13px; flex-shrink: 0; width: 20px; text-align: center; }
+.sb-mod-label { flex: 1; }
+.sb-mod-link.active .sb-mod-num { color: var(--sb-active-text); opacity: .55; }
+
+.sb-expand-icon {
+  font-size: 9px;
+  color: var(--sb-num);
+  flex-shrink: 0;
+  transition: transform .18s;
+}
+.sb-mod-group.open > .sb-mod-link .sb-expand-icon { transform: rotate(90deg); }
+
+/* ── SUBTOPICS ── */
+.sb-subtopics {
+  display: none;
+  flex-direction: column;
+  border-left: 1px solid var(--sb-border);
+  margin: 0 0 2px 28px;
+}
+.sb-mod-group.open > .sb-subtopics { display: flex; }
+
+.sb-sub-link {
+  display: block;
+  padding: 5px 10px 5px 12px;
+  font-size: 11.5px;
+  color: var(--sb-sub-text);
+  text-decoration: none;
+  border-left: 2px solid transparent;
+  transition: background .1s, color .1s, border-color .1s;
+  line-height: 1.4;
+}
+.sb-sub-link:hover {
+  background: var(--sb-sub-hover);
+  color: var(--sb-text-strong);
+}
+.sb-sub-link.active {
+  color: var(--sb-active-text);
+  border-left-color: var(--sb-active-border);
+  font-weight: 600;
+}
+
+/* ── OVERLAY ── */
+.sb-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: var(--sb-overlay-bg);
+  z-index: 199;
+}
+
+/* ════════════════════════════════════════════════════════
+   MOBILE — BOTTOM TAB BAR (≤768px)
+════════════════════════════════════════════════════════ */
+.bottom-bar {
+  display: none;
+}
+
+@media (max-width: 768px) {
+  /* hide desktop sidebar entirely */
+  .sidebar, .sb-overlay { display: none !important; }
+
+  /* undo layout shift */
+  body.sb-open, body.sb-closed { padding-left: 0 !important; }
+
+  /* push content up so bottom bar doesn't overlap */
+  body { padding-bottom: calc(var(--bb-h) + 4px) !important; }
+
+  .bottom-bar {
+    display: flex;
+    position: fixed;
+    bottom: 0; left: 0; right: 0;
+    height: var(--bb-h);
+    background: var(--bb-bg);
+    border-top: 1px solid var(--bb-border);
+    z-index: 200;
+    align-items: stretch;
+    transition: background .3s, border-color .3s;
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+  .bottom-bar::-webkit-scrollbar { display: none; }
+
+  .bb-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 3px;
+    flex: 1;
+    min-width: 52px;
+    text-decoration: none;
+    color: var(--bb-text);
+    padding: 6px 4px;
+    border-top: 2px solid transparent;
+    transition: color .15s, border-color .15s;
+  }
+  .bb-item.active {
+    color: var(--bb-active);
+    border-top-color: var(--bb-active);
+  }
+  .bb-icon {
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 12px;
+    font-weight: 600;
+    line-height: 1;
+  }
+  .bb-label {
+    font-size: 9px;
+    font-family: "IBM Plex Mono", monospace;
+    letter-spacing: .02em;
+    white-space: nowrap;
+  }
+
+  /* keep tab-bar sticky above bottom bar on module pages */
+  .tab-bar { bottom: var(--bb-h) !important; }
+}
+
+/* also hide toggle button from index page header on desktop
+   (hamburger only needed on mobile, but we removed that approach) */
+.sb-menu-btn { display: none; }
+/* ════════════════════════════════════════════════════════
+   END SIDEBAR + BOTTOM BAR
+════════════════════════════════════════════════════════ */
+
+</style>
+</head>
+<body>
+<!-- ═══ SIDEBAR ═══ -->
+<div class="sb-overlay" id="sbOverlay" onclick="closeSidebar()"></div>
+<aside class="sidebar" id="sidebar">
+  <div class="sb-head">
+    <a href="index.html" class="sb-brand">
+      <span class="sb-badge">GCP PDE</span>
+    </a>
+    <button class="sb-collapse-btn" id="sbCollapseBtn" onclick="toggleSidebar()" title="Collapse sidebar">◀</button>
+  </div>
+  <div class="sb-nav">
+    <a href="index.html" class="sb-mod-link" data-page="index">
+      <span class="sb-mod-icon">⌂</span>
+      <span class="sb-mod-label">Home</span>
+    </a>
+    <div class="sb-mod-group" data-group="m1_bigquery">
+      <a href="m1_bigquery.html" class="sb-mod-link" data-page="m1_bigquery">
+        <span class="sb-mod-num">01</span>
+        <span class="sb-mod-label">BigQuery</span>
+        <span class="sb-expand-icon">▸</span>
+      </a>
+      <div class="sb-subtopics" id="sub-m1_bigquery">
+        <a href="m1_bigquery.html#partitioning" class="sb-sub-link" data-page="m1_bigquery" data-tab="partitioning">Partitioning & clustering</a>
+        <a href="m1_bigquery.html#pricing" class="sb-sub-link" data-page="m1_bigquery" data-tab="pricing">Pricing & slots</a>
+        <a href="m1_bigquery.html#bqml" class="sb-sub-link" data-page="m1_bigquery" data-tab="bqml">BigQuery ML</a>
+        <a href="m1_bigquery.html#security" class="sb-sub-link" data-page="m1_bigquery" data-tab="security">Security & access control</a>
+        <a href="m1_bigquery.html#external" class="sb-sub-link" data-page="m1_bigquery" data-tab="external">External tables & BigLake</a>
+        <a href="m1_bigquery.html#advanced" class="sb-sub-link" data-page="m1_bigquery" data-tab="advanced">Advanced SQL & features</a>
+        <a href="m1_bigquery.html#scenarios" class="sb-sub-link" data-page="m1_bigquery" data-tab="scenarios">Exam scenarios</a>
+      </div>
+    </div>
+    <div class="sb-mod-group" data-group="m2_dataflow_pubsub">
+      <a href="m2_dataflow_pubsub.html" class="sb-mod-link" data-page="m2_dataflow_pubsub">
+        <span class="sb-mod-num">02</span>
+        <span class="sb-mod-label">Dataflow & Pub/Sub</span>
+        <span class="sb-expand-icon">▸</span>
+      </a>
+      <div class="sb-subtopics" id="sub-m2_dataflow_pubsub">
+        <a href="m2_dataflow_pubsub.html#beam" class="sb-sub-link" data-page="m2_dataflow_pubsub" data-tab="beam">Apache Beam model</a>
+        <a href="m2_dataflow_pubsub.html#windowing" class="sb-sub-link" data-page="m2_dataflow_pubsub" data-tab="windowing">Windowing</a>
+        <a href="m2_dataflow_pubsub.html#dataflow" class="sb-sub-link" data-page="m2_dataflow_pubsub" data-tab="dataflow">Dataflow service</a>
+        <a href="m2_dataflow_pubsub.html#pubsub" class="sb-sub-link" data-page="m2_dataflow_pubsub" data-tab="pubsub">Pub/Sub</a>
+        <a href="m2_dataflow_pubsub.html#pipeline" class="sb-sub-link" data-page="m2_dataflow_pubsub" data-tab="pipeline">The canonical pipeline</a>
+        <a href="m2_dataflow_pubsub.html#scenarios" class="sb-sub-link" data-page="m2_dataflow_pubsub" data-tab="scenarios">Exam scenarios</a>
+      </div>
+    </div>
+    <div class="sb-mod-group" data-group="m3_storage_services">
+      <a href="m3_storage_services.html" class="sb-mod-link" data-page="m3_storage_services">
+        <span class="sb-mod-num">03</span>
+        <span class="sb-mod-label">Storage Services</span>
+        <span class="sb-expand-icon">▸</span>
+      </a>
+      <div class="sb-subtopics" id="sub-m3_storage_services">
+        <a href="m3_storage_services.html#decision" class="sb-sub-link" data-page="m3_storage_services" data-tab="decision">Decision Framework</a>
+        <a href="m3_storage_services.html#bigtable" class="sb-sub-link" data-page="m3_storage_services" data-tab="bigtable">Bigtable</a>
+        <a href="m3_storage_services.html#spanner" class="sb-sub-link" data-page="m3_storage_services" data-tab="spanner">Cloud Spanner</a>
+        <a href="m3_storage_services.html#firestore" class="sb-sub-link" data-page="m3_storage_services" data-tab="firestore">Firestore</a>
+        <a href="m3_storage_services.html#cloudsql" class="sb-sub-link" data-page="m3_storage_services" data-tab="cloudsql">Cloud SQL</a>
+        <a href="m3_storage_services.html#memorystore" class="sb-sub-link" data-page="m3_storage_services" data-tab="memorystore">Memorystore</a>
+        <a href="m3_storage_services.html#scenarios" class="sb-sub-link" data-page="m3_storage_services" data-tab="scenarios">Exam Scenarios</a>
+        <a href="m3_storage_services.html#traps" class="sb-sub-link" data-page="m3_storage_services" data-tab="traps">Traps & Cheatsheet</a>
+      </div>
+    </div>
+    <div class="sb-mod-group" data-group="m4_data_processing_governance">
+      <a href="m4_data_processing_governance.html" class="sb-mod-link" data-page="m4_data_processing_governance">
+        <span class="sb-mod-num">04</span>
+        <span class="sb-mod-label">Data Processing</span>
+        <span class="sb-expand-icon">▸</span>
+      </a>
+      <div class="sb-subtopics" id="sub-m4_data_processing_governance">
+        <a href="m4_data_processing_governance.html#dataproc" class="sb-sub-link" data-page="m4_data_processing_governance" data-tab="dataproc">Dataproc</a>
+        <a href="m4_data_processing_governance.html#datafusion" class="sb-sub-link" data-page="m4_data_processing_governance" data-tab="datafusion">Cloud Data Fusion</a>
+        <a href="m4_data_processing_governance.html#dataform" class="sb-sub-link" data-page="m4_data_processing_governance" data-tab="dataform">Dataform</a>
+        <a href="m4_data_processing_governance.html#datastream" class="sb-sub-link" data-page="m4_data_processing_governance" data-tab="datastream">Datastream</a>
+        <a href="m4_data_processing_governance.html#composer" class="sb-sub-link" data-page="m4_data_processing_governance" data-tab="composer">Cloud Composer</a>
+        <a href="m4_data_processing_governance.html#dataplex" class="sb-sub-link" data-page="m4_data_processing_governance" data-tab="dataplex">Dataplex</a>
+        <a href="m4_data_processing_governance.html#datacatalog" class="sb-sub-link" data-page="m4_data_processing_governance" data-tab="datacatalog">Data Catalog</a>
+        <a href="m4_data_processing_governance.html#dlp" class="sb-sub-link" data-page="m4_data_processing_governance" data-tab="dlp">Cloud DLP</a>
+        <a href="m4_data_processing_governance.html#analyticshub" class="sb-sub-link" data-page="m4_data_processing_governance" data-tab="analyticshub">Analytics Hub</a>
+        <a href="m4_data_processing_governance.html#decision" class="sb-sub-link" data-page="m4_data_processing_governance" data-tab="decision">Decision Reference</a>
+      </div>
+    </div>
+    <div class="sb-mod-group" data-group="m5_security_ml_architecture">
+      <a href="m5_security_ml_architecture.html" class="sb-mod-link" data-page="m5_security_ml_architecture">
+        <span class="sb-mod-num">05</span>
+        <span class="sb-mod-label">Security & ML</span>
+        <span class="sb-expand-icon">▸</span>
+      </a>
+      <div class="sb-subtopics" id="sub-m5_security_ml_architecture">
+        <a href="m5_security_ml_architecture.html#iam" class="sb-sub-link" data-page="m5_security_ml_architecture" data-tab="iam">IAM</a>
+        <a href="m5_security_ml_architecture.html#encryption" class="sb-sub-link" data-page="m5_security_ml_architecture" data-tab="encryption">Encryption</a>
+        <a href="m5_security_ml_architecture.html#vpcsc" class="sb-sub-link" data-page="m5_security_ml_architecture" data-tab="vpcsc">VPC Service Controls</a>
+        <a href="m5_security_ml_architecture.html#audit" class="sb-sub-link" data-page="m5_security_ml_architecture" data-tab="audit">Audit Logging</a>
+        <a href="m5_security_ml_architecture.html#ml" class="sb-sub-link" data-page="m5_security_ml_architecture" data-tab="ml">ML Fundamentals</a>
+        <a href="m5_security_ml_architecture.html#vertex" class="sb-sub-link" data-page="m5_security_ml_architecture" data-tab="vertex">Vertex AI</a>
+        <a href="m5_security_ml_architecture.html#batchstream" class="sb-sub-link" data-page="m5_security_ml_architecture" data-tab="batchstream">Batch vs Streaming</a>
+        <a href="m5_security_ml_architecture.html#refarch" class="sb-sub-link" data-page="m5_security_ml_architecture" data-tab="refarch">Reference Architecture</a>
+        <a href="m5_security_ml_architecture.html#scenarios" class="sb-sub-link" data-page="m5_security_ml_architecture" data-tab="scenarios">Architecture Scenarios</a>
+      </div>
+    </div>
+    <div class="sb-mod-group" data-group="m6_advanced_topics">
+      <a href="m6_advanced_topics.html" class="sb-mod-link" data-page="m6_advanced_topics">
+        <span class="sb-mod-num">06</span>
+        <span class="sb-mod-label">Advanced Topics</span>
+        <span class="sb-expand-icon">▸</span>
+      </a>
+      <div class="sb-subtopics" id="sub-m6_advanced_topics">
+        <a href="m6_advanced_topics.html#bq" class="sb-sub-link" data-page="m6_advanced_topics" data-tab="bq">BigQuery</a>
+        <a href="m6_advanced_topics.html#dataflow" class="sb-sub-link" data-page="m6_advanced_topics" data-tab="dataflow">Dataflow</a>
+        <a href="m6_advanced_topics.html#pubsub" class="sb-sub-link" data-page="m6_advanced_topics" data-tab="pubsub">Pub/Sub</a>
+        <a href="m6_advanced_topics.html#spanner" class="sb-sub-link" data-page="m6_advanced_topics" data-tab="spanner">Cloud Spanner</a>
+        <a href="m6_advanced_topics.html#dataproc" class="sb-sub-link" data-page="m6_advanced_topics" data-tab="dataproc">Dataproc</a>
+        <a href="m6_advanced_topics.html#vertex" class="sb-sub-link" data-page="m6_advanced_topics" data-tab="vertex">Vertex AI</a>
+        <a href="m6_advanced_topics.html#security" class="sb-sub-link" data-page="m6_advanced_topics" data-tab="security">Security</a>
+        <a href="m6_advanced_topics.html#exactlyonce" class="sb-sub-link" data-page="m6_advanced_topics" data-tab="exactlyonce">Exactly-Once Semantics</a>
+        <a href="m6_advanced_topics.html#signals" class="sb-sub-link" data-page="m6_advanced_topics" data-tab="signals">Signal Prioritization</a>
+        <a href="m6_advanced_topics.html#cheatsheet" class="sb-sub-link" data-page="m6_advanced_topics" data-tab="cheatsheet">Cheat Sheet</a>
+      </div>
+    </div>
+  </div>
+</aside>
+<!-- ═══ END SIDEBAR ═══ -->
+
+<!-- ═══ MOBILE BOTTOM BAR ═══ -->
+<nav class="bottom-bar" id="bottomBar">
+  <a href="index.html" class="bb-item" data-page="index">
+    <span class="bb-icon">⌂</span>
+    <span class="bb-label">Home</span>
+  </a>
+  <a href="m1_bigquery.html" class="bb-item" data-page="m1_bigquery">
+    <span class="bb-icon">01</span>
+    <span class="bb-label">BigQuery</span>
+  </a>
+  <a href="m2_dataflow_pubsub.html" class="bb-item" data-page="m2_dataflow_pubsub">
+    <span class="bb-icon">02</span>
+    <span class="bb-label">Dataflow</span>
+  </a>
+  <a href="m3_storage_services.html" class="bb-item" data-page="m3_storage_services">
+    <span class="bb-icon">03</span>
+    <span class="bb-label">Storage</span>
+  </a>
+  <a href="m4_data_processing_governance.html" class="bb-item" data-page="m4_data_processing_governance">
+    <span class="bb-icon">04</span>
+    <span class="bb-label">Data</span>
+  </a>
+  <a href="m5_security_ml_architecture.html" class="bb-item" data-page="m5_security_ml_architecture">
+    <span class="bb-icon">05</span>
+    <span class="bb-label">Security</span>
+  </a>
+  <a href="m6_advanced_topics.html" class="bb-item" data-page="m6_advanced_topics">
+    <span class="bb-icon">06</span>
+    <span class="bb-label">Advanced</span>
+  </a>
+</nav>
+<!-- ═══ END MOBILE BOTTOM BAR ═══ -->
+
+
+
+<div class="page-header">
+  <div class="header-text">
+    <div class="label">GCP PDE Study Notes — Module 2</div>
+    <h1>Dataflow &amp; Pub/Sub Deep Dive</h1>
+    <p>6 subtopics · tap a tab to switch · tap cards to expand · add notes per card</p>
+  </div>
+  <div class="theme-toggle" onclick="toggleTheme()" title="Toggle light / dark mode">
+    <span class="toggle-icon-sun">☀️</span>
+    <div class="toggle-track"><div class="toggle-knob"></div></div>
+    <span class="toggle-icon-moon">🌙</span>
+  </div>
+</div>
+
+<div class="tab-bar" id="tabBar"></div>
+<div id="tabContent"></div>
+
+<script>
+function toggleTheme() {
+  const h = document.documentElement;
+  h.setAttribute('data-theme', h.getAttribute('data-theme') === 'dark' ? 'light' : 'dark');
+}
+
+const TABS = [
+  {
+    id: 'beam', label: 'Apache Beam model', freq: 'Day 2',
+    topics: [
+      {
+        title: 'Core Beam concepts: pipelines, PCollections, transforms',
+        body: `<p class="prose">Apache Beam is the programming model that Dataflow executes. Understanding Beam is necessary because exam questions often test whether you know the right Beam construct for a given scenario — not just that Dataflow exists.</p>
+<div class="section-label">The four core primitives</div>
+<div class="kv-row"><div class="kv-key">Pipeline</div><div class="kv-val">The top-level container for your entire data processing job. You create one Pipeline per job. It defines the graph of transforms to execute. In Dataflow, the pipeline is compiled and submitted to Google's managed runner.</div></div>
+<div class="kv-row"><div class="kv-key">PCollection</div><div class="kv-val">A distributed, immutable dataset — the data flowing between transforms. A PCollection can be bounded (finite batch data) or unbounded (infinite streaming data). You never modify a PCollection; transforms consume one and produce another.</div></div>
+<div class="kv-row"><div class="kv-key">PTransform</div><div class="kv-val">A data processing operation that takes one or more PCollections as input and produces one or more PCollections as output. Can be a single step (ParDo, Filter) or a composite of many steps.</div></div>
+<div class="kv-row"><div class="kv-key">Runner</div><div class="kv-val">The execution engine. The DirectRunner runs locally for testing. The DataflowRunner submits the pipeline to Google Cloud Dataflow for distributed execution.</div></div>
+<div class="section-label">Key built-in transforms</div>
+<div class="kv-row"><div class="kv-key">ParDo</div><div class="kv-val">The most general transform — applies a user-defined function (DoFn) to each element of a PCollection in parallel. Equivalent to a distributed map operation. Can emit zero, one, or multiple output elements per input element.</div></div>
+<div class="kv-row"><div class="kv-key">GroupByKey</div><div class="kv-val">Groups all values with the same key together — like a SQL GROUP BY. Must be used before aggregations. In streaming, requires a window to bound the grouping.</div></div>
+<div class="kv-row"><div class="kv-key">CoGroupByKey</div><div class="kv-val">Joins two or more keyed PCollections by key. Equivalent to a SQL JOIN across datasets.</div></div>
+<div class="kv-row"><div class="kv-key">Combine</div><div class="kv-val">Aggregates elements — sum, count, mean, custom combiners. More efficient than GroupByKey + map because Beam can apply partial aggregations before the shuffle.</div></div>
+<div class="kv-row"><div class="kv-key">Flatten</div><div class="kv-val">Merges multiple PCollections of the same type into one. Like UNION ALL.</div></div>
+<div class="kv-row"><div class="kv-key">Partition</div><div class="kv-val">Splits one PCollection into N PCollections based on a partition function. Useful for routing to different sinks.</div></div>
+<div class="code"># Conceptual Python Beam pipeline structure
+import apache_beam as beam
+
+with beam.Pipeline(runner='DataflowRunner', options=options) as p:
+    raw = (
+        p
+        | 'Read from Pub/Sub' >> beam.io.ReadFromPubSub(topic='projects/proj/topics/events')
+        | 'Parse JSON' >> beam.Map(json.loads)
+        | 'Filter valid' >> beam.Filter(lambda x: x.get('user_id'))
+        | 'Add key' >> beam.Map(lambda x: (x['user_id'], x))
+        | 'Window 1 min' >> beam.WindowInto(beam.window.FixedWindows(60))
+        | 'Group by user' >> beam.GroupByKey()
+        | 'Aggregate' >> beam.Map(aggregate_events)
+        | 'Write to BQ' >> beam.io.WriteToBigQuery(table='project:dataset.table')
+    )</div>
+<div class="alert alert-blue">The pipe operator (|) in Python Beam chains transforms. The string before >> is just a label for debugging — it must be unique within the pipeline. The actual transform is after >>.</div>`
+      },
+      {
+        title: 'DoFn lifecycle — setup, process, teardown',
+        body: `<p class="prose">A DoFn is the user-defined function inside a ParDo. Understanding the DoFn lifecycle matters for the exam because questions about state initialization, expensive setup (opening DB connections, loading models), and cleanup map directly to specific lifecycle methods.</p>
+<div class="kv-row"><div class="kv-key">setup()</div><div class="kv-val">Called once per DoFn instance when the worker starts. Use for expensive one-time initialization: loading an ML model from GCS, opening a connection pool. NOT called per-element.</div></div>
+<div class="kv-row"><div class="kv-key">start_bundle()</div><div class="kv-val">Called before processing each bundle of elements. A bundle is a batch of elements processed together on one worker thread.</div></div>
+<div class="kv-row"><div class="kv-key">process(element)</div><div class="kv-val">Called once per element. This is your main processing logic. Can yield multiple outputs or emit to side outputs.</div></div>
+<div class="kv-row"><div class="kv-key">finish_bundle()</div><div class="kv-val">Called after all elements in a bundle are processed. Use for flushing buffers.</div></div>
+<div class="kv-row"><div class="kv-key">teardown()</div><div class="kv-val">Called when the worker is shutting down. Use for cleanup: closing connections, flushing final writes.</div></div>
+<div class="alert alert-amber">Exam trap: if a question describes loading a large ML model or opening a database connection "for each element" causing slowness — the fix is to move initialization to setup(), not process(). setup() runs once per worker instance, not once per element.</div>`
+      }
+    ]
+  },
+  {
+    id: 'windowing', label: 'Windowing', freq: 'Day 2',
+    topics: [
+      {
+        title: 'Why windowing exists and the four window types',
+        body: `<p class="prose">In streaming, data is unbounded — it never ends. To aggregate unbounded data (e.g., "count events per minute"), you must define a window: a finite slice of the infinite stream. GroupByKey and most aggregations require a window in streaming mode.</p>
+<div class="window-grid">
+  <div class="window-card"><div class="wc-title">Fixed (tumbling)</div><div class="wc-desc">Non-overlapping, equal-size buckets. Each event belongs to exactly one window.</div><div class="wc-ex">E.g., hourly report, per-minute metrics</div></div>
+  <div class="window-card"><div class="wc-title">Sliding</div><div class="wc-desc">Overlapping windows. Each event may belong to multiple windows. Window size &gt; slide interval.</div><div class="wc-ex">E.g., 10-min rolling average, computed every 1 min</div></div>
+  <div class="window-card"><div class="wc-title">Session</div><div class="wc-desc">Variable-size windows per key. A new window starts on first event; closes after a gap of inactivity.</div><div class="wc-ex">E.g., user session tracking, click-stream analysis</div></div>
+  <div class="window-card"><div class="wc-title">Global</div><div class="wc-desc">One window for all data. Default for batch. In streaming, requires triggers — window never closes naturally.</div><div class="wc-ex">E.g., running totals with periodic triggers</div></div>
+</div>
+<div class="section-label">Choosing the right window</div>
+<div class="kv-row"><div class="kv-key">Fixed (tumbling) windows</div><div class="kv-val">Use when you want non-overlapping time buckets: hourly reports, daily aggregations, per-minute metrics. Each event belongs to exactly one window.</div></div>
+<div class="kv-row"><div class="kv-key">Sliding windows</div><div class="kv-val">Use when you want a rolling/moving average or trend. Each event may belong to multiple windows (overlap). Higher computational cost than fixed.</div></div>
+<div class="kv-row"><div class="kv-key">Session windows</div><div class="kv-val">Use when activity naturally clusters in sessions separated by idle time. Perfect for user session analysis, click-stream analytics. Window size varies per key.</div></div>
+<div class="kv-row"><div class="kv-key">Global window</div><div class="kv-val">Default for batch pipelines. One window contains all data. In streaming, only use with triggers — otherwise the window never closes and results never emit.</div></div>
+<div class="code"># Fixed window — 5-minute buckets
+beam.WindowInto(beam.window.FixedWindows(5 * 60))
+
+# Sliding window — 10-min window, slides every 1 min
+beam.WindowInto(beam.window.SlidingWindows(10 * 60, 1 * 60))
+
+# Session window — close after 30 min of inactivity
+beam.WindowInto(beam.window.Sessions(gap_size=30 * 60))
+
+# Global window with periodic trigger (for streaming aggregations)
+beam.WindowInto(
+    beam.window.GlobalWindows(),
+    trigger=beam.trigger.Repeatedly(
+        beam.trigger.AfterProcessingTime(60)
+    ),
+    accumulation_mode=beam.trigger.AccumulationMode.DISCARDING
+)</div>`
+      },
+      {
+        title: 'Watermarks and late data',
+        body: `<p class="prose">Event time is when an event actually occurred. Processing time is when Dataflow receives it. In real-world systems, events arrive late — a mobile app might buffer events and upload them minutes or hours after they occurred. Watermarks track how far behind "now" the pipeline's event time processing is.</p>
+<div class="section-label">Watermark concept</div>
+<p class="prose">A watermark is a statement: "I believe all events with event_time &lt; W have now arrived." When the watermark passes the end of a window, Dataflow considers that window complete and emits results. The watermark is an estimate — it can be wrong if late data arrives after it.</p>
+<div class="kv-row"><div class="kv-key">On-time pane</div><div class="kv-val">The first result emitted for a window when the watermark passes the window end. This is the "main" result.</div></div>
+<div class="kv-row"><div class="kv-key">Late pane</div><div class="kv-val">A result emitted after the watermark has passed, triggered by late-arriving data. Only emitted if allowed_lateness &gt; 0.</div></div>
+<div class="kv-row"><div class="kv-key">allowed_lateness</div><div class="kv-val">How long after the window closes Dataflow will still accept late data. Late data arriving after this duration is dropped (or sent to a side output).</div></div>
+<div class="kv-row"><div class="kv-key">Trigger</div><div class="kv-val">Defines when to emit intermediate or final results for a window. Default: emit once when watermark passes window end. Custom triggers can emit early (speculative) results.</div></div>
+<div class="code"># Handle late data up to 1 hour after window closes
+beam.WindowInto(
+    beam.window.FixedWindows(60),  # 1-minute windows
+    trigger=beam.trigger.AfterWatermark(
+        early=beam.trigger.AfterProcessingTime(30),  # speculative results every 30s
+        late=beam.trigger.AfterCount(1)              # emit on each late element
+    ),
+    allowed_lateness=Duration(seconds=3600),         # accept up to 1 hour late
+    accumulation_mode=beam.trigger.AccumulationMode.ACCUMULATING
+)</div>
+<div class="section-label">Accumulation modes</div>
+<div class="kv-row"><div class="kv-key">ACCUMULATING</div><div class="kv-val">Each new pane INCLUDES all previous elements. When a late element arrives, the new result contains old + new. Use when the downstream system can handle updates (e.g., MERGE into BigQuery).</div></div>
+<div class="kv-row"><div class="kv-key">DISCARDING</div><div class="kv-val">Each pane contains ONLY the new elements since the last pane fired. Use when you're appending deltas to a running total downstream.</div></div>
+<div class="kv-row"><div class="kv-key">RETRACTING (advanced)</div><div class="kv-val">Emits a retraction (negative) for the previous pane value, then emits the new value. Useful for exactly-once semantic systems.</div></div>
+<div class="alert alert-amber">Exam scenario: "A pipeline processes click events. Some events arrive 45 minutes late due to mobile network delays. The pipeline should still count them in the correct window." Answer: set allowed_lateness to at least 45 minutes (e.g., 1 hour to be safe) and use AfterWatermark with a late trigger + ACCUMULATING mode.</div>`
+      },
+      {
+        title: 'Triggers — controlling when results emit',
+        body: `<div class="kv-row"><div class="kv-key">AfterWatermark</div><div class="kv-val">Emit when the watermark passes the window end (default behavior). Optionally add early/late sub-triggers.</div></div>
+<div class="kv-row"><div class="kv-key">AfterProcessingTime</div><div class="kv-val">Emit after a certain amount of processing time has elapsed since the first element in the window arrived. Good for producing frequent speculative results.</div></div>
+<div class="kv-row"><div class="kv-key">AfterCount</div><div class="kv-val">Emit after N elements have been received in the window. Good for micro-batch behavior.</div></div>
+<div class="kv-row"><div class="kv-key">Repeatedly</div><div class="kv-val">Wrap another trigger to make it fire repeatedly. E.g., Repeatedly(AfterCount(100)) emits every 100 elements indefinitely.</div></div>
+<div class="kv-row"><div class="kv-key">AfterAny / AfterAll</div><div class="kv-val">Composite triggers — fire when any/all sub-triggers have fired. Build complex trigger logic.</div></div>
+<div class="alert alert-blue">Mental model: the watermark trigger is the "correct" answer for event-time accuracy. Processing-time triggers are for when you want frequent updates and don't care about event-time precision. Count-based triggers are for micro-batching.</div>`
+      }
+    ]
+  },
+  {
+    id: 'dataflow', label: 'Dataflow service', freq: 'Day 2',
+    topics: [
+      {
+        title: 'Dataflow architecture and job types',
+        body: `<p class="prose">Dataflow is Google's fully managed, auto-scaling service for executing Apache Beam pipelines. You write a Beam pipeline; Dataflow handles provisioning workers, optimizing the execution graph, scaling, and fault tolerance.</p>
+<div class="section-label">Batch vs streaming jobs</div>
+<div class="kv-row"><div class="kv-key">Batch (bounded PCollections)</div><div class="kv-val">Reads a finite dataset, processes it, writes output, then terminates. Workers are provisioned, run, and decommissioned. Billed per vCPU-hour and GB of memory used.</div></div>
+<div class="kv-row"><div class="kv-key">Streaming (unbounded PCollections)</div><div class="kv-val">Reads from an infinite source (Pub/Sub, Kafka). Runs indefinitely until manually stopped or drained. Workers can scale up and down based on throughput.</div></div>
+<div class="section-label">Dataflow execution optimizations</div>
+<div class="kv-row"><div class="kv-key">Fusion optimization</div><div class="kv-val">Dataflow automatically merges (fuses) consecutive transforms into a single execution stage to avoid unnecessary serialization/deserialization between steps. You cannot manually control fusion.</div></div>
+<div class="kv-row"><div class="kv-key">Autoscaling</div><div class="kv-val">Dataflow monitors backlog and processing throughput and automatically adds or removes workers. In streaming, it adjusts based on Pub/Sub backlog and throughput.</div></div>
+<div class="kv-row"><div class="kv-key">Dataflow Shuffle (batch)</div><div class="kv-val">Moves the shuffle operation (sort/group) off worker VMs onto a dedicated Google-managed shuffle service. Faster batch jobs, less worker memory pressure. Enabled by default for batch.</div></div>
+<div class="kv-row"><div class="kv-key">Streaming Engine</div><div class="kv-val">Moves windowing state and timers off worker VMs onto a Google-managed backend. Reduces worker memory, enables faster autoscaling, lowers cost. Enabled by default for new streaming jobs.</div></div>
+<div class="kv-row"><div class="kv-key">FlexRS (Flexible Resource Scheduling)</div><div class="kv-val">For batch jobs that can tolerate delay (up to 6 hours). Dataflow uses a mix of preemptible (Spot) and regular VMs, scheduled during periods of lower demand. Reduces cost by up to 40%.</div></div>
+<div class="alert alert-blue">Streaming Engine is a big exam topic. Key facts: it moves persistent state off workers (so workers are stateless), reduces per-worker memory requirements, allows faster scale-up/down, and is enabled by default on new streaming jobs. If a question describes memory pressure on streaming workers — enabling Streaming Engine is the fix.</div>`
+      },
+      {
+        title: 'Dataflow templates',
+        body: `<p class="prose">Templates allow non-engineers to launch pre-built Dataflow pipelines without writing code. You package a pipeline into a template stored in Cloud Storage, then launch it via Cloud Console, gcloud, or REST API with runtime parameters.</p>
+<div class="kv-row"><div class="kv-key">Classic templates</div><div class="kv-val">Pipeline graph is frozen at template build time. Parameters are passed at launch but the graph structure cannot change. Built using ValueProvider for runtime-configurable values.</div></div>
+<div class="kv-row"><div class="kv-key">Flex templates</div><div class="kv-val">Pipeline graph can be dynamic — determined at runtime based on parameters. Packaged as a Docker container. More flexible but slightly heavier launch overhead.</div></div>
+<div class="kv-row"><div class="kv-key">Google-provided templates</div><div class="kv-val">Google maintains a library of common templates: Pub/Sub to BigQuery, GCS to BigQuery, Datastream to BigQuery, BigQuery to GCS, Pub/Sub to GCS, etc. Know the most common ones for the exam.</div></div>
+<div class="alert alert-blue">Exam angle: if a scenario says "a non-technical team needs to run a data pipeline without writing code" or "launch the same pipeline daily with different parameters" — the answer is Dataflow templates (Flex templates for dynamic behavior, Classic for fixed graphs).</div>`
+      },
+      {
+        title: 'State and timers in streaming',
+        body: `<p class="prose">Stateful processing in Beam lets a DoFn maintain per-key, per-window state across elements. This is powerful for use cases like session tracking, deduplication, or joining a stream with slowly-changing reference data.</p>
+<div class="kv-row"><div class="kv-key">ValueState</div><div class="kv-val">Stores a single value per key. E.g., the last seen event for a user.</div></div>
+<div class="kv-row"><div class="kv-key">BagState</div><div class="kv-val">Stores a collection of values per key. E.g., all events for a user in a window.</div></div>
+<div class="kv-row"><div class="kv-key">CombiningState</div><div class="kv-val">Like BagState but with a combiner — stores a running aggregate. More efficient than BagState for sums/counts.</div></div>
+<div class="kv-row"><div class="kv-key">MapState</div><div class="kv-val">Key-value map per key. E.g., a small lookup table per user.</div></div>
+<div class="kv-row"><div class="kv-key">Timers</div><div class="kv-val">Schedule callbacks at a future event time or processing time. E.g., "if no event for user X in 30 minutes, emit a timeout event."</div></div>
+<div class="alert alert-amber">State is per-key, per-window. If your key has extremely high cardinality (e.g., individual device IDs in the millions), state can cause memory pressure. Streaming Engine mitigates this by moving state off workers — another reason it is the recommended default.</div>`
+      },
+      {
+        title: 'Dataflow vs Dataproc — the key decision',
+        body: `<p class="prose">This is one of the most tested decision questions on the exam. Both can process large datasets, but they serve different purposes.</p>
+<div class="kv-row"><div class="kv-key">Choose Dataflow when...</div><div class="kv-val">Building a NEW pipeline from scratch. Fully serverless (no cluster management). Streaming or batch. Prefers Apache Beam programming model. Auto-scaling without manual tuning. No Hadoop/Spark expertise required.</div></div>
+<div class="kv-row"><div class="kv-key">Choose Dataproc when...</div><div class="kv-val">Migrating EXISTING Hadoop or Spark jobs to GCP (lift-and-shift). Team already has Spark/PySpark/Hive code. Need Spark ML (MLlib). Using Hive, Pig, or Presto. Cluster needs custom libraries or OS-level configuration.</div></div>
+<div class="alert alert-red">The single most important rule: if the scenario mentions "existing Spark jobs," "existing Hadoop workloads," or "migrating from on-premises Hadoop cluster" — the answer is Dataproc, not Dataflow. If building something new with no legacy code — Dataflow is preferred.</div>
+<div class="kv-row"><div class="kv-key">Serverless Dataproc</div><div class="kv-val">A newer option: run Spark workloads without managing a cluster. Sits between classic Dataproc and Dataflow. Use when you want Spark's API (not Beam) but without cluster management.</div></div>`
+      }
+    ]
+  },
+  {
+    id: 'pubsub', label: 'Pub/Sub', freq: 'Day 2',
+    topics: [
+      {
+        title: 'Pub/Sub core concepts',
+        body: `<p class="prose">Cloud Pub/Sub is a fully managed, real-time messaging service. Publishers send messages to a topic; subscribers receive messages from subscriptions attached to that topic. Pub/Sub decouples producers from consumers — producers don't know or care who is consuming.</p>
+<div class="section-label">Core components</div>
+<div class="kv-row"><div class="kv-key">Topic</div><div class="kv-val">A named resource to which publishers send messages. A topic can have many subscriptions. One message published to a topic is delivered to ALL subscriptions on that topic (fan-out).</div></div>
+<div class="kv-row"><div class="kv-key">Subscription</div><div class="kv-val">A named resource representing a subscriber's stream of messages from a topic. Messages are delivered to exactly one subscriber per subscription (competing consumers). Multiple subscriptions = each gets a full copy of all messages.</div></div>
+<div class="kv-row"><div class="kv-key">Message</div><div class="kv-val">Up to 10MB of data plus optional attributes (key-value metadata). Has a messageId and publishTime assigned by Pub/Sub.</div></div>
+<div class="kv-row"><div class="kv-key">Acknowledgement (ack)</div><div class="kv-val">Subscribers must ack each message after processing it. An unacked message is redelivered after the ack deadline (default 10s, configurable up to 600s). This is how Pub/Sub ensures at-least-once delivery.</div></div>
+<div class="kv-row"><div class="kv-key">Ack deadline extension</div><div class="kv-val">For long-processing subscribers, extend the ack deadline programmatically to prevent premature redelivery.</div></div>
+<div class="alert alert-amber">Pub/Sub guarantees AT-LEAST-ONCE delivery, not exactly-once. A message can be delivered more than once (e.g., if a subscriber crashes after processing but before acking). Your consumer must be idempotent, or you must use Dataflow's exactly-once mode.</div>`
+      },
+      {
+        title: 'Push vs pull delivery',
+        body: `<div class="kv-row"><div class="kv-key">Pull delivery</div><div class="kv-val">Subscriber makes HTTP requests to Pub/Sub to fetch messages. Subscriber controls the rate. Can batch multiple messages per request. Best for high-throughput processing where the subscriber manages its own concurrency (e.g., Dataflow, a compute-intensive worker).</div></div>
+<div class="kv-row"><div class="kv-key">Push delivery</div><div class="kv-val">Pub/Sub sends HTTP POST requests to a subscriber-specified HTTPS endpoint. No polling needed. Best for lightweight event-driven handlers (e.g., Cloud Run, Cloud Functions, App Engine). Endpoint must be publicly accessible and return 2xx to ack.</div></div>
+<div class="kv-row"><div class="kv-key">BigQuery subscription</div><div class="kv-val">A special subscription type that writes messages directly to a BigQuery table without any subscriber code. Messages are inserted automatically. Schema must match.</div></div>
+<div class="kv-row"><div class="kv-key">Cloud Storage subscription</div><div class="kv-val">Writes messages to Cloud Storage as batched files. Useful for archival and downstream batch processing.</div></div>
+<div class="alert alert-blue">Exam pattern: "messages should trigger a Cloud Function on every event" → push subscription to Cloud Run/Cloud Function endpoint. "A Dataflow pipeline processes messages at high throughput" → pull subscription (Dataflow manages its own polling).</div>`
+      },
+      {
+        title: 'Ordering keys',
+        body: `<p class="prose">By default, Pub/Sub does NOT guarantee message ordering. Messages from the same publisher may arrive at different subscribers in any order. For use cases where order matters (e.g., database change events, sequential commands), use ordering keys.</p>
+<div class="kv-row"><div class="kv-key">Ordering key</div><div class="kv-val">A string attribute set on published messages. Pub/Sub guarantees that all messages with the same ordering key are delivered to the same subscriber in the order they were published.</div></div>
+<div class="kv-row"><div class="kv-key">Constraint</div><div class="kv-val">Ordering is only guaranteed within a single subscriber client. If you have multiple subscribers pulling from the same subscription, ordering is maintained per ordering key — Pub/Sub routes messages with the same key to the same client.</div></div>
+<div class="kv-row"><div class="kv-key">Performance impact</div><div class="kv-val">Enabling ordering reduces maximum throughput slightly because Pub/Sub must track per-key ordering state. Trade-off between order guarantee and throughput.</div></div>
+<div class="alert alert-amber">Ordering keys only work when message ordering is enabled on the subscription. You must enable it at subscription creation time — it cannot be changed after creation.</div>`
+      },
+      {
+        title: 'Dead-letter topics',
+        body: `<p class="prose">A dead-letter topic (DLT) is a separate Pub/Sub topic where Pub/Sub automatically moves messages that cannot be delivered after a configured number of delivery attempts. This prevents bad messages from blocking the main subscription indefinitely.</p>
+<div class="kv-row"><div class="kv-key">Max delivery attempts</div><div class="kv-val">Configure on the subscription (5–100). After this many failed deliveries (no ack received), the message is moved to the dead-letter topic.</div></div>
+<div class="kv-row"><div class="kv-key">Use case</div><div class="kv-val">Process poison pill messages (malformed data that always causes the subscriber to crash) separately. Inspect, fix, and republish them without affecting the main pipeline.</div></div>
+<div class="kv-row"><div class="kv-key">Monitoring</div><div class="kv-val">Use Cloud Monitoring to alert on dead-letter topic message count — a growing DLT means your subscriber is consistently failing on certain messages.</div></div>
+<div class="alert alert-blue">Exam scenario: "Some messages in the pipeline cause processing errors and keep being redelivered, blocking the queue." Answer: configure a dead-letter topic on the subscription with a max delivery attempt count. Failed messages route to the DLT for inspection without blocking good messages.</div>`
+      },
+      {
+        title: 'Message retention, replay, and seek',
+        body: `<div class="kv-row"><div class="kv-key">Message retention</div><div class="kv-val">Topics retain undelivered messages for 7 days by default (configurable). Subscriptions can also retain acknowledged messages for replay.</div></div>
+<div class="kv-row"><div class="kv-key">Seek</div><div class="kv-val">Move a subscription's cursor to a past timestamp or snapshot, causing Pub/Sub to redeliver all messages published after that point. Powerful for replaying events after a downstream outage.</div></div>
+<div class="kv-row"><div class="kv-key">Snapshot</div><div class="kv-val">A point-in-time capture of a subscription's state (which messages have been acked). You can seek to a snapshot to replay from an exact known state.</div></div>
+<div class="kv-row"><div class="kv-key">Exactly-once delivery (Preview)</div><div class="kv-val">When enabled on a subscription, Pub/Sub guarantees each message is delivered exactly once to a subscriber within a single subscription. Requires the subscriber to use the new exactly-once delivery API.</div></div>
+<div class="alert alert-blue">Exam pattern: "The downstream BigQuery table was accidentally corrupted. We need to reprocess the last 6 hours of events." Answer: use Pub/Sub Seek to rewind the subscription cursor to 6 hours ago, then let the Dataflow pipeline reprocess from that point.</div>`
+      },
+      {
+        title: 'Pub/Sub Lite vs standard Pub/Sub',
+        body: `<div class="kv-row"><div class="kv-key">Pub/Sub (Standard)</div><div class="kv-val">Serverless, global, auto-scaling. No capacity planning. Higher price per message. Messages can be delivered to any zone. Simpler operations.</div></div>
+<div class="kv-row"><div class="kv-key">Pub/Sub Lite</div><div class="kv-val">Zonal or regional service with pre-provisioned capacity (you buy throughput and storage). Lower price per message at high volume. Requires capacity planning. Messages stored in a single zone (zonal) or replicated (regional). Partition-based — similar to Kafka.</div></div>
+<div class="kv-row"><div class="kv-key">When to choose Lite</div><div class="kv-val">Very high, predictable throughput (hundreds of MB/s) where the cost savings justify capacity planning complexity. Otherwise, standard Pub/Sub is simpler and recommended.</div></div>
+<div class="alert alert-amber">Exam trap: Pub/Sub Lite is NOT a drop-in replacement for standard Pub/Sub. It has different client libraries, different semantics (partitions, offsets like Kafka), and requires provisioning. The exam will not trick you into choosing Lite unless the scenario explicitly mentions cost optimization at massive scale with predictable load.</div>`
+      }
+    ]
+  },
+  {
+    id: 'pipeline', label: 'The canonical pipeline', freq: 'Day 2',
+    topics: [
+      {
+        title: 'Pub/Sub → Dataflow → BigQuery — full pattern',
+        body: `<p class="prose">This three-service pipeline is the reference architecture for real-time data ingestion on GCP. It appears in roughly 20% of exam questions either directly or as a component of a larger architecture.</p>
+<div class="pipeline-flow">
+  <div class="pf-box">Producers<span class="pf-sub">apps, IoT, services</span></div>
+  <div class="pf-arrow">→</div>
+  <div class="pf-box highlight">Pub/Sub<span class="pf-sub">topic + subscription</span></div>
+  <div class="pf-arrow">→</div>
+  <div class="pf-box highlight">Dataflow<span class="pf-sub">Beam pipeline</span></div>
+  <div class="pf-arrow">→</div>
+  <div class="pf-box highlight">BigQuery<span class="pf-sub">Storage Write API</span></div>
+  <div class="pf-arrow">→</div>
+  <div class="pf-box">Consumers<span class="pf-sub">dashboards, ML, API</span></div>
+</div>
+<div class="section-label">Each hop explained</div>
+<div class="kv-row"><div class="kv-key">Pub/Sub (ingest layer)</div><div class="kv-val">Accepts high-throughput event streams from producers (mobile apps, IoT devices, backend services, Kafka connectors). Buffers messages reliably. Decouples producers from the processing layer. Handles bursts without losing data.</div></div>
+<div class="kv-row"><div class="kv-key">Dataflow (transform layer)</div><div class="kv-val">Reads from Pub/Sub subscription (pull). Applies transformations: parsing, filtering, enrichment, aggregation, joins. Handles late data via watermarks. Writes to BigQuery (or multiple sinks).</div></div>
+<div class="kv-row"><div class="kv-key">BigQuery (storage/analytics layer)</div><div class="kv-val">Receives rows via Dataflow's BigQuery streaming insert API (Storage Write API). Immediately queryable. Serves BI dashboards, ad-hoc analysis, ML training data.</div></div>
+<div class="section-label">BigQuery write modes from Dataflow</div>
+<div class="kv-row"><div class="kv-key">Storage Write API (recommended)</div><div class="kv-val">New high-performance API. Supports exactly-once semantics via committed streams. Higher throughput, lower cost than legacy streaming inserts.</div></div>
+<div class="kv-row"><div class="kv-key">Legacy streaming inserts</div><div class="kv-val">Older method. At-least-once — duplicates possible. Rows immediately queryable but higher cost. Avoid for new pipelines.</div></div>
+<div class="kv-row"><div class="kv-key">File loads (batch)</div><div class="kv-val">Dataflow writes files to GCS, then loads to BQ. Not immediately queryable but lowest cost. Use for batch pipelines.</div></div>
+<div class="alert alert-green">Exam shortcut: when you see a scenario describing real-time event ingestion → transformation → analytics, always map it to Pub/Sub → Dataflow → BigQuery unless there's a specific reason to deviate (e.g., existing Spark code → Dataproc instead of Dataflow).</div>`
+      },
+      {
+        title: 'Lambda vs Kappa architecture',
+        body: `<p class="prose">These are two architectural patterns for building data pipelines that serve both real-time and historical (batch) queries. The exam tests whether you know when to use each.</p>
+<div class="kv-row"><div class="kv-key">Lambda architecture</div><div class="kv-val">Maintains TWO separate processing paths: a batch layer (processes historical data, highest accuracy, higher latency) and a speed layer (processes real-time data, lower accuracy/completeness, low latency). A serving layer merges results from both. Example: Dataproc (batch) + Dataflow (stream) + BigQuery (serving).</div></div>
+<div class="kv-row"><div class="kv-key">Kappa architecture</div><div class="kv-val">ONE processing path — everything is treated as a stream. Historical reprocessing is done by replaying events from the messaging system (Pub/Sub replay/seek). Simpler to maintain (one codebase). Example: All data flows through Pub/Sub → Dataflow → BigQuery; reprocessing = seek Pub/Sub back in time.</div></div>
+<div class="kv-row"><div class="kv-key">When to use Lambda</div><div class="kv-val">When batch processing gives materially better results than stream processing (complex ML, multi-pass algorithms). When you need a guaranteed historical view that stream processing cannot produce accurately.</div></div>
+<div class="kv-row"><div class="kv-key">When to use Kappa</div><div class="kv-val">When your stream processing logic can accurately handle historical data too. Simpler operations — one pipeline to maintain. Modern recommendation for most GCP architectures using Dataflow.</div></div>
+<div class="alert alert-blue">Exam angle: Google's preferred pattern is Kappa (single streaming pipeline via Dataflow) because Dataflow handles both batch and streaming with the same Beam code. Lambda is the answer only when the scenario explicitly requires separate batch accuracy that streaming cannot achieve.</div>`
+      }
+    ]
+  },
+  {
+    id: 'scenarios', label: 'Exam scenarios', freq: 'Practice',
+    topics: [
+      {
+        title: 'High-frequency exam scenario patterns',
+        body: `<div class="section-label">Scenario set 1 — service selection</div>
+<div class="scenario-box"><div class="scenario-q">A company has 5 years of Spark ETL jobs running on-premises. They want to migrate to GCP with minimal code changes. Which service?</div><div class="scenario-a"><strong>Answer:</strong> Dataproc. The key phrase is "existing Spark jobs" and "minimal code changes." Dataflow uses Apache Beam, not Spark. Dataproc runs native Spark, making migration straightforward.</div></div>
+<div class="scenario-box"><div class="scenario-q">A startup is building a new real-time pipeline to process IoT sensor events, aggregate them per device per minute, and load to BigQuery for dashboards. No existing code. Which service?</div><div class="scenario-a"><strong>Answer:</strong> Dataflow. New pipeline, no legacy code, needs streaming + windowing + BQ write. Beam's FixedWindows(60) handles per-minute aggregation. Pub/Sub → Dataflow → BigQuery is the canonical answer.</div></div>
+<div class="scenario-box"><div class="scenario-q">A pipeline processes 10,000 messages/second from Pub/Sub. Workers are running out of memory during windowed aggregations. What is the fix?</div><div class="scenario-a"><strong>Answer:</strong> Enable Streaming Engine. It moves windowing state and timers off worker VMs to a managed backend, dramatically reducing per-worker memory consumption. Workers become stateless and can scale more freely.</div></div>
+<div class="section-label">Scenario set 2 — Pub/Sub behavior</div>
+<div class="scenario-box"><div class="scenario-q">A financial transactions system publishes events to Pub/Sub. The downstream processor must receive events for the same account in the exact order published. How?</div><div class="scenario-a"><strong>Answer:</strong> Use ordering keys: set the account_id as the ordering key on published messages, and enable message ordering on the subscription. Pub/Sub will deliver all messages with the same ordering key in order.</div></div>
+<div class="scenario-box"><div class="scenario-q">Some malformed messages in a Pub/Sub subscription are never successfully processed. They keep being redelivered and blocking pipeline progress. Solution?</div><div class="scenario-a"><strong>Answer:</strong> Configure a dead-letter topic on the subscription with a max delivery attempts limit (e.g., 5). After 5 failed deliveries, Pub/Sub automatically routes the message to the DLT. The main pipeline continues; the DLT can be inspected separately.</div></div>
+<div class="scenario-box"><div class="scenario-q">A downstream BigQuery table had a bug that corrupted 4 hours of data. The Dataflow pipeline has been fixed. How do you reprocess the last 4 hours?</div><div class="scenario-a"><strong>Answer:</strong> Use Pub/Sub Seek: set the subscription's seek timestamp to 4 hours ago. Pub/Sub will redeliver all messages from that point forward. The fixed Dataflow pipeline reprocesses them. This requires the topic to have message retention enabled for at least 4 hours.</div></div>
+<div class="section-label">Scenario set 3 — windowing and late data</div>
+<div class="scenario-box"><div class="scenario-q">A Dataflow streaming job counts page views per hour per user. Mobile app events sometimes arrive 2 hours late due to offline usage. The counts must still be correct. How?</div><div class="scenario-a"><strong>Answer:</strong> Use FixedWindows(3600) with allowed_lateness set to at least 2 hours (e.g., Duration(hours=2)). Use AfterWatermark trigger with a late=AfterCount(1) sub-trigger and ACCUMULATING mode so late elements update the window result. Write updated counts to BQ using MERGE/upsert.</div></div>
+<div class="scenario-box"><div class="scenario-q">A pipeline needs to detect when a user has NOT sent any event for 30 minutes (inactivity detection). Which Beam feature handles this?</div><div class="scenario-a"><strong>Answer:</strong> Use session windows with a gap_size of 30 minutes. When no events arrive for a key (user) within 30 minutes, the session window closes. You can fire a timer in a stateful DoFn to emit an "inactivity" event at the session close time.</div></div>
+<div class="section-label">Scenario set 4 — architecture patterns</div>
+<div class="scenario-box"><div class="scenario-q">A company runs a daily batch job AND a real-time stream. The batch job produces more accurate results but takes 8 hours. The stream gives approximate results within seconds. They want to serve both. What pattern?</div><div class="scenario-a"><strong>Answer:</strong> Lambda architecture. Batch layer (Dataproc or Dataflow batch) produces accurate daily results. Speed layer (Dataflow streaming) produces approximate real-time results. Serving layer (BigQuery) merges both. Users see real-time approximate data, which gets replaced by accurate batch results when ready.</div></div>
+<div class="scenario-box"><div class="scenario-q">An engineering team wants to simplify their architecture — they currently maintain both a Spark batch job and a Dataflow streaming job with separate codebases. The data source is Pub/Sub with 7-day retention. How do they simplify?</div><div class="scenario-a"><strong>Answer:</strong> Migrate to Kappa architecture using a single Dataflow pipeline. Since Pub/Sub retains 7 days of messages, historical reprocessing is done via Pub/Sub Seek. One Beam codebase handles both streaming and batch-mode reprocessing, eliminating the separate Spark job.</div></div>`
+      }
+    ]
+  }
+];
+
+const tabBar = document.getElementById('tabBar');
+const tabContent = document.getElementById('tabContent');
+
+TABS.forEach((tab, ti) => {
+  const btn = document.createElement('button');
+  btn.className = 'tab-btn' + (ti === 0 ? ' active' : '');
+  btn.textContent = tab.label;
+  btn.onclick = () => {
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.tab-section').forEach(s => s.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById('sec-' + ti).classList.add('active');
+  };
+  tabBar.appendChild(btn);
+
+  const sec = document.createElement('div');
+  sec.className = 'tab-section' + (ti === 0 ? ' active' : '');
+  sec.id = 'sec-' + ti;
+
+  tab.topics.forEach((topic, tpi) => {
+    const gid = `g${ti}_${tpi}`;
+    const cid = `c${ti}_${tpi}`;
+    const cardId = `${tab.id}_${tpi}`;
+    const div = document.createElement('div');
+    div.className = 'gap';
+    div.innerHTML = `
+      <div class="gap-header" onclick="tog('${gid}','${cid}')">
+        <div class="gap-num">${tpi + 1}</div>
+        <div class="gap-title">${topic.title}</div>
+        <span class="gap-tag">${tab.freq}</span>
+        <span class="chevron${tpi === 0 ? ' open' : ''}" id="${cid}">▶</span>
+      </div>
+      <div class="gap-body${tpi === 0 ? ' open' : ''}" id="${gid}">${topic.body}${buildNoteZone(cardId)}</div>`;
+    sec.appendChild(div);
+  });
+
+  tabContent.appendChild(sec);
+});
+
+/* init notes for all cards */
+TABS.forEach((tab, ti) => {
+  tab.topics.forEach((_, tpi) => { initNotes(`${tab.id}_${tpi}`); });
+});
+
+function tog(b, c) {
+  document.getElementById(b).classList.toggle('open');
+  document.getElementById(c).classList.toggle('open');
+}
+
+/* ── NOTES ENGINE ── */
+const NOTES_PREFIX = 'gcp_pde_notes_';
+function getCardNotes(id) {
+  try { const r = localStorage.getItem(NOTES_PREFIX + id); return r ? JSON.parse(r) : []; } catch(e) { return []; }
+}
+function saveCardNotes(id, notes) {
+  try { localStorage.setItem(NOTES_PREFIX + id, JSON.stringify(notes)); } catch(e) {}
+  try { window.storage && window.storage.set(NOTES_PREFIX + id, JSON.stringify(notes), false); } catch(e) {}
+}
+async function initNotes(id) {
+  try { if (window.storage) { const r = await window.storage.get(NOTES_PREFIX + id, false); if (r) { try { localStorage.setItem(NOTES_PREFIX + id, r.value); } catch(e) {} } } } catch(e) {}
+  renderNotes(id);
+}
+function formatTs(ts) {
+  const d = new Date(ts);
+  return d.toLocaleDateString('en-CA',{month:'short',day:'numeric',year:'numeric'})+' '+d.toLocaleTimeString('en-CA',{hour:'2-digit',minute:'2-digit'});
+}
+function escHtml(s) { return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\n/g,'<br>'); }
+function buildNoteZone(id) {
+  return `<div class="note-zone" id="notes-zone-${id}">
+    <div class="notes-list"></div>
+    <div class="note-form" style="display:none" data-edit-idx="">
+      <textarea placeholder="Add your study note…" rows="3"></textarea>
+      <div class="note-form-actions">
+        <button class="note-save-btn" onclick="saveNote('${id}')">save note</button>
+        <button class="note-cancel-btn" onclick="cancelNote('${id}')">cancel</button>
+      </div>
+    </div>
+    <button class="note-add-trigger" onclick="showNoteForm('${id}')">
+      <svg width="13" height="13" viewBox="0 0 13 13" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="1" y="1" width="11" height="11" rx="2"/><line x1="3.5" y1="4" x2="9.5" y2="4"/><line x1="3.5" y1="6.5" x2="9.5" y2="6.5"/><line x1="3.5" y1="9" x2="6.5" y2="9"/><line x1="9.5" y1="7.5" x2="9.5" y2="11"/><line x1="7.5" y1="9.5" x2="11.5" y2="9.5"/></svg>
+      add note
+    </button>
+  </div>`;
+}
+function renderNotes(id) {
+  const zone = document.getElementById('notes-zone-' + id);
+  if (!zone) return;
+  const notes = getCardNotes(id);
+  const list = zone.querySelector('.notes-list');
+  list.innerHTML = '';
+  notes.forEach((note, idx) => {
+    const item = document.createElement('div');
+    item.className = 'note-item';
+    item.innerHTML = `<div class="note-item-text">${escHtml(note.text)}</div>
+      <div class="note-item-footer">
+        <span class="note-ts">${formatTs(note.ts)}</span>
+        <div class="note-item-actions">
+          <button class="note-action-btn" onclick="editNote('${id}',${idx})">edit</button>
+          <button class="note-action-btn del" onclick="deleteNote('${id}',${idx})">delete</button>
+        </div>
+      </div>`;
+    list.appendChild(item);
+  });
+}
+function showNoteForm(id) {
+  const zone = document.getElementById('notes-zone-' + id);
+  const form = zone.querySelector('.note-form');
+  form.dataset.editIdx = '';
+  form.querySelector('textarea').value = '';
+  form.style.display = 'block';
+  zone.querySelector('.note-add-trigger').style.display = 'none';
+  form.querySelector('textarea').focus();
+}
+function cancelNote(id) {
+  const zone = document.getElementById('notes-zone-' + id);
+  zone.querySelector('.note-form').style.display = 'none';
+  zone.querySelector('.note-add-trigger').style.display = 'flex';
+}
+function saveNote(id) {
+  const zone = document.getElementById('notes-zone-' + id);
+  const form = zone.querySelector('.note-form');
+  const text = form.querySelector('textarea').value.trim();
+  if (!text) return;
+  const notes = getCardNotes(id);
+  const idx = form.dataset.editIdx;
+  if (idx !== '') { notes[parseInt(idx)] = {text, ts: notes[parseInt(idx)].ts}; }
+  else { notes.push({text, ts: Date.now()}); }
+  saveCardNotes(id, notes);
+  renderNotes(id);
+  form.style.display = 'none';
+  zone.querySelector('.note-add-trigger').style.display = 'flex';
+}
+function editNote(id, idx) {
+  const zone = document.getElementById('notes-zone-' + id);
+  const form = zone.querySelector('.note-form');
+  form.dataset.editIdx = idx;
+  form.querySelector('textarea').value = getCardNotes(id)[idx].text;
+  form.style.display = 'block';
+  zone.querySelector('.note-add-trigger').style.display = 'none';
+  form.querySelector('textarea').focus();
+}
+function deleteNote(id, idx) {
+  const notes = getCardNotes(id);
+  notes.splice(idx, 1);
+  saveCardNotes(id, notes);
+  renderNotes(id);
+}
+
+
+
+
+/* ════ SIDEBAR + BOTTOM BAR JS ════ */
+(function () {
+  var sidebar = document.getElementById('sidebar');
+  var btn     = document.getElementById('sbCollapseBtn');
+  var overlay = document.getElementById('sbOverlay');
+  if (!sidebar) return;
+
+  // ── Restore collapsed state from localStorage ──
+  var isCollapsed = localStorage.getItem('sbCollapsed') === '1';
+  if (isCollapsed) {
+    sidebar.classList.add('collapsed');
+    document.body.classList.add('sb-closed');
+  } else {
+    document.body.classList.add('sb-open');
+  }
+
+  // ── Mark active page ──
+  var path    = window.location.pathname.split('/').pop().replace('.html', '') || 'index';
+  var hash    = window.location.hash.replace('#', '');
+
+  // Activate module links
+  document.querySelectorAll('.sb-mod-link[data-page]').forEach(function (el) {
+    if (el.getAttribute('data-page') === path) el.classList.add('active');
+  });
+  // Activate bottom bar items
+  document.querySelectorAll('.bb-item[data-page]').forEach(function (el) {
+    if (el.getAttribute('data-page') === path) el.classList.add('active');
+  });
+
+  // ── Open subtopic group for current page ──
+  var grp = document.querySelector('.sb-mod-group[data-group="' + path + '"]');
+  if (grp) {
+    grp.classList.add('open');
+    // Highlight active subtopic if hash present
+    if (hash) {
+      var sub = grp.querySelector('.sb-sub-link[data-tab="' + hash + '"]');
+      if (sub) sub.classList.add('active');
+    }
+  }
+
+  // ── Expand/collapse on group header click (toggle subtopics) ──
+  document.querySelectorAll('.sb-mod-group').forEach(function (grp) {
+    var link = grp.querySelector(':scope > .sb-mod-link');
+    if (!link) return;
+    link.addEventListener('click', function (e) {
+      // Only intercept the expand toggle, not navigation to other pages
+      var targetPage = link.getAttribute('data-page');
+      if (targetPage && targetPage !== path) return; // let it navigate
+      // Same page or no page change — toggle subtopics
+      e.preventDefault();
+      grp.classList.toggle('open');
+    });
+  });
+
+  // ── Hash change: update active subtopic ──
+  window.addEventListener('hashchange', function () {
+    var h = window.location.hash.replace('#', '');
+    document.querySelectorAll('.sb-sub-link').forEach(function (el) { el.classList.remove('active'); });
+    if (h && grp) {
+      var sub = grp.querySelector('.sb-sub-link[data-tab="' + h + '"]');
+      if (sub) sub.classList.add('active');
+    }
+  });
+})();
+
+function toggleSidebar() {
+  var sidebar = document.getElementById('sidebar');
+  if (!sidebar) return;
+  var collapsed = sidebar.classList.toggle('collapsed');
+  document.body.classList.toggle('sb-open',   !collapsed);
+  document.body.classList.toggle('sb-closed', collapsed);
+  localStorage.setItem('sbCollapsed', collapsed ? '1' : '0');
+}
+function closeSidebar() {
+  // no-op on desktop; overlay not shown
+}
+/* ════ END SIDEBAR JS ════ */
+
+</script>
+</body>
+</html>

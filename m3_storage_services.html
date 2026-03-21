@@ -1,0 +1,1352 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Module 3 — Storage Services</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap');
+
+/* ── DARK THEME ── */
+[data-theme="dark"] {
+  --bg: #0d0f14;
+  --surface: #161920;
+  --surface2: #1e2230;
+  --border: #2a2f3d;
+  --text: #e8eaf0;
+  --muted: #7a8099;
+  --dim: #4a5168;
+  --prose-color: #c0c4d4;
+  --kv-val-color: #9aa0b8;
+  --code-color: #c8d0e8;
+
+  --accent: #4dff91;
+  --accent-bg: #091a11;
+  --accent-border: #0f4024;
+  --accent-text: #4dff91;
+  --num-fg: #0d0f14;
+
+  --alert-info-bg: #091a11;    --alert-info-text: #99ffcc;   --alert-info-border: #4dff91;
+  --alert-warn-bg: #1a1000;    --alert-warn-text: #ffd699;   --alert-warn-border: #ffb84d;
+  --alert-red-bg:  #1a0a0a;    --alert-red-text:  #ffaaaa;   --alert-red-border:  #ff4d4d;
+  --alert-green-bg:#091a11;    --alert-green-text:#99ffcc;   --alert-green-border:#4dff91;
+
+  --code-bg: #0a0c10;
+  --scenario-bg: #1e2230;
+  --section-label-color: #2a6641;
+  --toggle-track-on: #0f4024;
+  --toggle-border: #0f4024;
+  --toggle-knob: #4dff91;
+  --toggle-knob-shadow: rgba(77,255,145,0.3);
+  --sun-opacity: 0.35;
+  --moon-opacity: 1;
+
+  --mini-bg: #1e2230;
+  --mini-good-bg: #091a11;
+  --mini-bad-bg: #1a0a0a;
+  --mini-good-text: #4dff91;
+  --mini-bad-text: #ff4d4d;
+  --table-head-color: #4a5168;
+  --table-row-border: #1e2230;
+  --table-td-color: #9aa0b8;
+  --decision-row-bg: #1e2230;
+  --decision-badge-text: #0d0f14;
+}
+
+/* ── LIGHT THEME ── */
+[data-theme="light"] {
+  --bg: #f7f8f4;
+  --surface: #ffffff;
+  --surface2: #f0f2ec;
+  --border: #dde0d8;
+  --text: #1c1f18;
+  --muted: #5a6052;
+  --dim: #9aa090;
+  --prose-color: #4a5240;
+  --kv-val-color: #5a6052;
+  --code-color: #2a3820;
+
+  --accent: #1e8a45;
+  --accent-bg: #eaf6ee;
+  --accent-border: #9ed4b2;
+  --accent-text: #1e8a45;
+  --num-fg: #ffffff;
+
+  --alert-info-bg: #eaf6ee;    --alert-info-text: #155c2e;   --alert-info-border: #1e8a45;
+  --alert-warn-bg: #fdf6e8;    --alert-warn-text: #7a4400;   --alert-warn-border: #c08020;
+  --alert-red-bg:  #fdf0f0;    --alert-red-text:  #8a2020;   --alert-red-border:  #c04040;
+  --alert-green-bg:#eaf6ee;    --alert-green-text:#155c2e;   --alert-green-border:#1e8a45;
+
+  --code-bg: #f0f2ec;
+  --scenario-bg: #f4f6f0;
+  --section-label-color: #1e8a45;
+  --toggle-track-on: #1e8a45;
+  --toggle-border: #9ed4b2;
+  --toggle-knob: #ffffff;
+  --toggle-knob-shadow: rgba(0,0,0,0.15);
+  --sun-opacity: 1;
+  --moon-opacity: 0.4;
+
+  --mini-bg: #f0f2ec;
+  --mini-good-bg: #eaf6ee;
+  --mini-bad-bg: #fdf0f0;
+  --mini-good-text: #155c2e;
+  --mini-bad-text: #8a2020;
+  --table-head-color: #9aa090;
+  --table-row-border: #f0f2ec;
+  --table-td-color: #5a6052;
+  --decision-row-bg: #f0f2ec;
+  --decision-badge-text: #ffffff;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: 'IBM Plex Sans', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  padding: 28px 20px;
+  max-width: 860px;
+  margin: 0 auto;
+  line-height: 1.6;
+  transition: background 0.3s, color 0.3s;
+}
+
+/* ── PAGE HEADER ── */
+.page-header {
+  margin-bottom: 24px;
+  padding-bottom: 18px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  transition: border-color 0.3s;
+}
+.header-text .label {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 11px;
+  color: var(--accent);
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  margin-bottom: 7px;
+}
+.header-text h1 { font-size: 22px; font-weight: 600; color: var(--text); margin-bottom: 4px; }
+.header-text p  { font-size: 13px; color: var(--muted); }
+
+/* ── THEME TOGGLE ── */
+.theme-toggle {
+  display: flex; align-items: center; gap: 7px;
+  flex-shrink: 0; margin-top: 2px; cursor: pointer; user-select: none;
+}
+.toggle-icon-sun, .toggle-icon-moon { font-size: 14px; line-height: 1; transition: opacity 0.3s; }
+.toggle-icon-sun  { opacity: var(--sun-opacity); }
+.toggle-icon-moon { opacity: var(--moon-opacity); }
+.toggle-track {
+  position: relative; width: 42px; height: 24px;
+  background: var(--toggle-track-on); border-radius: 99px;
+  border: 1px solid var(--toggle-border);
+  transition: background 0.3s, border-color 0.3s; flex-shrink: 0;
+}
+.toggle-knob {
+  position: absolute; top: 3px; left: 3px;
+  width: 16px; height: 16px; border-radius: 50%;
+  background: var(--toggle-knob);
+  box-shadow: 0 1px 4px var(--toggle-knob-shadow);
+  transition: transform 0.25s cubic-bezier(.4,0,.2,1), background 0.3s;
+}
+[data-theme="light"] .toggle-knob { transform: translateX(18px); }
+
+/* ── TAB BAR ── */
+.tab-bar {
+  display: flex; gap: 6px; flex-wrap: wrap;
+  margin-bottom: 20px; position: sticky; top: 0;
+  background: var(--bg); padding: 10px 0; z-index: 10;
+  border-bottom: 1px solid var(--border);
+  transition: background 0.3s, border-color 0.3s;
+}
+.tab-btn {
+  font-family: 'IBM Plex Mono', monospace; font-size: 11px;
+  padding: 5px 12px; border-radius: 99px;
+  border: 1px solid var(--border); background: transparent;
+  color: var(--muted); cursor: pointer; white-space: nowrap;
+  transition: all 0.15s; letter-spacing: 0.03em;
+}
+.tab-btn:hover { background: var(--surface2); color: var(--text); }
+.tab-btn.active {
+  background: var(--accent-bg); color: var(--accent-text);
+  border-color: var(--accent-border); font-weight: 600;
+}
+.tab-section { display: none; }
+.tab-section.active { display: block; }
+
+/* ── GAP CARDS ── */
+.gap {
+  border: 1px solid var(--border); border-radius: 10px;
+  margin-bottom: 14px; overflow: hidden; background: var(--surface);
+  transition: background 0.3s, border-color 0.3s;
+}
+.gap-header {
+  display: flex; align-items: center; gap: 10px;
+  padding: 13px 16px; cursor: pointer; transition: background 0.15s;
+}
+.gap-header:hover { background: var(--surface2); }
+.gap-num {
+  font-family: 'IBM Plex Mono', monospace; font-size: 11px; font-weight: 600;
+  color: var(--num-fg); background: var(--accent);
+  width: 22px; height: 22px; border-radius: 5px;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0; transition: background 0.3s, color 0.3s;
+}
+.gap-title { flex: 1; font-size: 13.5px; font-weight: 600; color: var(--text); }
+.gap-tag {
+  font-family: 'IBM Plex Mono', monospace; font-size: 10px;
+  padding: 2px 8px; border-radius: 99px; font-weight: 600; letter-spacing: 0.04em;
+  background: var(--accent-bg); color: var(--accent-text);
+  border: 1px solid var(--accent-border); white-space: nowrap;
+  transition: all 0.3s;
+}
+.chevron { font-size: 10px; color: var(--dim); transition: transform 0.2s; margin-left: 4px; flex-shrink: 0; }
+.chevron.open { transform: rotate(90deg); }
+.gap-body { display: none; border-top: 1px solid var(--border); padding: 16px 18px; transition: border-color 0.3s; }
+.gap-body.open { display: block; }
+
+/* ── CONTENT ── */
+.section-label {
+  font-family: 'IBM Plex Mono', monospace; font-size: 10px;
+  letter-spacing: 0.12em; text-transform: uppercase;
+  color: var(--section-label-color); margin: 14px 0 7px; opacity: 0.85;
+}
+.section-label:first-child { margin-top: 0; }
+
+p.prose { font-size: 13px; color: var(--prose-color); line-height: 1.7; margin-bottom: 8px; }
+p.prose:last-child { margin-bottom: 0; }
+
+.kv-row { display: flex; gap: 12px; margin-bottom: 8px; font-size: 13px; }
+.kv-key { font-weight: 600; color: var(--text); min-width: 185px; flex-shrink: 0; }
+.kv-val { color: var(--kv-val-color); line-height: 1.55; }
+
+.alert { padding: 10px 14px; font-size: 12.5px; line-height: 1.6; border-left: 3px solid; margin: 10px 0; transition: background 0.3s, color 0.3s; }
+.alert-blue   { background: var(--alert-info-bg);  color: var(--alert-info-text);  border-color: var(--alert-info-border); }
+.alert-amber  { background: var(--alert-warn-bg);  color: var(--alert-warn-text);  border-color: var(--alert-warn-border); }
+.alert-red    { background: var(--alert-red-bg);   color: var(--alert-red-text);   border-color: var(--alert-red-border); }
+.alert-green  { background: var(--alert-green-bg); color: var(--alert-green-text); border-color: var(--alert-green-border); }
+
+.code {
+  font-family: 'IBM Plex Mono', monospace; font-size: 11.5px;
+  background: var(--code-bg); border: 1px solid var(--border);
+  border-radius: 6px; padding: 12px 14px; color: var(--code-color);
+  line-height: 1.65; white-space: pre; overflow-x: auto; margin: 8px 0;
+  transition: background 0.3s, color 0.3s, border-color 0.3s;
+}
+
+/* ── MINI GRID ── */
+.g2 { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin: 8px 0; }
+.g3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin: 8px 0; }
+.mini {
+  background: var(--mini-bg); border-radius: 8px; padding: 10px 12px;
+  border: 1px solid var(--border); transition: background 0.3s, border-color 0.3s;
+}
+.mini.good { background: var(--mini-good-bg); border-color: var(--accent-border); }
+.mini.bad  { background: var(--mini-bad-bg);  border-color: var(--alert-red-border); }
+.mt { font-size: 12px; font-weight: 600; margin-bottom: 4px; color: var(--text); }
+.mini.good .mt { color: var(--mini-good-text); }
+.mini.bad  .mt { color: var(--mini-bad-text); }
+.mb { font-size: 12px; color: var(--kv-val-color); line-height: 1.5; }
+
+/* ── DECISION TABLE ── */
+.decision-table { background: var(--surface2); border-radius: 8px; padding: 12px 14px; margin: 8px 0; transition: background 0.3s; }
+.decision-row {
+  display: flex; align-items: center; gap: 10px;
+  margin-bottom: 7px; font-size: 13px;
+}
+.decision-row:last-child { margin-bottom: 0; }
+.decision-q { flex: 1; color: var(--kv-val-color); font-size: 12.5px; line-height: 1.45; }
+.decision-a {
+  font-family: 'IBM Plex Mono', monospace; font-weight: 600; font-size: 11px;
+  white-space: nowrap; padding: 3px 10px; border-radius: 99px;
+}
+
+/* ── COMPARISON TABLE ── */
+.cmp-wrap { overflow-x: auto; margin: 10px 0; }
+.cmp { width: 100%; border-collapse: collapse; font-size: 12px; }
+.cmp th {
+  padding: 7px 10px; text-align: left; font-weight: 600; font-size: 11px;
+  text-transform: uppercase; letter-spacing: 0.05em;
+  color: var(--table-head-color); border-bottom: 1px solid var(--border);
+  font-family: 'IBM Plex Mono', monospace;
+}
+.cmp td {
+  padding: 7px 10px; border-bottom: 1px solid var(--table-row-border);
+  vertical-align: top; color: var(--table-td-color); line-height: 1.5; font-size: 12px;
+  transition: color 0.3s, border-color 0.3s;
+}
+.cmp td:first-child { font-weight: 600; color: var(--text); white-space: nowrap; }
+.cmp tr:last-child td { border-bottom: none; }
+
+/* ── SCENARIO BOX ── */
+.scenario-box {
+  border: 1px solid var(--border); border-radius: 8px;
+  padding: 12px 14px; margin-bottom: 10px;
+  background: var(--scenario-bg); transition: background 0.3s, border-color 0.3s;
+}
+.scenario-q { font-size: 13px; font-weight: 600; color: var(--text); margin-bottom: 7px; line-height: 1.5; }
+.scenario-a { font-size: 12.5px; color: var(--kv-val-color); line-height: 1.6; }
+.scenario-a strong { color: var(--accent); font-weight: 600; }
+
+/* ── MOBILE ── */
+@media (max-width: 600px) {
+  body { padding: 14px 12px; }
+  .page-header { flex-direction: column; gap: 12px; }
+  .header-text h1 { font-size: 18px; }
+  .tab-bar { gap: 5px; padding: 8px 0; }
+  .tab-btn { font-size: 10px; padding: 4px 9px; }
+  .gap-header { padding: 11px 13px; gap: 8px; }
+  .gap-title { font-size: 12.5px; }
+  .gap-tag { display: none; }
+  .gap-body { padding: 13px 14px; }
+  .kv-row { flex-direction: column; gap: 3px; }
+  .kv-key { min-width: unset; }
+  .g2, .g3 { grid-template-columns: 1fr; }
+  .decision-row { flex-direction: column; align-items: flex-start; gap: 4px; }
+  .code { font-size: 10.5px; padding: 10px 11px; }
+}
+
+
+
+
+/* ════════════════════════════════════════════════════════
+   SIDEBAR + BOTTOM BAR
+════════════════════════════════════════════════════════ */
+:root { --sb-w: 220px; --sb-w-collapsed: 48px; --bb-h: 56px; }
+
+[data-theme="dark"] {
+  --sb-bg: #0f1118;
+  --sb-border: #1e2230;
+  --sb-hover: #1a1f2e;
+  --sb-active-bg: #091a11;
+  --sb-active-text: #4dff91;
+  --sb-active-border: #0f4024;
+  --sb-text: #7a8099;
+  --sb-text-strong: #c0c4d4;
+  --sb-num: #3a3f52;
+  --sb-badge-bg: #091a11;
+  --sb-badge-text: #4dff91;
+  --sb-badge-border: #0f4024;
+  --sb-sub-text: #5a6070;
+  --sb-sub-hover: #1e2230;
+  --sb-section: #252b3a;
+  --sb-collapse-color: #4a5168;
+  --sb-overlay-bg: rgba(0,0,0,0.55);
+  --bb-bg: #0f1118;
+  --bb-border: #1e2230;
+  --bb-text: #5a6070;
+  --bb-active: #4dff91;
+}
+[data-theme="light"] {
+  --sb-bg: #ffffff;
+  --sb-border: #e4e8e0;
+  --sb-hover: #f4f6f0;
+  --sb-active-bg: #eaf6ee;
+  --sb-active-text: #1e8a45;
+  --sb-active-border: #9ed4b2;
+  --sb-text: #6a7060;
+  --sb-text-strong: #2a3020;
+  --sb-num: #c0c8b8;
+  --sb-badge-bg: #eaf6ee;
+  --sb-badge-text: #1e8a45;
+  --sb-badge-border: #9ed4b2;
+  --sb-sub-text: #9aa090;
+  --sb-sub-hover: #f0f4ec;
+  --sb-section: #eaeee6;
+  --sb-collapse-color: #b0b8a8;
+  --sb-overlay-bg: rgba(0,0,0,0.25);
+  --bb-bg: #ffffff;
+  --bb-border: #e4e8e0;
+  --bb-text: #9aa090;
+  --bb-active: #1e8a45;
+}
+
+/* ── LAYOUT SHIFT ── */
+body { transition: padding-left .25s cubic-bezier(.4,0,.2,1); }
+body.sb-open   { padding-left: var(--sb-w) !important; }
+body.sb-closed { padding-left: var(--sb-w-collapsed) !important; }
+
+/* ── SIDEBAR ── */
+.sidebar {
+  position: fixed;
+  top: 0; left: 0;
+  width: var(--sb-w);
+  height: 100vh;
+  background: var(--sb-bg);
+  border-right: 1px solid var(--sb-border);
+  display: flex;
+  flex-direction: column;
+  z-index: 200;
+  overflow: hidden;
+  transition: width .25s cubic-bezier(.4,0,.2,1), background .3s, border-color .3s;
+}
+.sidebar.collapsed { width: var(--sb-w-collapsed); }
+.sidebar.collapsed .sb-mod-label,
+.sidebar.collapsed .sb-expand-icon,
+.sidebar.collapsed .sb-brand,
+.sidebar.collapsed .sb-subtopics { display: none; }
+.sidebar.collapsed .sb-mod-num,
+.sidebar.collapsed .sb-mod-icon { margin: 0 auto; }
+.sidebar.collapsed .sb-mod-link { justify-content: center; padding: 10px 0; }
+.sidebar.collapsed .sb-nav { padding-top: 4px; }
+
+/* ── SIDEBAR HEAD ── */
+.sb-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 14px 12px;
+  border-bottom: 1px solid var(--sb-border);
+  flex-shrink: 0;
+  min-height: 52px;
+  gap: 8px;
+}
+.sb-brand {
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  overflow: hidden;
+}
+.sb-badge {
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 10px;
+  font-weight: 600;
+  background: var(--sb-badge-bg);
+  color: var(--sb-badge-text);
+  border: 1px solid var(--sb-badge-border);
+  border-radius: 5px;
+  padding: 3px 7px;
+  letter-spacing: .06em;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+.sb-collapse-btn {
+  background: none;
+  border: 1px solid var(--sb-border);
+  border-radius: 6px;
+  color: var(--sb-collapse-color);
+  font-size: 10px;
+  cursor: pointer;
+  padding: 4px 7px;
+  line-height: 1;
+  transition: all .15s;
+  flex-shrink: 0;
+  white-space: nowrap;
+}
+.sb-collapse-btn:hover { background: var(--sb-hover); color: var(--sb-text-strong); }
+.sidebar.collapsed .sb-collapse-btn { transform: rotate(180deg); }
+
+/* ── SIDEBAR NAV ── */
+.sb-nav {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 8px 0 24px;
+  scrollbar-width: thin;
+  scrollbar-color: var(--sb-border) transparent;
+}
+
+.sb-mod-link {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px 8px 14px;
+  text-decoration: none;
+  color: var(--sb-text);
+  font-size: 12.5px;
+  font-weight: 500;
+  border-left: 2px solid transparent;
+  transition: background .1s, color .1s, border-color .1s;
+  line-height: 1.3;
+}
+.sb-mod-link:hover {
+  background: var(--sb-hover);
+  color: var(--sb-text-strong);
+}
+.sb-mod-link.active {
+  background: var(--sb-active-bg);
+  color: var(--sb-active-text);
+  border-left-color: var(--sb-active-border);
+  font-weight: 600;
+}
+.sb-mod-num {
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 10px;
+  color: var(--sb-num);
+  flex-shrink: 0;
+  width: 20px;
+  text-align: right;
+  transition: color .1s;
+}
+.sb-mod-icon { font-size: 13px; flex-shrink: 0; width: 20px; text-align: center; }
+.sb-mod-label { flex: 1; }
+.sb-mod-link.active .sb-mod-num { color: var(--sb-active-text); opacity: .55; }
+
+.sb-expand-icon {
+  font-size: 9px;
+  color: var(--sb-num);
+  flex-shrink: 0;
+  transition: transform .18s;
+}
+.sb-mod-group.open > .sb-mod-link .sb-expand-icon { transform: rotate(90deg); }
+
+/* ── SUBTOPICS ── */
+.sb-subtopics {
+  display: none;
+  flex-direction: column;
+  border-left: 1px solid var(--sb-border);
+  margin: 0 0 2px 28px;
+}
+.sb-mod-group.open > .sb-subtopics { display: flex; }
+
+.sb-sub-link {
+  display: block;
+  padding: 5px 10px 5px 12px;
+  font-size: 11.5px;
+  color: var(--sb-sub-text);
+  text-decoration: none;
+  border-left: 2px solid transparent;
+  transition: background .1s, color .1s, border-color .1s;
+  line-height: 1.4;
+}
+.sb-sub-link:hover {
+  background: var(--sb-sub-hover);
+  color: var(--sb-text-strong);
+}
+.sb-sub-link.active {
+  color: var(--sb-active-text);
+  border-left-color: var(--sb-active-border);
+  font-weight: 600;
+}
+
+/* ── OVERLAY ── */
+.sb-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: var(--sb-overlay-bg);
+  z-index: 199;
+}
+
+/* ════════════════════════════════════════════════════════
+   MOBILE — BOTTOM TAB BAR (≤768px)
+════════════════════════════════════════════════════════ */
+.bottom-bar {
+  display: none;
+}
+
+@media (max-width: 768px) {
+  /* hide desktop sidebar entirely */
+  .sidebar, .sb-overlay { display: none !important; }
+
+  /* undo layout shift */
+  body.sb-open, body.sb-closed { padding-left: 0 !important; }
+
+  /* push content up so bottom bar doesn't overlap */
+  body { padding-bottom: calc(var(--bb-h) + 4px) !important; }
+
+  .bottom-bar {
+    display: flex;
+    position: fixed;
+    bottom: 0; left: 0; right: 0;
+    height: var(--bb-h);
+    background: var(--bb-bg);
+    border-top: 1px solid var(--bb-border);
+    z-index: 200;
+    align-items: stretch;
+    transition: background .3s, border-color .3s;
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+  .bottom-bar::-webkit-scrollbar { display: none; }
+
+  .bb-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 3px;
+    flex: 1;
+    min-width: 52px;
+    text-decoration: none;
+    color: var(--bb-text);
+    padding: 6px 4px;
+    border-top: 2px solid transparent;
+    transition: color .15s, border-color .15s;
+  }
+  .bb-item.active {
+    color: var(--bb-active);
+    border-top-color: var(--bb-active);
+  }
+  .bb-icon {
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 12px;
+    font-weight: 600;
+    line-height: 1;
+  }
+  .bb-label {
+    font-size: 9px;
+    font-family: "IBM Plex Mono", monospace;
+    letter-spacing: .02em;
+    white-space: nowrap;
+  }
+
+  /* keep tab-bar sticky above bottom bar on module pages */
+  .tab-bar { bottom: var(--bb-h) !important; }
+}
+
+/* also hide toggle button from index page header on desktop
+   (hamburger only needed on mobile, but we removed that approach) */
+.sb-menu-btn { display: none; }
+/* ════════════════════════════════════════════════════════
+   END SIDEBAR + BOTTOM BAR
+════════════════════════════════════════════════════════ */
+
+</style>
+</head>
+<body>
+<!-- ═══ SIDEBAR ═══ -->
+<div class="sb-overlay" id="sbOverlay" onclick="closeSidebar()"></div>
+<aside class="sidebar" id="sidebar">
+  <div class="sb-head">
+    <a href="index.html" class="sb-brand">
+      <span class="sb-badge">GCP PDE</span>
+    </a>
+    <button class="sb-collapse-btn" id="sbCollapseBtn" onclick="toggleSidebar()" title="Collapse sidebar">◀</button>
+  </div>
+  <div class="sb-nav">
+    <a href="index.html" class="sb-mod-link" data-page="index">
+      <span class="sb-mod-icon">⌂</span>
+      <span class="sb-mod-label">Home</span>
+    </a>
+    <div class="sb-mod-group" data-group="m1_bigquery">
+      <a href="m1_bigquery.html" class="sb-mod-link" data-page="m1_bigquery">
+        <span class="sb-mod-num">01</span>
+        <span class="sb-mod-label">BigQuery</span>
+        <span class="sb-expand-icon">▸</span>
+      </a>
+      <div class="sb-subtopics" id="sub-m1_bigquery">
+        <a href="m1_bigquery.html#partitioning" class="sb-sub-link" data-page="m1_bigquery" data-tab="partitioning">Partitioning & clustering</a>
+        <a href="m1_bigquery.html#pricing" class="sb-sub-link" data-page="m1_bigquery" data-tab="pricing">Pricing & slots</a>
+        <a href="m1_bigquery.html#bqml" class="sb-sub-link" data-page="m1_bigquery" data-tab="bqml">BigQuery ML</a>
+        <a href="m1_bigquery.html#security" class="sb-sub-link" data-page="m1_bigquery" data-tab="security">Security & access control</a>
+        <a href="m1_bigquery.html#external" class="sb-sub-link" data-page="m1_bigquery" data-tab="external">External tables & BigLake</a>
+        <a href="m1_bigquery.html#advanced" class="sb-sub-link" data-page="m1_bigquery" data-tab="advanced">Advanced SQL & features</a>
+        <a href="m1_bigquery.html#scenarios" class="sb-sub-link" data-page="m1_bigquery" data-tab="scenarios">Exam scenarios</a>
+      </div>
+    </div>
+    <div class="sb-mod-group" data-group="m2_dataflow_pubsub">
+      <a href="m2_dataflow_pubsub.html" class="sb-mod-link" data-page="m2_dataflow_pubsub">
+        <span class="sb-mod-num">02</span>
+        <span class="sb-mod-label">Dataflow & Pub/Sub</span>
+        <span class="sb-expand-icon">▸</span>
+      </a>
+      <div class="sb-subtopics" id="sub-m2_dataflow_pubsub">
+        <a href="m2_dataflow_pubsub.html#beam" class="sb-sub-link" data-page="m2_dataflow_pubsub" data-tab="beam">Apache Beam model</a>
+        <a href="m2_dataflow_pubsub.html#windowing" class="sb-sub-link" data-page="m2_dataflow_pubsub" data-tab="windowing">Windowing</a>
+        <a href="m2_dataflow_pubsub.html#dataflow" class="sb-sub-link" data-page="m2_dataflow_pubsub" data-tab="dataflow">Dataflow service</a>
+        <a href="m2_dataflow_pubsub.html#pubsub" class="sb-sub-link" data-page="m2_dataflow_pubsub" data-tab="pubsub">Pub/Sub</a>
+        <a href="m2_dataflow_pubsub.html#pipeline" class="sb-sub-link" data-page="m2_dataflow_pubsub" data-tab="pipeline">The canonical pipeline</a>
+        <a href="m2_dataflow_pubsub.html#scenarios" class="sb-sub-link" data-page="m2_dataflow_pubsub" data-tab="scenarios">Exam scenarios</a>
+      </div>
+    </div>
+    <div class="sb-mod-group" data-group="m3_storage_services">
+      <a href="m3_storage_services.html" class="sb-mod-link" data-page="m3_storage_services">
+        <span class="sb-mod-num">03</span>
+        <span class="sb-mod-label">Storage Services</span>
+        <span class="sb-expand-icon">▸</span>
+      </a>
+      <div class="sb-subtopics" id="sub-m3_storage_services">
+        <a href="m3_storage_services.html#decision" class="sb-sub-link" data-page="m3_storage_services" data-tab="decision">Decision Framework</a>
+        <a href="m3_storage_services.html#bigtable" class="sb-sub-link" data-page="m3_storage_services" data-tab="bigtable">Bigtable</a>
+        <a href="m3_storage_services.html#spanner" class="sb-sub-link" data-page="m3_storage_services" data-tab="spanner">Cloud Spanner</a>
+        <a href="m3_storage_services.html#firestore" class="sb-sub-link" data-page="m3_storage_services" data-tab="firestore">Firestore</a>
+        <a href="m3_storage_services.html#cloudsql" class="sb-sub-link" data-page="m3_storage_services" data-tab="cloudsql">Cloud SQL</a>
+        <a href="m3_storage_services.html#memorystore" class="sb-sub-link" data-page="m3_storage_services" data-tab="memorystore">Memorystore</a>
+        <a href="m3_storage_services.html#scenarios" class="sb-sub-link" data-page="m3_storage_services" data-tab="scenarios">Exam Scenarios</a>
+        <a href="m3_storage_services.html#traps" class="sb-sub-link" data-page="m3_storage_services" data-tab="traps">Traps & Cheatsheet</a>
+      </div>
+    </div>
+    <div class="sb-mod-group" data-group="m4_data_processing_governance">
+      <a href="m4_data_processing_governance.html" class="sb-mod-link" data-page="m4_data_processing_governance">
+        <span class="sb-mod-num">04</span>
+        <span class="sb-mod-label">Data Processing</span>
+        <span class="sb-expand-icon">▸</span>
+      </a>
+      <div class="sb-subtopics" id="sub-m4_data_processing_governance">
+        <a href="m4_data_processing_governance.html#dataproc" class="sb-sub-link" data-page="m4_data_processing_governance" data-tab="dataproc">Dataproc</a>
+        <a href="m4_data_processing_governance.html#datafusion" class="sb-sub-link" data-page="m4_data_processing_governance" data-tab="datafusion">Cloud Data Fusion</a>
+        <a href="m4_data_processing_governance.html#dataform" class="sb-sub-link" data-page="m4_data_processing_governance" data-tab="dataform">Dataform</a>
+        <a href="m4_data_processing_governance.html#datastream" class="sb-sub-link" data-page="m4_data_processing_governance" data-tab="datastream">Datastream</a>
+        <a href="m4_data_processing_governance.html#composer" class="sb-sub-link" data-page="m4_data_processing_governance" data-tab="composer">Cloud Composer</a>
+        <a href="m4_data_processing_governance.html#dataplex" class="sb-sub-link" data-page="m4_data_processing_governance" data-tab="dataplex">Dataplex</a>
+        <a href="m4_data_processing_governance.html#datacatalog" class="sb-sub-link" data-page="m4_data_processing_governance" data-tab="datacatalog">Data Catalog</a>
+        <a href="m4_data_processing_governance.html#dlp" class="sb-sub-link" data-page="m4_data_processing_governance" data-tab="dlp">Cloud DLP</a>
+        <a href="m4_data_processing_governance.html#analyticshub" class="sb-sub-link" data-page="m4_data_processing_governance" data-tab="analyticshub">Analytics Hub</a>
+        <a href="m4_data_processing_governance.html#decision" class="sb-sub-link" data-page="m4_data_processing_governance" data-tab="decision">Decision Reference</a>
+      </div>
+    </div>
+    <div class="sb-mod-group" data-group="m5_security_ml_architecture">
+      <a href="m5_security_ml_architecture.html" class="sb-mod-link" data-page="m5_security_ml_architecture">
+        <span class="sb-mod-num">05</span>
+        <span class="sb-mod-label">Security & ML</span>
+        <span class="sb-expand-icon">▸</span>
+      </a>
+      <div class="sb-subtopics" id="sub-m5_security_ml_architecture">
+        <a href="m5_security_ml_architecture.html#iam" class="sb-sub-link" data-page="m5_security_ml_architecture" data-tab="iam">IAM</a>
+        <a href="m5_security_ml_architecture.html#encryption" class="sb-sub-link" data-page="m5_security_ml_architecture" data-tab="encryption">Encryption</a>
+        <a href="m5_security_ml_architecture.html#vpcsc" class="sb-sub-link" data-page="m5_security_ml_architecture" data-tab="vpcsc">VPC Service Controls</a>
+        <a href="m5_security_ml_architecture.html#audit" class="sb-sub-link" data-page="m5_security_ml_architecture" data-tab="audit">Audit Logging</a>
+        <a href="m5_security_ml_architecture.html#ml" class="sb-sub-link" data-page="m5_security_ml_architecture" data-tab="ml">ML Fundamentals</a>
+        <a href="m5_security_ml_architecture.html#vertex" class="sb-sub-link" data-page="m5_security_ml_architecture" data-tab="vertex">Vertex AI</a>
+        <a href="m5_security_ml_architecture.html#batchstream" class="sb-sub-link" data-page="m5_security_ml_architecture" data-tab="batchstream">Batch vs Streaming</a>
+        <a href="m5_security_ml_architecture.html#refarch" class="sb-sub-link" data-page="m5_security_ml_architecture" data-tab="refarch">Reference Architecture</a>
+        <a href="m5_security_ml_architecture.html#scenarios" class="sb-sub-link" data-page="m5_security_ml_architecture" data-tab="scenarios">Architecture Scenarios</a>
+      </div>
+    </div>
+    <div class="sb-mod-group" data-group="m6_advanced_topics">
+      <a href="m6_advanced_topics.html" class="sb-mod-link" data-page="m6_advanced_topics">
+        <span class="sb-mod-num">06</span>
+        <span class="sb-mod-label">Advanced Topics</span>
+        <span class="sb-expand-icon">▸</span>
+      </a>
+      <div class="sb-subtopics" id="sub-m6_advanced_topics">
+        <a href="m6_advanced_topics.html#bq" class="sb-sub-link" data-page="m6_advanced_topics" data-tab="bq">BigQuery</a>
+        <a href="m6_advanced_topics.html#dataflow" class="sb-sub-link" data-page="m6_advanced_topics" data-tab="dataflow">Dataflow</a>
+        <a href="m6_advanced_topics.html#pubsub" class="sb-sub-link" data-page="m6_advanced_topics" data-tab="pubsub">Pub/Sub</a>
+        <a href="m6_advanced_topics.html#spanner" class="sb-sub-link" data-page="m6_advanced_topics" data-tab="spanner">Cloud Spanner</a>
+        <a href="m6_advanced_topics.html#dataproc" class="sb-sub-link" data-page="m6_advanced_topics" data-tab="dataproc">Dataproc</a>
+        <a href="m6_advanced_topics.html#vertex" class="sb-sub-link" data-page="m6_advanced_topics" data-tab="vertex">Vertex AI</a>
+        <a href="m6_advanced_topics.html#security" class="sb-sub-link" data-page="m6_advanced_topics" data-tab="security">Security</a>
+        <a href="m6_advanced_topics.html#exactlyonce" class="sb-sub-link" data-page="m6_advanced_topics" data-tab="exactlyonce">Exactly-Once Semantics</a>
+        <a href="m6_advanced_topics.html#signals" class="sb-sub-link" data-page="m6_advanced_topics" data-tab="signals">Signal Prioritization</a>
+        <a href="m6_advanced_topics.html#cheatsheet" class="sb-sub-link" data-page="m6_advanced_topics" data-tab="cheatsheet">Cheat Sheet</a>
+      </div>
+    </div>
+  </div>
+</aside>
+<!-- ═══ END SIDEBAR ═══ -->
+
+<!-- ═══ MOBILE BOTTOM BAR ═══ -->
+<nav class="bottom-bar" id="bottomBar">
+  <a href="index.html" class="bb-item" data-page="index">
+    <span class="bb-icon">⌂</span>
+    <span class="bb-label">Home</span>
+  </a>
+  <a href="m1_bigquery.html" class="bb-item" data-page="m1_bigquery">
+    <span class="bb-icon">01</span>
+    <span class="bb-label">BigQuery</span>
+  </a>
+  <a href="m2_dataflow_pubsub.html" class="bb-item" data-page="m2_dataflow_pubsub">
+    <span class="bb-icon">02</span>
+    <span class="bb-label">Dataflow</span>
+  </a>
+  <a href="m3_storage_services.html" class="bb-item" data-page="m3_storage_services">
+    <span class="bb-icon">03</span>
+    <span class="bb-label">Storage</span>
+  </a>
+  <a href="m4_data_processing_governance.html" class="bb-item" data-page="m4_data_processing_governance">
+    <span class="bb-icon">04</span>
+    <span class="bb-label">Data</span>
+  </a>
+  <a href="m5_security_ml_architecture.html" class="bb-item" data-page="m5_security_ml_architecture">
+    <span class="bb-icon">05</span>
+    <span class="bb-label">Security</span>
+  </a>
+  <a href="m6_advanced_topics.html" class="bb-item" data-page="m6_advanced_topics">
+    <span class="bb-icon">06</span>
+    <span class="bb-label">Advanced</span>
+  </a>
+</nav>
+<!-- ═══ END MOBILE BOTTOM BAR ═══ -->
+
+
+
+<div class="page-header">
+  <div class="header-text">
+    <div class="label">GCP PDE Study Notes — Module 3</div>
+    <h1>Storage Services Deep Dive</h1>
+    <p>8 subtopics · tap a tab to switch · tap cards to expand</p>
+  </div>
+  <div class="theme-toggle" onclick="toggleTheme()" title="Toggle light / dark mode">
+    <span class="toggle-icon-sun">☀️</span>
+    <div class="toggle-track"><div class="toggle-knob"></div></div>
+    <span class="toggle-icon-moon">🌙</span>
+  </div>
+</div>
+
+<div class="tab-bar" id="tabBar"></div>
+<div id="tabContent"></div>
+
+<script>
+function toggleTheme() {
+  const h = document.documentElement;
+  h.setAttribute('data-theme', h.getAttribute('data-theme') === 'dark' ? 'light' : 'dark');
+}
+
+const TABS = [
+
+  /* ══════════════════════════════════════════════════
+     1. DECISION FRAMEWORK
+  ══════════════════════════════════════════════════ */
+  {
+    id: 'decision', label: 'Decision Framework', freq: 'Reference',
+    topics: [
+      {
+        title: 'Master service selection — keyword → answer',
+        body: `<div class="decision-table">
+<div class="decision-row"><div class="decision-q">Time-series / IoT / sensor data at scale</div><div class="decision-a" style="background:#050f1a;color:#4d9fff;border:1px solid #0f3050">→ Bigtable</div></div>
+<div class="decision-row"><div class="decision-q">Low-latency random reads, milliseconds, petabytes</div><div class="decision-a" style="background:#050f1a;color:#4d9fff;border:1px solid #0f3050">→ Bigtable</div></div>
+<div class="decision-row"><div class="decision-q">HBase migration to GCP</div><div class="decision-a" style="background:#050f1a;color:#4d9fff;border:1px solid #0f3050">→ Bigtable</div></div>
+<div class="decision-row"><div class="decision-q">Global ACID / multi-region transactions / external consistency</div><div class="decision-a" style="background:#100a1a;color:#b84dff;border:1px solid #3d1550">→ Cloud Spanner</div></div>
+<div class="decision-row"><div class="decision-q">Horizontally scalable relational SQL</div><div class="decision-a" style="background:#100a1a;color:#b84dff;border:1px solid #3d1550">→ Cloud Spanner</div></div>
+<div class="decision-row"><div class="decision-q">Replace sharded MySQL at scale</div><div class="decision-a" style="background:#100a1a;color:#b84dff;border:1px solid #3d1550">→ Cloud Spanner</div></div>
+<div class="decision-row"><div class="decision-q">Mobile / web app backend, real-time sync, offline support</div><div class="decision-a" style="background:#1a0d06;color:#ff7a4d;border:1px solid #4d2510">→ Firestore</div></div>
+<div class="decision-row"><div class="decision-q">Document model, flexible schema, hierarchical data</div><div class="decision-a" style="background:#1a0d06;color:#ff7a4d;border:1px solid #4d2510">→ Firestore</div></div>
+<div class="decision-row"><div class="decision-q">Existing MySQL / PostgreSQL / SQL Server</div><div class="decision-a" style="background:#091a11;color:#4dff91;border:1px solid #0f4024">→ Cloud SQL</div></div>
+<div class="decision-row"><div class="decision-q">Lift-and-shift RDBMS workload</div><div class="decision-a" style="background:#091a11;color:#4dff91;border:1px solid #0f4024">→ Cloud SQL</div></div>
+<div class="decision-row"><div class="decision-q">Sub-millisecond caching / session storage / rate limiting</div><div class="decision-a" style="background:#1a1000;color:#ffb84d;border:1px solid #4d3000">→ Memorystore</div></div>
+<div class="decision-row"><div class="decision-q">Leaderboard / sorted set operations</div><div class="decision-a" style="background:#1a1000;color:#ffb84d;border:1px solid #4d3000">→ Memorystore</div></div>
+<div class="decision-row"><div class="decision-q">Petabyte SQL analytics / BI / OLAP / data warehouse</div><div class="decision-a" style="background:#050f1a;color:#4d9fff;border:1px solid #0f3050">→ BigQuery</div></div>
+<div class="decision-row"><div class="decision-q">Object storage / data lake / blobs / files / archival</div><div class="decision-a" style="background:#100a1a;color:#b84dff;border:1px solid #3d1550">→ Cloud Storage</div></div>
+</div>`
+      },
+      {
+        title: 'Latency ladder — pick by response time requirement',
+        body: `<div class="g3">
+<div class="mini"><div class="mt">&lt; 1ms (sub-millisecond)</div><div class="mb">Memorystore (Redis). In-memory. For caching, sessions, rate limiters, leaderboards. Data fits in RAM.</div></div>
+<div class="mini"><div class="mt">Single-digit ms</div><div class="mb">Bigtable. On-disk but fast. Low-latency random reads by row key. Petabyte-scale. High write throughput.</div></div>
+<div class="mini"><div class="mt">~5–10ms</div><div class="mb">Cloud Spanner, Firestore, Cloud SQL. Transactional reads with strong consistency. SQL or document model.</div></div>
+<div class="mini"><div class="mt">Seconds</div><div class="mb">BigQuery. Analytical scans across billions of rows. NOT for individual row lookups.</div></div>
+<div class="mini"><div class="mt">Minutes–hours</div><div class="mb">BigQuery complex joins, Dataproc Spark. Multi-pass computation, heavy aggregations.</div></div>
+<div class="mini"><div class="mt">Up to 12 hours</div><div class="mb">GCS Archive class. Compliance retention. Highest retrieval cost. Not for operational data.</div></div>
+</div>
+<div class="alert alert-red">The most common mistake: choosing BigQuery for low-latency lookups. BigQuery takes seconds per query — it is an analytical engine, not a lookup store. Millisecond lookups → Bigtable. Sub-millisecond → Memorystore.</div>`
+      },
+      {
+        title: 'Full service comparison table',
+        body: `<div class="cmp-wrap"><table class="cmp">
+<thead><tr><th>Service</th><th>Model</th><th>Scale</th><th>Latency</th><th>Consistency</th><th>Best for</th></tr></thead>
+<tbody>
+<tr><td>BigQuery</td><td>Columnar SQL</td><td>Petabytes</td><td>Seconds</td><td>Eventually consistent reads</td><td>Analytics, BI, OLAP, ML training data</td></tr>
+<tr><td>Bigtable</td><td>Wide-column NoSQL</td><td>Petabytes</td><td>Single-digit ms</td><td>Strong (single-row atomic)</td><td>Time-series, IoT, AdTech, ML features</td></tr>
+<tr><td>Cloud Spanner</td><td>Relational SQL</td><td>Petabytes</td><td>~5ms</td><td>External / global strong</td><td>Global ACID, financial systems</td></tr>
+<tr><td>Firestore</td><td>Document NoSQL</td><td>Terabytes</td><td>~10ms</td><td>Strong (default)</td><td>Mobile/web apps, real-time sync</td></tr>
+<tr><td>Cloud SQL</td><td>Relational SQL</td><td>~64TB</td><td>~1ms local</td><td>Strong (ACID)</td><td>Existing RDBMS, CMS, ERP</td></tr>
+<tr><td>Memorystore</td><td>In-memory K/V</td><td>GBs–TBs</td><td>Sub-ms</td><td>Eventual (Redis)</td><td>Caching, sessions, leaderboards</td></tr>
+<tr><td>Cloud Storage</td><td>Object store</td><td>Unlimited</td><td>100ms–12hrs</td><td>Strong (object-level)</td><td>Blobs, data lake, archival</td></tr>
+</tbody>
+</table></div>`
+      }
+    ]
+  },
+
+  /* ══════════════════════════════════════════════════
+     2. BIGTABLE
+  ══════════════════════════════════════════════════ */
+  {
+    id: 'bigtable', label: 'Bigtable', freq: 'High',
+    topics: [
+      {
+        title: 'How Bigtable works internally — the storage model',
+        body: `<p class="prose">Bigtable is a wide-column NoSQL database. Understanding the internal model is mandatory because row key design — the most-tested concept — only makes sense once you understand storage.</p>
+<div class="section-label">Data model primitives</div>
+<div class="kv-row"><div class="kv-key">Row key</div><div class="kv-val">The ONLY index in Bigtable. Every lookup and range scan is by row key. No secondary indexes exist. This makes row key design the single most critical decision in any Bigtable schema.</div></div>
+<div class="kv-row"><div class="kv-key">Column family</div><div class="kv-val">A named group of related columns defined at table creation. A table has a small number of families (1–10 typical). Columns within a family are stored together on disk.</div></div>
+<div class="kv-row"><div class="kv-key">Column qualifier</div><div class="kv-val">A named column within a family. Dynamic — NOT defined at schema creation. A row can have millions of distinct qualifiers. This is the "wide-column" — extremely sparse data is storage-efficient.</div></div>
+<div class="kv-row"><div class="kv-key">Cell</div><div class="kv-val">The intersection of row key + column family + column qualifier. Stores one byte-string value + timestamp. Multiple versions of the same cell coexist ordered by timestamp descending.</div></div>
+<div class="kv-row"><div class="kv-key">Cell versioning</div><div class="kv-val">Each cell can store multiple timestamped versions. Configurable GC policies: keep N most recent versions, or keep versions newer than N days.</div></div>
+<div class="kv-row"><div class="kv-key">Sorted by row key</div><div class="kv-val">All rows stored in sorted lexicographic order. Adjacent row keys are physically co-located on the same tablet. This is why row key design determines read/write performance.</div></div>
+<div class="section-label">Storage architecture</div>
+<div class="kv-row"><div class="kv-key">Tablet</div><div class="kv-val">A contiguous row key range. The unit of distribution across nodes. Tablets split automatically as they grow. Each tablet served by exactly one node.</div></div>
+<div class="kv-row"><div class="kv-key">Bigtable node</div><div class="kv-val">Serves a set of tablets and handles read/write requests. Adding nodes = linear throughput increase. Bigtable scales horizontally by adding nodes to the cluster.</div></div>
+<div class="kv-row"><div class="kv-key">Colossus (underlying FS)</div><div class="kv-val">Actual SSTable data lives in Google's Colossus distributed filesystem — separate from nodes. Node failure does NOT lose data. Adding/removing nodes requires no data migration.</div></div>`
+      },
+      {
+        title: 'Row key design — the #1 most-tested Bigtable concept',
+        body: `<p class="prose">Because the row key is the only index, its design determines: (1) lookup speed, (2) range scan efficiency, (3) whether you get hotspots that degrade performance.</p>
+<div class="section-label">Good row key patterns</div>
+<div class="g2">
+<div class="mini good"><div class="mt">Reverse timestamp</div><div class="mb">device_id + "#" + (MAX_LONG - timestamp). Newest records sort FIRST. Makes "get latest N records" efficient. Essential for time-series.</div></div>
+<div class="mini good"><div class="mt">Composite key</div><div class="mb">customer_id + "#" + event_type + "#" + timestamp. Co-locates all data for one customer. Efficient per-customer range scans.</div></div>
+<div class="mini good"><div class="mt">Hash / salt prefix</div><div class="mb">First 4 chars of MD5(natural_key) as prefix. Distributes writes evenly across all tablets. Prevents hotspot on any single tablet.</div></div>
+<div class="mini good"><div class="mt">Reversed domain</div><div class="mb">com.google.www instead of www.google.com. Prevents all .com domains clustering and creating a read hotspot.</div></div>
+</div>
+<div class="section-label">Bad patterns — these cause hotspots</div>
+<div class="g2">
+<div class="mini bad"><div class="mt">Sequential integer IDs (1, 2, 3...)</div><div class="mb">All new writes go to the tablet holding the highest ID range. One tablet overwhelmed, others idle.</div></div>
+<div class="mini bad"><div class="mt">Timestamp as prefix</div><div class="mb">All concurrent writes share similar timestamps → same tablet range → write hotspot on that tablet.</div></div>
+<div class="mini bad"><div class="mt">Low-cardinality prefix</div><div class="mb">Using status (active/inactive) as prefix = only 2 tablets receive all writes. No distribution.</div></div>
+<div class="mini bad"><div class="mt">Domain names as-is</div><div class="mb">www.google.com, www.amazon.com all start with "www" → same tablet range gets all traffic.</div></div>
+</div>
+<div class="code"># Good: reverse timestamp — newest records sort first
+MAX_LONG = 9999999999999999
+timestamp_us = int(time.time() * 1e6)
+row_key = f"sensor_001#{MAX_LONG - timestamp_us}"
+# Lexicographic order = newest first for sensor_001
+
+# Good: hash salt to prevent hotspot
+salt = hashlib.md5(natural_key.encode()).hexdigest()[:4]
+row_key = f"{salt}#{natural_key}"
+# Writes distributed evenly across all tablets</div>
+<div class="alert alert-red">The #1 Bigtable exam trap: using a monotonically increasing value (timestamp, auto-increment ID) as the row key prefix funnels all writes to one tablet. This creates a write hotspot — one node overwhelmed while others sit idle. The fix is reverse timestamp, hash prefix, or a composite key that distributes writes.</div>`
+      },
+      {
+        title: 'When to use Bigtable — use cases and limits',
+        body: `<div class="section-label">Use Bigtable for</div>
+<div class="kv-row"><div class="kv-key">Time-series data</div><div class="kv-val">Sensor readings, stock prices, metrics, logs. Row key = entity + reverse timestamp. Natural fit for the wide-column model.</div></div>
+<div class="kv-row"><div class="kv-key">IoT / telemetry</div><div class="kv-val">High write throughput from many devices. Bigtable handles millions of writes per second across its cluster.</div></div>
+<div class="kv-row"><div class="kv-key">AdTech / user behavior</div><div class="kv-val">Click-stream, impression, conversion data. Sparse wide-column model handles variable user attributes efficiently.</div></div>
+<div class="kv-row"><div class="kv-key">ML feature store</div><div class="kv-val">Store precomputed ML features keyed by entity ID (user_id, product_id). Millisecond lookups at serving time.</div></div>
+<div class="kv-row"><div class="kv-key">HBase migration</div><div class="kv-val">Bigtable is API-compatible with Apache HBase. Change only the connection config — application code unchanged.</div></div>
+<div class="section-label">Do NOT use Bigtable for</div>
+<div class="kv-row"><div class="kv-key">SQL analytics</div><div class="kv-val">No SQL, no JOINs, no aggregations. Use BigQuery.</div></div>
+<div class="kv-row"><div class="kv-key">Multi-row ACID transactions</div><div class="kv-val">Single-row atomic writes only. Multi-row transactions → Cloud Spanner.</div></div>
+<div class="kv-row"><div class="kv-key">Small datasets (&lt; 300GB)</div><div class="kv-val">Bigtable is expensive at small scale — minimum cluster cost regardless of data size. Use Cloud SQL or Firestore.</div></div>
+<div class="kv-row"><div class="kv-key">Ad-hoc queries on non-key columns</div><div class="kv-val">No secondary indexes — can only query by row key. For flexible ad-hoc queries → BigQuery.</div></div>
+<div class="alert alert-blue">Bigtable performance investigation: if performance degrades after scaling, the most common cause is hotspotting — all traffic going to one tablet due to a bad row key. Use the Key Visualizer tool in Cloud Console to identify hotspots visually.</div>`
+      }
+    ]
+  },
+
+  /* ══════════════════════════════════════════════════
+     3. CLOUD SPANNER
+  ══════════════════════════════════════════════════ */
+  {
+    id: 'spanner', label: 'Cloud Spanner', freq: 'High',
+    topics: [
+      {
+        title: 'What Cloud Spanner is and why it exists',
+        body: `<p class="prose">Cloud Spanner solves a problem that previously seemed impossible: horizontal scalability of NoSQL combined with the ACID guarantees and SQL interface of a traditional relational database. It uses TrueTime (GPS clocks + atomic clocks across Google data centers) to assign globally consistent timestamps to every transaction — enabling external consistency, which is stronger than serializable isolation.</p>
+<div class="section-label">Core capabilities</div>
+<div class="kv-row"><div class="kv-key">Global ACID transactions</div><div class="kv-val">Multi-row, multi-table, multi-region transactions with external consistency. Every transaction appears to execute at a precise real-time moment globally.</div></div>
+<div class="kv-row"><div class="kv-key">Horizontal scaling</div><div class="kv-val">Add nodes for more throughput and storage. Throughput scales linearly. No vertical scaling ceiling. Petabyte-scale.</div></div>
+<div class="kv-row"><div class="kv-key">Full SQL</div><div class="kv-val">ANSI SQL with JOINs, aggregations, subqueries, window functions. Familiar to any SQL developer.</div></div>
+<div class="kv-row"><div class="kv-key">99.999% SLA</div><div class="kv-val">Five nines for multi-region configurations. Regional = 99.99%. Designed for zero-downtime maintenance.</div></div>
+<div class="kv-row"><div class="kv-key">TrueTime</div><div class="kv-val">GPS and atomic clocks across Google's data centers provide globally unique, causally consistent timestamps. The technology enabling external consistency.</div></div>
+<div class="kv-row"><div class="kv-key">Change Streams</div><div class="kv-val">Real-time CDC stream of all Spanner data changes. Route to Pub/Sub or Dataflow for downstream processing. Equivalent to MySQL binlog or Postgres WAL, but managed.</div></div>
+<div class="section-label">When Spanner is the right answer</div>
+<div class="kv-row"><div class="kv-key">Global ACID</div><div class="kv-val">Financial systems, banking, inventory — any scenario where multi-table, multi-region data integrity is non-negotiable.</div></div>
+<div class="kv-row"><div class="kv-key">Horizontal relational scale</div><div class="kv-val">When Cloud SQL has hit its vertical scaling limit and you need more throughput/storage without sharding.</div></div>
+<div class="kv-row"><div class="kv-key">Multi-region strong consistency</div><div class="kv-val">Global users with no stale reads anywhere. Every read reflects all committed writes globally.</div></div>
+<div class="kv-row"><div class="kv-key">Five nines SLA</div><div class="kv-val">Mission-critical systems that cannot tolerate more than 5 minutes of downtime per year.</div></div>
+<div class="alert alert-red">Spanner vs Cloud SQL trap: both are relational SQL databases. The key discriminator is SCALE and DISTRIBUTION. Cloud SQL = single-region, vertically scaled, max ~64TB. Cloud Spanner = multi-region option, horizontally scaled, petabytes. "Global," "multi-region ACID," or "horizontally scalable relational" always → Spanner.</div>`
+      },
+      {
+        title: 'Schema design: interleaving and secondary indexes',
+        body: `<p class="prose">Interleaving is Spanner's primary performance optimization. Child table rows are physically co-located with their parent row on the same server split. Parent-child JOINs become local operations instead of cross-server calls — dramatically faster.</p>
+<div class="code">-- Parent table
+CREATE TABLE Customers (
+  CustomerId  INT64 NOT NULL,
+  Name        STRING(MAX),
+  Email       STRING(MAX),
+) PRIMARY KEY (CustomerId);
+
+-- Child table INTERLEAVED inside parent
+-- Orders rows physically co-located with their Customer row
+CREATE TABLE Orders (
+  CustomerId  INT64 NOT NULL,  -- must match parent PK
+  OrderId     INT64 NOT NULL,
+  OrderDate   DATE,
+  TotalAmount FLOAT64,
+) PRIMARY KEY (CustomerId, OrderId),
+  INTERLEAVE IN PARENT Customers ON DELETE CASCADE;
+
+-- This JOIN is a local operation — no cross-server call:
+SELECT c.Name, o.OrderId, o.TotalAmount
+FROM Customers c JOIN Orders o USING (CustomerId)
+WHERE c.CustomerId = 12345;</div>
+<div class="section-label">Secondary indexes</div>
+<div class="kv-row"><div class="kv-key">Secondary index</div><div class="kv-val">Unlike Bigtable, Spanner DOES support secondary indexes. Enables efficient queries on non-primary-key columns without full table scans.</div></div>
+<div class="kv-row"><div class="kv-key">STORING clause</div><div class="kv-val">Include additional columns in the index to avoid a second lookup to the base table. Improves performance for common query patterns.</div></div>
+<div class="code">-- Secondary index on Email
+CREATE INDEX CustomersByEmail ON Customers (Email);
+
+-- Index with STORING — avoids base table read for TotalAmount
+CREATE INDEX OrdersByDate ON Orders (OrderDate)
+STORING (TotalAmount, CustomerId);
+-- Queries filtering on OrderDate + reading TotalAmount
+-- are served entirely from the index</div>
+<div class="alert alert-blue">Interleaving exam angle: "A query JOINs Customers and Orders by CustomerId frequently. Performance is poor." → Interleave the Orders table inside Customers. Co-location makes the JOIN a local operation on the same split.</div>`
+      },
+      {
+        title: 'Spanner vs other services — when to pick which',
+        body: `<div class="kv-row"><div class="kv-key">Spanner vs Cloud SQL</div><div class="kv-val">Spanner when: multi-region, horizontal scale, &gt; 64TB, 99.999% SLA, global ACID. Cloud SQL when: single-region, vertical scale sufficient, lower cost, existing MySQL/PostgreSQL app.</div></div>
+<div class="kv-row"><div class="kv-key">Spanner vs BigQuery</div><div class="kv-val">Spanner when: OLTP (transactional reads/writes), low-latency, multi-row writes. BigQuery when: OLAP (analytical scans), BI/reporting, no heavy write workload.</div></div>
+<div class="kv-row"><div class="kv-key">Spanner vs Bigtable</div><div class="kv-val">Spanner when: SQL needed, multi-row ACID, relational schema with JOINs. Bigtable when: NoSQL, ultra-high write throughput, time-series, no SQL needed.</div></div>
+<div class="kv-row"><div class="kv-key">Spanner vs Firestore</div><div class="kv-val">Spanner when: relational model, SQL, global multi-table transactions. Firestore when: document model, mobile/web app, real-time listeners, flexible schema.</div></div>
+<div class="alert alert-green">Spanner keyword checklist — if you see ANY of these, answer is Cloud Spanner: "global ACID," "multi-region transactions," "horizontally scalable relational," "external consistency," "financial transactions at scale," "five nines SLA," "replace sharded MySQL."</div>`
+      }
+    ]
+  },
+
+  /* ══════════════════════════════════════════════════
+     4. FIRESTORE
+  ══════════════════════════════════════════════════ */
+  {
+    id: 'firestore', label: 'Firestore', freq: 'Medium',
+    topics: [
+      {
+        title: 'Firestore data model and core concepts',
+        body: `<p class="prose">Cloud Firestore is a fully managed, serverless, NoSQL document database — the backend for mobile and web applications. Successor to Cloud Datastore (backward-compatible in Datastore mode). Optimized for real-time data synchronization.</p>
+<div class="section-label">Data model</div>
+<div class="kv-row"><div class="kv-key">Document</div><div class="kv-val">The basic storage unit. A JSON-like object containing named fields. Fields can be strings, numbers, booleans, arrays, nested maps, timestamps, or document references. Maximum document size: 1MB.</div></div>
+<div class="kv-row"><div class="kv-key">Collection</div><div class="kv-val">A container of documents. Documents within a collection do not need the same fields (schema-flexible). Collections cannot directly contain other collections.</div></div>
+<div class="kv-row"><div class="kv-key">Subcollection</div><div class="kv-val">A collection nested inside a document. Enables hierarchical data: users/{userId}/orders/{orderId}/items/{itemId}. Subcollections are independent of parent documents — deleting the parent does NOT delete subcollections automatically.</div></div>
+<div class="kv-row"><div class="kv-key">Document reference</div><div class="kv-val">A pointer to another document. Used to model relationships. Firestore does NOT perform automatic JOINs on references — clients must fetch referenced documents separately (fan-out reads).</div></div>
+<div class="code">// Document at /users/user_12345
+{
+  "name": "Alice Chen",
+  "email": "alice@example.com",
+  "created_at": Timestamp(2024, 1, 15),
+  "address": {               // nested map
+    "city": "Toronto",
+    "country": "CA"
+  },
+  "tags": ["premium", "verified"]  // array field
+}
+
+// Subcollection document at /users/user_12345/orders/order_001
+{
+  "order_date": Timestamp(2024, 1, 20),
+  "total": 149.99,
+  "status": "shipped"
+}</div>`
+      },
+      {
+        title: 'Querying, indexes, and real-time features',
+        body: `<div class="section-label">Querying</div>
+<div class="kv-row"><div class="kv-key">Single collection queries</div><div class="kv-val">Query documents within one collection using filters, ordering, and limits. Fully indexed. Fast.</div></div>
+<div class="kv-row"><div class="kv-key">Collection group queries</div><div class="kv-val">Query across ALL subcollections with the same name. E.g., query all "orders" subcollections across all users simultaneously — without knowing which users have orders.</div></div>
+<div class="kv-row"><div class="kv-key">Composite indexes</div><div class="kv-val">Multi-field queries require explicit composite index creation in Firestore. Queries without the required composite index FAIL at runtime with an error message. The error includes a direct link to create the index.</div></div>
+<div class="kv-row"><div class="kv-key">No JOINs</div><div class="kv-val">Firestore has no JOIN operation. Design data denormalized (duplicate relevant fields) or accept multiple reads. Fan-out reads (fetch parent then children) are the standard pattern.</div></div>
+<div class="kv-row"><div class="kv-key">Query limitations</div><div class="kv-val">Cannot apply inequality filters on more than one field simultaneously. No full-text search — use Algolia or Elasticsearch alongside Firestore for that.</div></div>
+<div class="section-label">Real-time listeners — the killer feature</div>
+<div class="kv-row"><div class="kv-key">Real-time updates</div><div class="kv-val">Clients attach listeners to documents or collections. When data changes, Firestore PUSHES the update to all connected clients instantly — no polling. This is why Firestore is chosen for mobile/web apps over Bigtable or Cloud SQL.</div></div>
+<div class="kv-row"><div class="kv-key">Offline support</div><div class="kv-val">SDKs cache data locally. App works fully offline. Changes made offline are queued and applied when connectivity is restored. Conflict resolution is automatic.</div></div>
+<div class="kv-row"><div class="kv-key">Firestore Security Rules</div><div class="kv-val">Server-side access control evaluated against the requesting user's Firebase Auth token. Define who can read/write which documents without writing backend code.</div></div>
+<div class="section-label">Two modes — important distinction</div>
+<div class="kv-row"><div class="kv-key">Native mode (Firestore)</div><div class="kv-val">Current version. Supports real-time listeners, mobile SDKs, collection group queries, full feature set. Use for ALL new projects.</div></div>
+<div class="kv-row"><div class="kv-key">Datastore mode</div><div class="kv-val">Backward-compatible with Cloud Datastore. NO real-time listeners. NO mobile SDKs. Use ONLY when migrating existing Cloud Datastore applications.</div></div>
+<div class="alert alert-amber">Firestore mode trap: real-time listeners, mobile SDKs → Native mode. Migrating existing Cloud Datastore app → Datastore mode. These are different operational modes of the same service with different feature sets.</div>`
+      },
+      {
+        title: 'When to use Firestore',
+        body: `<div class="kv-row"><div class="kv-key">Use Firestore when</div><div class="kv-val">Mobile or web app backend, real-time data sync needed, flexible/evolving document schema, hierarchical data (users → orders → items), serverless auto-scaling, offline-first apps, pay-per-use pricing (no idle instance cost).</div></div>
+<div class="kv-row"><div class="kv-key">Do NOT use for analytics</div><div class="kv-val">Firestore has no aggregation queries, no JOINs, no GROUP BY. For analytics → BigQuery.</div></div>
+<div class="kv-row"><div class="kv-key">Do NOT use for global ACID</div><div class="kv-val">Firestore transactions are limited in scope. For global multi-table ACID across millions of documents → Cloud Spanner.</div></div>
+<div class="kv-row"><div class="kv-key">Do NOT use for time-series writes</div><div class="kv-val">High-throughput time-series writes (millions/sec) → Bigtable. Firestore is not optimized for that write pattern.</div></div>
+<div class="kv-row"><div class="kv-key">Firestore vs Cloud SQL</div><div class="kv-val">Firestore: schema-less documents, auto-scaling, no idle cost, mobile SDKs. Cloud SQL: rigid relational schema, SQL JOINs, ACID transactions, requires instance management.</div></div>
+<div class="alert alert-blue">Firestore keyword checklist: "mobile app," "web app backend," "real-time updates," "flexible schema," "document model," "offline sync," "hierarchical data," "no ops database." Any of these → Firestore.</div>`
+      }
+    ]
+  },
+
+  /* ══════════════════════════════════════════════════
+     5. CLOUD SQL
+  ══════════════════════════════════════════════════ */
+  {
+    id: 'cloudsql', label: 'Cloud SQL', freq: 'Medium',
+    topics: [
+      {
+        title: 'Cloud SQL — managed RDBMS for lift-and-shift',
+        body: `<p class="prose">Cloud SQL is fully managed MySQL, PostgreSQL, and SQL Server. Google handles backups, patches, replication, and failover. You manage schemas and queries exactly as you would on-premises. The core use case is lift-and-shift of existing RDBMS workloads.</p>
+<div class="section-label">Supported engines</div>
+<div class="kv-row"><div class="kv-key">MySQL 5.7, 8.0</div><div class="kv-val">Most common. Classic LAMP stack, WordPress, Drupal, standard web apps. Up to 96 vCPUs, 624GB RAM, 64TB.</div></div>
+<div class="kv-row"><div class="kv-key">PostgreSQL 9.6–15</div><div class="kv-val">Full PostgreSQL feature set including extensions: PostGIS (geospatial), pgvector (vector embeddings), pg_trgm (fuzzy search).</div></div>
+<div class="kv-row"><div class="kv-key">SQL Server 2017/2019</div><div class="kv-val">Enterprise, Standard, Web, Express editions. For Windows-based application stacks.</div></div>
+<div class="section-label">High availability and read replicas</div>
+<div class="kv-row"><div class="kv-key">High availability (HA)</div><div class="kv-val">Synchronous replication to a standby in a different zone. Automatic failover in ~60 seconds. Zero data loss. HA = 99.95% SLA. Without HA = 99.5%.</div></div>
+<div class="kv-row"><div class="kv-key">Read replicas</div><div class="kv-val">Asynchronous replicas for read scaling. Send read traffic to replicas to reduce load on primary. Replicas lag slightly (eventual consistency). Cannot promote in the normal sense — they exist to scale reads.</div></div>
+<div class="kv-row"><div class="kv-key">Cross-region replicas</div><div class="kv-val">Read replicas in different regions for DR or global read scaling. Can be promoted to a standalone primary if the source region fails.</div></div>
+<div class="kv-row"><div class="kv-key">Point-in-time recovery</div><div class="kv-val">Binary logging enables recovery to any point in time within the backup retention window. Configure backup retention (default 7 days, up to 365 days).</div></div>
+<div class="section-label">Connectivity</div>
+<div class="kv-row"><div class="kv-key">Cloud SQL Auth Proxy</div><div class="kv-val">Always use for application → Cloud SQL connections. Manages IAM authentication and TLS automatically. No IP allowlisting or SSL certificate management required. Standard practice for all production deployments.</div></div>
+<div class="kv-row"><div class="kv-key">Private IP</div><div class="kv-val">Deploy Cloud SQL with only a private IP (no public endpoint). Access via Auth Proxy or Private Service Connect. Recommended for all production environments.</div></div>`
+      },
+      {
+        title: 'Cloud SQL scaling limits and the Cloud SQL → Spanner decision',
+        body: `<p class="prose">Cloud SQL scales VERTICALLY only — you upgrade the instance to a larger machine type. There is no horizontal sharding built into Cloud SQL. When you hit the ceiling, the path is Cloud Spanner.</p>
+<div class="cmp-wrap"><table class="cmp">
+<thead><tr><th>Dimension</th><th>Cloud SQL</th><th>Cloud Spanner</th></tr></thead>
+<tbody>
+<tr><td>Scaling model</td><td>Vertical only (bigger instance)</td><td>Horizontal (add nodes)</td></tr>
+<tr><td>Max storage</td><td>~64TB</td><td>Petabytes</td></tr>
+<tr><td>Regions</td><td>Single region</td><td>Single or multi-region</td></tr>
+<tr><td>SLA</td><td>99.95% (with HA)</td><td>99.999% (multi-region)</td></tr>
+<tr><td>ACID scope</td><td>Single region</td><td>Global multi-region</td></tr>
+<tr><td>Cost</td><td>Lower</td><td>Significantly higher</td></tr>
+<tr><td>Choose when</td><td>Existing MySQL/PostgreSQL app, single region, cost-sensitive</td><td>Global transactions, horizontal scale, five nines</td></tr>
+</tbody>
+</table></div>
+<div class="alert alert-amber">Cloud SQL vs Spanner rule: "existing MySQL/PostgreSQL" → Cloud SQL. "Global transactions," "multi-region ACID," "replace sharded MySQL," "horizontal scaling relational" → Cloud Spanner. Cost is also a differentiator — Spanner is significantly more expensive per unit of throughput.</div>
+<div class="section-label">Database Migration Service (DMS)</div>
+<div class="kv-row"><div class="kv-key">What it does</div><div class="kv-val">Managed migration service with continuous replication. Keeps source and destination in sync during the migration period so the cutover window is minimal (minutes, not hours).</div></div>
+<div class="kv-row"><div class="kv-key">Homogeneous migration</div><div class="kv-val">MySQL → Cloud SQL MySQL, PostgreSQL → Cloud SQL PostgreSQL. Schema-compatible, straightforward.</div></div>
+<div class="kv-row"><div class="kv-key">Heterogeneous migration</div><div class="kv-val">Oracle → Cloud SQL PostgreSQL. DMS handles schema and data type conversion.</div></div>
+<div class="alert alert-blue">DMS exam pattern: "Migrate on-premises MySQL to Cloud SQL with minimal downtime." → Database Migration Service with continuous replication. The pipeline keeps source and Cloud SQL in sync until cutover — application switches connection string, then DMS replication is stopped.</div>`
+      }
+    ]
+  },
+
+  /* ══════════════════════════════════════════════════
+     6. MEMORYSTORE
+  ══════════════════════════════════════════════════ */
+  {
+    id: 'memorystore', label: 'Memorystore', freq: 'Medium',
+    topics: [
+      {
+        title: 'Memorystore — in-memory for sub-millisecond latency',
+        body: `<p class="prose">Cloud Memorystore is fully managed Redis (and Valkey, the open-source Redis fork). Google handles provisioning, replication, patching, and failover. Applications connect using standard Redis clients — no code changes needed. Use it when sub-millisecond response times are required.</p>
+<div class="section-label">Redis data structures → use cases</div>
+<div class="g2">
+<div class="mini"><div class="mt">String + TTL (SETEX)</div><div class="mb">Session storage, cached API responses, feature flags, distributed locks. INCR + EXPIRE for rate limiting counters.</div></div>
+<div class="mini"><div class="mt">Sorted Set (ZADD/ZREVRANGE)</div><div class="mb">Leaderboards (score = rank), time-series event windows, priority queues. ZREVRANGE for top-N players.</div></div>
+<div class="mini"><div class="mt">Hash (HSET/HGET)</div><div class="mb">User profile cache, shopping cart contents, structured object cache. Partial updates without full object replacement.</div></div>
+<div class="mini"><div class="mt">List (LPUSH/BRPOP)</div><div class="mb">Task queue, message buffer, activity feed. BRPOP is a blocking pop — workers wait for items.</div></div>
+<div class="mini"><div class="mt">HyperLogLog</div><div class="mb">Approximate unique visitor counting with very low memory (~12KB regardless of cardinality). ±0.81% error rate.</div></div>
+<div class="mini"><div class="mt">Pub/Sub (PUBLISH/SUBSCRIBE)</div><div class="mb">Real-time notifications, chat (small scale). For large-scale durable messaging use Cloud Pub/Sub instead.</div></div>
+</div>
+<div class="section-label">Rate limiting pattern — exam favorite</div>
+<div class="code"># Rate limit: max 100 requests per minute per user
+def is_rate_limited(user_id: str) -> bool:
+    # Key includes current minute bucket
+    key = f"rate:{user_id}:{int(time.time() // 60)}"
+    count = redis_client.incr(key)
+    if count == 1:
+        redis_client.expire(key, 60)  # TTL = 60 seconds
+    return count > 100
+# Entire check completes in &lt; 0.5ms</div>`
+      },
+      {
+        title: 'Cache-aside pattern and Memorystore tiers',
+        body: `<p class="prose">The most common Memorystore use case is caching — storing results of expensive DB queries or API calls in Redis so repeated requests are served from memory.</p>
+<div class="section-label">Cache-aside (lazy loading) — the standard pattern</div>
+<div class="kv-row"><div class="kv-key">1. Check Redis first</div><div class="kv-val">Application tries to fetch the value from Redis by key. Operation completes in &lt; 1ms.</div></div>
+<div class="kv-row"><div class="kv-key">2. Cache hit</div><div class="kv-val">Key found → return cached value immediately. Database is never touched.</div></div>
+<div class="kv-row"><div class="kv-key">3. Cache miss</div><div class="kv-val">Key not found → query the primary database (Cloud SQL, Spanner, etc.). Store result in Redis with a TTL. Return result to caller.</div></div>
+<div class="kv-row"><div class="kv-key">TTL strategy</div><div class="kv-val">Always set a TTL so stale data eventually expires. 60s for near-real-time, 5–60 min for user data, 1hr for reports, 24hr for reference/config data.</div></div>
+<div class="section-label">Other caching patterns</div>
+<div class="kv-row"><div class="kv-key">Write-through</div><div class="kv-val">Every database write also updates the cache. Cache always consistent. Higher write latency. Use when reads vastly outnumber writes.</div></div>
+<div class="kv-row"><div class="kv-key">Write-behind</div><div class="kv-val">Writes go to cache, database updated asynchronously. Lowest write latency. Risk of data loss on cache failure. Rare in practice.</div></div>
+<div class="section-label">Memorystore tiers</div>
+<div class="kv-row"><div class="kv-key">Basic tier</div><div class="kv-val">No replica. Data LOST on instance failure. Development/testing only. Never use in production.</div></div>
+<div class="kv-row"><div class="kv-key">Standard tier</div><div class="kv-val">Primary + replica. Automatic failover in ~1 minute. Zero data loss. Always use Standard tier in production.</div></div>
+<div class="alert alert-blue">Cache-aside exam pattern: "A web API queries Cloud SQL for user profiles — 200ms latency. Same profiles requested thousands of times per second." → Add Memorystore (Redis) as cache. App checks Redis first (&lt; 1ms on hit), falls back to Cloud SQL (200ms) on miss and caches with 5-minute TTL.</div>
+<div class="section-label">When NOT to use Memorystore</div>
+<div class="kv-row"><div class="kv-key">As primary durable storage</div><div class="kv-val">Redis is in-memory — not durably persistent by default. Use as cache or supplement to a primary database, not as the primary data store.</div></div>
+<div class="kv-row"><div class="kv-key">Large datasets exceeding RAM</div><div class="kv-val">Memorystore instances are bounded by RAM. For petabyte-scale persistent data → Bigtable or BigQuery.</div></div>
+<div class="kv-row"><div class="kv-key">Complex queries or JOINs</div><div class="kv-val">Redis has no query language beyond key operations. For relational queries → Cloud SQL or Spanner.</div></div>`
+      }
+    ]
+  },
+
+  /* ══════════════════════════════════════════════════
+     7. EXAM SCENARIOS
+  ══════════════════════════════════════════════════ */
+  {
+    id: 'scenarios', label: 'Exam Scenarios', freq: 'Practice',
+    topics: [
+      {
+        title: 'Service selection scenarios — 10 practice questions',
+        body: `<div class="scenario-box"><div class="scenario-q">A stock trading platform processes 1 million price updates per second from 5,000 securities. Each update has a symbol, price, and timestamp. Queries always retrieve the last N readings for a specific symbol within milliseconds. Which database?</div><div class="scenario-a"><strong>Answer: Cloud Bigtable.</strong> Row key = symbol + "#" + (MAX_LONG - timestamp). Newest records sort first for each symbol — efficient "get latest N" via prefix scan. 1M writes/sec is well within Bigtable's throughput. BigQuery is wrong — seconds of latency vs milliseconds required.</div></div>
+<div class="scenario-box"><div class="scenario-q">A global bank needs to transfer funds between accounts. Each transfer must atomically debit one account and credit another, be globally consistent, and have zero possibility of duplicate transactions. Users are in 40 countries. Which database?</div><div class="scenario-a"><strong>Answer: Cloud Spanner.</strong> Global ACID transactions with external consistency across multiple regions. No other GCP service can guarantee globally consistent, multi-row, multi-region ACID transactions. Cloud SQL = single-region only. Bigtable = single-row atomic only.</div></div>
+<div class="scenario-box"><div class="scenario-q">A mobile gaming app needs user profiles, game state, and achievements that sync across devices in real time. The app must work fully offline and sync when reconnected. Expected 10M users. Which database?</div><div class="scenario-a"><strong>Answer: Firestore (Native mode).</strong> Document model for profiles/game state. Real-time listeners sync across devices. Built-in offline support with automatic sync on reconnect. Auto-scales to 10M users serverlessly. No idle instance cost.</div></div>
+<div class="scenario-box"><div class="scenario-q">The same gaming app also needs a global leaderboard. Top 100 players need to be retrieved in under 5ms. Scores update in real time. Which service handles the leaderboard?</div><div class="scenario-a"><strong>Answer: Memorystore (Redis Sorted Set).</strong> Use ZADD to update scores, ZREVRANGE to get top-N players. Sub-millisecond reads. This is the canonical Redis leaderboard pattern. Firestore queries for top-N would be too slow for this latency requirement.</div></div>
+<div class="scenario-box"><div class="scenario-q">A company runs a WordPress site on-premises with a MySQL 8.0 database (200GB). They want to migrate to GCP with minimal application code changes and no downtime. Which service and migration approach?</div><div class="scenario-a"><strong>Answer: Cloud SQL for MySQL + Database Migration Service.</strong> WordPress requires MySQL — Cloud SQL is fully managed MySQL. DMS with continuous replication keeps source and Cloud SQL in sync during migration. Cutover = change connection string. Zero application code changes.</div></div>
+<div class="scenario-box"><div class="scenario-q">A Bigtable table serving an IoT platform is experiencing degraded write performance. Cloud Monitoring shows one Bigtable node handling 90% of all writes while two others are nearly idle. What is the cause and fix?</div><div class="scenario-a"><strong>Answer: Row key hotspot.</strong> The row key likely uses a timestamp or sequential device ID as a prefix — all new writes sort to the same tablet (served by one node). Fix: redesign the row key using reverse timestamp (MAX_LONG - timestamp) or add a hash prefix/salt to distribute writes evenly across all tablets.</div></div>
+<div class="scenario-box"><div class="scenario-q">An e-commerce platform has a Cloud SQL PostgreSQL instance at maximum size (96 vCPU, 64TB). Write latency is increasing as the product catalog grows. Read replicas are already in use. What is the next step?</div><div class="scenario-a"><strong>Answer: Migrate to Cloud Spanner.</strong> Cloud SQL has hit its vertical scaling ceiling. Spanner provides horizontal scaling for writes and storage beyond 64TB. Alternatively, add Memorystore as a caching layer to reduce read load on Cloud SQL if the bottleneck is reads, not writes.</div></div>
+<div class="scenario-box"><div class="scenario-q">A data pipeline needs to store precomputed ML feature vectors keyed by user_id. During model serving, the system performs 500,000 feature lookups per second, each requiring &lt; 5ms latency. Expected data volume: 50 billion rows. Which storage?</div><div class="scenario-a"><strong>Answer: Cloud Bigtable.</strong> Row key = user_id. Features stored as columns. 50B rows at petabyte scale with millisecond lookups per row key = Bigtable's design point. BigQuery = seconds (wrong). Cloud SQL = can't handle 50B rows. Memorystore = can't hold petabytes in RAM.</div></div>
+<div class="scenario-box"><div class="scenario-q">An API processes 100,000 requests per second. Each request must verify the caller has not exceeded 1,000 requests per minute. The check must complete in &lt; 1ms to not add latency to the API. Which service?</div><div class="scenario-a"><strong>Answer: Memorystore (Redis).</strong> Use INCR + EXPIRE pattern: key = "rate:{api_key}:{minute_bucket}", INCR on each request, set 60-second TTL on first increment. Entire check completes in &lt; 0.5ms. No other GCP service provides the sub-millisecond latency needed for 100K concurrent checks.</div></div>
+<div class="scenario-box"><div class="scenario-q">A company needs both: (1) real-time inventory management (current stock levels, updated on every purchase/restock, queried by warehouse staff in &lt; 10ms), and (2) monthly trend analysis across 5 years of inventory history in SQL. How do you serve both?</div><div class="scenario-a"><strong>Answer: Two-layer HTAP architecture.</strong> Cloud Spanner (or Firestore) for operational inventory — low-latency reads/writes, ACID for inventory updates. BigQuery for historical analytics — petabyte SQL, trend reports, ML training. Use Dataflow or Spanner Change Streams → Pub/Sub → BigQuery to stream changes from operational to analytics in near real time.</div></div>`
+      },
+      {
+        title: 'Bigtable-specific scenario traps',
+        body: `<div class="scenario-box"><div class="scenario-q">An Apache HBase application runs on-premises and the company wants to migrate to GCP. The development team wants to reuse as much existing code as possible. Which GCP service?</div><div class="scenario-a"><strong>Answer: Cloud Bigtable.</strong> Bigtable is API-compatible with Apache HBase. Existing HBase application code connects to Bigtable by changing only the connection configuration (pointing to Bigtable's endpoint with appropriate credentials). No application code changes required.</div></div>
+<div class="scenario-box"><div class="scenario-q">A Bigtable table stores user activity events. The row key is designed as: user_id + "#" + event_type + "#" + timestamp. A query needs to retrieve all "purchase" events for user "user_001" from the last 30 days. Is this an efficient query?</div><div class="scenario-a"><strong>Answer: Yes, efficient.</strong> The query can use a row key range scan: prefix = "user_001#purchase#" with a timestamp range. Since rows are sorted by row key, this retrieves only matching rows. All data for user_001 is co-located. This is a well-designed composite key. However: "get most recent purchases" would require scanning forward from the lowest timestamp — consider using reverse timestamp if newest-first is the primary access pattern.</div></div>
+<div class="scenario-box"><div class="scenario-q">A Bigtable table has 10 column families. Performance is degrading. What is a likely cause?</div><div class="scenario-a"><strong>Answer: Too many column families.</strong> Best practice is 1–2 column families per table. Each column family requires separate storage and compaction overhead. 10 families is significantly above recommended limits. Consolidate related columns into fewer families. Note: this is different from column qualifiers — you can have millions of unique column qualifiers within a single family.</div></div>`
+      }
+    ]
+  },
+
+  /* ══════════════════════════════════════════════════
+     8. TRAPS & CHEAT SHEET
+  ══════════════════════════════════════════════════ */
+  {
+    id: 'traps', label: 'Traps & Cheatsheet', freq: 'Review',
+    topics: [
+      {
+        title: 'Cross-service traps — most commonly missed on the exam',
+        body: `<div class="kv-row"><div class="kv-key">BigQuery for random lookups</div><div class="kv-val">WRONG. BigQuery = seconds. For ms lookups → Bigtable. For sub-ms → Memorystore.</div></div>
+<div class="kv-row"><div class="kv-key">Bigtable for SQL analytics</div><div class="kv-val">WRONG. No SQL, no JOINs, no aggregations. Analytics → BigQuery.</div></div>
+<div class="kv-row"><div class="kv-key">Cloud SQL for global ACID</div><div class="kv-val">WRONG. Cloud SQL is single-region only. Global ACID → Cloud Spanner.</div></div>
+<div class="kv-row"><div class="kv-key">Cloud SQL for horizontal scaling</div><div class="kv-val">WRONG. Cloud SQL is vertically scaled only. Horizontal → Cloud Spanner.</div></div>
+<div class="kv-row"><div class="kv-key">Bigtable for datasets &lt; 300GB</div><div class="kv-val">WRONG. Expensive at small scale. Use Cloud SQL or Firestore.</div></div>
+<div class="kv-row"><div class="kv-key">Bigtable for multi-row ACID</div><div class="kv-val">WRONG. Single-row atomic writes only. Multi-row ACID → Spanner.</div></div>
+<div class="kv-row"><div class="kv-key">Memorystore as primary storage</div><div class="kv-val">WRONG. Not durable by default. Cache only — primary data lives elsewhere.</div></div>
+<div class="kv-row"><div class="kv-key">Firestore for analytics</div><div class="kv-val">WRONG. No aggregations or JOINs. Analytics → BigQuery.</div></div>
+<div class="kv-row"><div class="kv-key">Spanner for simple low-traffic apps</div><div class="kv-val">WRONG (usually). Expensive. For simple apps → Cloud SQL. Spanner = scale + global ACID.</div></div>
+<div class="alert alert-amber">Most confused pair — Bigtable vs BigQuery: Both petabyte-scale. Bigtable = online serving, ms lookups, NoSQL, write-heavy. BigQuery = offline analytics, second-level SQL scans, OLAP. Never swap them.</div>`
+      },
+      {
+        title: 'Bigtable row key rules — commit these cold',
+        body: `<div class="kv-row"><div class="kv-key">Sequential IDs as prefix</div><div class="kv-val">NEVER — causes write hotspot.</div></div>
+<div class="kv-row"><div class="kv-key">Timestamp as prefix</div><div class="kv-val">NEVER as raw timestamp — causes write hotspot. Use REVERSE timestamp instead.</div></div>
+<div class="kv-row"><div class="kv-key">Low-cardinality prefix</div><div class="kv-val">NEVER — concentrates writes. Add hash salt.</div></div>
+<div class="kv-row"><div class="kv-key">Reverse timestamp pattern</div><div class="kv-val">GOOD — newest records sort first, distributes writes over time.</div></div>
+<div class="kv-row"><div class="kv-key">Hash prefix / salt</div><div class="kv-val">GOOD — distributes writes across all tablets evenly.</div></div>
+<div class="alert alert-amber">Most confused pair one last time: Bigtable = online serving, ms lookups, NoSQL, high-write-throughput, time-series. BigQuery = offline analytics, second-level SQL scans, OLAP. A question mentioning "low-latency" and "large scale" together means Bigtable, not BigQuery.</div>`
+      },
+      {
+        title: 'Complete final cheat sheet — service selection',
+        body: `<div class="decision-table">
+<div class="decision-row"><div class="decision-q">Time-series / IoT / sensor data at scale / HBase migration</div><div class="decision-a" style="background:#050f1a;color:#4d9fff;border:1px solid #0f3050">→ Bigtable</div></div>
+<div class="decision-row"><div class="decision-q">Low-latency random reads at petabyte scale (ms)</div><div class="decision-a" style="background:#050f1a;color:#4d9fff;border:1px solid #0f3050">→ Bigtable</div></div>
+<div class="decision-row"><div class="decision-q">Global ACID / multi-region transactions / external consistency</div><div class="decision-a" style="background:#100a1a;color:#b84dff;border:1px solid #3d1550">→ Cloud Spanner</div></div>
+<div class="decision-row"><div class="decision-q">Horizontally scalable relational SQL / replace sharded MySQL</div><div class="decision-a" style="background:#100a1a;color:#b84dff;border:1px solid #3d1550">→ Cloud Spanner</div></div>
+<div class="decision-row"><div class="decision-q">Mobile/web app, real-time sync, document model, offline support</div><div class="decision-a" style="background:#1a0d06;color:#ff7a4d;border:1px solid #4d2510">→ Firestore</div></div>
+<div class="decision-row"><div class="decision-q">Existing MySQL / PostgreSQL / SQL Server / lift-and-shift RDBMS</div><div class="decision-a" style="background:#091a11;color:#4dff91;border:1px solid #0f4024">→ Cloud SQL</div></div>
+<div class="decision-row"><div class="decision-q">Sub-millisecond caching / rate limiting / leaderboard / sessions</div><div class="decision-a" style="background:#1a1000;color:#ffb84d;border:1px solid #4d3000">→ Memorystore</div></div>
+<div class="decision-row"><div class="decision-q">Petabyte SQL analytics / BI / OLAP / data warehouse</div><div class="decision-a" style="background:#050f1a;color:#4d9fff;border:1px solid #0f3050">→ BigQuery</div></div>
+<div class="decision-row"><div class="decision-q">Object storage / data lake / blobs / archival</div><div class="decision-a" style="background:#100a1a;color:#b84dff;border:1px solid #3d1550">→ Cloud Storage</div></div>
+</div>`
+      }
+    ]
+  }
+
+]; // END TABS
+
+const tabBar = document.getElementById('tabBar');
+const tabContent = document.getElementById('tabContent');
+
+TABS.forEach((tab, ti) => {
+  const btn = document.createElement('button');
+  btn.className = 'tab-btn' + (ti === 0 ? ' active' : '');
+  btn.textContent = tab.label;
+  btn.onclick = () => {
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.tab-section').forEach(s => s.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById('sec-' + ti).classList.add('active');
+  };
+  tabBar.appendChild(btn);
+
+  const sec = document.createElement('div');
+  sec.className = 'tab-section' + (ti === 0 ? ' active' : '');
+  sec.id = 'sec-' + ti;
+
+  tab.topics.forEach((topic, tpi) => {
+    const gid = `g${ti}_${tpi}`;
+    const cid = `c${ti}_${tpi}`;
+    const div = document.createElement('div');
+    div.className = 'gap';
+    div.innerHTML = `
+      <div class="gap-header" onclick="tog('${gid}','${cid}')">
+        <div class="gap-num">${tpi + 1}</div>
+        <div class="gap-title">${topic.title}</div>
+        <span class="gap-tag">${tab.freq}</span>
+        <span class="chevron${tpi === 0 ? ' open' : ''}" id="${cid}">▶</span>
+      </div>
+      <div class="gap-body${tpi === 0 ? ' open' : ''}" id="${gid}">${topic.body}</div>`;
+    sec.appendChild(div);
+  });
+
+  tabContent.appendChild(sec);
+});
+
+function tog(b, c) {
+  document.getElementById(b).classList.toggle('open');
+  document.getElementById(c).classList.toggle('open');
+}
+
+
+
+
+/* ════ SIDEBAR + BOTTOM BAR JS ════ */
+(function () {
+  var sidebar = document.getElementById('sidebar');
+  var btn     = document.getElementById('sbCollapseBtn');
+  var overlay = document.getElementById('sbOverlay');
+  if (!sidebar) return;
+
+  // ── Restore collapsed state from localStorage ──
+  var isCollapsed = localStorage.getItem('sbCollapsed') === '1';
+  if (isCollapsed) {
+    sidebar.classList.add('collapsed');
+    document.body.classList.add('sb-closed');
+  } else {
+    document.body.classList.add('sb-open');
+  }
+
+  // ── Mark active page ──
+  var path    = window.location.pathname.split('/').pop().replace('.html', '') || 'index';
+  var hash    = window.location.hash.replace('#', '');
+
+  // Activate module links
+  document.querySelectorAll('.sb-mod-link[data-page]').forEach(function (el) {
+    if (el.getAttribute('data-page') === path) el.classList.add('active');
+  });
+  // Activate bottom bar items
+  document.querySelectorAll('.bb-item[data-page]').forEach(function (el) {
+    if (el.getAttribute('data-page') === path) el.classList.add('active');
+  });
+
+  // ── Open subtopic group for current page ──
+  var grp = document.querySelector('.sb-mod-group[data-group="' + path + '"]');
+  if (grp) {
+    grp.classList.add('open');
+    // Highlight active subtopic if hash present
+    if (hash) {
+      var sub = grp.querySelector('.sb-sub-link[data-tab="' + hash + '"]');
+      if (sub) sub.classList.add('active');
+    }
+  }
+
+  // ── Expand/collapse on group header click (toggle subtopics) ──
+  document.querySelectorAll('.sb-mod-group').forEach(function (grp) {
+    var link = grp.querySelector(':scope > .sb-mod-link');
+    if (!link) return;
+    link.addEventListener('click', function (e) {
+      // Only intercept the expand toggle, not navigation to other pages
+      var targetPage = link.getAttribute('data-page');
+      if (targetPage && targetPage !== path) return; // let it navigate
+      // Same page or no page change — toggle subtopics
+      e.preventDefault();
+      grp.classList.toggle('open');
+    });
+  });
+
+  // ── Hash change: update active subtopic ──
+  window.addEventListener('hashchange', function () {
+    var h = window.location.hash.replace('#', '');
+    document.querySelectorAll('.sb-sub-link').forEach(function (el) { el.classList.remove('active'); });
+    if (h && grp) {
+      var sub = grp.querySelector('.sb-sub-link[data-tab="' + h + '"]');
+      if (sub) sub.classList.add('active');
+    }
+  });
+})();
+
+function toggleSidebar() {
+  var sidebar = document.getElementById('sidebar');
+  if (!sidebar) return;
+  var collapsed = sidebar.classList.toggle('collapsed');
+  document.body.classList.toggle('sb-open',   !collapsed);
+  document.body.classList.toggle('sb-closed', collapsed);
+  localStorage.setItem('sbCollapsed', collapsed ? '1' : '0');
+}
+function closeSidebar() {
+  // no-op on desktop; overlay not shown
+}
+/* ════ END SIDEBAR JS ════ */
+
+</script>
+</body>
+</html>
