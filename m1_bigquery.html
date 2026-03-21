@@ -1,0 +1,1418 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Module 1 — BigQuery Deep Dive</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap');
+
+/* ── DARK THEME ── */
+[data-theme="dark"] {
+  --bg: #0d0f14;
+  --surface: #161920;
+  --surface2: #1e2230;
+  --border: #2a2f3d;
+  --border2: #373d52;
+  --text: #e8eaf0;
+  --muted: #7a8099;
+  --dim: #4a5168;
+  --prose-color: #c0c4d4;
+  --kv-val-color: #9aa0b8;
+  --signal-color: #c0c4d4;
+  --code-color: #c8d0e8;
+
+  --accent: #4dff91;
+  --accent-bg: #091a11;
+  --accent-border: #0f4024;
+  --accent-text: #4dff91;
+  --num-fg: #0d0f14;
+
+  --amber: #ffb84d; --amber-bg: #1a1000; --amber-border: #4d3000;
+  --red: #ff4d4d;   --red-bg: #1a0a0a;   --red-border: #4d1515;
+
+  --alert-info-bg: #091a11;   --alert-info-text: #99ffcc;    --alert-info-border: #4dff91;
+  --alert-warn-bg: #1a1000;   --alert-warn-text: #ffd699;    --alert-warn-border: #ffb84d;
+  --alert-red-bg:  #1a0a0a;   --alert-red-text:  #ffaaaa;    --alert-red-border:  #ff4d4d;
+  --alert-green-bg:#091a11;   --alert-green-text:#99ffcc;    --alert-green-border:#4dff91;
+  --alert-purple-bg:#100a1a;  --alert-purple-text:#ddb3ff;   --alert-purple-border:#b84dff;
+
+  --code-bg: #0a0c10;
+  --scenario-bg: #1e2230;
+  --section-label-color: #2a6641;
+  --note-bg: #091a11; --note-border: #0f4024; --note-text: #99ffcc;
+  --note-ts: #2a6641; --note-input-bg: #0a0c10; --note-input-border: #0f4024;
+  --note-trigger-color: #2a6641; --note-trigger-hover: #4dff91;
+  --toggle-track-on: #0f4024;
+  --toggle-border: #0f4024;
+  --toggle-knob: #4dff91;
+  --toggle-knob-shadow: rgba(77,255,145,0.3);
+  --sun-opacity: 0.35;
+  --moon-opacity: 1;
+}
+
+/* ── LIGHT THEME ── */
+[data-theme="light"] {
+  --bg: #f7f8f4;
+  --surface: #ffffff;
+  --surface2: #f0f2ec;
+  --border: #dde0d8;
+  --border2: #c8ccc2;
+  --text: #1c1f18;
+  --muted: #5a6052;
+  --dim: #9aa090;
+  --prose-color: #4a5240;
+  --kv-val-color: #5a6052;
+  --signal-color: #4a5240;
+  --code-color: #2a3820;
+
+  --accent: #1e8a45;
+  --accent-bg: #eaf6ee;
+  --accent-border: #9ed4b2;
+  --accent-text: #1e8a45;
+  --num-fg: #ffffff;
+
+  --amber: #9a5800; --amber-bg: #fdf6e8; --amber-border: #e8c070;
+  --red: #b83030;   --red-bg: #fdf0f0;   --red-border: #e8a0a0;
+
+  --alert-info-bg: #eaf6ee;   --alert-info-text: #155c2e;   --alert-info-border: #1e8a45;
+  --alert-warn-bg: #fdf6e8;   --alert-warn-text: #7a4400;   --alert-warn-border: #c08020;
+  --alert-red-bg:  #fdf0f0;   --alert-red-text:  #8a2020;   --alert-red-border:  #c04040;
+  --alert-green-bg:#eaf6ee;   --alert-green-text:#155c2e;   --alert-green-border:#1e8a45;
+  --alert-purple-bg:#f5eeff;  --alert-purple-text:#4a2090;  --alert-purple-border:#7a40c0;
+
+  --code-bg: #f0f2ec;
+  --scenario-bg: #f4f6f0;
+  --section-label-color: #1e8a45;
+  --note-bg: #eaf6ee; --note-border: #9ed4b2; --note-text: #155c2e;
+  --note-ts: #9ed4b2; --note-input-bg: #f7f8f4; --note-input-border: #9ed4b2;
+  --note-trigger-color: #9ed4b2; --note-trigger-hover: #1e8a45;
+  --toggle-track-on: #1e8a45;
+  --toggle-border: #9ed4b2;
+  --toggle-knob: #ffffff;
+  --toggle-knob-shadow: rgba(0,0,0,0.15);
+  --sun-opacity: 1;
+  --moon-opacity: 0.4;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: 'IBM Plex Sans', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  padding: 28px 20px;
+  max-width: 860px;
+  margin: 0 auto;
+  line-height: 1.6;
+  transition: background 0.3s, color 0.3s;
+}
+
+/* ── PAGE HEADER ── */
+.page-header {
+  margin-bottom: 24px;
+  padding-bottom: 18px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  transition: border-color 0.3s;
+}
+.header-text .label {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 11px;
+  color: var(--accent);
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  margin-bottom: 7px;
+}
+.header-text h1 { font-size: 22px; font-weight: 600; color: var(--text); margin-bottom: 4px; }
+.header-text p  { font-size: 13px; color: var(--muted); }
+
+/* ── THEME TOGGLE ── */
+.theme-toggle {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  flex-shrink: 0;
+  margin-top: 2px;
+  cursor: pointer;
+  user-select: none;
+}
+.toggle-icon-sun, .toggle-icon-moon {
+  font-size: 14px;
+  line-height: 1;
+  transition: opacity 0.3s;
+}
+.toggle-icon-sun  { opacity: var(--sun-opacity); }
+.toggle-icon-moon { opacity: var(--moon-opacity); }
+
+.toggle-track {
+  position: relative;
+  width: 42px;
+  height: 24px;
+  background: var(--toggle-track-on);
+  border-radius: 99px;
+  border: 1px solid var(--toggle-border);
+  transition: background 0.3s, border-color 0.3s;
+  flex-shrink: 0;
+}
+.toggle-knob {
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: var(--toggle-knob);
+  box-shadow: 0 1px 4px var(--toggle-knob-shadow);
+  transition: transform 0.25s cubic-bezier(.4,0,.2,1), background 0.3s;
+}
+[data-theme="light"] .toggle-knob { transform: translateX(18px); }
+
+/* ── TAB BAR ── */
+.tab-bar {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  margin-bottom: 20px;
+  position: sticky;
+  top: 0;
+  background: var(--bg);
+  padding: 10px 0;
+  z-index: 10;
+  border-bottom: 1px solid var(--border);
+  transition: background 0.3s, border-color 0.3s;
+}
+.tab-btn {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 11px;
+  padding: 5px 12px;
+  border-radius: 99px;
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--muted);
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.15s;
+  letter-spacing: 0.03em;
+}
+.tab-btn:hover { background: var(--surface2); color: var(--text); }
+.tab-btn.active {
+  background: var(--accent-bg);
+  color: var(--accent-text);
+  border-color: var(--accent-border);
+  font-weight: 600;
+}
+
+.tab-section { display: none; }
+.tab-section.active { display: block; }
+
+/* ── GAP CARDS ── */
+.gap {
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  margin-bottom: 14px;
+  overflow: hidden;
+  background: var(--surface);
+  transition: background 0.3s, border-color 0.3s;
+}
+.gap-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 13px 16px;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+.gap-header:hover { background: var(--surface2); }
+
+.gap-num {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--num-fg);
+  background: var(--accent);
+  width: 22px;
+  height: 22px;
+  border-radius: 5px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: background 0.3s, color 0.3s;
+}
+
+.gap-title { flex: 1; font-size: 13.5px; font-weight: 600; color: var(--text); }
+
+.gap-tag {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 10px;
+  padding: 2px 8px;
+  border-radius: 99px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  background: var(--accent-bg);
+  color: var(--accent-text);
+  border: 1px solid var(--accent-border);
+  white-space: nowrap;
+  transition: background 0.3s, color 0.3s, border-color 0.3s;
+}
+
+.chevron { font-size: 10px; color: var(--dim); transition: transform 0.2s; margin-left: 4px; flex-shrink: 0; }
+.chevron.open { transform: rotate(90deg); }
+
+.gap-body { display: none; border-top: 1px solid var(--border); padding: 16px 18px; transition: border-color 0.3s; }
+.gap-body.open { display: block; }
+
+/* ── CONTENT ELEMENTS ── */
+.section-label {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--section-label-color);
+  margin: 14px 0 7px;
+  transition: color 0.3s;
+}
+.section-label:first-child { margin-top: 0; }
+
+p.prose { font-size: 13px; color: var(--prose-color); line-height: 1.7; margin-bottom: 8px; transition: color 0.3s; }
+p.prose:last-child { margin-bottom: 0; }
+
+.kv-row { display: flex; gap: 12px; margin-bottom: 8px; font-size: 13px; }
+.kv-key { font-weight: 600; color: var(--text); min-width: 185px; flex-shrink: 0; }
+.kv-val { color: var(--kv-val-color); line-height: 1.55; transition: color 0.3s; }
+
+.alert {
+  padding: 10px 14px;
+  font-size: 12.5px;
+  line-height: 1.6;
+  border-left: 3px solid;
+  margin: 10px 0;
+  transition: background 0.3s, color 0.3s;
+}
+.alert-blue   { background: var(--alert-info-bg);   color: var(--alert-info-text);   border-color: var(--alert-info-border); }
+.alert-amber  { background: var(--alert-warn-bg);   color: var(--alert-warn-text);   border-color: var(--alert-warn-border); }
+.alert-red    { background: var(--alert-red-bg);    color: var(--alert-red-text);    border-color: var(--alert-red-border); }
+.alert-green  { background: var(--alert-green-bg);  color: var(--alert-green-text);  border-color: var(--alert-green-border); }
+.alert-purple { background: var(--alert-purple-bg); color: var(--alert-purple-text); border-color: var(--alert-purple-border); }
+
+.code {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 11.5px;
+  background: var(--code-bg);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 12px 14px;
+  color: var(--code-color);
+  line-height: 1.65;
+  white-space: pre;
+  overflow-x: auto;
+  margin: 8px 0;
+  transition: background 0.3s, color 0.3s, border-color 0.3s;
+}
+
+.g2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 8px 0; }
+.mini { background: var(--surface2); border: 1px solid var(--border); border-radius: 8px; padding: 12px 14px; transition: background 0.3s; }
+.mt { font-size: 12px; font-weight: 600; margin-bottom: 6px; }
+.mb { font-size: 12px; color: var(--kv-val-color); line-height: 1.55; }
+
+.decision-grid { display: grid; gap: 6px; margin: 8px 0; }
+.decision-row { display: grid; grid-template-columns: 1fr auto; gap: 8px; align-items: center; background: var(--surface2); border-radius: 7px; padding: 9px 12px; transition: background 0.3s; }
+.signal { font-size: 12.5px; color: var(--signal-color); line-height: 1.5; }
+.answer { font-size: 11px; font-weight: 600; font-family: 'IBM Plex Mono', monospace; padding: 3px 10px; border-radius: 99px; white-space: nowrap; }
+
+.scenario-box { border: 1px solid var(--border); border-radius: 8px; padding: 12px 14px; margin-bottom: 10px; background: var(--scenario-bg); transition: background 0.3s, border-color 0.3s; }
+.scenario-q { font-size: 13px; font-weight: 600; color: var(--text); margin-bottom: 7px; line-height: 1.5; }
+.scenario-a { font-size: 12.5px; color: var(--kv-val-color); line-height: 1.6; }
+.scenario-a strong { color: var(--accent); font-weight: 600; }
+
+/* ── MOBILE ── */
+@media (max-width: 600px) {
+  body { padding: 14px 12px; }
+  .page-header { flex-direction: column; gap: 12px; }
+  .header-text h1 { font-size: 18px; }
+  .tab-bar { gap: 5px; padding: 8px 0; }
+  .tab-btn { font-size: 10px; padding: 4px 9px; }
+  .gap-header { padding: 11px 13px; gap: 8px; }
+  .gap-title { font-size: 12.5px; }
+  .gap-tag { display: none; }
+  .gap-body { padding: 13px 14px; }
+  .kv-row { flex-direction: column; gap: 3px; }
+  .kv-key { min-width: unset; }
+  .g2 { grid-template-columns: 1fr; }
+  .decision-row { grid-template-columns: 1fr; }
+  .answer { width: fit-content; }
+  .code { font-size: 10.5px; padding: 10px 11px; }
+}
+
+/* ── NOTES ── */
+.note-zone { margin-top: 14px; border-top: 1px solid var(--border); padding-top: 12px; }
+.notes-list { display: flex; flex-direction: column; gap: 8px; margin-bottom: 8px; }
+.note-item { background: var(--note-bg); border-left: 2px solid var(--accent); border-radius: 0 6px 6px 0; padding: 9px 11px; }
+.note-item-text { font-size: 12.5px; color: var(--note-text); line-height: 1.6; white-space: pre-wrap; word-break: break-word; }
+.note-item-footer { display: flex; align-items: center; justify-content: space-between; margin-top: 6px; }
+.note-ts { font-family: 'IBM Plex Mono', monospace; font-size: 10px; color: var(--note-ts); }
+.note-item-actions { display: flex; gap: 4px; }
+.note-action-btn { font-size: 10px; font-family: 'IBM Plex Mono', monospace; padding: 2px 8px; border-radius: 99px; border: 1px solid var(--border); background: transparent; color: var(--muted); cursor: pointer; transition: all .15s; }
+.note-action-btn:hover { background: var(--surface2); color: var(--text); }
+.note-action-btn.del:hover { background: var(--alert-red-bg); color: var(--alert-red-text); border-color: var(--alert-red-border); }
+.note-form { margin-top: 8px; }
+.note-form textarea { width: 100%; font-size: 12.5px; font-family: 'IBM Plex Sans', sans-serif; line-height: 1.55; resize: vertical; min-height: 68px; padding: 8px 10px; border-radius: 6px; border: 1px solid var(--note-input-border); background: var(--note-input-bg); color: var(--text); transition: background .3s, border-color .3s; }
+.note-form textarea:focus { outline: none; border-color: var(--accent); }
+.note-form-actions { display: flex; gap: 6px; margin-top: 6px; }
+.note-save-btn { font-size: 11px; font-family: 'IBM Plex Mono', monospace; padding: 4px 12px; border-radius: 99px; border: 1px solid var(--accent-border); background: var(--accent-bg); color: var(--accent-text); cursor: pointer; font-weight: 600; transition: all .15s; }
+.note-save-btn:hover { background: var(--accent); color: var(--num-fg); }
+.note-cancel-btn { font-size: 11px; font-family: 'IBM Plex Mono', monospace; padding: 4px 12px; border-radius: 99px; border: 1px solid var(--border); background: transparent; color: var(--muted); cursor: pointer; transition: all .15s; }
+.note-cancel-btn:hover { background: var(--surface2); color: var(--text); }
+.note-add-trigger { display: flex; align-items: center; gap: 6px; font-family: 'IBM Plex Mono', monospace; font-size: 11px; color: var(--note-trigger-color); cursor: pointer; padding: 4px 0; background: none; border: none; transition: color .15s; letter-spacing: .03em; }
+.note-add-trigger:hover { color: var(--note-trigger-hover); }
+
+
+
+
+/* ════════════════════════════════════════════════════════
+   SIDEBAR + BOTTOM BAR
+════════════════════════════════════════════════════════ */
+:root { --sb-w: 220px; --sb-w-collapsed: 48px; --bb-h: 56px; }
+
+[data-theme="dark"] {
+  --sb-bg: #0f1118;
+  --sb-border: #1e2230;
+  --sb-hover: #1a1f2e;
+  --sb-active-bg: #091a11;
+  --sb-active-text: #4dff91;
+  --sb-active-border: #0f4024;
+  --sb-text: #7a8099;
+  --sb-text-strong: #c0c4d4;
+  --sb-num: #3a3f52;
+  --sb-badge-bg: #091a11;
+  --sb-badge-text: #4dff91;
+  --sb-badge-border: #0f4024;
+  --sb-sub-text: #5a6070;
+  --sb-sub-hover: #1e2230;
+  --sb-section: #252b3a;
+  --sb-collapse-color: #4a5168;
+  --sb-overlay-bg: rgba(0,0,0,0.55);
+  --bb-bg: #0f1118;
+  --bb-border: #1e2230;
+  --bb-text: #5a6070;
+  --bb-active: #4dff91;
+}
+[data-theme="light"] {
+  --sb-bg: #ffffff;
+  --sb-border: #e4e8e0;
+  --sb-hover: #f4f6f0;
+  --sb-active-bg: #eaf6ee;
+  --sb-active-text: #1e8a45;
+  --sb-active-border: #9ed4b2;
+  --sb-text: #6a7060;
+  --sb-text-strong: #2a3020;
+  --sb-num: #c0c8b8;
+  --sb-badge-bg: #eaf6ee;
+  --sb-badge-text: #1e8a45;
+  --sb-badge-border: #9ed4b2;
+  --sb-sub-text: #9aa090;
+  --sb-sub-hover: #f0f4ec;
+  --sb-section: #eaeee6;
+  --sb-collapse-color: #b0b8a8;
+  --sb-overlay-bg: rgba(0,0,0,0.25);
+  --bb-bg: #ffffff;
+  --bb-border: #e4e8e0;
+  --bb-text: #9aa090;
+  --bb-active: #1e8a45;
+}
+
+/* ── LAYOUT SHIFT ── */
+body { transition: padding-left .25s cubic-bezier(.4,0,.2,1); }
+body.sb-open   { padding-left: var(--sb-w) !important; }
+body.sb-closed { padding-left: var(--sb-w-collapsed) !important; }
+
+/* ── SIDEBAR ── */
+.sidebar {
+  position: fixed;
+  top: 0; left: 0;
+  width: var(--sb-w);
+  height: 100vh;
+  background: var(--sb-bg);
+  border-right: 1px solid var(--sb-border);
+  display: flex;
+  flex-direction: column;
+  z-index: 200;
+  overflow: hidden;
+  transition: width .25s cubic-bezier(.4,0,.2,1), background .3s, border-color .3s;
+}
+.sidebar.collapsed { width: var(--sb-w-collapsed); }
+.sidebar.collapsed .sb-mod-label,
+.sidebar.collapsed .sb-expand-icon,
+.sidebar.collapsed .sb-brand,
+.sidebar.collapsed .sb-subtopics { display: none; }
+.sidebar.collapsed .sb-mod-num,
+.sidebar.collapsed .sb-mod-icon { margin: 0 auto; }
+.sidebar.collapsed .sb-mod-link { justify-content: center; padding: 10px 0; }
+.sidebar.collapsed .sb-nav { padding-top: 4px; }
+
+/* ── SIDEBAR HEAD ── */
+.sb-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 14px 12px;
+  border-bottom: 1px solid var(--sb-border);
+  flex-shrink: 0;
+  min-height: 52px;
+  gap: 8px;
+}
+.sb-brand {
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  overflow: hidden;
+}
+.sb-badge {
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 10px;
+  font-weight: 600;
+  background: var(--sb-badge-bg);
+  color: var(--sb-badge-text);
+  border: 1px solid var(--sb-badge-border);
+  border-radius: 5px;
+  padding: 3px 7px;
+  letter-spacing: .06em;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+.sb-collapse-btn {
+  background: none;
+  border: 1px solid var(--sb-border);
+  border-radius: 6px;
+  color: var(--sb-collapse-color);
+  font-size: 10px;
+  cursor: pointer;
+  padding: 4px 7px;
+  line-height: 1;
+  transition: all .15s;
+  flex-shrink: 0;
+  white-space: nowrap;
+}
+.sb-collapse-btn:hover { background: var(--sb-hover); color: var(--sb-text-strong); }
+.sidebar.collapsed .sb-collapse-btn { transform: rotate(180deg); }
+
+/* ── SIDEBAR NAV ── */
+.sb-nav {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 8px 0 24px;
+  scrollbar-width: thin;
+  scrollbar-color: var(--sb-border) transparent;
+}
+
+.sb-mod-link {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px 8px 14px;
+  text-decoration: none;
+  color: var(--sb-text);
+  font-size: 12.5px;
+  font-weight: 500;
+  border-left: 2px solid transparent;
+  transition: background .1s, color .1s, border-color .1s;
+  line-height: 1.3;
+}
+.sb-mod-link:hover {
+  background: var(--sb-hover);
+  color: var(--sb-text-strong);
+}
+.sb-mod-link.active {
+  background: var(--sb-active-bg);
+  color: var(--sb-active-text);
+  border-left-color: var(--sb-active-border);
+  font-weight: 600;
+}
+.sb-mod-num {
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 10px;
+  color: var(--sb-num);
+  flex-shrink: 0;
+  width: 20px;
+  text-align: right;
+  transition: color .1s;
+}
+.sb-mod-icon { font-size: 13px; flex-shrink: 0; width: 20px; text-align: center; }
+.sb-mod-label { flex: 1; }
+.sb-mod-link.active .sb-mod-num { color: var(--sb-active-text); opacity: .55; }
+
+.sb-expand-icon {
+  font-size: 9px;
+  color: var(--sb-num);
+  flex-shrink: 0;
+  transition: transform .18s;
+}
+.sb-mod-group.open > .sb-mod-link .sb-expand-icon { transform: rotate(90deg); }
+
+/* ── SUBTOPICS ── */
+.sb-subtopics {
+  display: none;
+  flex-direction: column;
+  border-left: 1px solid var(--sb-border);
+  margin: 0 0 2px 28px;
+}
+.sb-mod-group.open > .sb-subtopics { display: flex; }
+
+.sb-sub-link {
+  display: block;
+  padding: 5px 10px 5px 12px;
+  font-size: 11.5px;
+  color: var(--sb-sub-text);
+  text-decoration: none;
+  border-left: 2px solid transparent;
+  transition: background .1s, color .1s, border-color .1s;
+  line-height: 1.4;
+}
+.sb-sub-link:hover {
+  background: var(--sb-sub-hover);
+  color: var(--sb-text-strong);
+}
+.sb-sub-link.active {
+  color: var(--sb-active-text);
+  border-left-color: var(--sb-active-border);
+  font-weight: 600;
+}
+
+/* ── OVERLAY ── */
+.sb-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: var(--sb-overlay-bg);
+  z-index: 199;
+}
+
+/* ════════════════════════════════════════════════════════
+   MOBILE — BOTTOM TAB BAR (≤768px)
+════════════════════════════════════════════════════════ */
+.bottom-bar {
+  display: none;
+}
+
+@media (max-width: 768px) {
+  /* hide desktop sidebar entirely */
+  .sidebar, .sb-overlay { display: none !important; }
+
+  /* undo layout shift */
+  body.sb-open, body.sb-closed { padding-left: 0 !important; }
+
+  /* push content up so bottom bar doesn't overlap */
+  body { padding-bottom: calc(var(--bb-h) + 4px) !important; }
+
+  .bottom-bar {
+    display: flex;
+    position: fixed;
+    bottom: 0; left: 0; right: 0;
+    height: var(--bb-h);
+    background: var(--bb-bg);
+    border-top: 1px solid var(--bb-border);
+    z-index: 200;
+    align-items: stretch;
+    transition: background .3s, border-color .3s;
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+  .bottom-bar::-webkit-scrollbar { display: none; }
+
+  .bb-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 3px;
+    flex: 1;
+    min-width: 52px;
+    text-decoration: none;
+    color: var(--bb-text);
+    padding: 6px 4px;
+    border-top: 2px solid transparent;
+    transition: color .15s, border-color .15s;
+  }
+  .bb-item.active {
+    color: var(--bb-active);
+    border-top-color: var(--bb-active);
+  }
+  .bb-icon {
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 12px;
+    font-weight: 600;
+    line-height: 1;
+  }
+  .bb-label {
+    font-size: 9px;
+    font-family: "IBM Plex Mono", monospace;
+    letter-spacing: .02em;
+    white-space: nowrap;
+  }
+
+  /* keep tab-bar sticky above bottom bar on module pages */
+  .tab-bar { bottom: var(--bb-h) !important; }
+}
+
+/* also hide toggle button from index page header on desktop
+   (hamburger only needed on mobile, but we removed that approach) */
+.sb-menu-btn { display: none; }
+/* ════════════════════════════════════════════════════════
+   END SIDEBAR + BOTTOM BAR
+════════════════════════════════════════════════════════ */
+
+</style>
+</head>
+<body>
+<!-- ═══ SIDEBAR ═══ -->
+<div class="sb-overlay" id="sbOverlay" onclick="closeSidebar()"></div>
+<aside class="sidebar" id="sidebar">
+  <div class="sb-head">
+    <a href="index.html" class="sb-brand">
+      <span class="sb-badge">GCP PDE</span>
+    </a>
+    <button class="sb-collapse-btn" id="sbCollapseBtn" onclick="toggleSidebar()" title="Collapse sidebar">◀</button>
+  </div>
+  <div class="sb-nav">
+    <a href="index.html" class="sb-mod-link" data-page="index">
+      <span class="sb-mod-icon">⌂</span>
+      <span class="sb-mod-label">Home</span>
+    </a>
+    <div class="sb-mod-group" data-group="m1_bigquery">
+      <a href="m1_bigquery.html" class="sb-mod-link" data-page="m1_bigquery">
+        <span class="sb-mod-num">01</span>
+        <span class="sb-mod-label">BigQuery</span>
+        <span class="sb-expand-icon">▸</span>
+      </a>
+      <div class="sb-subtopics" id="sub-m1_bigquery">
+        <a href="m1_bigquery.html#partitioning" class="sb-sub-link" data-page="m1_bigquery" data-tab="partitioning">Partitioning & clustering</a>
+        <a href="m1_bigquery.html#pricing" class="sb-sub-link" data-page="m1_bigquery" data-tab="pricing">Pricing & slots</a>
+        <a href="m1_bigquery.html#bqml" class="sb-sub-link" data-page="m1_bigquery" data-tab="bqml">BigQuery ML</a>
+        <a href="m1_bigquery.html#security" class="sb-sub-link" data-page="m1_bigquery" data-tab="security">Security & access control</a>
+        <a href="m1_bigquery.html#external" class="sb-sub-link" data-page="m1_bigquery" data-tab="external">External tables & BigLake</a>
+        <a href="m1_bigquery.html#advanced" class="sb-sub-link" data-page="m1_bigquery" data-tab="advanced">Advanced SQL & features</a>
+        <a href="m1_bigquery.html#scenarios" class="sb-sub-link" data-page="m1_bigquery" data-tab="scenarios">Exam scenarios</a>
+      </div>
+    </div>
+    <div class="sb-mod-group" data-group="m2_dataflow_pubsub">
+      <a href="m2_dataflow_pubsub.html" class="sb-mod-link" data-page="m2_dataflow_pubsub">
+        <span class="sb-mod-num">02</span>
+        <span class="sb-mod-label">Dataflow & Pub/Sub</span>
+        <span class="sb-expand-icon">▸</span>
+      </a>
+      <div class="sb-subtopics" id="sub-m2_dataflow_pubsub">
+        <a href="m2_dataflow_pubsub.html#beam" class="sb-sub-link" data-page="m2_dataflow_pubsub" data-tab="beam">Apache Beam model</a>
+        <a href="m2_dataflow_pubsub.html#windowing" class="sb-sub-link" data-page="m2_dataflow_pubsub" data-tab="windowing">Windowing</a>
+        <a href="m2_dataflow_pubsub.html#dataflow" class="sb-sub-link" data-page="m2_dataflow_pubsub" data-tab="dataflow">Dataflow service</a>
+        <a href="m2_dataflow_pubsub.html#pubsub" class="sb-sub-link" data-page="m2_dataflow_pubsub" data-tab="pubsub">Pub/Sub</a>
+        <a href="m2_dataflow_pubsub.html#pipeline" class="sb-sub-link" data-page="m2_dataflow_pubsub" data-tab="pipeline">The canonical pipeline</a>
+        <a href="m2_dataflow_pubsub.html#scenarios" class="sb-sub-link" data-page="m2_dataflow_pubsub" data-tab="scenarios">Exam scenarios</a>
+      </div>
+    </div>
+    <div class="sb-mod-group" data-group="m3_storage_services">
+      <a href="m3_storage_services.html" class="sb-mod-link" data-page="m3_storage_services">
+        <span class="sb-mod-num">03</span>
+        <span class="sb-mod-label">Storage Services</span>
+        <span class="sb-expand-icon">▸</span>
+      </a>
+      <div class="sb-subtopics" id="sub-m3_storage_services">
+        <a href="m3_storage_services.html#decision" class="sb-sub-link" data-page="m3_storage_services" data-tab="decision">Decision Framework</a>
+        <a href="m3_storage_services.html#bigtable" class="sb-sub-link" data-page="m3_storage_services" data-tab="bigtable">Bigtable</a>
+        <a href="m3_storage_services.html#spanner" class="sb-sub-link" data-page="m3_storage_services" data-tab="spanner">Cloud Spanner</a>
+        <a href="m3_storage_services.html#firestore" class="sb-sub-link" data-page="m3_storage_services" data-tab="firestore">Firestore</a>
+        <a href="m3_storage_services.html#cloudsql" class="sb-sub-link" data-page="m3_storage_services" data-tab="cloudsql">Cloud SQL</a>
+        <a href="m3_storage_services.html#memorystore" class="sb-sub-link" data-page="m3_storage_services" data-tab="memorystore">Memorystore</a>
+        <a href="m3_storage_services.html#scenarios" class="sb-sub-link" data-page="m3_storage_services" data-tab="scenarios">Exam Scenarios</a>
+        <a href="m3_storage_services.html#traps" class="sb-sub-link" data-page="m3_storage_services" data-tab="traps">Traps & Cheatsheet</a>
+      </div>
+    </div>
+    <div class="sb-mod-group" data-group="m4_data_processing_governance">
+      <a href="m4_data_processing_governance.html" class="sb-mod-link" data-page="m4_data_processing_governance">
+        <span class="sb-mod-num">04</span>
+        <span class="sb-mod-label">Data Processing</span>
+        <span class="sb-expand-icon">▸</span>
+      </a>
+      <div class="sb-subtopics" id="sub-m4_data_processing_governance">
+        <a href="m4_data_processing_governance.html#dataproc" class="sb-sub-link" data-page="m4_data_processing_governance" data-tab="dataproc">Dataproc</a>
+        <a href="m4_data_processing_governance.html#datafusion" class="sb-sub-link" data-page="m4_data_processing_governance" data-tab="datafusion">Cloud Data Fusion</a>
+        <a href="m4_data_processing_governance.html#dataform" class="sb-sub-link" data-page="m4_data_processing_governance" data-tab="dataform">Dataform</a>
+        <a href="m4_data_processing_governance.html#datastream" class="sb-sub-link" data-page="m4_data_processing_governance" data-tab="datastream">Datastream</a>
+        <a href="m4_data_processing_governance.html#composer" class="sb-sub-link" data-page="m4_data_processing_governance" data-tab="composer">Cloud Composer</a>
+        <a href="m4_data_processing_governance.html#dataplex" class="sb-sub-link" data-page="m4_data_processing_governance" data-tab="dataplex">Dataplex</a>
+        <a href="m4_data_processing_governance.html#datacatalog" class="sb-sub-link" data-page="m4_data_processing_governance" data-tab="datacatalog">Data Catalog</a>
+        <a href="m4_data_processing_governance.html#dlp" class="sb-sub-link" data-page="m4_data_processing_governance" data-tab="dlp">Cloud DLP</a>
+        <a href="m4_data_processing_governance.html#analyticshub" class="sb-sub-link" data-page="m4_data_processing_governance" data-tab="analyticshub">Analytics Hub</a>
+        <a href="m4_data_processing_governance.html#decision" class="sb-sub-link" data-page="m4_data_processing_governance" data-tab="decision">Decision Reference</a>
+      </div>
+    </div>
+    <div class="sb-mod-group" data-group="m5_security_ml_architecture">
+      <a href="m5_security_ml_architecture.html" class="sb-mod-link" data-page="m5_security_ml_architecture">
+        <span class="sb-mod-num">05</span>
+        <span class="sb-mod-label">Security & ML</span>
+        <span class="sb-expand-icon">▸</span>
+      </a>
+      <div class="sb-subtopics" id="sub-m5_security_ml_architecture">
+        <a href="m5_security_ml_architecture.html#iam" class="sb-sub-link" data-page="m5_security_ml_architecture" data-tab="iam">IAM</a>
+        <a href="m5_security_ml_architecture.html#encryption" class="sb-sub-link" data-page="m5_security_ml_architecture" data-tab="encryption">Encryption</a>
+        <a href="m5_security_ml_architecture.html#vpcsc" class="sb-sub-link" data-page="m5_security_ml_architecture" data-tab="vpcsc">VPC Service Controls</a>
+        <a href="m5_security_ml_architecture.html#audit" class="sb-sub-link" data-page="m5_security_ml_architecture" data-tab="audit">Audit Logging</a>
+        <a href="m5_security_ml_architecture.html#ml" class="sb-sub-link" data-page="m5_security_ml_architecture" data-tab="ml">ML Fundamentals</a>
+        <a href="m5_security_ml_architecture.html#vertex" class="sb-sub-link" data-page="m5_security_ml_architecture" data-tab="vertex">Vertex AI</a>
+        <a href="m5_security_ml_architecture.html#batchstream" class="sb-sub-link" data-page="m5_security_ml_architecture" data-tab="batchstream">Batch vs Streaming</a>
+        <a href="m5_security_ml_architecture.html#refarch" class="sb-sub-link" data-page="m5_security_ml_architecture" data-tab="refarch">Reference Architecture</a>
+        <a href="m5_security_ml_architecture.html#scenarios" class="sb-sub-link" data-page="m5_security_ml_architecture" data-tab="scenarios">Architecture Scenarios</a>
+      </div>
+    </div>
+    <div class="sb-mod-group" data-group="m6_advanced_topics">
+      <a href="m6_advanced_topics.html" class="sb-mod-link" data-page="m6_advanced_topics">
+        <span class="sb-mod-num">06</span>
+        <span class="sb-mod-label">Advanced Topics</span>
+        <span class="sb-expand-icon">▸</span>
+      </a>
+      <div class="sb-subtopics" id="sub-m6_advanced_topics">
+        <a href="m6_advanced_topics.html#bq" class="sb-sub-link" data-page="m6_advanced_topics" data-tab="bq">BigQuery</a>
+        <a href="m6_advanced_topics.html#dataflow" class="sb-sub-link" data-page="m6_advanced_topics" data-tab="dataflow">Dataflow</a>
+        <a href="m6_advanced_topics.html#pubsub" class="sb-sub-link" data-page="m6_advanced_topics" data-tab="pubsub">Pub/Sub</a>
+        <a href="m6_advanced_topics.html#spanner" class="sb-sub-link" data-page="m6_advanced_topics" data-tab="spanner">Cloud Spanner</a>
+        <a href="m6_advanced_topics.html#dataproc" class="sb-sub-link" data-page="m6_advanced_topics" data-tab="dataproc">Dataproc</a>
+        <a href="m6_advanced_topics.html#vertex" class="sb-sub-link" data-page="m6_advanced_topics" data-tab="vertex">Vertex AI</a>
+        <a href="m6_advanced_topics.html#security" class="sb-sub-link" data-page="m6_advanced_topics" data-tab="security">Security</a>
+        <a href="m6_advanced_topics.html#exactlyonce" class="sb-sub-link" data-page="m6_advanced_topics" data-tab="exactlyonce">Exactly-Once Semantics</a>
+        <a href="m6_advanced_topics.html#signals" class="sb-sub-link" data-page="m6_advanced_topics" data-tab="signals">Signal Prioritization</a>
+        <a href="m6_advanced_topics.html#cheatsheet" class="sb-sub-link" data-page="m6_advanced_topics" data-tab="cheatsheet">Cheat Sheet</a>
+      </div>
+    </div>
+  </div>
+</aside>
+<!-- ═══ END SIDEBAR ═══ -->
+
+<!-- ═══ MOBILE BOTTOM BAR ═══ -->
+<nav class="bottom-bar" id="bottomBar">
+  <a href="index.html" class="bb-item" data-page="index">
+    <span class="bb-icon">⌂</span>
+    <span class="bb-label">Home</span>
+  </a>
+  <a href="m1_bigquery.html" class="bb-item" data-page="m1_bigquery">
+    <span class="bb-icon">01</span>
+    <span class="bb-label">BigQuery</span>
+  </a>
+  <a href="m2_dataflow_pubsub.html" class="bb-item" data-page="m2_dataflow_pubsub">
+    <span class="bb-icon">02</span>
+    <span class="bb-label">Dataflow</span>
+  </a>
+  <a href="m3_storage_services.html" class="bb-item" data-page="m3_storage_services">
+    <span class="bb-icon">03</span>
+    <span class="bb-label">Storage</span>
+  </a>
+  <a href="m4_data_processing_governance.html" class="bb-item" data-page="m4_data_processing_governance">
+    <span class="bb-icon">04</span>
+    <span class="bb-label">Data</span>
+  </a>
+  <a href="m5_security_ml_architecture.html" class="bb-item" data-page="m5_security_ml_architecture">
+    <span class="bb-icon">05</span>
+    <span class="bb-label">Security</span>
+  </a>
+  <a href="m6_advanced_topics.html" class="bb-item" data-page="m6_advanced_topics">
+    <span class="bb-icon">06</span>
+    <span class="bb-label">Advanced</span>
+  </a>
+</nav>
+<!-- ═══ END MOBILE BOTTOM BAR ═══ -->
+
+
+
+<div class="page-header">
+  <div class="header-text">
+    <div class="label">GCP PDE Study Notes — Module 1</div>
+    <h1>BigQuery Deep Dive</h1>
+    <p>7 subtopics · tap a tab to switch · tap cards to expand · add notes per card</p>
+  </div>
+  <div class="theme-toggle" onclick="toggleTheme()" title="Toggle light / dark mode">
+    <span class="toggle-icon-sun">☀️</span>
+    <div class="toggle-track"><div class="toggle-knob"></div></div>
+    <span class="toggle-icon-moon">🌙</span>
+  </div>
+</div>
+
+<div class="tab-bar" id="tabBar"></div>
+<div id="tabContent"></div>
+
+<script>
+function toggleTheme() {
+  const html = document.documentElement;
+  html.setAttribute('data-theme', html.getAttribute('data-theme') === 'dark' ? 'light' : 'dark');
+}
+
+const TABS = [
+  {
+    id: "partitioning", label: "Partitioning & clustering", freq: "Very high",
+    topics: [
+      {
+        title: "Partitioned tables — how they work",
+        body: `<p class="prose">Partitioning physically divides a table's data into segments called partitions. When a query includes a filter on the partition column, BigQuery reads only the relevant partitions — skipping the rest entirely. This dramatically reduces bytes processed, which directly lowers cost on on-demand pricing and reduces slot consumption on reservations.</p>
+<div class="section-label">Three partition types</div>
+<div class="kv-row"><div class="kv-key">Ingestion-time (_PARTITIONTIME)</div><div class="kv-val">BQ auto-assigns rows to daily or hourly partitions based on when data was loaded. No partition column needed in the schema. Used when you don't have a meaningful timestamp column.</div></div>
+<div class="kv-row"><div class="kv-key">Column partitioning (DATE/TIMESTAMP/DATETIME)</div><div class="kv-val">You designate a DATE, TIMESTAMP, or DATETIME column. BQ partitions by day by default; can also partition by HOUR, MONTH, or YEAR.</div></div>
+<div class="kv-row"><div class="kv-key">Integer range partitioning</div><div class="kv-val">Partition by an INT64 column across user-defined ranges. E.g., partition by customer_id ranges 0-999, 1000-1999, etc. Useful for ID-based sharding patterns.</div></div>
+<div class="code">CREATE TABLE sales.orders
+PARTITION BY DATE(order_date)
+OPTIONS (partition_expiration_days = 90)
+AS SELECT * FROM raw.orders;</div>
+<div class="alert alert-amber">Exam trap: partitioning only helps if your WHERE clause filters on the partition column. A query with no filter scans ALL partitions — same cost as an unpartitioned table. Partition pruning requires the filter to be deterministic at query planning time.</div>
+<div class="section-label">Partition limits</div>
+<div class="kv-row"><div class="kv-key">Max partitions per table</div><div class="kv-val">10,000 partitions</div></div>
+<div class="kv-row"><div class="kv-key">Partition expiration</div><div class="kv-val">Set at table or partition level; expired partitions are auto-deleted</div></div>
+<div class="kv-row"><div class="kv-key">Require partition filter</div><div class="kv-val">Set requirePartitionFilter=true to force callers to always filter on partition column — prevents accidental full table scans</div></div>`
+      },
+      {
+        title: "Clustered tables — how they work",
+        body: `<p class="prose">Clustering sorts the data within each partition (or within the whole table for non-partitioned tables) by the values of up to 4 columns you specify. BQ stores sorted blocks of data and maintains metadata about the min/max values in each block. When a query filters on clustered columns, BQ skips blocks that cannot contain matching rows — a process called block pruning.</p>
+<div class="alert alert-blue">Clustering cost savings are estimated, not guaranteed. BigQuery shows an estimated bytes processed before you run the query, but the actual bytes may differ slightly because pruning is not perfectly precise.</div>
+<div class="section-label">Clustering column ordering matters</div>
+<p class="prose">Cluster columns are specified in order. Pruning is most effective for the first column, then progressively less effective for later columns. If your queries most often filter on status then region, declare CLUSTER BY status, region — not the reverse.</p>
+<div class="code">CREATE TABLE sales.orders
+PARTITION BY DATE(order_date)
+CLUSTER BY customer_id, status
+AS SELECT * FROM raw.orders;</div>
+<div class="section-label">Partition + cluster together</div>
+<p class="prose">This is the power pattern. Partition by date reduces the partitions scanned; clustering within each partition reduces blocks scanned. A query like WHERE order_date = '2024-01-15' AND customer_id = 42 benefits from both layers of pruning.</p>
+<div class="alert alert-green">Rule of thumb for the exam: high-cardinality columns (customer_id, user_id, device_id) → cluster. Low-cardinality time-based columns (date, month) → partition. Status/region columns → cluster after the high-cardinality one.</div>`
+      },
+      {
+        title: "Partitioning vs clustering decision",
+        body: `<div class="kv-row"><div class="kv-key">Use partitioning when...</div><div class="kv-val">You filter heavily on a date/time column, you want to set partition expiration, you want to use DML (UPDATE/DELETE) efficiently on a time range, or you need to enforce partition filters.</div></div>
+<div class="kv-row"><div class="kv-key">Use clustering when...</div><div class="kv-val">Your filter columns are high-cardinality (many distinct values), you want to sort by non-date columns, your table is under 1GB (partitioning overhead not worth it), or you want to cluster in addition to partitioning.</div></div>
+<div class="kv-row"><div class="kv-key">Use both when...</div><div class="kv-val">You have a time dimension AND a high-cardinality filter column — this is the most common production pattern.</div></div>
+<div class="alert alert-amber">Exam scenario: 'A table has 500M rows. Queries always filter on event_date (date) and country (low cardinality, ~200 values). How do you optimize?' Answer: Partition by event_date, cluster by country.</div>`
+      }
+    ]
+  },
+  {
+    id: "pricing", label: "Pricing & slots", freq: "High",
+    topics: [
+      {
+        title: "On-demand vs capacity pricing models",
+        body: `<div class="section-label">On-demand pricing</div>
+<p class="prose">You pay $6.25 per TB of data processed. No reservation required — you get up to 2,000 concurrent slots by default. Cost is unpredictable; a poorly written query can scan a massive table and incur large unexpected charges. Best for exploratory/ad-hoc workloads or teams without predictable query volumes.</p>
+<div class="section-label">Capacity pricing (reservations)</div>
+<p class="prose">You purchase a committed number of slots (BigQuery processing units). A slot is a virtual CPU — BigQuery automatically parallelizes queries across available slots. You pay for slots whether used or not. Best for large, predictable workloads where you want cost caps and performance guarantees.</p>
+<div class="kv-row"><div class="kv-key">Slot editions (as of 2023+)</div><div class="kv-val">Standard, Enterprise, and Enterprise Plus tiers — replacing old flat-rate model. Standard allows autoscaling; Enterprise adds CMEK/VPC-SC; Enterprise Plus adds higher SLA and disaster recovery.</div></div>
+<div class="kv-row"><div class="kv-key">Autoscaling slots</div><div class="kv-val">Slots can scale up automatically during peak demand and scale back down. You set a baseline and a maximum — you're only billed for the peak slots used per second.</div></div>
+<div class="kv-row"><div class="kv-key">Slot reservations</div><div class="kv-val">You create a reservation (pool of slots) and assign projects or folders to it. Queries in those projects draw from that slot pool.</div></div>
+<div class="kv-row"><div class="kv-key">Idle slots</div><div class="kv-val">Unused slots in your reservation can be shared to other reservations in the same admin project via slot sharing.</div></div>
+<div class="alert alert-blue">Exam angle: on-demand is cheaper for low/bursty query volumes; capacity is cheaper for steady high-volume workloads. The break-even point is roughly when your queries process 100+ TB/month consistently.</div>`
+      },
+      {
+        title: "Slot commitments and flex slots",
+        body: `<div class="kv-row"><div class="kv-key">Annual/monthly commitments</div><div class="kv-val">Lower per-slot price in exchange for 1-year or 1-month commitment. Cannot be cancelled during the commitment period.</div></div>
+<div class="kv-row"><div class="kv-key">Flex slots</div><div class="kv-val">Purchase slots by the minute (60-second minimum). Useful for burst workloads — spin up extra slots for a long-running batch job, then release them.</div></div>
+<div class="kv-row"><div class="kv-key">INFORMATION_SCHEMA.JOBS</div><div class="kv-val">Query this view to analyze slot utilization, bytes billed, query duration, and job errors across your project. Critical for capacity planning.</div></div>
+<div class="code">SELECT
+  job_id,
+  total_slot_ms / 1000 AS slot_seconds,
+  total_bytes_processed / POW(10,9) AS gb_processed,
+  TIMESTAMP_DIFF(end_time, start_time, SECOND) AS duration_sec
+FROM \`region-us\`.INFORMATION_SCHEMA.JOBS
+WHERE DATE(creation_time) = CURRENT_DATE()
+ORDER BY total_slot_ms DESC
+LIMIT 20;</div>`
+      }
+    ]
+  },
+  {
+    id: "bqml", label: "BigQuery ML", freq: "Medium-high",
+    topics: [
+      {
+        title: "BigQuery ML overview and supported models",
+        body: `<p class="prose">BigQuery ML lets you create and execute machine learning models directly in BigQuery using SQL — no need to export data to Python or move it to Vertex AI for standard use cases. The model is stored as a BigQuery object in your dataset.</p>
+<div class="section-label">Supported model types (know these for the exam)</div>
+<div class="kv-row"><div class="kv-key">LINEAR_REG</div><div class="kv-val">Linear regression — predict a continuous numeric value (e.g., predicted revenue).</div></div>
+<div class="kv-row"><div class="kv-key">LOGISTIC_REG</div><div class="kv-val">Logistic regression — binary or multi-class classification (e.g., churn: yes/no).</div></div>
+<div class="kv-row"><div class="kv-key">KMEANS</div><div class="kv-val">Unsupervised clustering — segment data into k clusters. No label column needed.</div></div>
+<div class="kv-row"><div class="kv-key">MATRIX_FACTORIZATION</div><div class="kv-val">Recommendation systems — collaborative filtering (e.g., product recommendations).</div></div>
+<div class="kv-row"><div class="kv-key">TIME_SERIES (ARIMA_PLUS)</div><div class="kv-val">Time series forecasting — automatically handles seasonality and trend.</div></div>
+<div class="kv-row"><div class="kv-key">AUTOML_CLASSIFIER / AUTOML_REGRESSOR</div><div class="kv-val">Uses Vertex AI AutoML under the hood via BigQuery ML interface.</div></div>
+<div class="kv-row"><div class="kv-key">TENSORFLOW / PYTORCH</div><div class="kv-val">Import pre-trained TF/PyTorch models from Cloud Storage and run predictions in BQ.</div></div>
+<div class="kv-row"><div class="kv-key">RANDOM_FOREST_*, BOOSTED_TREE_*</div><div class="kv-val">Tree-based models (XGBoost-style). Good for tabular classification/regression.</div></div>`
+      },
+      {
+        title: "The BigQuery ML workflow — SQL lifecycle",
+        body: `<div class="code">-- 1. Create model
+CREATE OR REPLACE MODEL \`project.dataset.churn_model\`
+OPTIONS (
+  model_type = 'LOGISTIC_REG',
+  input_label_cols = ['churned'],
+  data_split_method = 'AUTO_SPLIT'
+) AS
+SELECT * FROM \`dataset.training_data\`;
+
+-- 2. Evaluate model
+SELECT * FROM ML.EVALUATE(
+  MODEL \`project.dataset.churn_model\`,
+  (SELECT * FROM \`dataset.eval_data\`)
+);
+
+-- 3. Inspect weights / features
+SELECT * FROM ML.WEIGHTS(MODEL \`project.dataset.churn_model\`);
+
+-- 4. Predict
+SELECT * FROM ML.PREDICT(
+  MODEL \`project.dataset.churn_model\`,
+  (SELECT * FROM \`dataset.new_customers\`)
+);</div>
+<div class="section-label">Key ML functions to know</div>
+<div class="kv-row"><div class="kv-key">ML.EVALUATE()</div><div class="kv-val">Returns evaluation metrics: accuracy, precision, recall, AUC-ROC for classifiers; MAE, RMSE for regressors.</div></div>
+<div class="kv-row"><div class="kv-key">ML.PREDICT()</div><div class="kv-val">Run model inference on new data. Returns predicted labels + probabilities.</div></div>
+<div class="kv-row"><div class="kv-key">ML.EXPLAIN_PREDICT()</div><div class="kv-val">Returns feature attributions (Shapley values) alongside predictions — explains which features drove each prediction.</div></div>
+<div class="kv-row"><div class="kv-key">ML.TRANSFORM()</div><div class="kv-val">Apply the same preprocessing transformations used during training to new data. Ensures training/serving consistency.</div></div>
+<div class="kv-row"><div class="kv-key">ML.FEATURE_INFO()</div><div class="kv-val">Statistics about input features — useful for detecting data quality issues.</div></div>
+<div class="kv-row"><div class="kv-key">ML.FORECAST()</div><div class="kv-val">For ARIMA_PLUS models — generate future predictions with confidence intervals.</div></div>
+<div class="alert alert-amber">Exam trap: ML.TRANSFORM() is specifically for applying preprocessing transformations defined in the CREATE MODEL statement. If a question asks how to ensure the same feature engineering is applied at prediction time, the answer is ML.TRANSFORM().</div>`
+      },
+      {
+        title: "TRANSFORM clause and feature engineering",
+        body: `<p class="prose">The TRANSFORM clause in CREATE MODEL lets you define preprocessing steps that are saved with the model. When you call ML.PREDICT(), BigQuery automatically applies the same transformations. This is critical to prevent training/serving skew.</p>
+<div class="code">CREATE OR REPLACE MODEL \`dataset.model\`
+TRANSFORM(
+  ML.STANDARD_SCALER(age) OVER() AS scaled_age,
+  ML.ONE_HOT_ENCODER(category) OVER() AS encoded_category,
+  label
+)
+OPTIONS (model_type = 'LINEAR_REG', input_label_cols = ['label'])
+AS SELECT age, category, label FROM \`dataset.train\`;</div>
+<div class="kv-row"><div class="kv-key">ML.STANDARD_SCALER()</div><div class="kv-val">Normalizes to mean=0, stddev=1. Use for numeric columns with large value ranges.</div></div>
+<div class="kv-row"><div class="kv-key">ML.MIN_MAX_SCALER()</div><div class="kv-val">Scales to [0, 1] range.</div></div>
+<div class="kv-row"><div class="kv-key">ML.ONE_HOT_ENCODER()</div><div class="kv-val">Encodes categorical string columns as binary vectors.</div></div>
+<div class="kv-row"><div class="kv-key">ML.BUCKETIZE()</div><div class="kv-val">Converts numeric to categorical by bucketing into ranges.</div></div>
+<div class="kv-row"><div class="kv-key">ML.FEATURE_CROSS()</div><div class="kv-val">Creates interaction features between two categorical columns.</div></div>`
+      }
+    ]
+  },
+  {
+    id: "security", label: "Security & access control", freq: "High",
+    topics: [
+      {
+        title: "IAM roles in BigQuery",
+        body: `<p class="prose">BigQuery uses GCP IAM for access control. Roles can be granted at the organization, project, dataset, table, or column level. Understanding the hierarchy and which role grants what is critical for the exam.</p>
+<div class="kv-row"><div class="kv-key">roles/bigquery.admin</div><div class="kv-val">Full control over all BQ resources in the project. Can create/delete datasets, manage IAM policies.</div></div>
+<div class="kv-row"><div class="kv-key">roles/bigquery.dataEditor</div><div class="kv-val">Read + write data in tables. Can run query jobs but cannot create/delete datasets.</div></div>
+<div class="kv-row"><div class="kv-key">roles/bigquery.dataViewer</div><div class="kv-val">Read-only access to table data and metadata. Cannot run query jobs.</div></div>
+<div class="kv-row"><div class="kv-key">roles/bigquery.jobUser</div><div class="kv-val">Can run query jobs (create jobs). Must be combined with dataViewer to actually read data. Common pattern for service accounts.</div></div>
+<div class="kv-row"><div class="kv-key">roles/bigquery.user</div><div class="kv-val">Can run jobs AND list datasets/tables/jobs. A superset of jobUser. Typical for analysts.</div></div>
+<div class="kv-row"><div class="kv-key">roles/bigquery.dataOwner</div><div class="kv-val">Full control over dataset-level resources. Can manage IAM on the dataset.</div></div>
+<div class="alert alert-blue">Key exam pattern: a service account that needs to query data needs BOTH bigquery.jobUser (to create jobs) AND bigquery.dataViewer (to read data). Giving only one won't work. Alternatively, bigquery.user covers both.</div>`
+      },
+      {
+        title: "Authorized views and authorized datasets",
+        body: `<p class="prose">An authorized view is a view that has been explicitly granted access to the underlying tables in another dataset — without giving the view's users direct access to those tables. This is the primary row/column restriction mechanism for the exam.</p>
+<div class="section-label">How it works</div>
+<p class="prose">Dataset A contains sensitive raw data. You create Dataset B with a view that only exposes certain columns (e.g., no PII). You add Dataset B's view as an authorized view on Dataset A. Now users with access to Dataset B's view can query it, and BigQuery will allow the view to read from Dataset A — even though those users don't have direct access to Dataset A.</p>
+<div class="code">-- In Dataset B:
+CREATE VIEW \`project.dataset_b.safe_view\` AS
+SELECT user_id, event_type, event_timestamp  -- no PII fields
+FROM \`project.dataset_a.raw_events\`;
+
+-- Then authorize the view in Dataset A's settings:
+-- Dataset A > Share > Authorize views > add dataset_b.safe_view</div>
+<div class="kv-row"><div class="kv-key">Authorized dataset</div><div class="kv-val">Instead of authorizing individual views, you can authorize an entire dataset. All views in that dataset gain access to the source dataset. Simpler to manage at scale.</div></div>
+<div class="kv-row"><div class="kv-key">Row-level security (RLS)</div><div class="kv-val">Use CREATE ROW ACCESS POLICY to filter rows based on the querying user's identity. Each user sees only their allowed rows without needing separate views.</div></div>
+<div class="code">CREATE ROW ACCESS POLICY us_only_filter
+ON \`project.dataset.orders\`
+GRANT TO ('group:us-analysts@company.com')
+FILTER USING (region = 'US');</div>`
+      },
+      {
+        title: "Column-level security with policy tags",
+        body: `<p class="prose">Policy tags are defined in Data Catalog's Policy Tag Manager as a taxonomy. You attach policy tags to specific columns in a BigQuery schema. Users must have the Fine-Grained Reader role on the tag to read that column — otherwise the query fails (not returns NULL).</p>
+<div class="kv-row"><div class="kv-key">Step 1</div><div class="kv-val">Create a taxonomy and policy tags in Data Catalog (e.g., taxonomy: 'PII', tags: 'SSN', 'Credit Card').</div></div>
+<div class="kv-row"><div class="kv-key">Step 2</div><div class="kv-val">Apply policy tags to table columns in BigQuery's schema editor (or via API/DDL).</div></div>
+<div class="kv-row"><div class="kv-key">Step 3</div><div class="kv-val">Grant roles/datacatalog.categoryFineGrainedReader on the specific tag to users/groups who should see that column.</div></div>
+<div class="kv-row"><div class="kv-key">Enforcement</div><div class="kv-val">BigQuery automatically enforces tags. Unauthorized users get an error — the column data is not returned even as NULL.</div></div>
+<div class="alert alert-amber">Important distinction: column-level security via policy tags blocks access entirely (error). It does NOT mask or return NULL. If you need masking, use Cloud DLP to de-identify the data before storing it, or use BigQuery's managed masking rules.</div>`
+      },
+      {
+        title: "Encryption: CMEK, CSEK, Google-managed",
+        body: `<div class="kv-row"><div class="kv-key">Google-managed encryption keys (GMEK)</div><div class="kv-val">Default for all BigQuery data. Google manages the keys transparently. No action required. Used when there is no compliance requirement for customer-controlled keys.</div></div>
+<div class="kv-row"><div class="kv-key">Customer-managed encryption keys (CMEK)</div><div class="kv-val">You create a key in Cloud KMS. BigQuery uses it to encrypt data. You control key rotation and revocation. If you destroy the key, the data becomes permanently unreadable. Required by many compliance frameworks (HIPAA, FedRAMP).</div></div>
+<div class="kv-row"><div class="kv-key">Customer-supplied encryption keys (CSEK)</div><div class="kv-val">You supply the raw key material directly. NOT supported in BigQuery (CSEK is for Cloud Storage and Compute Engine). If an exam question asks about CSEK in BigQuery — it's wrong/inapplicable.</div></div>
+<div class="alert alert-red">Exam trap: CSEK is NOT available for BigQuery. BigQuery supports GMEK (default) and CMEK (via Cloud KMS) only. Do not confuse with Cloud Storage where CSEK is available.</div>
+<div class="code">-- Assign CMEK at table creation
+CREATE TABLE \`project.dataset.secure_table\` (
+  id INT64, data STRING
+)
+OPTIONS (
+  kms_key_name = 'projects/my-proj/locations/us/keyRings/my-ring/cryptoKeys/my-key'
+);</div>`
+      }
+    ]
+  },
+  {
+    id: "external", label: "External tables & BigLake", freq: "Medium-high",
+    topics: [
+      {
+        title: "External tables",
+        body: `<p class="prose">External tables (also called federated tables) let you query data stored outside BigQuery — in Cloud Storage, Cloud Bigtable, Google Drive, or Cloud Spanner — without loading the data into BigQuery storage. The query is executed in BigQuery but reads directly from the external source.</p>
+<div class="kv-row"><div class="kv-key">Supported formats</div><div class="kv-val">CSV, JSON (newline-delimited), Avro, Parquet, ORC, Datastore exports, Firestore exports.</div></div>
+<div class="kv-row"><div class="kv-key">Performance</div><div class="kv-val">Slower and higher-cost than native BQ tables because there's no columnar storage optimization, no statistics for the query optimizer, and no caching.</div></div>
+<div class="kv-row"><div class="kv-key">Hive-partitioned external tables</div><div class="kv-val">If your Cloud Storage files are organized in Hive-style partitions (e.g., gs://bucket/dt=2024-01-01/hour=10/data.parquet), BQ can use these as partition pseudo-columns. Declare with hive_partition_uri_prefix.</div></div>
+<div class="kv-row"><div class="kv-key">Use case</div><div class="kv-val">Querying raw landing zone data without loading it. Joining BigQuery tables with fresh Cloud Storage exports. One-time or infrequent access patterns.</div></div>
+<div class="alert alert-amber">External table queries are billed at on-demand rates based on bytes read from Cloud Storage, not on the BQ storage cost model. Also, external tables cannot use streaming inserts, DML, or table clustering/partitioning (natively).</div>`
+      },
+      {
+        title: "BigLake tables",
+        body: `<p class="prose">BigLake is an evolution of external tables that adds fine-grained access control, row/column level security, and consistent data governance across multi-cloud and on-premises storage. A BigLake table wraps Cloud Storage (or S3/Azure Blob) data and enforces BigQuery's IAM and policy tag security model.</p>
+<div class="kv-row"><div class="kv-key">Key advantage over external tables</div><div class="kv-val">Row-level security and column-level policy tags work on BigLake tables — they do not work on regular external tables.</div></div>
+<div class="kv-row"><div class="kv-key">Connection resource</div><div class="kv-val">BigLake uses a Cloud Resource Connection (in BigQuery Connection API) to securely access external storage with a service account. You don't give direct GCS access to users.</div></div>
+<div class="kv-row"><div class="kv-key">Object tables</div><div class="kv-val">A special type of BigLake table for unstructured data (images, audio, video). Each row = one Cloud Storage object. Used with ML models like Vision API or custom models via ML.PREDICT().</div></div>
+<div class="kv-row"><div class="kv-key">Multi-cloud</div><div class="kv-val">BigLake can connect to Amazon S3 and Azure Blob Storage, enabling federated queries across cloud providers from BigQuery.</div></div>
+<div class="alert alert-blue">Exam angle: if a question asks how to apply column-level security or row access policies on data stored in Cloud Storage — the answer is BigLake, not a regular external table. Regular external tables bypass BQ's security model.</div>`
+      }
+    ]
+  },
+  {
+    id: "advanced", label: "Advanced SQL & features", freq: "Medium",
+    topics: [
+      {
+        title: "INFORMATION_SCHEMA — operational visibility",
+        body: `<p class="prose">INFORMATION_SCHEMA is a set of system views in BigQuery that expose metadata about tables, columns, partitions, jobs, reservations, and more. It's the primary tool for monitoring, auditing, and capacity planning.</p>
+<div class="kv-row"><div class="kv-key">INFORMATION_SCHEMA.TABLES</div><div class="kv-val">Table metadata: row count, size, last modified, schema, partition/cluster info.</div></div>
+<div class="kv-row"><div class="kv-key">INFORMATION_SCHEMA.COLUMNS</div><div class="kv-val">Column metadata: name, data type, mode (NULLABLE/REQUIRED/REPEATED).</div></div>
+<div class="kv-row"><div class="kv-key">INFORMATION_SCHEMA.PARTITIONS</div><div class="kv-val">Per-partition stats: row count, bytes, last modified. Use to find empty or bloated partitions.</div></div>
+<div class="kv-row"><div class="kv-key">INFORMATION_SCHEMA.JOBS</div><div class="kv-val">Job-level stats: bytes processed, slot usage, duration, user, query text, error state.</div></div>
+<div class="kv-row"><div class="kv-key">INFORMATION_SCHEMA.JOBS_BY_ORGANIZATION</div><div class="kv-val">Same as JOBS but organization-wide. Requires org-level permissions.</div></div>
+<div class="kv-row"><div class="kv-key">INFORMATION_SCHEMA.RESERVATIONS</div><div class="kv-val">Slot reservation configs in your admin project.</div></div>
+<div class="kv-row"><div class="kv-key">INFORMATION_SCHEMA.ASSIGNMENT_CHANGES</div><div class="kv-val">History of slot assignment changes — useful for auditing.</div></div>
+<div class="alert alert-blue">INFORMATION_SCHEMA views are region-scoped. To query a US multi-region: \`region-us\`.INFORMATION_SCHEMA.JOBS. For a specific region: \`region-us-central1\`.INFORMATION_SCHEMA.JOBS.</div>`
+      },
+      {
+        title: "Wildcard tables",
+        body: `<p class="prose">If you have a set of tables with the same schema and a shared prefix (e.g., sales_2022, sales_2023, sales_2024), you can query them all at once using a wildcard table — without UNION ALL.</p>
+<div class="code">-- Query all sales tables from 2022 onwards
+SELECT * FROM \`project.dataset.sales_*\`
+WHERE _TABLE_SUFFIX >= '2022'
+  AND _TABLE_SUFFIX &lt;= '2024';
+
+-- _TABLE_SUFFIX is a pseudo-column containing the part
+-- matched by the wildcard (*)</div>
+<div class="alert alert-amber">Wildcard tables are NOT the same as partitioned tables. They are separate physical tables. Filtering on _TABLE_SUFFIX prunes which tables are read at query time. However, BQ cannot use clustering or partition-level optimizations across wildcard tables.</div>`
+      },
+      {
+        title: "Materialized views",
+        body: `<p class="prose">A materialized view pre-computes and stores the results of a query. When you query the materialized view (or even the base table), BigQuery's smart tuning can automatically rewrite the query to use the materialized view's cached results — even if you didn't explicitly query the view.</p>
+<div class="kv-row"><div class="kv-key">Auto-refresh</div><div class="kv-val">Materialized views are refreshed automatically when base table data changes (within 5 minutes or on a schedule).</div></div>
+<div class="kv-row"><div class="kv-key">Smart rewriting</div><div class="kv-val">BQ optimizer can automatically use a materialized view to answer a query on the base table if the view covers the query's aggregation. Transparent to the query writer.</div></div>
+<div class="kv-row"><div class="kv-key">Incremental updates</div><div class="kv-val">Only new/changed data in the base table is used to update the materialized view — not a full recompute.</div></div>
+<div class="kv-row"><div class="kv-key">Limitations</div><div class="kv-val">Base table cannot be a view, external table, or partitioned by ingestion time. Queries must be aggregation queries (GROUP BY) without non-deterministic functions.</div></div>
+<div class="code">CREATE MATERIALIZED VIEW \`dataset.daily_sales_mv\`
+PARTITION BY sale_date
+CLUSTER BY region
+OPTIONS (enable_refresh = true, refresh_interval_minutes = 60)
+AS
+SELECT
+  DATE(sale_timestamp) AS sale_date,
+  region,
+  SUM(amount) AS total_sales
+FROM \`dataset.raw_sales\`
+GROUP BY 1, 2;</div>`
+      },
+      {
+        title: "Scheduled queries, BI Engine & DML",
+        body: `<div class="kv-row"><div class="kv-key">Scheduled queries</div><div class="kv-val">SQL queries that run on a cron-like schedule. Results can be written to a destination table (append, overwrite, or partition). Managed via BigQuery Data Transfer Service. Use for ETL jobs, daily aggregations, report refreshes.</div></div>
+<div class="kv-row"><div class="kv-key">BI Engine</div><div class="kv-val">An in-memory analysis service that accelerates BigQuery SQL queries — especially for BI tools like Looker Studio and Tableau. Reserves capacity in GB-hours. Queries that fit in the BI Engine cache execute in sub-second latency without consuming slots.</div></div>
+<div class="kv-row"><div class="kv-key">BI Engine vs slot reservations</div><div class="kv-val">BI Engine is for acceleration of repeated/similar queries (BI dashboards). Slot reservations are for overall query throughput. They are complementary — you can use both.</div></div>
+<div class="kv-row"><div class="kv-key">DML statements</div><div class="kv-val">BigQuery supports INSERT, UPDATE, DELETE, MERGE (upsert). DML on partitioned tables is efficient when filtering by partition column — BQ only rewrites affected partitions.</div></div>
+<div class="kv-row"><div class="kv-key">MERGE statement</div><div class="kv-val">MERGE is the upsert pattern — match rows from a source table and either UPDATE matching rows or INSERT new ones. Common for slowly changing dimensions (SCD Type 2).</div></div>
+<div class="kv-row"><div class="kv-key">Time travel</div><div class="kv-val">BigQuery retains historical table snapshots for 7 days. Query data at a past point with FOR SYSTEM_TIME AS OF 'timestamp'. Useful for recovery from accidental deletions.</div></div>
+<div class="kv-row"><div class="kv-key">Table snapshots</div><div class="kv-val">A lightweight read-only copy of a table at a specific point in time. Cheaper than a full copy. Use for long-term archival beyond the 7-day travel window.</div></div>
+<div class="kv-row"><div class="kv-key">Fail-safe</div><div class="kv-val">After time travel expires, data enters a fail-safe period (7 more days) accessible only by Google support — not by customers directly.</div></div>
+<div class="alert alert-blue">Scheduled query exam angle: if a scenario describes a nightly batch aggregation that writes results to a reporting table, the answer is a scheduled query using the BigQuery Data Transfer Service, not Dataflow or Cloud Composer (unless orchestration complexity demands it).</div>
+<div class="code">-- Query data from 24 hours ago
+SELECT * FROM \`dataset.orders\`
+FOR SYSTEM_TIME AS OF
+  TIMESTAMP_SUB(CURRENT_TIMESTAMP(), INTERVAL 1 DAY);
+
+-- MERGE example (upsert)
+MERGE \`dataset.customers\` T
+USING \`dataset.updates\` S
+ON T.id = S.id
+WHEN MATCHED THEN
+  UPDATE SET T.email = S.email, T.updated_at = CURRENT_TIMESTAMP()
+WHEN NOT MATCHED THEN
+  INSERT (id, email, created_at) VALUES (S.id, S.email, CURRENT_TIMESTAMP());</div>`
+      }
+    ]
+  },
+  {
+    id: "scenarios", label: "Exam scenarios", freq: "Practice",
+    topics: [
+      {
+        title: "High-frequency exam scenario patterns",
+        body: `<div class="section-label">Scenario set 1 — query optimization</div>
+<div class="scenario-box"><div class="scenario-q">A BigQuery table has 10B rows. Queries take too long and cost too much. They always filter on transaction_date (DATE) and product_category (100 distinct values). How do you optimize?</div><div class="scenario-a"><strong>Answer:</strong> Partition by transaction_date (reduces partitions scanned) + CLUSTER BY product_category (reduces blocks scanned within each partition). Together they minimize both time and cost.</div></div>
+<div class="scenario-box"><div class="scenario-q">A query on a partitioned table is not showing cost reduction. The query filters on order_date but still scans the whole table. Why?</div><div class="scenario-a"><strong>Answer:</strong> The WHERE clause likely uses a non-deterministic function or the filter is wrapped in a subquery that prevents partition pruning. Use WHERE order_date = '2024-01-15' with a literal value, or ensure the column is the actual partition column.</div></div>
+<div class="section-label">Scenario set 2 — access control</div>
+<div class="scenario-box"><div class="scenario-q">Team A has a dataset with sensitive PII columns. Team B's analysts should be able to query aggregate results but never see raw PII. What is the recommended approach?</div><div class="scenario-a"><strong>Answer:</strong> Create an authorized view in a separate dataset that selects only non-PII columns and exposes aggregated data. Grant Team B access to the view-containing dataset only. Alternatively, apply policy tags to PII columns and do NOT grant Team B the Fine-Grained Reader role.</div></div>
+<div class="scenario-box"><div class="scenario-q">A data lake stores files in Cloud Storage. Different users should see different rows based on their region. How do you enforce this in BigQuery?</div><div class="scenario-a"><strong>Answer:</strong> Create a BigLake table over the Cloud Storage files (not a regular external table). Apply Row Access Policies on the BigLake table. Regular external tables do not support row-level security — only BigLake tables do.</div></div>
+<div class="section-label">Scenario set 3 — cost & performance</div>
+<div class="scenario-box"><div class="scenario-q">A company runs 50 BI dashboards in Looker Studio. Dashboard load times are slow (3-5 seconds per chart). Queries are repetitive — the same aggregations run hundreds of times daily. What is the best solution?</div><div class="scenario-a"><strong>Answer:</strong> Enable BI Engine with a reservation sized to hold the frequently accessed dataset in memory. BI Engine accelerates repeated aggregation queries from BI tools to sub-second latency without consuming slot reservations.</div></div>
+<div class="scenario-box"><div class="scenario-q">A nightly batch process needs to aggregate yesterday's sales and write results to a reporting table. What is the simplest solution?</div><div class="scenario-a"><strong>Answer:</strong> Use a Scheduled Query in BigQuery (via BigQuery Data Transfer Service). Set it to run daily at a fixed time, with WRITE_TRUNCATE or WRITE_APPEND to the destination table. No Dataflow or Composer needed for simple SQL aggregations.</div></div>
+<div class="scenario-box"><div class="scenario-q">A data engineer accidentally deleted 2 million rows from a production table 3 hours ago. How do you recover?</div><div class="scenario-a"><strong>Answer:</strong> Use BigQuery Time Travel: CREATE OR REPLACE TABLE as SELECT * FROM table FOR SYSTEM_TIME AS OF '3-hours-ago-timestamp'. This recovers the table state from before the deletion. Works within the 7-day time travel window.</div></div>`
+      }
+    ]
+  }
+];
+
+const tabBar = document.getElementById('tabBar');
+const tabContent = document.getElementById('tabContent');
+
+TABS.forEach((tab, ti) => {
+  const btn = document.createElement('button');
+  btn.className = 'tab-btn' + (ti === 0 ? ' active' : '');
+  btn.textContent = tab.label;
+  btn.onclick = () => {
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.tab-section').forEach(s => s.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById('sec-' + ti).classList.add('active');
+  };
+  tabBar.appendChild(btn);
+
+  const sec = document.createElement('div');
+  sec.className = 'tab-section' + (ti === 0 ? ' active' : '');
+  sec.id = 'sec-' + ti;
+
+  tab.topics.forEach((topic, tpi) => {
+    const gid = `g${ti}_${tpi}`;
+    const cid = `c${ti}_${tpi}`;
+    const cardId = `${tab.id}_${tpi}`;
+    const div = document.createElement('div');
+    div.className = 'gap';
+    div.innerHTML = `
+      <div class="gap-header" onclick="tog('${gid}','${cid}')">
+        <div class="gap-num">${tpi + 1}</div>
+        <div class="gap-title">${topic.title}</div>
+        <span class="gap-tag">${tab.freq}</span>
+        <span class="chevron${tpi === 0 ? ' open' : ''}" id="${cid}">▶</span>
+      </div>
+      <div class="gap-body${tpi === 0 ? ' open' : ''}" id="${gid}">${topic.body}${buildNoteZone(cardId)}</div>`;
+    sec.appendChild(div);
+  });
+
+  tabContent.appendChild(sec);
+});
+
+/* init notes for all cards */
+TABS.forEach((tab, ti) => {
+  tab.topics.forEach((_, tpi) => { initNotes(`${tab.id}_${tpi}`); });
+});
+
+function tog(b, c) {
+  document.getElementById(b).classList.toggle('open');
+  document.getElementById(c).classList.toggle('open');
+}
+
+/* ── NOTES ENGINE ── */
+const NOTES_PREFIX = 'gcp_pde_notes_';
+
+function getCardNotes(id) {
+  try { const r = localStorage.getItem(NOTES_PREFIX + id); return r ? JSON.parse(r) : []; }
+  catch(e) { return []; }
+}
+function saveCardNotes(id, notes) {
+  try { localStorage.setItem(NOTES_PREFIX + id, JSON.stringify(notes)); } catch(e) {}
+  try { window.storage && window.storage.set(NOTES_PREFIX + id, JSON.stringify(notes), false); } catch(e) {}
+}
+async function initNotes(id) {
+  try {
+    if (window.storage) {
+      const r = await window.storage.get(NOTES_PREFIX + id, false);
+      if (r) { try { localStorage.setItem(NOTES_PREFIX + id, r.value); } catch(e) {} }
+    }
+  } catch(e) {}
+  renderNotes(id);
+}
+function formatTs(ts) {
+  const d = new Date(ts);
+  return d.toLocaleDateString('en-CA', {month:'short',day:'numeric',year:'numeric'}) + ' ' +
+         d.toLocaleTimeString('en-CA', {hour:'2-digit',minute:'2-digit'});
+}
+function escHtml(s) {
+  return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\n/g,'<br>');
+}
+function buildNoteZone(id) {
+  return `<div class="note-zone" id="notes-zone-${id}">
+    <div class="notes-list"></div>
+    <div class="note-form" style="display:none" data-edit-idx="">
+      <textarea placeholder="Add your study note…" rows="3"></textarea>
+      <div class="note-form-actions">
+        <button class="note-save-btn" onclick="saveNote('${id}')">save note</button>
+        <button class="note-cancel-btn" onclick="cancelNote('${id}')">cancel</button>
+      </div>
+    </div>
+    <button class="note-add-trigger" onclick="showNoteForm('${id}')">
+      <svg width="13" height="13" viewBox="0 0 13 13" fill="none" stroke="currentColor" stroke-width="1.5">
+        <rect x="1" y="1" width="11" height="11" rx="2"/>
+        <line x1="3.5" y1="4" x2="9.5" y2="4"/>
+        <line x1="3.5" y1="6.5" x2="9.5" y2="6.5"/>
+        <line x1="3.5" y1="9" x2="6.5" y2="9"/>
+        <line x1="9.5" y1="7.5" x2="9.5" y2="11"/>
+        <line x1="7.5" y1="9.5" x2="11.5" y2="9.5"/>
+      </svg>
+      add note
+    </button>
+  </div>`;
+}
+function renderNotes(id) {
+  const zone = document.getElementById('notes-zone-' + id);
+  if (!zone) return;
+  const notes = getCardNotes(id);
+  const list = zone.querySelector('.notes-list');
+  list.innerHTML = '';
+  notes.forEach((note, idx) => {
+    const item = document.createElement('div');
+    item.className = 'note-item';
+    item.innerHTML = `<div class="note-item-text">${escHtml(note.text)}</div>
+      <div class="note-item-footer">
+        <span class="note-ts">${formatTs(note.ts)}</span>
+        <div class="note-item-actions">
+          <button class="note-action-btn" onclick="editNote('${id}',${idx})">edit</button>
+          <button class="note-action-btn del" onclick="deleteNote('${id}',${idx})">delete</button>
+        </div>
+      </div>`;
+    list.appendChild(item);
+  });
+}
+function showNoteForm(id) {
+  const zone = document.getElementById('notes-zone-' + id);
+  const form = zone.querySelector('.note-form');
+  form.dataset.editIdx = '';
+  form.querySelector('textarea').value = '';
+  form.style.display = 'block';
+  zone.querySelector('.note-add-trigger').style.display = 'none';
+  form.querySelector('textarea').focus();
+}
+function cancelNote(id) {
+  const zone = document.getElementById('notes-zone-' + id);
+  zone.querySelector('.note-form').style.display = 'none';
+  zone.querySelector('.note-add-trigger').style.display = 'flex';
+}
+function saveNote(id) {
+  const zone = document.getElementById('notes-zone-' + id);
+  const form = zone.querySelector('.note-form');
+  const text = form.querySelector('textarea').value.trim();
+  if (!text) return;
+  const notes = getCardNotes(id);
+  const idx = form.dataset.editIdx;
+  if (idx !== '') { notes[parseInt(idx)] = {text, ts: notes[parseInt(idx)].ts}; }
+  else { notes.push({text, ts: Date.now()}); }
+  saveCardNotes(id, notes);
+  renderNotes(id);
+  form.style.display = 'none';
+  zone.querySelector('.note-add-trigger').style.display = 'flex';
+}
+function editNote(id, idx) {
+  const zone = document.getElementById('notes-zone-' + id);
+  const form = zone.querySelector('.note-form');
+  form.dataset.editIdx = idx;
+  form.querySelector('textarea').value = getCardNotes(id)[idx].text;
+  form.style.display = 'block';
+  zone.querySelector('.note-add-trigger').style.display = 'none';
+  form.querySelector('textarea').focus();
+}
+function deleteNote(id, idx) {
+  const notes = getCardNotes(id);
+  notes.splice(idx, 1);
+  saveCardNotes(id, notes);
+  renderNotes(id);
+}
+
+
+
+
+/* ════ SIDEBAR + BOTTOM BAR JS ════ */
+(function () {
+  var sidebar = document.getElementById('sidebar');
+  var btn     = document.getElementById('sbCollapseBtn');
+  var overlay = document.getElementById('sbOverlay');
+  if (!sidebar) return;
+
+  // ── Restore collapsed state from localStorage ──
+  var isCollapsed = localStorage.getItem('sbCollapsed') === '1';
+  if (isCollapsed) {
+    sidebar.classList.add('collapsed');
+    document.body.classList.add('sb-closed');
+  } else {
+    document.body.classList.add('sb-open');
+  }
+
+  // ── Mark active page ──
+  var path    = window.location.pathname.split('/').pop().replace('.html', '') || 'index';
+  var hash    = window.location.hash.replace('#', '');
+
+  // Activate module links
+  document.querySelectorAll('.sb-mod-link[data-page]').forEach(function (el) {
+    if (el.getAttribute('data-page') === path) el.classList.add('active');
+  });
+  // Activate bottom bar items
+  document.querySelectorAll('.bb-item[data-page]').forEach(function (el) {
+    if (el.getAttribute('data-page') === path) el.classList.add('active');
+  });
+
+  // ── Open subtopic group for current page ──
+  var grp = document.querySelector('.sb-mod-group[data-group="' + path + '"]');
+  if (grp) {
+    grp.classList.add('open');
+    // Highlight active subtopic if hash present
+    if (hash) {
+      var sub = grp.querySelector('.sb-sub-link[data-tab="' + hash + '"]');
+      if (sub) sub.classList.add('active');
+    }
+  }
+
+  // ── Expand/collapse on group header click (toggle subtopics) ──
+  document.querySelectorAll('.sb-mod-group').forEach(function (grp) {
+    var link = grp.querySelector(':scope > .sb-mod-link');
+    if (!link) return;
+    link.addEventListener('click', function (e) {
+      // Only intercept the expand toggle, not navigation to other pages
+      var targetPage = link.getAttribute('data-page');
+      if (targetPage && targetPage !== path) return; // let it navigate
+      // Same page or no page change — toggle subtopics
+      e.preventDefault();
+      grp.classList.toggle('open');
+    });
+  });
+
+  // ── Hash change: update active subtopic ──
+  window.addEventListener('hashchange', function () {
+    var h = window.location.hash.replace('#', '');
+    document.querySelectorAll('.sb-sub-link').forEach(function (el) { el.classList.remove('active'); });
+    if (h && grp) {
+      var sub = grp.querySelector('.sb-sub-link[data-tab="' + h + '"]');
+      if (sub) sub.classList.add('active');
+    }
+  });
+})();
+
+function toggleSidebar() {
+  var sidebar = document.getElementById('sidebar');
+  if (!sidebar) return;
+  var collapsed = sidebar.classList.toggle('collapsed');
+  document.body.classList.toggle('sb-open',   !collapsed);
+  document.body.classList.toggle('sb-closed', collapsed);
+  localStorage.setItem('sbCollapsed', collapsed ? '1' : '0');
+}
+function closeSidebar() {
+  // no-op on desktop; overlay not shown
+}
+/* ════ END SIDEBAR JS ════ */
+
+</script>
+</body>
+</html>

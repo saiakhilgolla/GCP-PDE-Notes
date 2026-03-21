@@ -1,0 +1,1679 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Module 6 — Advanced Topics</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap');
+
+[data-theme="dark"] {
+  --bg:#0d0f14; --surface:#161920; --surface2:#1e2230;
+  --border:#2a2f3d; --text:#e8eaf0; --muted:#7a8099; --dim:#4a5168;
+  --prose-color:#c0c4d4; --kv-val-color:#9aa0b8; --code-color:#c8d0e8;
+  --accent:#4dff91; --accent-bg:#091a11; --accent-border:#0f4024; --accent-text:#4dff91; --num-fg:#0d0f14;
+  --alert-blue-bg:#091a11;  --alert-blue-text:#99ffcc;  --alert-blue-border:#4dff91;
+  --alert-amber-bg:#1a1000; --alert-amber-text:#ffd699; --alert-amber-border:#ffb84d;
+  --alert-red-bg:#1a0a0a;   --alert-red-text:#ffaaaa;   --alert-red-border:#ff4d4d;
+  --alert-green-bg:#091a11; --alert-green-text:#99ffcc; --alert-green-border:#4dff91;
+  --alert-teal-bg:#061515;  --alert-teal-text:#99eeff;  --alert-teal-border:#00ccdd;
+  --alert-purple-bg:#100a1a;--alert-purple-text:#ddb3ff;--alert-purple-border:#b84dff;
+  --code-bg:#0a0c10; --scenario-bg:#1e2230; --section-label-color:#2a6641;
+  --toggle-track:#0f4024; --toggle-border:#0f4024; --toggle-knob:#4dff91; --toggle-shadow:rgba(77,255,145,0.3);
+  --sun-op:0.35; --moon-op:1;
+  --mini-bg:#1e2230; --mini-good-bg:#091a11; --mini-bad-bg:#1a0a0a;
+  --mini-good-text:#4dff91; --mini-bad-text:#ff4d4d;
+  --table-head:#4a5168; --table-row-border:#1e2230; --table-td:#9aa0b8;
+  --dt-bg:#1e2230; --dt-q:#9aa0b8;
+  --step-bg:#1e2230; --step-num-bg:#e8eaf0; --step-num-fg:#0d0f14;
+  --drill-q-bg:#1e2230; --drill-signals-bg:#161920; --drill-ans-bg:#091a11;
+  --drill-ans-text:#99ffcc; --drill-label:#4dff91;
+  --sig-deciding-bg:#1a0a0a; --sig-deciding-text:#ff9999; --sig-deciding-border:#ff4d4d;
+  --sig-neutral-bg:#1e2230; --sig-neutral-text:#7a8099; --sig-neutral-border:#2a2f3d;
+  --sig-points-bg:#091a11; --sig-points-text:#99ccff; --sig-points-border:#336699;
+  --stage-label-bg:#e8eaf0; --stage-label-fg:#0d0f14;
+  --method-box-bg:#161920; --method-box-border:#2a2f3d;
+  --cheat-head-bg:#e8eaf0; --cheat-head-fg:#0d0f14;
+  --cheat-alt-bg:#1e2230;
+  --prune-ok-bg:#091a11; --prune-ok-text:#4dff91; --prune-ok-border:#0f4024;
+  --prune-fail-bg:#1a0a0a; --prune-fail-text:#ff4d4d; --prune-fail-border:#4d1515;
+  --prune-partial-bg:#1a1000; --prune-partial-text:#ffb84d; --prune-partial-border:#4d3000;
+  --pipe-box-bg:#1e2230; --pipe-box-border:#2a2f3d;
+  --pipe-guarantee-bg:#091a11; --pipe-guarantee-text:#4dff91; --pipe-guarantee-border:#0f4024;
+  --pipe-bad-bg:#1a0a0a; --pipe-bad-text:#ff4d4d; --pipe-bad-border:#4d1515;
+  --flow-hi-bg:#091a11; --flow-hi-border:#0f4024; --flow-hi-text:#4dff91;
+  --note-bg:#091a11; --note-border:#0f4024; --note-text:#99ffcc;
+  --note-ts:#2a6641; --note-input-bg:#0a0c10; --note-input-border:#0f4024;
+  --note-trigger-color:#2a6641; --note-trigger-hover:#4dff91;
+}
+[data-theme="light"] {
+  --bg:#f7f8f4; --surface:#ffffff; --surface2:#f0f2ec;
+  --border:#dde0d8; --text:#1c1f18; --muted:#5a6052; --dim:#9aa090;
+  --prose-color:#4a5240; --kv-val-color:#5a6052; --code-color:#2a3820;
+  --accent:#1e8a45; --accent-bg:#eaf6ee; --accent-border:#9ed4b2; --accent-text:#1e8a45; --num-fg:#ffffff;
+  --alert-blue-bg:#eaf6ee;  --alert-blue-text:#155c2e;  --alert-blue-border:#1e8a45;
+  --alert-amber-bg:#fdf6e8; --alert-amber-text:#7a4400; --alert-amber-border:#c08020;
+  --alert-red-bg:#fdf0f0;   --alert-red-text:#8a2020;   --alert-red-border:#c04040;
+  --alert-green-bg:#eaf6ee; --alert-green-text:#155c2e; --alert-green-border:#1e8a45;
+  --alert-teal-bg:#edf7f7;  --alert-teal-text:#0d4a42;  --alert-teal-border:#1a7a6e;
+  --alert-purple-bg:#f5eeff;--alert-purple-text:#4a2090;--alert-purple-border:#7a40c0;
+  --code-bg:#f0f2ec; --scenario-bg:#f4f6f0; --section-label-color:#1e8a45;
+  --toggle-track:#1e8a45; --toggle-border:#9ed4b2; --toggle-knob:#ffffff; --toggle-shadow:rgba(0,0,0,0.15);
+  --sun-op:1; --moon-op:0.4;
+  --mini-bg:#f0f2ec; --mini-good-bg:#eaf6ee; --mini-bad-bg:#fdf0f0;
+  --mini-good-text:#155c2e; --mini-bad-text:#8a2020;
+  --table-head:#9aa090; --table-row-border:#f0f2ec; --table-td:#5a6052;
+  --dt-bg:#f0f2ec; --dt-q:#5a6052;
+  --step-bg:#f0f2ec; --step-num-bg:#1c1f18; --step-num-fg:#ffffff;
+  --drill-q-bg:#f0f2ec; --drill-signals-bg:#f7f8f4; --drill-ans-bg:#eaf6ee;
+  --drill-ans-text:#155c2e; --drill-label:#1e8a45;
+  --sig-deciding-bg:#fdf0f0; --sig-deciding-text:#8a2020; --sig-deciding-border:#c04040;
+  --sig-neutral-bg:#f0f2ec; --sig-neutral-text:#9aa090; --sig-neutral-border:#dde0d8;
+  --sig-points-bg:#eaf2ff; --sig-points-text:#1a4a8a; --sig-points-border:#9ec4f0;
+  --stage-label-bg:#1c1f18; --stage-label-fg:#ffffff;
+  --method-box-bg:#1c1f18; --method-box-border:#2a2f2a;
+  --cheat-head-bg:#1c1f18; --cheat-head-fg:#ffffff;
+  --cheat-alt-bg:#f0f2ec;
+  --prune-ok-bg:#eaf6ee; --prune-ok-text:#155c2e; --prune-ok-border:#9ed4b2;
+  --prune-fail-bg:#fdf0f0; --prune-fail-text:#8a2020; --prune-fail-border:#c04040;
+  --prune-partial-bg:#fdf6e8; --prune-partial-text:#7a4400; --prune-partial-border:#c08020;
+  --pipe-box-bg:#f0f2ec; --pipe-box-border:#dde0d8;
+  --pipe-guarantee-bg:#eaf6ee; --pipe-guarantee-text:#155c2e; --pipe-guarantee-border:#9ed4b2;
+  --pipe-bad-bg:#fdf0f0; --pipe-bad-text:#8a2020; --pipe-bad-border:#c04040;
+  --flow-hi-bg:#eaf6ee; --flow-hi-border:#9ed4b2; --flow-hi-text:#155c2e;
+  --note-bg:#eaf6ee; --note-border:#9ed4b2; --note-text:#155c2e;
+  --note-ts:#9ed4b2; --note-input-bg:#f7f8f4; --note-input-border:#9ed4b2;
+  --note-trigger-color:#9ed4b2; --note-trigger-hover:#1e8a45;
+}
+
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'IBM Plex Sans',sans-serif;background:var(--bg);color:var(--text);padding:28px 20px;max-width:860px;margin:0 auto;line-height:1.6;transition:background .3s,color .3s}
+
+/* HEADER */
+.page-header{margin-bottom:24px;padding-bottom:18px;border-bottom:1px solid var(--border);display:flex;align-items:flex-start;justify-content:space-between;gap:16px}
+.header-text .label{font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--accent);letter-spacing:.15em;text-transform:uppercase;margin-bottom:7px}
+.header-text h1{font-size:22px;font-weight:600;color:var(--text);margin-bottom:4px}
+.header-text p{font-size:13px;color:var(--muted)}
+.theme-toggle{display:flex;align-items:center;gap:7px;flex-shrink:0;margin-top:2px;cursor:pointer;user-select:none}
+.ti-sun,.ti-moon{font-size:14px;line-height:1;transition:opacity .3s}
+.ti-sun{opacity:var(--sun-op)}.ti-moon{opacity:var(--moon-op)}
+.toggle-track{position:relative;width:42px;height:24px;background:var(--toggle-track);border-radius:99px;border:1px solid var(--toggle-border);flex-shrink:0;transition:background .3s}
+.toggle-knob{position:absolute;top:3px;left:3px;width:16px;height:16px;border-radius:50%;background:var(--toggle-knob);box-shadow:0 1px 4px var(--toggle-shadow);transition:transform .25s cubic-bezier(.4,0,.2,1)}
+[data-theme="light"] .toggle-knob{transform:translateX(18px)}
+
+/* TABS */
+.tab-bar{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:20px;position:sticky;top:0;background:var(--bg);padding:10px 0;z-index:10;border-bottom:1px solid var(--border);transition:background .3s}
+.tab-btn{font-family:'IBM Plex Mono',monospace;font-size:11px;padding:5px 12px;border-radius:99px;border:1px solid var(--border);background:transparent;color:var(--muted);cursor:pointer;white-space:nowrap;transition:all .15s;letter-spacing:.03em}
+.tab-btn:hover{background:var(--surface2);color:var(--text)}
+.tab-btn.active{background:var(--accent-bg);color:var(--accent-text);border-color:var(--accent-border);font-weight:600}
+.tab-section{display:none}.tab-section.active{display:block}
+
+/* CARDS */
+.gap{border:1px solid var(--border);border-radius:10px;margin-bottom:14px;overflow:hidden;background:var(--surface);transition:background .3s,border-color .3s}
+.gap-header{display:flex;align-items:center;gap:10px;padding:13px 16px;cursor:pointer;transition:background .15s}
+.gap-header:hover{background:var(--surface2)}
+.gap-num{font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:600;color:var(--num-fg);background:var(--accent);min-width:22px;height:22px;border-radius:5px;display:flex;align-items:center;justify-content:center;flex-shrink:0;padding:0 4px}
+.gap-title{flex:1;font-size:13.5px;font-weight:600;color:var(--text)}
+.gap-tag{font-family:'IBM Plex Mono',monospace;font-size:10px;padding:2px 8px;border-radius:99px;font-weight:600;letter-spacing:.04em;background:var(--accent-bg);color:var(--accent-text);border:1px solid var(--accent-border);white-space:nowrap;transition:all .3s}
+.chevron{font-size:10px;color:var(--dim);transition:transform .2s;margin-left:4px;flex-shrink:0}
+.chevron.open{transform:rotate(90deg)}
+.gap-body{display:none;border-top:1px solid var(--border);padding:16px 18px}
+.gap-body.open{display:block}
+
+/* CONTENT PRIMITIVES */
+.lbl{font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--section-label-color);margin:14px 0 7px;opacity:.85}
+.lbl:first-child{margin-top:0}
+p.prose{font-size:13px;color:var(--prose-color);line-height:1.7;margin-bottom:10px}
+p.prose:last-child{margin-bottom:0}
+.kv-row{display:flex;gap:12px;margin-bottom:8px;font-size:13px}
+.kv-key{font-weight:600;color:var(--text);min-width:200px;flex-shrink:0}
+.kv-val{color:var(--kv-val-color);line-height:1.55}
+.divider{height:1px;background:var(--border);margin:14px 0}
+
+/* ALERTS */
+.alert{padding:10px 14px;font-size:12.5px;line-height:1.6;border-left:3px solid;margin:10px 0;transition:background .3s}
+.alert-blue  {background:var(--alert-blue-bg);  color:var(--alert-blue-text);  border-color:var(--alert-blue-border)}
+.alert-amber {background:var(--alert-amber-bg); color:var(--alert-amber-text); border-color:var(--alert-amber-border)}
+.alert-red   {background:var(--alert-red-bg);   color:var(--alert-red-text);   border-color:var(--alert-red-border)}
+.alert-green {background:var(--alert-green-bg); color:var(--alert-green-text); border-color:var(--alert-green-border)}
+.alert-teal  {background:var(--alert-teal-bg);  color:var(--alert-teal-text);  border-color:var(--alert-teal-border)}
+.alert-purple{background:var(--alert-purple-bg);color:var(--alert-purple-text);border-color:var(--alert-purple-border)}
+
+/* CODE */
+.code{font-family:'IBM Plex Mono',monospace;font-size:11.5px;background:#0a0c10;border:1px solid var(--border);border-radius:6px;padding:12px 14px;color:#c8d0e8;line-height:1.65;white-space:pre;overflow-x:auto;margin:8px 0}
+[data-theme="light"] .code{background:#1a1916;color:#d4d0c4}
+.code .cm{color:#555d70}.code .ck{color:#7dd3b8}.code .cv{color:#f0c080}.code .cs{color:#a8d0a8}
+
+/* GRIDS + MINIS */
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:8px 0}
+.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin:8px 0}
+.mini{background:var(--mini-bg);border:1px solid var(--border);border-radius:8px;padding:10px 12px;transition:background .3s}
+.mini.good{background:var(--mini-good-bg);border-color:var(--accent-border)}
+.mini.bad {background:var(--mini-bad-bg); border-color:var(--alert-red-border)}
+.mt{font-size:12px;font-weight:600;margin-bottom:4px;color:var(--text)}
+.mini.good .mt{color:var(--mini-good-text)}.mini.bad .mt{color:var(--mini-bad-text)}
+.mb{font-size:12px;color:var(--kv-val-color);line-height:1.5}
+
+/* COMPARISON TABLE */
+.cmp-wrap{overflow-x:auto;margin:10px 0}
+.cmp{width:100%;border-collapse:collapse;font-size:12px}
+.cmp th{padding:7px 10px;text-align:left;font-weight:600;font-size:10px;text-transform:uppercase;letter-spacing:.08em;color:var(--table-head);border-bottom:1px solid var(--border);font-family:'IBM Plex Mono',monospace}
+.cmp td{padding:7px 10px;border-bottom:1px solid var(--table-row-border);vertical-align:top;color:var(--table-td);line-height:1.5;font-size:12px}
+.cmp td:first-child{font-weight:600;color:var(--text);white-space:nowrap}
+.cmp tr:last-child td{border-bottom:none}
+
+/* DECISION TABLE */
+.decision{background:var(--dt-bg);border-radius:8px;overflow:hidden;margin:10px 0;transition:background .3s}
+.d-row{display:flex;align-items:center;gap:10px;padding:9px 14px;border-bottom:1px solid var(--border);font-size:12.5px}
+.d-row:last-child{border-bottom:none}
+.d-q{flex:1;color:var(--dt-q)}
+.d-a{font-family:'IBM Plex Mono',monospace;font-weight:600;font-size:11px;padding:3px 9px;border-radius:99px;white-space:nowrap;flex-shrink:0}
+
+/* FLOW */
+.flow{display:flex;align-items:center;flex-wrap:wrap;gap:6px;margin:10px 0}
+.fb{background:var(--mini-bg);border:1px solid var(--border);border-radius:7px;padding:8px 12px;font-size:12px;font-weight:600;white-space:nowrap;color:var(--text);transition:background .3s}
+.fb.hi{background:var(--flow-hi-bg);border-color:var(--flow-hi-border);color:var(--flow-hi-text)}
+.fa{font-size:13px;color:var(--dim)}
+
+/* STEPS */
+.steps{display:flex;flex-direction:column;gap:8px;margin:10px 0}
+.step{display:flex;gap:12px;background:var(--step-bg);border:1px solid var(--border);border-radius:8px;padding:11px 14px;align-items:flex-start}
+.step-n{font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:700;background:var(--step-num-bg);color:var(--step-num-fg);width:22px;height:22px;border-radius:4px;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px}
+.step-c{font-size:12.5px;color:var(--kv-val-color);line-height:1.55}
+.step-c strong{color:var(--text);font-weight:600}
+
+/* STAGE ROWS (BQ ML lifecycle) */
+.stage-row{display:flex;gap:10px;align-items:flex-start;margin-bottom:10px;font-size:13px}
+.stage-label{font-family:'IBM Plex Mono',monospace;font-size:10px;background:var(--stage-label-bg);color:var(--stage-label-fg);padding:3px 8px;border-radius:4px;white-space:nowrap;flex-shrink:0;margin-top:2px}
+.stage-content{color:var(--kv-val-color);line-height:1.55}
+.stage-content strong{color:var(--text)}
+
+/* METHOD BOX (signal method) */
+.method-box{background:var(--method-box-bg);border:1px solid var(--method-box-border);border-radius:9px;padding:20px 22px;margin:14px 0}
+.mb-title{font-family:'IBM Plex Sans',sans-serif;font-size:15px;font-weight:700;margin-bottom:14px;color:var(--text)}
+.mb-step{display:flex;gap:12px;margin-bottom:10px;font-size:13px}
+.mb-step:last-child{margin-bottom:0}
+.mb-n{font-family:'IBM Plex Mono',monospace;font-size:11px;width:22px;height:22px;border-radius:50%;border:1px solid var(--border);display:flex;align-items:center;justify-content:center;flex-shrink:0;color:var(--muted);margin-top:1px}
+.mb-text{color:var(--kv-val-color);line-height:1.55}
+.mb-text strong{color:var(--text)}
+
+/* DISQUALIFIER TABLE */
+.dtree{background:var(--dt-bg);border-radius:8px;padding:12px 14px;margin:10px 0}
+.dt-row{display:flex;align-items:center;gap:10px;margin-bottom:8px;font-size:12.5px}
+.dt-row:last-child{margin-bottom:0}
+.dt-q{flex:1;color:var(--dt-q)}
+.dt-a{font-family:'IBM Plex Mono',monospace;font-size:10px;padding:2px 9px;border-radius:99px;white-space:nowrap;flex-shrink:0;font-weight:600;background:var(--alert-red-bg);color:var(--alert-red-text);border:1px solid var(--alert-red-border)}
+
+/* SIGNAL DRILL */
+.drill{border:1px solid var(--border);border-radius:9px;overflow:hidden;margin:12px 0}
+.drill-q{background:var(--drill-q-bg);padding:12px 16px;font-size:13px;font-weight:600;color:var(--text);border-bottom:1px solid var(--border);line-height:1.5}
+.drill-signals{padding:12px 16px;display:flex;flex-direction:column;gap:7px;border-bottom:1px solid var(--border);background:var(--drill-signals-bg)}
+.signal-row{display:flex;align-items:center;gap:10px;font-size:12.5px}
+.sig-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.sig-text{flex:1;color:var(--muted)}
+.sig-badge{font-family:'IBM Plex Mono',monospace;font-size:10px;padding:2px 7px;border-radius:99px;flex-shrink:0}
+.sig-deciding{background:var(--sig-deciding-bg);color:var(--sig-deciding-text);border:1px solid var(--sig-deciding-border)}
+.sig-neutral {background:var(--sig-neutral-bg); color:var(--sig-neutral-text); border:1px solid var(--sig-neutral-border)}
+.sig-points  {background:var(--sig-points-bg);  color:var(--sig-points-text);  border:1px solid var(--sig-points-border)}
+.drill-answer{padding:11px 16px;display:flex;align-items:flex-start;gap:10px;background:var(--drill-ans-bg)}
+.da-label{font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--drill-label);text-transform:uppercase;letter-spacing:.1em;padding-top:2px;flex-shrink:0}
+.da-content{font-size:12.5px;color:var(--drill-ans-text);line-height:1.55}
+.da-content strong{font-weight:600}
+
+/* PARTITION PRUNING CASES */
+.prune-case{border:1px solid var(--border);border-radius:8px;overflow:hidden;margin:10px 0}
+.pc-header{display:flex;align-items:center;gap:10px;padding:9px 14px;border-bottom:1px solid var(--border);background:var(--surface2)}
+.pc-title{flex:1;font-size:13px;font-weight:600;color:var(--text)}
+.pc-badge{font-family:'IBM Plex Mono',monospace;font-size:10px;padding:2px 8px;border-radius:99px}
+.pc-ok  {background:var(--prune-ok-bg);  color:var(--prune-ok-text);  border:1px solid var(--prune-ok-border)}
+.pc-fail{background:var(--prune-fail-bg);color:var(--prune-fail-text);border:1px solid var(--prune-fail-border)}
+.pc-partial{background:var(--prune-partial-bg);color:var(--prune-partial-text);border:1px solid var(--prune-partial-border)}
+.pc-body{padding:10px 14px}
+.pc-sql{font-family:'IBM Plex Mono',monospace;font-size:11.5px;background:#0a0c10;color:#c8d0e8;padding:8px 12px;border-radius:5px;margin-bottom:7px;white-space:pre;overflow-x:auto}
+[data-theme="light"] .pc-sql{background:#1a1916;color:#d4d0c4}
+.pc-explain{font-size:12.5px;color:var(--kv-val-color);line-height:1.55}
+.pc-fix{font-size:12.5px;color:var(--accent-text);margin-top:5px;font-weight:600}
+
+/* PIPE DIAGRAM (exactly-once) */
+.pipe-diagram{margin:12px 0}
+.pipe-row{display:flex;align-items:stretch;gap:0;margin-bottom:2px;flex-wrap:wrap}
+.pipe-box{flex:1;background:var(--pipe-box-bg);border:1px solid var(--pipe-box-border);border-radius:7px;padding:10px 12px;text-align:center;font-size:12px;font-weight:600;color:var(--text);min-width:120px}
+.pipe-box.ok{border-color:var(--prune-ok-border)}
+.pipe-arrow-col{display:flex;align-items:center;padding:0 6px;font-size:12px;color:var(--dim)}
+.pipe-label{font-size:10px;color:var(--dim);text-align:center;margin-top:3px;font-family:'IBM Plex Mono',monospace}
+.pipe-guarantee{background:var(--pipe-guarantee-bg);border:1px solid var(--pipe-guarantee-border);border-radius:5px;padding:3px 8px;font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--pipe-guarantee-text);text-align:center;margin-top:4px}
+.pipe-guarantee.bad{background:var(--pipe-bad-bg);border-color:var(--pipe-bad-border);color:var(--pipe-bad-text)}
+
+/* BIG RULE (disqualifiers dark box) */
+.big-rule{background:var(--stage-label-bg);color:var(--stage-label-fg);border-radius:10px;padding:20px 24px;margin:14px 0}
+.br-title{font-family:'IBM Plex Sans',sans-serif;font-size:15px;font-weight:700;margin-bottom:14px}
+.br-item{display:flex;gap:10px;margin-bottom:8px;font-size:13px}
+.br-item:last-child{margin-bottom:0}
+.br-k{font-weight:600;min-width:200px;flex-shrink:0;opacity:.9}
+.br-v{opacity:.7;line-height:1.55}
+
+/* CHEAT SHEET TABLE */
+.cheat-wrap{overflow-x:auto;margin:10px 0}
+.cheat{width:100%;border-collapse:collapse}
+.cheat th{padding:8px 12px;text-align:left;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--cheat-head-fg);background:var(--cheat-head-bg);font-family:'IBM Plex Mono',monospace}
+.cheat tr:nth-child(even) td{background:var(--cheat-alt-bg)}
+.cheat td{padding:8px 12px;font-size:12.5px;border-bottom:1px solid var(--border);vertical-align:top}
+.cheat td:first-child{font-weight:600;color:var(--text);font-family:'IBM Plex Mono',monospace;font-size:11.5px;white-space:nowrap}
+.cheat td:last-child{color:var(--kv-val-color)}
+
+/* CS GRID (positive signals) */
+.cs-grid{display:grid;gap:6px;margin:10px 0}
+.cs-row{display:flex;align-items:flex-start;gap:10px;background:var(--surface2);border:1px solid var(--border);border-radius:7px;padding:9px 13px;transition:background .3s}
+.cs-signal{font-size:13px;color:var(--text);font-weight:600;flex:1}
+.cs-why{font-size:12px;color:var(--muted);margin-top:3px;font-weight:400}
+.cs-ans{font-family:'IBM Plex Mono',monospace;font-size:11px;padding:3px 9px;border-radius:99px;white-space:nowrap;flex-shrink:0;font-weight:600}
+
+/* OPERATIONAL SETUP KV */
+.op-kv{display:flex;gap:10px;margin-bottom:10px;font-size:13px;padding:9px 12px;background:var(--surface2);border-radius:7px;border:1px solid var(--border)}
+.op-k{font-weight:600;color:var(--text);min-width:210px;flex-shrink:0;font-family:'IBM Plex Mono',monospace;font-size:11.5px;padding-top:1px}
+.op-v{color:var(--kv-val-color);line-height:1.55;font-size:12.5px}
+
+/* NOTES */
+.note-zone{margin-top:14px;border-top:1px solid var(--border);padding-top:12px}
+.notes-list{display:flex;flex-direction:column;gap:8px;margin-bottom:8px}
+.note-item{background:var(--note-bg);border-left:2px solid var(--accent);border-radius:0 6px 6px 0;padding:9px 11px}
+.note-item-text{font-size:12.5px;color:var(--note-text);line-height:1.6;white-space:pre-wrap;word-break:break-word}
+.note-item-footer{display:flex;align-items:center;justify-content:space-between;margin-top:6px}
+.note-ts{font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--note-ts)}
+.note-item-actions{display:flex;gap:4px}
+.note-action-btn{font-size:10px;font-family:'IBM Plex Mono',monospace;padding:2px 8px;border-radius:99px;border:1px solid var(--border);background:transparent;color:var(--muted);cursor:pointer;transition:all .15s}
+.note-action-btn:hover{background:var(--surface2);color:var(--text)}
+.note-action-btn.del:hover{background:var(--alert-red-bg);color:var(--alert-red-text);border-color:var(--alert-red-border)}
+.note-form{margin-top:8px}
+.note-form textarea{width:100%;font-size:12.5px;font-family:'IBM Plex Sans',sans-serif;line-height:1.55;resize:vertical;min-height:68px;padding:8px 10px;border-radius:6px;border:1px solid var(--note-input-border);background:var(--note-input-bg);color:var(--text);transition:background .3s,border-color .3s}
+.note-form textarea:focus{outline:none;border-color:var(--accent)}
+.note-form-actions{display:flex;gap:6px;margin-top:6px}
+.note-save-btn{font-size:11px;font-family:'IBM Plex Mono',monospace;padding:4px 12px;border-radius:99px;border:1px solid var(--accent-border);background:var(--accent-bg);color:var(--accent-text);cursor:pointer;font-weight:600;transition:all .15s}
+.note-save-btn:hover{background:var(--accent);color:var(--num-fg)}
+.note-cancel-btn{font-size:11px;font-family:'IBM Plex Mono',monospace;padding:4px 12px;border-radius:99px;border:1px solid var(--border);background:transparent;color:var(--muted);cursor:pointer;transition:all .15s}
+.note-cancel-btn:hover{background:var(--surface2);color:var(--text)}
+.note-add-trigger{display:flex;align-items:center;gap:6px;font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--note-trigger-color);cursor:pointer;padding:4px 0;background:none;border:none;transition:color .15s;letter-spacing:.03em}
+.note-add-trigger:hover{color:var(--note-trigger-hover)}
+
+@media(max-width:600px){
+  body{padding:14px 12px}
+  .page-header{flex-direction:column;gap:12px}
+  .header-text h1{font-size:18px}
+  .tab-bar{gap:5px;padding:8px 0}
+  .tab-btn{font-size:10px;padding:4px 9px}
+  .gap-header{padding:11px 13px;gap:8px}
+  .gap-title{font-size:12.5px}
+  .gap-tag{display:none}
+  .gap-body{padding:13px 14px}
+  .kv-row{flex-direction:column;gap:3px}.kv-key{min-width:unset}
+  .g2,.g3{grid-template-columns:1fr}
+  .stage-row{flex-direction:column;gap:4px}
+  .code{font-size:10.5px;padding:10px 11px}
+  .dt-row{flex-direction:column;align-items:flex-start;gap:4px}
+  .signal-row{flex-wrap:wrap}
+  .pipe-row{flex-direction:column}
+  .br-k{min-width:unset}
+}
+
+
+
+
+/* ════════════════════════════════════════════════════════
+   SIDEBAR + BOTTOM BAR
+════════════════════════════════════════════════════════ */
+:root { --sb-w: 220px; --sb-w-collapsed: 48px; --bb-h: 56px; }
+
+[data-theme="dark"] {
+  --sb-bg: #0f1118;
+  --sb-border: #1e2230;
+  --sb-hover: #1a1f2e;
+  --sb-active-bg: #091a11;
+  --sb-active-text: #4dff91;
+  --sb-active-border: #0f4024;
+  --sb-text: #7a8099;
+  --sb-text-strong: #c0c4d4;
+  --sb-num: #3a3f52;
+  --sb-badge-bg: #091a11;
+  --sb-badge-text: #4dff91;
+  --sb-badge-border: #0f4024;
+  --sb-sub-text: #5a6070;
+  --sb-sub-hover: #1e2230;
+  --sb-section: #252b3a;
+  --sb-collapse-color: #4a5168;
+  --sb-overlay-bg: rgba(0,0,0,0.55);
+  --bb-bg: #0f1118;
+  --bb-border: #1e2230;
+  --bb-text: #5a6070;
+  --bb-active: #4dff91;
+}
+[data-theme="light"] {
+  --sb-bg: #ffffff;
+  --sb-border: #e4e8e0;
+  --sb-hover: #f4f6f0;
+  --sb-active-bg: #eaf6ee;
+  --sb-active-text: #1e8a45;
+  --sb-active-border: #9ed4b2;
+  --sb-text: #6a7060;
+  --sb-text-strong: #2a3020;
+  --sb-num: #c0c8b8;
+  --sb-badge-bg: #eaf6ee;
+  --sb-badge-text: #1e8a45;
+  --sb-badge-border: #9ed4b2;
+  --sb-sub-text: #9aa090;
+  --sb-sub-hover: #f0f4ec;
+  --sb-section: #eaeee6;
+  --sb-collapse-color: #b0b8a8;
+  --sb-overlay-bg: rgba(0,0,0,0.25);
+  --bb-bg: #ffffff;
+  --bb-border: #e4e8e0;
+  --bb-text: #9aa090;
+  --bb-active: #1e8a45;
+}
+
+/* ── LAYOUT SHIFT ── */
+body { transition: padding-left .25s cubic-bezier(.4,0,.2,1); }
+body.sb-open   { padding-left: var(--sb-w) !important; }
+body.sb-closed { padding-left: var(--sb-w-collapsed) !important; }
+
+/* ── SIDEBAR ── */
+.sidebar {
+  position: fixed;
+  top: 0; left: 0;
+  width: var(--sb-w);
+  height: 100vh;
+  background: var(--sb-bg);
+  border-right: 1px solid var(--sb-border);
+  display: flex;
+  flex-direction: column;
+  z-index: 200;
+  overflow: hidden;
+  transition: width .25s cubic-bezier(.4,0,.2,1), background .3s, border-color .3s;
+}
+.sidebar.collapsed { width: var(--sb-w-collapsed); }
+.sidebar.collapsed .sb-mod-label,
+.sidebar.collapsed .sb-expand-icon,
+.sidebar.collapsed .sb-brand,
+.sidebar.collapsed .sb-subtopics { display: none; }
+.sidebar.collapsed .sb-mod-num,
+.sidebar.collapsed .sb-mod-icon { margin: 0 auto; }
+.sidebar.collapsed .sb-mod-link { justify-content: center; padding: 10px 0; }
+.sidebar.collapsed .sb-nav { padding-top: 4px; }
+
+/* ── SIDEBAR HEAD ── */
+.sb-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 14px 12px;
+  border-bottom: 1px solid var(--sb-border);
+  flex-shrink: 0;
+  min-height: 52px;
+  gap: 8px;
+}
+.sb-brand {
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  overflow: hidden;
+}
+.sb-badge {
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 10px;
+  font-weight: 600;
+  background: var(--sb-badge-bg);
+  color: var(--sb-badge-text);
+  border: 1px solid var(--sb-badge-border);
+  border-radius: 5px;
+  padding: 3px 7px;
+  letter-spacing: .06em;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+.sb-collapse-btn {
+  background: none;
+  border: 1px solid var(--sb-border);
+  border-radius: 6px;
+  color: var(--sb-collapse-color);
+  font-size: 10px;
+  cursor: pointer;
+  padding: 4px 7px;
+  line-height: 1;
+  transition: all .15s;
+  flex-shrink: 0;
+  white-space: nowrap;
+}
+.sb-collapse-btn:hover { background: var(--sb-hover); color: var(--sb-text-strong); }
+.sidebar.collapsed .sb-collapse-btn { transform: rotate(180deg); }
+
+/* ── SIDEBAR NAV ── */
+.sb-nav {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 8px 0 24px;
+  scrollbar-width: thin;
+  scrollbar-color: var(--sb-border) transparent;
+}
+
+.sb-mod-link {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px 8px 14px;
+  text-decoration: none;
+  color: var(--sb-text);
+  font-size: 12.5px;
+  font-weight: 500;
+  border-left: 2px solid transparent;
+  transition: background .1s, color .1s, border-color .1s;
+  line-height: 1.3;
+}
+.sb-mod-link:hover {
+  background: var(--sb-hover);
+  color: var(--sb-text-strong);
+}
+.sb-mod-link.active {
+  background: var(--sb-active-bg);
+  color: var(--sb-active-text);
+  border-left-color: var(--sb-active-border);
+  font-weight: 600;
+}
+.sb-mod-num {
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 10px;
+  color: var(--sb-num);
+  flex-shrink: 0;
+  width: 20px;
+  text-align: right;
+  transition: color .1s;
+}
+.sb-mod-icon { font-size: 13px; flex-shrink: 0; width: 20px; text-align: center; }
+.sb-mod-label { flex: 1; }
+.sb-mod-link.active .sb-mod-num { color: var(--sb-active-text); opacity: .55; }
+
+.sb-expand-icon {
+  font-size: 9px;
+  color: var(--sb-num);
+  flex-shrink: 0;
+  transition: transform .18s;
+}
+.sb-mod-group.open > .sb-mod-link .sb-expand-icon { transform: rotate(90deg); }
+
+/* ── SUBTOPICS ── */
+.sb-subtopics {
+  display: none;
+  flex-direction: column;
+  border-left: 1px solid var(--sb-border);
+  margin: 0 0 2px 28px;
+}
+.sb-mod-group.open > .sb-subtopics { display: flex; }
+
+.sb-sub-link {
+  display: block;
+  padding: 5px 10px 5px 12px;
+  font-size: 11.5px;
+  color: var(--sb-sub-text);
+  text-decoration: none;
+  border-left: 2px solid transparent;
+  transition: background .1s, color .1s, border-color .1s;
+  line-height: 1.4;
+}
+.sb-sub-link:hover {
+  background: var(--sb-sub-hover);
+  color: var(--sb-text-strong);
+}
+.sb-sub-link.active {
+  color: var(--sb-active-text);
+  border-left-color: var(--sb-active-border);
+  font-weight: 600;
+}
+
+/* ── OVERLAY ── */
+.sb-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: var(--sb-overlay-bg);
+  z-index: 199;
+}
+
+/* ════════════════════════════════════════════════════════
+   MOBILE — BOTTOM TAB BAR (≤768px)
+════════════════════════════════════════════════════════ */
+.bottom-bar {
+  display: none;
+}
+
+@media (max-width: 768px) {
+  /* hide desktop sidebar entirely */
+  .sidebar, .sb-overlay { display: none !important; }
+
+  /* undo layout shift */
+  body.sb-open, body.sb-closed { padding-left: 0 !important; }
+
+  /* push content up so bottom bar doesn't overlap */
+  body { padding-bottom: calc(var(--bb-h) + 4px) !important; }
+
+  .bottom-bar {
+    display: flex;
+    position: fixed;
+    bottom: 0; left: 0; right: 0;
+    height: var(--bb-h);
+    background: var(--bb-bg);
+    border-top: 1px solid var(--bb-border);
+    z-index: 200;
+    align-items: stretch;
+    transition: background .3s, border-color .3s;
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+  .bottom-bar::-webkit-scrollbar { display: none; }
+
+  .bb-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 3px;
+    flex: 1;
+    min-width: 52px;
+    text-decoration: none;
+    color: var(--bb-text);
+    padding: 6px 4px;
+    border-top: 2px solid transparent;
+    transition: color .15s, border-color .15s;
+  }
+  .bb-item.active {
+    color: var(--bb-active);
+    border-top-color: var(--bb-active);
+  }
+  .bb-icon {
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 12px;
+    font-weight: 600;
+    line-height: 1;
+  }
+  .bb-label {
+    font-size: 9px;
+    font-family: "IBM Plex Mono", monospace;
+    letter-spacing: .02em;
+    white-space: nowrap;
+  }
+
+  /* keep tab-bar sticky above bottom bar on module pages */
+  .tab-bar { bottom: var(--bb-h) !important; }
+}
+
+/* also hide toggle button from index page header on desktop
+   (hamburger only needed on mobile, but we removed that approach) */
+.sb-menu-btn { display: none; }
+/* ════════════════════════════════════════════════════════
+   END SIDEBAR + BOTTOM BAR
+════════════════════════════════════════════════════════ */
+
+</style>
+</head>
+<body>
+<!-- ═══ SIDEBAR ═══ -->
+<div class="sb-overlay" id="sbOverlay" onclick="closeSidebar()"></div>
+<aside class="sidebar" id="sidebar">
+  <div class="sb-head">
+    <a href="index.html" class="sb-brand">
+      <span class="sb-badge">GCP PDE</span>
+    </a>
+    <button class="sb-collapse-btn" id="sbCollapseBtn" onclick="toggleSidebar()" title="Collapse sidebar">◀</button>
+  </div>
+  <div class="sb-nav">
+    <a href="index.html" class="sb-mod-link" data-page="index">
+      <span class="sb-mod-icon">⌂</span>
+      <span class="sb-mod-label">Home</span>
+    </a>
+    <div class="sb-mod-group" data-group="m1_bigquery">
+      <a href="m1_bigquery.html" class="sb-mod-link" data-page="m1_bigquery">
+        <span class="sb-mod-num">01</span>
+        <span class="sb-mod-label">BigQuery</span>
+        <span class="sb-expand-icon">▸</span>
+      </a>
+      <div class="sb-subtopics" id="sub-m1_bigquery">
+        <a href="m1_bigquery.html#partitioning" class="sb-sub-link" data-page="m1_bigquery" data-tab="partitioning">Partitioning & clustering</a>
+        <a href="m1_bigquery.html#pricing" class="sb-sub-link" data-page="m1_bigquery" data-tab="pricing">Pricing & slots</a>
+        <a href="m1_bigquery.html#bqml" class="sb-sub-link" data-page="m1_bigquery" data-tab="bqml">BigQuery ML</a>
+        <a href="m1_bigquery.html#security" class="sb-sub-link" data-page="m1_bigquery" data-tab="security">Security & access control</a>
+        <a href="m1_bigquery.html#external" class="sb-sub-link" data-page="m1_bigquery" data-tab="external">External tables & BigLake</a>
+        <a href="m1_bigquery.html#advanced" class="sb-sub-link" data-page="m1_bigquery" data-tab="advanced">Advanced SQL & features</a>
+        <a href="m1_bigquery.html#scenarios" class="sb-sub-link" data-page="m1_bigquery" data-tab="scenarios">Exam scenarios</a>
+      </div>
+    </div>
+    <div class="sb-mod-group" data-group="m2_dataflow_pubsub">
+      <a href="m2_dataflow_pubsub.html" class="sb-mod-link" data-page="m2_dataflow_pubsub">
+        <span class="sb-mod-num">02</span>
+        <span class="sb-mod-label">Dataflow & Pub/Sub</span>
+        <span class="sb-expand-icon">▸</span>
+      </a>
+      <div class="sb-subtopics" id="sub-m2_dataflow_pubsub">
+        <a href="m2_dataflow_pubsub.html#beam" class="sb-sub-link" data-page="m2_dataflow_pubsub" data-tab="beam">Apache Beam model</a>
+        <a href="m2_dataflow_pubsub.html#windowing" class="sb-sub-link" data-page="m2_dataflow_pubsub" data-tab="windowing">Windowing</a>
+        <a href="m2_dataflow_pubsub.html#dataflow" class="sb-sub-link" data-page="m2_dataflow_pubsub" data-tab="dataflow">Dataflow service</a>
+        <a href="m2_dataflow_pubsub.html#pubsub" class="sb-sub-link" data-page="m2_dataflow_pubsub" data-tab="pubsub">Pub/Sub</a>
+        <a href="m2_dataflow_pubsub.html#pipeline" class="sb-sub-link" data-page="m2_dataflow_pubsub" data-tab="pipeline">The canonical pipeline</a>
+        <a href="m2_dataflow_pubsub.html#scenarios" class="sb-sub-link" data-page="m2_dataflow_pubsub" data-tab="scenarios">Exam scenarios</a>
+      </div>
+    </div>
+    <div class="sb-mod-group" data-group="m3_storage_services">
+      <a href="m3_storage_services.html" class="sb-mod-link" data-page="m3_storage_services">
+        <span class="sb-mod-num">03</span>
+        <span class="sb-mod-label">Storage Services</span>
+        <span class="sb-expand-icon">▸</span>
+      </a>
+      <div class="sb-subtopics" id="sub-m3_storage_services">
+        <a href="m3_storage_services.html#decision" class="sb-sub-link" data-page="m3_storage_services" data-tab="decision">Decision Framework</a>
+        <a href="m3_storage_services.html#bigtable" class="sb-sub-link" data-page="m3_storage_services" data-tab="bigtable">Bigtable</a>
+        <a href="m3_storage_services.html#spanner" class="sb-sub-link" data-page="m3_storage_services" data-tab="spanner">Cloud Spanner</a>
+        <a href="m3_storage_services.html#firestore" class="sb-sub-link" data-page="m3_storage_services" data-tab="firestore">Firestore</a>
+        <a href="m3_storage_services.html#cloudsql" class="sb-sub-link" data-page="m3_storage_services" data-tab="cloudsql">Cloud SQL</a>
+        <a href="m3_storage_services.html#memorystore" class="sb-sub-link" data-page="m3_storage_services" data-tab="memorystore">Memorystore</a>
+        <a href="m3_storage_services.html#scenarios" class="sb-sub-link" data-page="m3_storage_services" data-tab="scenarios">Exam Scenarios</a>
+        <a href="m3_storage_services.html#traps" class="sb-sub-link" data-page="m3_storage_services" data-tab="traps">Traps & Cheatsheet</a>
+      </div>
+    </div>
+    <div class="sb-mod-group" data-group="m4_data_processing_governance">
+      <a href="m4_data_processing_governance.html" class="sb-mod-link" data-page="m4_data_processing_governance">
+        <span class="sb-mod-num">04</span>
+        <span class="sb-mod-label">Data Processing</span>
+        <span class="sb-expand-icon">▸</span>
+      </a>
+      <div class="sb-subtopics" id="sub-m4_data_processing_governance">
+        <a href="m4_data_processing_governance.html#dataproc" class="sb-sub-link" data-page="m4_data_processing_governance" data-tab="dataproc">Dataproc</a>
+        <a href="m4_data_processing_governance.html#datafusion" class="sb-sub-link" data-page="m4_data_processing_governance" data-tab="datafusion">Cloud Data Fusion</a>
+        <a href="m4_data_processing_governance.html#dataform" class="sb-sub-link" data-page="m4_data_processing_governance" data-tab="dataform">Dataform</a>
+        <a href="m4_data_processing_governance.html#datastream" class="sb-sub-link" data-page="m4_data_processing_governance" data-tab="datastream">Datastream</a>
+        <a href="m4_data_processing_governance.html#composer" class="sb-sub-link" data-page="m4_data_processing_governance" data-tab="composer">Cloud Composer</a>
+        <a href="m4_data_processing_governance.html#dataplex" class="sb-sub-link" data-page="m4_data_processing_governance" data-tab="dataplex">Dataplex</a>
+        <a href="m4_data_processing_governance.html#datacatalog" class="sb-sub-link" data-page="m4_data_processing_governance" data-tab="datacatalog">Data Catalog</a>
+        <a href="m4_data_processing_governance.html#dlp" class="sb-sub-link" data-page="m4_data_processing_governance" data-tab="dlp">Cloud DLP</a>
+        <a href="m4_data_processing_governance.html#analyticshub" class="sb-sub-link" data-page="m4_data_processing_governance" data-tab="analyticshub">Analytics Hub</a>
+        <a href="m4_data_processing_governance.html#decision" class="sb-sub-link" data-page="m4_data_processing_governance" data-tab="decision">Decision Reference</a>
+      </div>
+    </div>
+    <div class="sb-mod-group" data-group="m5_security_ml_architecture">
+      <a href="m5_security_ml_architecture.html" class="sb-mod-link" data-page="m5_security_ml_architecture">
+        <span class="sb-mod-num">05</span>
+        <span class="sb-mod-label">Security & ML</span>
+        <span class="sb-expand-icon">▸</span>
+      </a>
+      <div class="sb-subtopics" id="sub-m5_security_ml_architecture">
+        <a href="m5_security_ml_architecture.html#iam" class="sb-sub-link" data-page="m5_security_ml_architecture" data-tab="iam">IAM</a>
+        <a href="m5_security_ml_architecture.html#encryption" class="sb-sub-link" data-page="m5_security_ml_architecture" data-tab="encryption">Encryption</a>
+        <a href="m5_security_ml_architecture.html#vpcsc" class="sb-sub-link" data-page="m5_security_ml_architecture" data-tab="vpcsc">VPC Service Controls</a>
+        <a href="m5_security_ml_architecture.html#audit" class="sb-sub-link" data-page="m5_security_ml_architecture" data-tab="audit">Audit Logging</a>
+        <a href="m5_security_ml_architecture.html#ml" class="sb-sub-link" data-page="m5_security_ml_architecture" data-tab="ml">ML Fundamentals</a>
+        <a href="m5_security_ml_architecture.html#vertex" class="sb-sub-link" data-page="m5_security_ml_architecture" data-tab="vertex">Vertex AI</a>
+        <a href="m5_security_ml_architecture.html#batchstream" class="sb-sub-link" data-page="m5_security_ml_architecture" data-tab="batchstream">Batch vs Streaming</a>
+        <a href="m5_security_ml_architecture.html#refarch" class="sb-sub-link" data-page="m5_security_ml_architecture" data-tab="refarch">Reference Architecture</a>
+        <a href="m5_security_ml_architecture.html#scenarios" class="sb-sub-link" data-page="m5_security_ml_architecture" data-tab="scenarios">Architecture Scenarios</a>
+      </div>
+    </div>
+    <div class="sb-mod-group" data-group="m6_advanced_topics">
+      <a href="m6_advanced_topics.html" class="sb-mod-link" data-page="m6_advanced_topics">
+        <span class="sb-mod-num">06</span>
+        <span class="sb-mod-label">Advanced Topics</span>
+        <span class="sb-expand-icon">▸</span>
+      </a>
+      <div class="sb-subtopics" id="sub-m6_advanced_topics">
+        <a href="m6_advanced_topics.html#bq" class="sb-sub-link" data-page="m6_advanced_topics" data-tab="bq">BigQuery</a>
+        <a href="m6_advanced_topics.html#dataflow" class="sb-sub-link" data-page="m6_advanced_topics" data-tab="dataflow">Dataflow</a>
+        <a href="m6_advanced_topics.html#pubsub" class="sb-sub-link" data-page="m6_advanced_topics" data-tab="pubsub">Pub/Sub</a>
+        <a href="m6_advanced_topics.html#spanner" class="sb-sub-link" data-page="m6_advanced_topics" data-tab="spanner">Cloud Spanner</a>
+        <a href="m6_advanced_topics.html#dataproc" class="sb-sub-link" data-page="m6_advanced_topics" data-tab="dataproc">Dataproc</a>
+        <a href="m6_advanced_topics.html#vertex" class="sb-sub-link" data-page="m6_advanced_topics" data-tab="vertex">Vertex AI</a>
+        <a href="m6_advanced_topics.html#security" class="sb-sub-link" data-page="m6_advanced_topics" data-tab="security">Security</a>
+        <a href="m6_advanced_topics.html#exactlyonce" class="sb-sub-link" data-page="m6_advanced_topics" data-tab="exactlyonce">Exactly-Once Semantics</a>
+        <a href="m6_advanced_topics.html#signals" class="sb-sub-link" data-page="m6_advanced_topics" data-tab="signals">Signal Prioritization</a>
+        <a href="m6_advanced_topics.html#cheatsheet" class="sb-sub-link" data-page="m6_advanced_topics" data-tab="cheatsheet">Cheat Sheet</a>
+      </div>
+    </div>
+  </div>
+</aside>
+<!-- ═══ END SIDEBAR ═══ -->
+
+<!-- ═══ MOBILE BOTTOM BAR ═══ -->
+<nav class="bottom-bar" id="bottomBar">
+  <a href="index.html" class="bb-item" data-page="index">
+    <span class="bb-icon">⌂</span>
+    <span class="bb-label">Home</span>
+  </a>
+  <a href="m1_bigquery.html" class="bb-item" data-page="m1_bigquery">
+    <span class="bb-icon">01</span>
+    <span class="bb-label">BigQuery</span>
+  </a>
+  <a href="m2_dataflow_pubsub.html" class="bb-item" data-page="m2_dataflow_pubsub">
+    <span class="bb-icon">02</span>
+    <span class="bb-label">Dataflow</span>
+  </a>
+  <a href="m3_storage_services.html" class="bb-item" data-page="m3_storage_services">
+    <span class="bb-icon">03</span>
+    <span class="bb-label">Storage</span>
+  </a>
+  <a href="m4_data_processing_governance.html" class="bb-item" data-page="m4_data_processing_governance">
+    <span class="bb-icon">04</span>
+    <span class="bb-label">Data</span>
+  </a>
+  <a href="m5_security_ml_architecture.html" class="bb-item" data-page="m5_security_ml_architecture">
+    <span class="bb-icon">05</span>
+    <span class="bb-label">Security</span>
+  </a>
+  <a href="m6_advanced_topics.html" class="bb-item" data-page="m6_advanced_topics">
+    <span class="bb-icon">06</span>
+    <span class="bb-label">Advanced</span>
+  </a>
+</nav>
+<!-- ═══ END MOBILE BOTTOM BAR ═══ -->
+
+
+
+<div class="page-header">
+  <div class="header-text">
+    <div class="label">GCP PDE Study Notes — Module 6</div>
+    <h1>Advanced Topics</h1>
+    <p>10 subtopics · tap a tab to switch · tap cards to expand · add notes per card</p>
+  </div>
+  <div class="theme-toggle" onclick="toggleTheme()">
+    <span class="ti-sun">☀️</span>
+    <div class="toggle-track"><div class="toggle-knob"></div></div>
+    <span class="ti-moon">🌙</span>
+  </div>
+</div>
+
+<div class="tab-bar" id="tabBar"></div>
+<div id="tabContent"></div>
+
+<script>
+function toggleTheme(){const h=document.documentElement;h.setAttribute('data-theme',h.getAttribute('data-theme')==='dark'?'light':'dark');}
+
+const TABS = [
+
+/* ══ 1. BIGQUERY ══ */
+{id:'bq',label:'BigQuery',freq:'Advanced',topics:[
+{title:'Slot utilization and workload management — reservations in practice',body:`
+<p class="prose">Existing notes explain on-demand vs capacity pricing. This card covers how reservation assignments actually work at the project level — a concept tested in operational scenario questions.</p>
+<div class="lbl">Reservation assignment model</div>
+<div class="kv-row"><div class="kv-key">Admin project</div><div class="kv-val">Slot reservations and commitments are purchased in an "admin project" (the billing project for reservations). This project doesn't have to run any queries — it's just the capacity management hub.</div></div>
+<div class="kv-row"><div class="kv-key">Reservation</div><div class="kv-val">A named pool of slots. E.g., "production-reservation" with 2000 slots. You create multiple reservations to separate workloads.</div></div>
+<div class="kv-row"><div class="kv-key">Assignment</div><div class="kv-val">Links a project, folder, or organization to a reservation. Queries in the assigned project consume slots from that reservation — not from on-demand. An unassigned project falls back to on-demand pricing.</div></div>
+<div class="kv-row"><div class="kv-key">Idle slot sharing</div><div class="kv-val">Unused slots in one reservation can be temporarily lent to another reservation in the same admin project. If the owning reservation needs them back, they are reclaimed. This is automatic — no configuration.</div></div>
+<div class="lbl">Workload isolation pattern</div>
+<div class="g2">
+<div class="mini"><div class="mt">Production reservation</div><div class="mb">500 guaranteed slots. Production ETL pipelines assigned here. Always has capacity — never starved by analytics team running large queries.</div></div>
+<div class="mini"><div class="mt">Analytics reservation</div><div class="mb">200 baseline slots + autoscale to 1000. Data analysts assigned here. Can burst when production is idle but doesn't starve production.</div></div>
+</div>
+<div class="alert alert-blue">Exam pattern: "Production BigQuery jobs are being slowed by ad-hoc analyst queries consuming all available slots." → Create separate reservations for production and analytics. Assign each project to its respective reservation. Production queries are guaranteed their slot allocation and cannot be starved by analytics workloads.</div>`},
+
+{title:'Authorized functions and column-level transformations',body:`
+<p class="prose">Authorized views grant read access to sensitive tables for a view. Authorized functions extend this concept to persistent user-defined functions (UDFs) that can access sensitive data on behalf of callers.</p>
+<div class="kv-row"><div class="kv-key">Authorized UDF</div><div class="kv-val">A BigQuery persistent UDF that is authorized to query tables in another dataset — even if the calling user doesn't have direct access to those tables. Works like an authorized view but for function calls rather than SELECT statements.</div></div>
+<div class="kv-row"><div class="kv-key">Use case</div><div class="kv-val">A de-identification function that masks SSNs can be authorized on the sensitive dataset. Analysts call the function — the function accesses the raw SSN column and returns a masked value. Analysts never have direct column access.</div></div>
+<div class="kv-row"><div class="kv-key">vs authorized view</div><div class="kv-val">Authorized view = SELECT with restricted columns. Authorized UDF = function that can access restricted data and transform/return a safe version. Authorized UDFs allow dynamic transformations rather than fixed column projections.</div></div>`},
+
+{title:'BigQuery scripting, stored procedures, and transactions',body:`
+<p class="prose">BigQuery supports multi-statement scripts and stored procedures — useful for complex ETL logic that needs to run conditionally or in loops without external orchestration.</p>
+<div class="lbl">Scripting constructs</div>
+<div class="kv-row"><div class="kv-key">DECLARE / SET</div><div class="kv-val">Declare and set script variables. E.g., DECLARE cutoff_date DATE; SET cutoff_date = DATE_SUB(CURRENT_DATE(), INTERVAL 7 DAY);</div></div>
+<div class="kv-row"><div class="kv-key">IF / ELSEIF / ELSE</div><div class="kv-val">Conditional execution within a script. Run different SQL branches based on row counts, dates, or other conditions.</div></div>
+<div class="kv-row"><div class="kv-key">FOR...IN (loop)</div><div class="kv-val">Iterate over a query result set, executing SQL for each row. Use for generating dynamic SQL or processing partitions individually.</div></div>
+<div class="kv-row"><div class="kv-key">Stored procedures</div><div class="kv-val">Reusable named scripts with input/output parameters. Called with CALL procedure_name(args). Can contain full scripting logic including transactions.</div></div>
+<div class="kv-row"><div class="kv-key">BEGIN / COMMIT / ROLLBACK</div><div class="kv-val">Multi-statement transactions. Either all statements commit or all roll back. Use for atomic multi-table updates within a script.</div></div>
+<div class="code"><span class="cm">-- Stored procedure for incremental load with transaction</span>
+<span class="ck">CREATE OR REPLACE PROCEDURE</span> <span class="cv">dataset.load_daily_summary</span>(<span class="cv">p_date DATE</span>)
+<span class="ck">BEGIN</span>
+  <span class="ck">DECLARE</span> row_count <span class="ck">INT64</span>;
+  <span class="ck">BEGIN TRANSACTION</span>;
+    <span class="cm">-- Delete existing rows for this date (idempotent)</span>
+    <span class="ck">DELETE FROM</span> <span class="cv">dataset.daily_summary</span> <span class="ck">WHERE</span> summary_date = p_date;
+    <span class="cm">-- Insert fresh aggregation</span>
+    <span class="ck">INSERT INTO</span> <span class="cv">dataset.daily_summary</span>
+    <span class="ck">SELECT</span> p_date, region, <span class="ck">SUM</span>(amount)
+    <span class="ck">FROM</span> <span class="cv">dataset.orders</span>
+    <span class="ck">WHERE</span> <span class="ck">DATE</span>(order_time) = p_date
+    <span class="ck">GROUP BY</span> 1, 2;
+    <span class="ck">SET</span> row_count = @@row_count;
+  <span class="ck">COMMIT TRANSACTION</span>;
+  <span class="ck">SELECT</span> CONCAT(<span class="cs">'Loaded '</span>, <span class="ck">CAST</span>(row_count <span class="ck">AS STRING</span>), <span class="cs">' rows'</span>);
+<span class="ck">END</span>;</div>
+<div class="alert alert-blue">Exam pattern: "A data team needs to run complex multi-step conditional SQL logic in BigQuery without spinning up Dataflow or Composer." → BigQuery stored procedures with scripting. For simple conditional ETL with no cross-service dependencies, stored procedures are simpler and cheaper than Composer or Dataflow.</div>`},
+
+{title:'BigQuery capacity vs on-demand — break-even and flex slot strategy',body:`
+<div class="lbl">The break-even calculation</div>
+<div class="kv-row"><div class="kv-key">On-demand pricing</div><div class="kv-val">$6.25 per TB processed. Unpredictable cost. No wasted spend when idle. Good for: low/bursty query volumes, development environments, exploratory analytics.</div></div>
+<div class="kv-row"><div class="kv-key">Capacity pricing</div><div class="kv-val">Pay for reserved slots whether used or not. Good for: steady high-volume workloads, production ETL pipelines, BI dashboards running all day.</div></div>
+<div class="kv-row"><div class="kv-key">Break-even rule of thumb</div><div class="kv-val">Capacity pricing becomes cheaper than on-demand at roughly 400 slot-hours of consistent daily use, equivalent to processing ~100 TB/month. Below this threshold, on-demand is usually cheaper.</div></div>
+<div class="lbl">Flex slots — burst capacity strategy</div>
+<div class="kv-row"><div class="kv-key">What flex slots are</div><div class="kv-val">Purchase slots by the minute (60-second minimum). Used to temporarily add capacity for a known heavy job, then release immediately after. You pay only for the duration you hold them.</div></div>
+<div class="kv-row"><div class="kv-key">Mixed strategy</div><div class="kv-val">Base reservation covers steady-state workload. Flex slots cover burst jobs (month-end reports, large backfills, ML training queries). Much cheaper than sizing the base reservation for peak load.</div></div>
+<div class="flow">
+<div class="fb">Base reservation<br><span style="font-size:10px;font-weight:400;opacity:.7">500 slots — always on</span></div>
+<div class="fa">+</div>
+<div class="fb hi">Flex slots<br><span style="font-size:10px;font-weight:400">500 extra — job duration only</span></div>
+<div class="fa">=</div>
+<div class="fb">Peak: 1000 slots<br><span style="font-size:10px;font-weight:400;opacity:.7">Pay base rate + flex minutes</span></div>
+</div>
+<div class="alert alert-amber">Exam pattern: "Month-end reporting jobs need 10x normal slot capacity for 2 hours. The company doesn't want to pay for that extra capacity year-round." → Use flex slots for the 2-hour burst. Purchase flex slot commitments before the job, release after. Base reservation handles normal daily workload.</div>`},
+
+{title:'INFORMATION_SCHEMA operational monitoring queries',body:`
+<p class="prose">The following query patterns appear directly in exam scenarios — detecting slot budget overruns and tables with unoptimized partition access.</p>
+<div class="code"><span class="cm">-- Pattern 1: Find queries exceeding slot budget (last 24 hours)</span>
+<span class="ck">SELECT</span>
+  user_email,
+  <span class="ck">ROUND</span>(total_bytes_processed / <span class="ck">POW</span>(10,12), 3) <span class="ck">AS</span> tb_processed,
+  <span class="ck">ROUND</span>(total_slot_ms / (1000 * 3600), 2) <span class="ck">AS</span> slot_hours,
+  query
+<span class="ck">FROM</span> <span class="cv">\`region-us\`.INFORMATION_SCHEMA.JOBS</span>
+<span class="ck">WHERE</span> creation_time > <span class="ck">TIMESTAMP_SUB</span>(<span class="ck">CURRENT_TIMESTAMP</span>(), <span class="ck">INTERVAL</span> 1 <span class="ck">DAY</span>)
+  <span class="ck">AND</span> total_slot_ms > 3600000
+  <span class="ck">AND</span> job_type = <span class="cs">'QUERY'</span>
+<span class="ck">ORDER BY</span> total_slot_ms <span class="ck">DESC LIMIT</span> 20;
+
+<span class="cm">-- Pattern 2: Detect tables with unoptimized partition access</span>
+<span class="ck">SELECT</span>
+  referenced_table.table_id,
+  <span class="ck">COUNT</span>(*) <span class="ck">AS</span> query_count,
+  <span class="ck">AVG</span>(total_bytes_processed) / <span class="ck">POW</span>(10,9) <span class="ck">AS</span> avg_gb_per_query
+<span class="ck">FROM</span> <span class="cv">\`region-us\`.INFORMATION_SCHEMA.JOBS</span>,
+  <span class="ck">UNNEST</span>(referenced_tables) <span class="ck">AS</span> referenced_table
+<span class="ck">WHERE</span> <span class="ck">DATE</span>(creation_time) = <span class="ck">CURRENT_DATE</span>()
+<span class="ck">GROUP BY</span> 1 <span class="ck">HAVING</span> avg_gb_per_query > 100
+<span class="ck">ORDER BY</span> avg_gb_per_query <span class="ck">DESC</span>;</div>
+<div class="kv-row"><div class="kv-key">JOBS_BY_PROJECT</div><div class="kv-val">Scoped to the current project. Default view used in most queries.</div></div>
+<div class="kv-row"><div class="kv-key">JOBS_BY_USER</div><div class="kv-val">Scoped to the current user's jobs only. Useful for self-service cost analysis.</div></div>
+<div class="kv-row"><div class="kv-key">JOBS_BY_ORGANIZATION</div><div class="kv-val">Org-wide job history. Requires org-level permissions. Used by security/cost teams for comprehensive auditing.</div></div>
+<div class="kv-row"><div class="kv-key">JOBS_TIMELINE_BY_PROJECT</div><div class="kv-val">Shows slot usage over time with 1-second granularity. Use to identify slot utilization patterns and size reservations accurately.</div></div>`},
+
+{title:'Partition pruning — six ways it silently fails',body:`
+<p class="prose">Partition pruning requires BigQuery to determine the relevant partition values at query plan time — before execution. Any filter that prevents this compile-time resolution disables pruning. No error is shown; the query simply scans all partitions.</p>
+
+<div class="prune-case">
+  <div class="pc-header"><div class="pc-title">Case 1 — wrapping partition column in a function</div><div class="pc-badge pc-fail">Pruning FAILS</div></div>
+  <div class="pc-body">
+    <div class="pc-sql">-- Table partitioned by DATE(created_at)
+SELECT * FROM orders WHERE DATE(created_at) = '2024-01-15'
+-- BQ cannot prune: must evaluate DATE() on every row first</div>
+    <div class="pc-fix">Fix: partition by a DATE column directly, not a TIMESTAMP column wrapped in DATE().</div>
+    <div class="pc-sql">CREATE TABLE orders PARTITION BY order_date ...
+SELECT * FROM orders WHERE order_date = '2024-01-15'  -- pruning works</div>
+  </div>
+</div>
+
+<div class="prune-case">
+  <div class="pc-header"><div class="pc-title">Case 2 — TIMESTAMP range filter (converts to partition dates at plan time)</div><div class="pc-badge pc-ok">Pruning WORKS</div></div>
+  <div class="pc-body">
+    <div class="pc-sql">WHERE event_timestamp >= '2024-01-15 00:00:00'
+  AND event_timestamp <  '2024-01-16 00:00:00'</div>
+    <div class="pc-explain">BQ can infer which date partitions are relevant from the TIMESTAMP range without evaluating a function on each row.</div>
+  </div>
+</div>
+
+<div class="prune-case">
+  <div class="pc-header"><div class="pc-title">Case 3 — non-deterministic function in filter</div><div class="pc-badge pc-fail">Pruning FAILS</div></div>
+  <div class="pc-body">
+    <div class="pc-sql">-- CURRENT_DATE() varies per query — BQ cannot resolve at plan time
+SELECT * FROM orders WHERE order_date = CURRENT_DATE()
+SELECT * FROM orders WHERE order_date >= DATE_SUB(CURRENT_DATE(), INTERVAL 7 DAY)</div>
+    <div class="pc-fix">Fix: pass the date as a query parameter (@run_date) rather than calling CURRENT_DATE() inline.</div>
+  </div>
+</div>
+
+<div class="prune-case">
+  <div class="pc-header"><div class="pc-title">Case 4 — partition filter inside a subquery</div><div class="pc-badge pc-fail">Pruning FAILS</div></div>
+  <div class="pc-body">
+    <div class="pc-sql">-- Filter is inside a subquery — BQ cannot push it to the partition scan
+SELECT * FROM (SELECT * FROM orders) WHERE order_date = '2024-01-15'</div>
+    <div class="pc-fix">Fix: filter directly on the partitioned table, not on a subquery wrapping it.</div>
+    <div class="pc-sql">SELECT * FROM orders WHERE order_date = '2024-01-15'</div>
+  </div>
+</div>
+
+<div class="prune-case">
+  <div class="pc-header"><div class="pc-title">Case 5 — filter applied after JOIN result</div><div class="pc-badge pc-partial">Partial or no pruning</div></div>
+  <div class="pc-body">
+    <div class="pc-sql">-- Filter applied after join — both tables may be fully scanned
+SELECT o.*, c.name FROM orders o JOIN customers c ON o.customer_id = c.id
+WHERE o.order_date = '2024-01-15'</div>
+    <div class="pc-fix">Fix: pre-filter the partitioned table in a CTE before joining.</div>
+    <div class="pc-sql">WITH recent_orders AS (
+  SELECT * FROM orders WHERE order_date = '2024-01-15'  -- pruning here
+)
+SELECT o.*, c.name FROM recent_orders o JOIN customers c ON o.customer_id = c.id</div>
+  </div>
+</div>
+
+<div class="prune-case">
+  <div class="pc-header"><div class="pc-title">Case 6 — require_partition_filter not set, no filter provided</div><div class="pc-badge pc-fail">Full scan (silent)</div></div>
+  <div class="pc-body">
+    <div class="pc-sql">-- Without require_partition_filter, a query with no WHERE clause
+-- silently scans ALL partitions — no error, just a huge bill
+SELECT COUNT(*) FROM orders</div>
+    <div class="pc-fix">Prevention: set require_partition_filter=TRUE on the table. Queries without a partition filter return an error instead of silently scanning everything.</div>
+  </div>
+</div>
+
+<div class="alert alert-amber">Exam diagnosis: "A partitioned BigQuery table is still scanning all data despite a WHERE clause on the partition column." → First check: is the partition column being wrapped in a function (DATE(), TIMESTAMP_TRUNC())? Is the filter inside a subquery? Is CURRENT_DATE() used? Any of these prevents pruning.</div>`},
+
+{title:'BigQuery ML full lifecycle decision tree',body:`
+<div class="lbl">Training stage</div>
+<div class="stage-row"><div class="stage-label">STAY IN BQ ML</div><div class="stage-content">Standard model types (LOGISTIC_REG, LINEAR_REG, BOOSTED_TREE_*, KMEANS, ARIMA_PLUS). Team knows SQL. Data is in BigQuery. Fast to iterate. No Python or ML engineer required.</div></div>
+<div class="stage-row"><div class="stage-label">GO TO VERTEX AI</div><div class="stage-content"><strong>Custom neural network architecture</strong> or custom loss function. <strong>PyTorch or non-TF framework</strong> required. <strong>Large-scale distributed training</strong> needing many GPUs/TPUs. Fine-tuning a foundation model. Advanced hyperparameter tuning with Vizier.</div></div>
+<div class="divider"></div>
+<div class="lbl">Evaluation stage</div>
+<div class="stage-row"><div class="stage-label">STAY IN BQ ML</div><div class="stage-content">ML.EVALUATE() in SQL. Standard metrics (AUC-ROC, precision, recall, RMSE, MAE). Sufficient for most use cases.</div></div>
+<div class="stage-row"><div class="stage-label">GO TO VERTEX AI</div><div class="stage-content"><strong>Model Evaluation</strong> in Vertex AI for custom metrics, fairness analysis, feature attribution at scale.</div></div>
+<div class="divider"></div>
+<div class="lbl">Serving / prediction stage — this is where most transitions happen</div>
+<div class="stage-row"><div class="stage-label">STAY IN BQ ML</div><div class="stage-content">ML.PREDICT() in SQL. <strong>Latency: 3–30+ seconds.</strong> Use for: nightly batch scoring, weekly campaign targeting, periodic data enrichment.</div></div>
+<div class="stage-row"><div class="stage-label">VERTEX AI ENDPOINT</div><div class="stage-content"><strong>Any latency &lt; 1 second requirement.</strong> REST API for application code. Per-request prediction during a user session. The trained BQ ML model can be exported to Vertex AI for this.</div></div>
+<div class="stage-row"><div class="stage-label">VERTEX AI BATCH</div><div class="stage-content">Large dataset scoring asynchronously. Input from GCS or BigQuery. No endpoint needed. Cheaper than an online endpoint for non-real-time batch scoring.</div></div>
+<div class="stage-row"><div class="stage-label">PRE-COMPUTE PATTERN</div><div class="stage-content">Run ML.PREDICT() or Vertex AI Batch Prediction nightly/hourly. Write per-entity scores to <strong>Bigtable</strong> (ms lookup) or <strong>Memorystore</strong> (sub-ms). Application reads pre-computed scores directly — no model inference at request time.</div></div>
+<div class="divider"></div>
+<div class="lbl">Monitoring stage</div>
+<div class="stage-row"><div class="stage-label">BQ ML only</div><div class="stage-content">No built-in monitoring. Manually schedule ML.EVALUATE() on new data via scheduled query or Composer DAG.</div></div>
+<div class="stage-row"><div class="stage-label">VERTEX AI MONITORING</div><div class="stage-content">When the model is deployed to a Vertex AI Endpoint — use Vertex AI Model Monitoring for automatic drift detection, alerts, and data skew detection.</div></div>
+<div class="alert alert-blue">Export path: BQML model → EXPORT MODEL to GCS as TensorFlow SavedModel → import to Vertex AI Model Registry → deploy to Vertex AI Endpoint. Training in BQ ML, serving infrastructure in Vertex AI.</div>`},
+
+{title:'The pre-compute serving pattern',body:`
+<p class="prose">The pre-compute pattern is the third option beyond "serve from BQ ML directly" and "export to Vertex AI Endpoint" — and it's often the right answer for high-traffic recommendation and scoring scenarios.</p>
+<div class="lbl">When pre-compute makes sense</div>
+<div class="kv-row"><div class="kv-key">Features don't change in real time</div><div class="kv-val">User purchase history, product attributes, account age — these change slowly. A recommendation score computed at midnight is still valid at 2pm the next day.</div></div>
+<div class="kv-row"><div class="kv-key">Very high traffic</div><div class="kv-val">10M users × 1 prediction each = 10M inference calls. Pre-computing all 10M predictions nightly and caching in Bigtable is cheaper and faster.</div></div>
+<div class="kv-row"><div class="kv-key">Cost sensitivity</div><div class="kv-val">A running Vertex AI Endpoint costs money even at idle. Pre-compute + Bigtable/Memorystore = no idle cost.</div></div>
+<div class="lbl">End-to-end pre-compute architecture</div>
+<div class="flow">
+<div class="fb hi">BigQuery training data</div>
+<div class="fa">→</div>
+<div class="fb">BQ ML PREDICT<br><span style="font-size:10px;font-weight:400;opacity:.7">nightly batch</span></div>
+<div class="fa">→</div>
+<div class="fb">scores → Bigtable<br><span style="font-size:10px;font-weight:400;opacity:.7">key=user_id, value=score</span></div>
+<div class="fa">→</div>
+<div class="fb hi">App reads Bigtable<br><span style="font-size:10px;font-weight:400">~5ms latency</span></div>
+</div>
+<div class="code"><span class="cm">-- Step 1: Run nightly batch scoring in BQ ML</span>
+<span class="ck">CREATE OR REPLACE TABLE</span> dataset.user_churn_scores <span class="ck">AS</span>
+<span class="ck">SELECT</span>
+  user_id,
+  predicted_churned_probs[<span class="ck">OFFSET</span>(0)].prob <span class="ck">AS</span> churn_probability,
+  <span class="ck">CURRENT_TIMESTAMP</span>() <span class="ck">AS</span> scored_at
+<span class="ck">FROM</span> <span class="ck">ML.PREDICT</span>(
+  <span class="ck">MODEL</span> <span class="cv">\`dataset.churn_model\`</span>,
+  (<span class="ck">SELECT</span> * <span class="ck">FROM</span> <span class="cv">\`dataset.user_features\`</span>
+   <span class="ck">WHERE</span> last_activity_date >= <span class="ck">DATE_SUB</span>(<span class="ck">CURRENT_DATE</span>(), <span class="ck">INTERVAL</span> 90 <span class="ck">DAY</span>))
+);
+<span class="cm">-- Step 2: Dataflow writes results to Bigtable (row key = user_id)</span>
+<span class="cm">-- Step 3: App reads from Bigtable at ~5ms — no model inference at request time</span></div>
+<div class="alert alert-teal">Exam pattern: "A recommendation model scores 50 million users nightly. Recommendations must appear on the homepage in under 20ms." → Pre-compute with BQ ML batch prediction (nightly), write per-user scores to Bigtable (row key = user_id). Homepage reads from Bigtable at &lt;10ms. No Vertex AI Endpoint needed.</div>`}
+]},
+
+/* ══ 2. DATAFLOW ══ */
+{id:'dataflow',label:'Dataflow',freq:'Advanced',topics:[
+{title:'Dataflow auto-scaling — how it decides when to scale',body:`
+<div class="lbl">What triggers scaling decisions</div>
+<p class="prose">Dataflow monitors two metrics to decide whether to add or remove workers. Understanding the specific metrics matters because exam questions describe a symptom and ask how to fix it.</p>
+<div class="kv-row"><div class="kv-key">Current backlog (streaming)</div><div class="kv-val">The volume of unprocessed data in the source (Pub/Sub unacked message bytes). If backlog is growing faster than workers can process it, Dataflow adds workers. If backlog is shrinking, it removes workers.</div></div>
+<div class="kv-row"><div class="kv-key">CPU utilization</div><div class="kv-val">If workers are consistently above ~80% CPU, Dataflow scales out. If consistently below ~20%, it scales in. Used in batch mode where there is no backlog metric.</div></div>
+<div class="kv-row"><div class="kv-key">Throughput per worker</div><div class="kv-val">Dataflow tracks how many elements per second each worker processes. Diminishing throughput per additional worker signals the pipeline is I/O-bound rather than CPU-bound.</div></div>
+<div class="lbl">Autoscaling limits</div>
+<div class="kv-row"><div class="kv-key">maxNumWorkers</div><div class="kv-val">Hard cap on worker count. Dataflow will never exceed this even if backlog is growing. Set this to control cost and avoid runaway scaling.</div></div>
+<div class="kv-row"><div class="kv-key">numWorkers</div><div class="kv-val">Initial number of workers at job launch. Not a minimum — Dataflow can scale below this after startup if throughput drops.</div></div>
+<div class="alert alert-blue">Exam symptom: "A Dataflow streaming job is falling behind on Pub/Sub — the backlog is growing. Workers are at max." → The issue is maxNumWorkers is too low. Fix: increase maxNumWorkers. If Streaming Engine is not enabled, also enable it — it reduces per-worker memory needs so each worker can handle more throughput before needing more workers.</div>
+<div class="lbl">Streaming Engine relationship</div>
+<p class="prose">Streaming Engine moves windowing state off worker VMs. Workers need less memory per unit of throughput — the same worker count handles more data. Workers don't become memory-bottlenecked before they become CPU-bottlenecked, so Dataflow can extract more work from fewer workers before scaling out.</p>`},
+
+{title:'Dataflow job graph — fusion and its implications',body:`
+<p class="prose">Dataflow optimizes your Beam pipeline by fusing consecutive transforms into single execution steps. This is largely automatic and beneficial — but understanding when fusion does NOT help, and what to do about it, is tested.</p>
+<div class="lbl">What fusion does</div>
+<p class="prose">When transforms A → B → C are fused, Dataflow executes them as a single unit on each worker without serializing data between steps. Avoids marshalling overhead. The pipeline DAG in the Dataflow UI shows "fused stages" that correspond to multiple Beam transforms collapsed together.</p>
+<div class="lbl">When you want to break fusion</div>
+<div class="kv-row"><div class="kv-key">Hot key / uneven distribution</div><div class="kv-val">If all elements with the same key end up on one worker (hot key), fusion means all downstream transforms for that key also run on the same overloaded worker. Breaking fusion with a reshuffle forces redistribution before the fused stage.</div></div>
+<div class="kv-row"><div class="kv-key">Reshuffle</div><div class="kv-val">beam.Reshuffle() is a no-op transform that breaks fusion. It forces Dataflow to redistribute elements across workers before the next stage. Use after a GroupByKey or aggregation that may have created uneven distribution.</div></div>
+<div class="code"><span class="cm"># Force redistribution to break fusion and balance workers</span>
+result = (
+    pcoll
+    | <span class="cs">'GroupByKey'</span>  >> beam.GroupByKey()
+    | <span class="cs">'Reshuffle'</span>   >> beam.Reshuffle()   <span class="cm"># breaks fusion, redistributes</span>
+    | <span class="cs">'ProcessGroups'</span> >> beam.Map(process)
+)</div>
+<div class="alert alert-amber">Exam pattern: "After a GroupByKey step, a Dataflow job has most work concentrated on a few workers while others are idle." → Add beam.Reshuffle() after the GroupByKey to break fusion and force even redistribution before the next processing step.</div>`},
+
+{title:'Dataflow cross-language transforms and portable runners',body:`
+<p class="prose">Apache Beam supports writing transforms in one language (e.g. Python) that calls code written in another language (e.g. Java). This matters for exam questions about reusing existing Java I/O connectors from a Python pipeline.</p>
+<div class="kv-row"><div class="kv-key">Cross-language transforms</div><div class="kv-val">A Python Beam pipeline can call a Java Beam transform using the cross-language mechanism. The Java transform runs in a separate expansion service process. Useful when a high-performance Java I/O connector exists but the team writes in Python.</div></div>
+<div class="kv-row"><div class="kv-key">Exam use case</div><div class="kv-val">"A team has a Python Dataflow pipeline but needs to use a Java-based Kafka I/O connector." → Use cross-language transforms. The Python pipeline calls the Java Kafka connector via the expansion service.</div></div>`}
+]},
+
+/* ══ 3. PUB/SUB ══ */
+{id:'pubsub',label:'Pub/Sub',freq:'Advanced',topics:[
+{title:'Pub/Sub message flow control — preventing consumer overload',body:`
+<p class="prose">When a subscriber is slower than the publisher (the consumer can't keep up), messages accumulate in the subscription. Pub/Sub will attempt to deliver them faster than the subscriber can process — leading to ack deadline timeouts, redeliveries, and cascading failures.</p>
+<div class="lbl">Flow control settings (pull subscriptions)</div>
+<div class="kv-row"><div class="kv-key">max_outstanding_messages</div><div class="kv-val">Maximum number of messages the client library will hold in memory at once waiting to be processed. Once this limit is hit, the client stops pulling new messages until existing ones are acked. Prevents memory exhaustion on the consumer.</div></div>
+<div class="kv-row"><div class="kv-key">max_outstanding_bytes</div><div class="kv-val">Same concept but limits total bytes of outstanding messages rather than count. Use for large messages where count alone doesn't reflect memory pressure.</div></div>
+<div class="kv-row"><div class="kv-key">max_lease_duration</div><div class="kv-val">Maximum time the client will hold a message before automatically extending or releasing the lease. If processing takes longer than this, the message is redelivered to another worker.</div></div>
+<div class="alert alert-red">Exam symptom: "A Pub/Sub consumer is crashing due to out-of-memory errors when message volume spikes. Messages are being redelivered repeatedly." → Configure flow control (max_outstanding_messages or max_outstanding_bytes) on the pull subscription client. This throttles how many messages the client holds in memory simultaneously.</div>`},
+
+{title:'Pub/Sub schema validation — catching bad messages at publish time',body:`
+<p class="prose">Without schema validation, a producer sending malformed messages (wrong field types, missing required fields) causes downstream consumer failures or silent data corruption. Pub/Sub schema validation rejects invalid messages at the topic level before they ever enter the system.</p>
+<div class="kv-row"><div class="kv-key">How it works</div><div class="kv-val">Attach an Avro or Protocol Buffer schema to a Pub/Sub topic. When a producer publishes a message, Pub/Sub validates it against the schema. Invalid messages are rejected with an error returned to the publisher — they never enter the subscription queue.</div></div>
+<div class="kv-row"><div class="kv-key">Schema evolution</div><div class="kv-val">Pub/Sub supports schema revisions. You can add optional fields without breaking existing consumers. Required field additions require a new schema version and coordination with all publishers.</div></div>
+<div class="kv-row"><div class="kv-key">Encoding</div><div class="kv-val">Messages are encoded as binary Avro or JSON Avro. Binary is more compact; JSON is human-readable for debugging. The topic encoding is set when attaching the schema.</div></div>
+<div class="alert alert-green">Exam pattern: "The data pipeline receives malformed messages that crash the Dataflow consumer. The team wants to reject invalid messages before they enter the pipeline." → Enable Pub/Sub schema validation on the topic. Invalid messages fail at publish time and never reach the subscription or Dataflow consumer.</div>
+<div class="lbl">Schema validation vs dead-letter topic — which to use</div>
+<div class="decision">
+<div class="d-row"><div class="d-q">Messages are malformed at the publisher (wrong schema, missing fields)</div><div class="d-a" style="background:var(--mini-good-bg);color:var(--mini-good-text);border:1px solid var(--accent-border)">Schema validation</div></div>
+<div class="d-row"><div class="d-q">Messages are valid schema but cause processing errors in the consumer</div><div class="d-a" style="background:var(--alert-red-bg);color:var(--alert-red-text);border:1px solid var(--alert-red-border)">Dead-letter topic</div></div>
+<div class="d-row"><div class="d-q">Want to catch both bad schema AND processing failures</div><div class="d-a" style="background:var(--alert-amber-bg);color:var(--alert-amber-text);border:1px solid var(--alert-amber-border)">Both — schema + DLT</div></div>
+</div>`},
+
+{title:'Pub/Sub exactly-once delivery — when and how',body:`
+<p class="prose">The default guarantee is at-least-once delivery. However, exactly-once delivery is available as a subscription-level option — this distinction is now tested.</p>
+<div class="kv-row"><div class="kv-key">At-least-once (default)</div><div class="kv-val">A message may be delivered more than once. Your consumer must be idempotent. Lower overhead, higher throughput, works with all subscriber types.</div></div>
+<div class="kv-row"><div class="kv-key">Exactly-once delivery (opt-in)</div><div class="kv-val">Enable on a subscription to guarantee each message is delivered exactly once per subscriber. Pub/Sub tracks which messages have been successfully acked and will not redeliver them. Requires the subscriber to use the exactly-once delivery API (not the standard ack API).</div></div>
+<div class="kv-row"><div class="kv-key">Trade-offs</div><div class="kv-val">Exactly-once has higher latency (Pub/Sub must maintain state to prevent duplicates) and slightly lower throughput than at-least-once. Use only when idempotency is difficult to implement in the consumer.</div></div>
+<div class="kv-row"><div class="kv-key">Scope of guarantee</div><div class="kv-val">Exactly-once is guaranteed within a single subscription. If the same topic has two subscriptions, each subscription independently delivers each message once — the message is still delivered to both subscriptions.</div></div>
+<div class="alert alert-amber">Exam rule: the default guarantee is at-least-once, not exactly-once. If a question describes duplicate processing and the answer involves Pub/Sub configuration, exactly-once delivery is the correct option — but only if the question is about subscription-level configuration. For end-to-end exactly-once from source through Dataflow to BigQuery, use Dataflow's exactly-once mode with Storage Write API committed streams.</div>`}
+]},
+
+/* ══ 4. CLOUD SPANNER ══ */
+{id:'spanner',label:'Cloud Spanner',freq:'Advanced',topics:[
+{title:'Spanner stale reads — trading consistency for performance',body:`
+<p class="prose">Spanner's default reads are strongly consistent — they always return the most current data. But strong reads require coordination across all Spanner servers, adding latency. For read-heavy workloads where slightly stale data is acceptable, stale reads offer significantly lower latency.</p>
+<div class="kv-row"><div class="kv-key">Strong reads (default)</div><div class="kv-val">Always returns the most current committed data. Requires coordination across replicas. Slightly higher latency (~5ms). Use for: financial balances, inventory counts, anything where stale data causes incorrect decisions.</div></div>
+<div class="kv-row"><div class="kv-key">Bounded staleness reads</div><div class="kv-val">Read data that is no more than N seconds old. Spanner can serve from the nearest replica without cross-replica coordination if that replica's data is within the staleness bound. Much lower latency for read-heavy workloads.</div></div>
+<div class="kv-row"><div class="kv-key">Exact staleness reads</div><div class="kv-val">Read data as it existed at a specific timestamp. Deterministic — multiple queries at the same timestamp return identical data. Useful for consistent snapshots across multiple queries in a reporting job.</div></div>
+<div class="alert alert-teal">Exam pattern: "A Spanner-backed analytics dashboard is slow because of high-latency strong reads. The dashboard data can be up to 15 seconds stale without impacting user experience." → Use bounded staleness reads with a 15-second staleness bound. Queries are served from local replicas without cross-replica coordination, dramatically reducing latency.</div>`},
+
+{title:'Spanner mutations vs DML — when to use which',body:`
+<div class="g2">
+<div class="mini"><div class="mt">DML (INSERT / UPDATE / DELETE)</div><div class="mb">SQL syntax. Reads during the transaction (can read and write in one statement). Checked against constraints immediately. Good for: conditional updates, UPDATE WHERE, INSERT...SELECT patterns.</div></div>
+<div class="mini good"><div class="mt">Mutations (InsertOrUpdate, Delete)</div><div class="mb">API-level operations. Buffered client-side, applied atomically at commit. Cannot read-then-write. Good for: high-throughput bulk writes where you don't need to read during the transaction. Lower latency than DML for pure writes.</div></div>
+</div>
+<div class="alert alert-amber">Exam rule: DML when you need to read-then-write in the same transaction (e.g., UPDATE SET value = value + 1 WHERE id = X). Mutations when bulk writing without needing to read first (e.g., writing 10,000 rows from a data migration). Mutations are faster for pure write workloads.</div>`}
+]},
+
+/* ══ 5. DATAPROC ══ */
+{id:'dataproc',label:'Dataproc',freq:'Advanced',topics:[
+{title:'Four job submission methods compared',body:`
+<div class="cmp-wrap"><table class="cmp">
+<thead><tr><th>Method</th><th>Use when</th><th>Key characteristics</th><th>Exam signal</th></tr></thead>
+<tbody>
+<tr><td>gcloud dataproc jobs submit</td><td>Ad-hoc execution, one-off jobs, testing</td><td>CLI. Synchronous or async. No scheduling. No dependency management. Human-triggered.</td><td>"Run a Spark job now" / "test a script"</td></tr>
+<tr><td>Cloud Composer (Airflow)</td><td>Multi-step pipelines, scheduled jobs with dependencies, complex orchestration</td><td>DataprocSubmitJobOperator in a DAG. Dependency-aware. Retry logic. SLA monitoring. Cross-service orchestration. Most common production pattern.</td><td>"Orchestrate with other services" / "daily pipeline with multiple steps"</td></tr>
+<tr><td>Dataproc Workflow Templates</td><td>Simple Dataproc-only workflows (create → run → delete), without cross-service needs</td><td>Defines cluster creation + job submission + cluster deletion as a single managed unit. Triggered via gcloud, REST API, or Cloud Scheduler. Lighter than Composer for Dataproc-only flows.</td><td>"Simple Dataproc pipeline" / "no other GCP services" / "avoid Composer cost"</td></tr>
+<tr><td>Cloud Scheduler + REST API</td><td>Single scheduled Dataproc job with no orchestration dependencies</td><td>Cloud Scheduler sends a POST request to the Dataproc REST API on a cron schedule. No Composer overhead. Minimal cost. No dependency management.</td><td>"One recurring Dataproc job on a schedule" / "cron-based, no other steps"</td></tr>
+</tbody>
+</table></div>
+<div class="alert alert-amber">Cost ordering (cheapest to most expensive): gcloud CLI (free) → Cloud Scheduler + REST ($0.10/job) → Dataproc Workflow Templates (no additional cost beyond cluster) → Cloud Composer (GKE cluster + Cloud SQL base cost). Choose Composer only when orchestration complexity justifies the cost.</div>`},
+
+{title:'Dataproc Workflow Templates — how they work',body:`
+<p class="prose">Workflow Templates are a lesser-known Dataproc feature the exam occasionally tests. They let you define a complete Dataproc workflow — cluster creation, multiple job submissions, cluster deletion — as a versioned, reusable template.</p>
+<div class="lbl">What a workflow template defines</div>
+<div class="kv-row"><div class="kv-key">Managed cluster</div><div class="kv-val">The template creates a cluster at workflow start and deletes it at workflow end automatically. No separate create/delete operations needed. The ephemeral cluster pattern built-in.</div></div>
+<div class="kv-row"><div class="kv-key">Multiple jobs with ordering</div><div class="kv-val">Define multiple Spark/Hive/Pig/Hadoop jobs with step-by-step prerequisites. Job B runs only after Job A succeeds. Job C and D can run in parallel after Job B.</div></div>
+<div class="kv-row"><div class="kv-key">Parameters</div><div class="kv-val">Templatize values (bucket paths, dates) as parameters. Pass different values at instantiation time. Reuse the same template for daily runs with different date parameters.</div></div>
+<div class="code">// Workflow Template YAML (simplified)
+jobs:
+  - stepId: etl_job
+    sparkJob:
+      mainClass: com.company.ETL
+      args: ['--date', '{{DATE}}', '--input', 'gs://bucket/raw/{{DATE}}']
+    prerequisiteStepIds: []
+
+  - stepId: aggregate_job
+    sparkJob:
+      mainClass: com.company.Aggregate
+    prerequisiteStepIds: [etl_job]   // runs AFTER etl_job succeeds
+
+  - stepId: export_job_a
+    sparkJob: ...
+    prerequisiteStepIds: [aggregate_job]   // parallel with export_job_b
+
+  - stepId: export_job_b
+    sparkJob: ...
+    prerequisiteStepIds: [aggregate_job]   // parallel with export_job_a</div>
+<div class="decision">
+<div class="d-row"><div class="d-q">Multi-step pipeline spanning Dataproc + BigQuery + Dataflow + notifications</div><div class="d-a" style="background:var(--mini-good-bg);color:var(--mini-good-text);border:1px solid var(--accent-border)">→ Cloud Composer</div></div>
+<div class="d-row"><div class="d-q">Multi-step pipeline using only Dataproc jobs, want zero Composer overhead</div><div class="d-a" style="background:var(--alert-amber-bg);color:var(--alert-amber-text);border:1px solid var(--alert-amber-border)">→ Dataproc Workflow Template</div></div>
+<div class="d-row"><div class="d-q">Single Dataproc job on a cron schedule</div><div class="d-a" style="background:var(--alert-blue-bg);color:var(--alert-blue-text);border:1px solid var(--alert-blue-border)">→ Cloud Scheduler + REST API</div></div>
+</div>`}
+]},
+
+/* ══ 6. VERTEX AI ══ */
+{id:'vertex',label:'Vertex AI',freq:'Advanced',topics:[
+{title:'Vertex AI Vizier — hyperparameter tuning',body:`
+<p class="prose">Hyperparameter tuning is the process of finding the optimal configuration values for a model (learning rate, batch size, number of layers, regularization strength) without manually trying every combination. Vertex AI Vizier automates this.</p>
+<div class="lbl">How Vizier works</div>
+<div class="kv-row"><div class="kv-key">Study</div><div class="kv-val">A Vizier Study defines the hyperparameter search space (e.g., learning_rate in [0.0001, 0.1], batch_size in {32, 64, 128}) and the metric to optimize (e.g., maximize validation AUC).</div></div>
+<div class="kv-row"><div class="kv-key">Trial</div><div class="kv-val">Each trial is one training run with a specific set of hyperparameter values chosen by Vizier. The trial reports its metric back to Vizier after training.</div></div>
+<div class="kv-row"><div class="kv-key">Bayesian optimization</div><div class="kv-val">Vizier uses Bayesian optimization — it learns from previous trial results to select better hyperparameter combinations for future trials. Much more efficient than grid search or random search.</div></div>
+<div class="kv-row"><div class="kv-key">Parallel trials</div><div class="kv-val">Run multiple trials simultaneously across multiple VMs/GPUs. Speeds up the search significantly. Configure max_parallel_trials to control concurrency.</div></div>
+<div class="kv-row"><div class="kv-key">Early stopping</div><div class="kv-val">Vizier can terminate trials that are clearly underperforming before they complete. Saves compute by not wasting resources on poor hyperparameter combinations.</div></div>
+<div class="alert alert-purple">Exam pattern: "A team needs to find the optimal learning rate and batch size for a custom TensorFlow model on Vertex AI. Manual tuning is taking too long." → Vertex AI Vizier (hyperparameter tuning). Configure a study with the search space, run parallel trials, and Vizier identifies the best combination automatically.</div>`},
+
+{title:'Vertex AI Explainable AI — understanding predictions',body:`
+<p class="prose">Explainable AI (XAI) provides feature attributions for individual predictions — it tells you WHY the model made a specific prediction, not just WHAT it predicted. Required for regulated industries (finance, healthcare) and for debugging model behavior.</p>
+<div class="lbl">Explanation methods</div>
+<div class="kv-row"><div class="kv-key">Sampled Shapley (tabular)</div><div class="kv-val">Estimates Shapley values for each input feature. Shows which features contributed positively or negatively to the prediction. The most interpretable method for tabular data. Higher compute cost than gradient methods.</div></div>
+<div class="kv-row"><div class="kv-key">Integrated gradients (neural networks)</div><div class="kv-val">Computes the gradient of the prediction with respect to each input feature, integrated along a path from a baseline to the actual input. Efficient for neural networks. Works well for image and text models.</div></div>
+<div class="kv-row"><div class="kv-key">XRAI (image models)</div><div class="kv-val">Extends integrated gradients for images by attributing importance to regions rather than individual pixels. Produces more interpretable heatmaps than pixel-level attribution.</div></div>
+<div class="kv-row"><div class="kv-key">Explanation metadata</div><div class="kv-val">When deploying a model to a Vertex AI Endpoint with explanations enabled, you configure which explanation method to use and a baseline input. The endpoint then returns feature attributions alongside each prediction.</div></div>
+<div class="alert alert-blue">Exam pattern: "A loan approval model must explain why a loan was denied to comply with financial regulations." → Vertex AI Explainable AI with Sampled Shapley for tabular data. The explanation shows which features (income, credit score, debt-to-income ratio) contributed most to the denial decision.</div>
+<div class="lbl">Explanation vs Model Monitoring</div>
+<div class="decision">
+<div class="d-row"><div class="d-q">Why did this specific prediction get a certain result?</div><div class="d-a" style="background:var(--alert-purple-bg);color:var(--alert-purple-text);border:1px solid var(--alert-purple-border)">Explainable AI</div></div>
+<div class="d-row"><div class="d-q">Is the model's behavior degrading over time across all predictions?</div><div class="d-a" style="background:var(--alert-teal-bg);color:var(--alert-teal-text);border:1px solid var(--alert-teal-border)">Model Monitoring</div></div>
+<div class="d-row"><div class="d-q">Which features drove the predictions in the last week overall?</div><div class="d-a" style="background:var(--alert-teal-bg);color:var(--alert-teal-text);border:1px solid var(--alert-teal-border)">Model Monitoring attribution</div></div>
+</div>`},
+
+{title:'Vertex AI Matching Engine — vector similarity search',body:`
+<p class="prose">Matching Engine (now called Vector Search) is Vertex AI's managed approximate nearest neighbor (ANN) search service. It finds the most similar items to a query vector from a large collection — the backbone of recommendation systems, semantic search, and embedding-based retrieval.</p>
+<div class="kv-row"><div class="kv-key">Use case</div><div class="kv-val">You have embeddings (vector representations) for 10 million products. A user searches for "running shoes." You compute the embedding of the search query and find the 20 most similar product embeddings. Matching Engine returns results in milliseconds.</div></div>
+<div class="kv-row"><div class="kv-key">Index</div><div class="kv-val">An Matching Engine Index stores all your embeddings and builds an ANN data structure for fast similarity search. You create an Index from embeddings stored in GCS.</div></div>
+<div class="kv-row"><div class="kv-key">Index Endpoint</div><div class="kv-val">A deployed Index with a REST/gRPC API. Your application sends a query vector and receives the K nearest neighbors with their distances.</div></div>
+<div class="kv-row"><div class="kv-key">vs exact search</div><div class="kv-val">Matching Engine uses approximate search (ANN) — it may miss a small number of true nearest neighbors in exchange for much lower latency. For 10M+ embeddings, exact exhaustive search would take seconds; ANN takes milliseconds.</div></div>
+<div class="alert alert-purple">Exam keyword: "vector similarity search," "nearest neighbor search," "recommendation using embeddings," "semantic search over a large corpus." → Vertex AI Matching Engine (Vector Search).</div>`},
+
+{title:'Vertex AI Workbench — managed vs user-managed notebooks',body:`
+<div class="g2">
+<div class="mini good"><div class="mt">Managed notebooks</div><div class="mb">Fully serverless. Google manages the underlying VM. Auto-shutdown on idle. Integrated with BigQuery, GCS, and Vertex AI services. No SSH or direct VM access. Simpler — for data scientists who don't need custom environments.</div></div>
+<div class="mini"><div class="mt">User-managed notebooks</div><div class="mb">You manage the underlying VM (instance type, startup scripts, custom containers). Full SSH access. Persistent instance — doesn't auto-shutdown. For teams needing custom OS config, specific GPU drivers, or third-party tools.</div></div>
+</div>
+<div class="alert alert-amber">Exam signal: "Auto-shutdown on idle" or "no VM management" → Managed notebooks. "Custom GPU drivers" or "SSH access needed" → User-managed notebooks.</div>`}
+]},
+
+/* ══ 7. SECURITY ══ */
+{id:'security',label:'Security',freq:'Advanced',topics:[
+{title:'Private Google Access — GCP APIs without public internet',body:`
+<p class="prose">By default, a VM in a private subnet (no external IP) cannot reach Google Cloud APIs (BigQuery, GCS, Pub/Sub) because those APIs are on the public internet. Private Google Access solves this without requiring a NAT gateway or external IP.</p>
+<div class="kv-row"><div class="kv-key">What it does</div><div class="kv-val">Enable Private Google Access on a VPC subnet. VMs in that subnet with only internal IPs can reach Google Cloud APIs (*.googleapis.com) via an internal path — traffic stays within Google's network, never touches the public internet.</div></div>
+<div class="kv-row"><div class="kv-key">What it covers</div><div class="kv-val">BigQuery API, Cloud Storage API, Pub/Sub, Dataflow, Vertex AI, and all other googleapis.com endpoints. Does NOT cover third-party APIs or non-Google services.</div></div>
+<div class="kv-row"><div class="kv-key">vs VPC-SC</div><div class="kv-val">Private Google Access = enables private VMs to reach GCP APIs (a connectivity feature). VPC-SC = restricts which requests can access GCP resources based on perimeter (a security feature). They are complementary — use both in secure environments.</div></div>
+<div class="kv-row"><div class="kv-key">Private Service Connect</div><div class="kv-val">A more flexible successor. Creates a private endpoint (internal IP) in your VPC that forwards to a Google service. More configurable than subnet-level Private Google Access. Use for Cloud SQL private connectivity and newer services.</div></div>
+<div class="alert alert-blue">Exam pattern: "A Dataflow job running on VMs with no external IP address cannot reach BigQuery or Cloud Storage APIs." → Enable Private Google Access on the subnet where the Dataflow workers run. The workers gain access to GCP APIs without needing public IPs or a NAT gateway.</div>`},
+
+{title:'Shared VPC — networking across projects',body:`
+<p class="prose">In large organizations, different teams have separate GCP projects but need to share network resources (subnets, firewall rules, VPNs). Shared VPC centralizes network management while allowing individual projects to use the shared network.</p>
+<div class="kv-row"><div class="kv-key">Host project</div><div class="kv-val">Contains the shared VPC network and all its subnets. Managed by the network team. Other projects attach to it but cannot modify its network configuration.</div></div>
+<div class="kv-row"><div class="kv-key">Service project</div><div class="kv-val">Attaches to the host project's shared VPC. Compute resources (VMs, GKE nodes, Dataflow workers) in the service project can use subnets from the host project's network.</div></div>
+<div class="kv-row"><div class="kv-key">Why it matters for data engineering</div><div class="kv-val">Dataproc and Dataflow workers can be placed in a shared VPC subnet — allowing them to reach on-premises databases, shared services, or other VPC resources across the organization without creating peer VPCs or public IPs.</div></div>
+<div class="kv-row"><div class="kv-key">vs VPC Peering</div><div class="kv-val">VPC Peering: connect two separate VPCs directly (bidirectional, non-transitive). Shared VPC: centralize one network that multiple projects share (one network, many projects). Shared VPC is preferred for large organizations needing centralized network policy.</div></div>
+<div class="alert alert-amber">Exam pattern: "Dataflow pipelines in the data-engineering project need to access a Cloud SQL instance in the shared-services project and an on-premises database via VPN." → Use Shared VPC. The Dataflow workers run in the host project's shared subnet, giving them access to the VPN and the shared-services project's Cloud SQL instance.</div>`},
+
+{title:'Secret Manager — handling credentials in pipelines',body:`
+<p class="prose">Pipelines often need credentials: database passwords, API keys for third-party services, encryption keys. Storing these in code, environment variables, or GCS files is a security risk. Secret Manager provides a secure, versioned, audited store for secrets.</p>
+<div class="kv-row"><div class="kv-key">What it does</div><div class="kv-val">Store sensitive values (strings, binary blobs) as named secrets with versioned values. Access is controlled by IAM. Every access is logged in Cloud Audit Logs. Secrets are encrypted at rest with Google-managed or customer-managed keys.</div></div>
+<div class="kv-row"><div class="kv-key">Accessing from a pipeline</div><div class="kv-val">Grant the pipeline's service account roles/secretmanager.secretAccessor on the specific secret. The pipeline calls the Secret Manager API at runtime to fetch the secret value. No secret in code, config files, or environment variables.</div></div>
+<div class="kv-row"><div class="kv-key">Rotation</div><div class="kv-val">Create a new secret version with the rotated value. Update the pipeline to use the LATEST version. Old versions remain accessible for rollback. Pub/Sub notifications on rotation events can trigger automated pipeline restarts.</div></div>
+<div class="kv-row"><div class="kv-key">Composer and Secret Manager</div><div class="kv-val">Cloud Composer 2 integrates natively with Secret Manager. Store Airflow Variables and Connections as Secret Manager secrets instead of in the Airflow metadata database. Eliminates sensitive values from Cloud SQL.</div></div>
+<div class="alert alert-green">Exam pattern: "A Dataflow pipeline connects to a third-party API. The API key must not be stored in code or configuration files." → Store the API key in Secret Manager. Grant the Dataflow service account secretAccessor on that secret. The pipeline fetches the key at runtime via the Secret Manager API.</div>`},
+
+{title:'Binary Authorization — container image security',body:`
+<p class="prose">Binary Authorization ensures that only trusted, approved container images can be deployed to GKE or Cloud Run. Relevant for data engineering when Dataflow Flex Templates (Docker containers) or KubernetesPodOperator (in Composer) must meet security policies.</p>
+<div class="kv-row"><div class="kv-key">How it works</div><div class="kv-val">Define a policy that requires container images to have an attestation — a cryptographic signature from an authorized attestor (e.g., your CI/CD security scanner). If a deployment requests an image without the required attestation, Binary Authorization blocks the deployment.</div></div>
+<div class="kv-row"><div class="kv-key">Attestors</div><div class="kv-val">Entities authorized to sign container images. E.g., your CI/CD pipeline signs images that have passed security scanning. Binary Authorization verifies the signature before allowing deployment.</div></div>
+<div class="kv-row"><div class="kv-key">Exam context</div><div class="kv-val">If a question asks how to ensure only security-scanned container images are deployed in Dataflow Flex Templates or Composer's KubernetesPodOperator → Binary Authorization.</div></div>`}
+]},
+
+/* ══ 8. EXACTLY-ONCE SEMANTICS ══ */
+{id:'exactlyonce',label:'Exactly-Once Semantics',freq:'Advanced',topics:[
+{title:'Each service\'s individual guarantee',body:`
+<div class="kv-row"><div class="kv-key">Pub/Sub guarantee</div><div class="kv-val"><strong>At-least-once delivery</strong> per subscription. A message may be delivered more than once if the subscriber doesn't ack in time or crashes after processing. The standard Pub/Sub API cannot prevent duplicates from the source.</div></div>
+<div class="kv-row"><div class="kv-key">Pub/Sub exactly-once (opt-in)</div><div class="kv-val">An opt-in mode on a subscription. Pub/Sub itself guarantees each message is delivered to the consumer exactly once within that subscription. Requires using the exactly-once delivery API on the subscriber side.</div></div>
+<div class="kv-row"><div class="kv-key">Dataflow guarantee</div><div class="kv-val"><strong>Exactly-once processing</strong> of each record within the pipeline — even with retries and worker failures. Dataflow internally deduplicates retried computations. This does NOT mean the source delivered it once — it means Dataflow processes each input record exactly once regardless of retries.</div></div>
+<div class="kv-row"><div class="kv-key">BigQuery Storage Write API</div><div class="kv-val">The <strong>committed stream</strong> mode provides exactly-once writes. You write to a stream, Finalize() it, then CommitStream(). Rows appear in the table only after commit. Duplicate write attempts to the same offset in a committed stream are idempotent.</div></div>
+<div class="kv-row"><div class="kv-key">Legacy BQ streaming inserts</div><div class="kv-val"><strong>At-least-once</strong> — duplicates are possible and must be handled downstream (deduplication in BQ with DISTINCT queries or MERGE).</div></div>`},
+
+{title:'How exactly-once works end-to-end in the canonical pipeline',body:`
+<p class="prose">No single service achieves exactly-once delivery on its own. End-to-end exactly-once requires the right combination of features across the full pipeline.</p>
+
+<div class="lbl">Configuration 1 — Standard (at-least-once end-to-end)</div>
+<div class="pipe-diagram">
+<div class="pipe-row">
+  <div style="flex:1;text-align:center;min-width:120px">
+    <div class="pipe-box">Pub/Sub<br><span style="font-size:10px;font-weight:400;opacity:.7">standard subscription</span></div>
+    <div class="pipe-guarantee bad">at-least-once</div>
+  </div>
+  <div class="pipe-arrow-col">→</div>
+  <div style="flex:1;text-align:center;min-width:120px">
+    <div class="pipe-box">Dataflow<br><span style="font-size:10px;font-weight:400;opacity:.7">default mode</span></div>
+    <div class="pipe-guarantee">exactly-once processing</div>
+  </div>
+  <div class="pipe-arrow-col">→</div>
+  <div style="flex:1;text-align:center;min-width:120px">
+    <div class="pipe-box">BigQuery<br><span style="font-size:10px;font-weight:400;opacity:.7">legacy streaming inserts</span></div>
+    <div class="pipe-guarantee bad">at-least-once</div>
+  </div>
+</div>
+</div>
+<p class="prose" style="font-size:12.5px;color:var(--muted)">Result: end-to-end at-least-once. Duplicates can appear in BigQuery. Must deduplicate downstream if needed.</p>
+
+<div class="lbl">Configuration 2 — Best practice (effectively exactly-once end-to-end)</div>
+<div class="pipe-diagram">
+<div class="pipe-row">
+  <div style="flex:1;text-align:center;min-width:120px">
+    <div class="pipe-box ok">Pub/Sub<br><span style="font-size:10px;font-weight:400;opacity:.7">standard subscription</span></div>
+    <div class="pipe-guarantee">at-least-once</div>
+  </div>
+  <div class="pipe-arrow-col">→</div>
+  <div style="flex:1;text-align:center;min-width:120px">
+    <div class="pipe-box ok">Dataflow<br><span style="font-size:10px;font-weight:400;opacity:.7">Streaming Engine enabled</span></div>
+    <div class="pipe-guarantee">exactly-once processing</div>
+  </div>
+  <div class="pipe-arrow-col">→</div>
+  <div style="flex:1;text-align:center;min-width:120px">
+    <div class="pipe-box ok">BigQuery<br><span style="font-size:10px;font-weight:400;opacity:.7">Storage Write API<br>committed stream</span></div>
+    <div class="pipe-guarantee">exactly-once write</div>
+  </div>
+</div>
+</div>
+<p class="prose" style="font-size:12.5px;color:var(--muted)">Result: effectively exactly-once end-to-end. Pub/Sub may deliver the same message twice; Dataflow deduplicates processing; Storage Write API committed stream ensures no duplicate rows in BigQuery. <strong>This is the recommended production configuration.</strong></p>
+
+<div class="lbl">What Dataflow's exactly-once processing actually means</div>
+<p class="prose">Dataflow guarantees that even if a worker fails mid-task and the task is retried, the output of that task appears in the output stream exactly once. Dataflow uses checkpointing and shuffle deduplication. This is separate from whether the INPUT message was delivered once or twice — Dataflow handles input deduplication too when using Pub/Sub as a source with its built-in Pub/Sub IO connector.</p>
+<div class="alert alert-blue">Exam scenario: "A financial pipeline must ensure every transaction is processed and written to BigQuery exactly once, even if workers fail." Answer: Dataflow with Streaming Engine + BigQuery Storage Write API committed stream. Pub/Sub standard subscription is fine because Dataflow's connector handles deduplication from Pub/Sub's at-least-once delivery.</div>`}
+]},
+
+/* ══ 9. SIGNAL PRIORITIZATION ══ */
+{id:'signals',label:'Signal Prioritization',freq:'Core Method',topics:[
+{title:'The 4-step signal prioritization process',body:`
+<div class="method-box">
+  <div class="mb-title">The 4-step signal prioritization process</div>
+  <div class="mb-step"><div class="mb-n">1</div><div class="mb-text"><strong>List all signals.</strong> Read the entire scenario. Extract every factual claim: data type, scale, latency requirement, access pattern, team skill, existing code, budget constraint. Write them as a bullet list mentally before answering.</div></div>
+  <div class="mb-step"><div class="mb-n">2</div><div class="mb-text"><strong>Pick the "obvious" answer</strong> from the majority of signals. What does most of the evidence point to?</div></div>
+  <div class="mb-step"><div class="mb-n">3</div><div class="mb-text"><strong>Look for one hard disqualifier.</strong> Is any single signal a HARD CONSTRAINT that makes the obvious answer impossible? Latency requirements, update frequency, SQL requirements, and existing code are the most common disqualifiers.</div></div>
+  <div class="mb-step"><div class="mb-n">4</div><div class="mb-text"><strong>If a disqualifier exists, it wins.</strong> One hard constraint beats five soft preferences. The answer is the service that satisfies the constraint AND as many other signals as possible.</div></div>
+</div>
+<div class="lbl">The hierarchy of signal types</div>
+<div class="kv-row"><div class="kv-key">Hard constraints (always win)</div><div class="kv-val">Latency requirement (sub-ms, ms, seconds), existing code/framework ("existing Spark" → Dataproc), ACID transaction requirement, SQL analytics requirement ("analysts run ad hoc SQL"), update frequency ("frequent row-level updates").</div></div>
+<div class="kv-row"><div class="kv-key">Strong preferences (usually win)</div><div class="kv-val">Data scale (petabyte → BQ or Bigtable, not Cloud SQL), access pattern (random lookup → Bigtable/Memorystore, analytical scan → BigQuery), team skill ("no ML expertise" → AutoML).</div></div>
+<div class="kv-row"><div class="kv-key">Weak signals (tiebreakers only)</div><div class="kv-val">Cost preference, familiarity, managed vs unmanaged preference. These only matter when hard constraints and strong preferences don't distinguish the answer.</div></div>
+<div class="alert alert-red">The mistake: reading the first two signals, picking an answer, and confirming it with the remaining signals instead of challenging it. Train yourself to actively look for the disqualifier AFTER picking the obvious answer — not to confirm the obvious answer.</div>`},
+
+{title:'Disqualifier reference — which signals kill which services',body:`
+<p class="prose">Memorize this table. When you see a disqualifier signal in a question, cross out the disqualified services immediately before evaluating the remaining signals.</p>
+<div class="dtree">
+<div class="dt-row"><div class="dt-q">"sub-millisecond" / "cache" / "session storage" / "rate limit"</div><div class="dt-a">Kills: everything except Memorystore</div></div>
+<div class="dt-row"><div class="dt-q">"frequent row-level updates" / "UPDATE records constantly"</div><div class="dt-a">Kills: BigQuery (append-optimized, DML expensive)</div></div>
+<div class="dt-row"><div class="dt-q">"ad hoc SQL analytics" / "analysts run SQL queries"</div><div class="dt-a">Kills: Bigtable (no SQL)</div></div>
+<div class="dt-row"><div class="dt-q">"existing Spark / PySpark / Hive code"</div><div class="dt-a">Kills: Dataflow (uses Beam, not Spark)</div></div>
+<div class="dt-row"><div class="dt-q">"under 100ms" / "real-time serving" / "REST API predictions"</div><div class="dt-a">Kills: BQ ML direct serving</div></div>
+<div class="dt-row"><div class="dt-q">"global ACID" / "multi-region transactions"</div><div class="dt-a">Kills: Cloud SQL (single-region only)</div></div>
+<div class="dt-row"><div class="dt-q">"horizontal scaling" / "beyond 64TB relational"</div><div class="dt-a">Kills: Cloud SQL (vertically scaled only)</div></div>
+<div class="dt-row"><div class="dt-q">"multi-row ACID transactions"</div><div class="dt-a">Kills: Bigtable (single-row atomic only)</div></div>
+<div class="dt-row"><div class="dt-q">"custom C++ TensorFlow operations"</div><div class="dt-a">Kills: TPU (can't run custom C++ ops)</div></div>
+<div class="dt-row"><div class="dt-q">"dataset &lt; 300GB" + "database needed"</div><div class="dt-a">Kills: Bigtable (expensive at small scale)</div></div>
+<div class="dt-row"><div class="dt-q">"windowing / trigger strategy change" in Dataflow</div><div class="dt-a">Kills: in-place Update (must Drain)</div></div>
+<div class="dt-row"><div class="dt-q">"zone failure" / "automatic failover"</div><div class="dt-a">Kills: read replicas as the HA answer</div></div>
+<div class="dt-row"><div class="dt-q">"CSEK in BigQuery"</div><div class="dt-a">Kills: CSEK — BQ = GMEK + CMEK only</div></div>
+<div class="dt-row"><div class="dt-q">"policy tags" + "returns NULL"</div><div class="dt-a">Wrong: policy tags return ACCESS DENIED</div></div>
+</div>`},
+
+{title:'The STOP-SCAN-DISQUALIFY method',body:`
+<p class="prose">Most wrong answers happen when you identify the "obvious" service from the first 1-2 signals and stop reading. The deciding signal is almost always the one that DISQUALIFIES the obvious answer — and it's usually in the middle or end of the scenario.</p>
+<div class="lbl">The three-step process</div>
+<div class="steps">
+<div class="step"><div class="step-n">1</div><div class="step-c"><strong>STOP before answering.</strong> Read the entire scenario once without forming an answer. Identify every signal present.</div></div>
+<div class="step"><div class="step-n">2</div><div class="step-c"><strong>SCAN for disqualifiers.</strong> Ask for each candidate answer: "Is there any signal here that makes this impossible?" Latency requirement kills BQ ML. Update frequency kills BigQuery. SQL analytics kills Bigtable. Global ACID kills Cloud SQL.</div></div>
+<div class="step"><div class="step-n">3</div><div class="step-c"><strong>DISQUALIFY before you commit.</strong> The service that survives all disqualifiers wins — even if it wasn't the first one that came to mind.</div></div>
+</div>
+<div class="lbl">Hard disqualifier rules — memorize these</div>
+<div class="cmp-wrap"><table class="cmp">
+<thead><tr><th>Signal</th><th>Disqualifies</th></tr></thead>
+<tbody>
+<tr><td>"under 100ms" / "sub-millisecond" / "real-time serving"</td><td>BQ ML direct serving, BigQuery queries</td></tr>
+<tr><td>"frequent updates" / "row-level updates"</td><td>BigQuery (append-optimized, expensive DML)</td></tr>
+<tr><td>"ad hoc SQL analytics by analysts"</td><td>Bigtable (no SQL, no aggregations)</td></tr>
+<tr><td>"global ACID" / "multi-region transactions"</td><td>Cloud SQL (single region only)</td></tr>
+<tr><td>"horizontal scaling" / "beyond 64TB"</td><td>Cloud SQL (vertical only)</td></tr>
+<tr><td>"existing Spark/Hadoop/Hive code"</td><td>Dataflow (uses Beam, not Spark)</td></tr>
+<tr><td>"windowing/trigger change" (Dataflow)</td><td>In-place Update (must Drain)</td></tr>
+<tr><td>"custom C++ TF ops"</td><td>TPU (XLA can't compile custom C++ ops)</td></tr>
+<tr><td>"zone failure" / "automatic failover"</td><td>Read Replicas (async, no failover)</td></tr>
+<tr><td>"no per-query charges"</td><td>BigQuery on-demand (need capacity pricing)</td></tr>
+<tr><td>"PyTorch model"</td><td>TPU on Vertex AI (TPU = TF/XLA only)</td></tr>
+<tr><td>"data exceeds 7 days back"</td><td>BigQuery time travel (7-day limit)</td></tr>
+</tbody>
+</table></div>`},
+
+{title:'Signal drill bank — 10 new scenarios',body:`
+<div class="drill"><div class="drill-q">A: Hospital stores patient records. Each patient record is updated frequently as doctors add notes. Queries are simple key lookups by patient ID. Compliance requires encryption with hospital-controlled keys. Scale: 50 million patients.</div><div class="drill-signals"><div class="signal-row"><div class="sig-dot" style="background:#4d9fff"></div><div class="sig-text">50 million records, large scale</div><div class="sig-badge sig-points">points to BQ or Bigtable</div></div><div class="signal-row"><div class="sig-dot" style="background:#ff4d4d"></div><div class="sig-text">Frequently updated records</div><div class="sig-badge sig-deciding">DISQUALIFIES BigQuery</div></div><div class="signal-row"><div class="sig-dot" style="background:#4d9fff"></div><div class="sig-text">Simple key lookups by patient ID</div><div class="sig-badge sig-points">points to Bigtable</div></div></div><div class="drill-answer"><div class="da-label">Answer</div><div class="da-content"><strong>Bigtable with CMEK.</strong> "Frequently updated" disqualifies BigQuery — BQ's DML is expensive (full table scan per UPDATE). Bigtable handles random key-value updates natively. Row key = patient_id. CMEK is supported on Bigtable via Cloud KMS.</div></div></div>
+
+<div class="drill"><div class="drill-q">B: Social media company stores 10 years of post engagement data (5PB total). Data scientists run complex multi-table SQL analytical queries. New data is appended in real time. No per-query billing preferred.</div><div class="drill-signals"><div class="signal-row"><div class="sig-dot" style="background:#4d9fff"></div><div class="sig-text">5PB, 10 years of data</div><div class="sig-badge sig-points">points to BQ or Bigtable</div></div><div class="signal-row"><div class="sig-dot" style="background:#ff4d4d"></div><div class="sig-text">Complex multi-table SQL analytical queries</div><div class="sig-badge sig-deciding">DISQUALIFIES Bigtable (no SQL, no JOINs)</div></div><div class="signal-row"><div class="sig-dot" style="background:#ff4d4d"></div><div class="sig-text">No per-query billing</div><div class="sig-badge sig-deciding">specifies capacity/flat-rate pricing</div></div></div><div class="drill-answer"><div class="da-label">Answer</div><div class="da-content"><strong>BigQuery with capacity slot reservations (flat-rate pricing).</strong> "Multi-table SQL" kills Bigtable. "No per-query billing" specifies capacity pricing, not on-demand. Use Pub/Sub → Dataflow → BigQuery for real-time append.</div></div></div>
+
+<div class="drill"><div class="drill-q">C: E-commerce site trained a product recommendation model using BigQuery ML on purchase history. When a user loads the homepage, the site must show personalized recommendations within 80ms.</div><div class="drill-signals"><div class="signal-row"><div class="sig-dot" style="background:#4d9fff"></div><div class="sig-text">Model trained in BigQuery ML</div><div class="sig-badge sig-points">suggests BQ ML serving</div></div><div class="signal-row"><div class="sig-dot" style="background:#ff4d4d"></div><div class="sig-text">Within 80ms</div><div class="sig-badge sig-deciding">DISQUALIFIES BQ ML.PREDICT (seconds)</div></div></div><div class="drill-answer"><div class="da-label">Answer</div><div class="da-content"><strong>Export BQ ML model → Vertex AI Endpoint.</strong> 80ms disqualifies BQ ML direct. Alternatively: pre-compute recommendations nightly with BQ ML batch prediction, store results in Bigtable or Memorystore, serve from there at &lt;10ms.</div></div></div>
+
+<div class="drill"><div class="drill-q">D: Retailer manages inventory across 50 countries. When a customer purchases an item, the inventory count must be decremented atomically and consistently across all regions simultaneously. 50,000 TPS globally.</div><div class="drill-signals"><div class="signal-row"><div class="sig-dot" style="background:#4d9fff"></div><div class="sig-text">50,000 TPS, high throughput</div><div class="sig-badge sig-points">points to scalable service</div></div><div class="signal-row"><div class="sig-dot" style="background:#ff4d4d"></div><div class="sig-text">Atomically and consistently across all regions simultaneously</div><div class="sig-badge sig-deciding">DISQUALIFIES Cloud SQL (single-region)</div></div></div><div class="drill-answer"><div class="da-label">Answer</div><div class="da-content"><strong>Cloud Spanner.</strong> "Atomically across all regions" = global ACID transactions. Cloud SQL is single-region. Bigtable has no multi-row transactions. Only Cloud Spanner provides globally consistent ACID at this scale.</div></div></div>
+
+<div class="drill"><div class="drill-q">E: Mobile game needs to show the top 100 players globally, updated in real time. Player scores update continuously. 10 million concurrent players. The leaderboard query must return in under 5ms.</div><div class="drill-signals"><div class="signal-row"><div class="sig-dot" style="background:#ff4d4d"></div><div class="sig-text">Under 5ms</div><div class="sig-badge sig-deciding">DISQUALIFIES everything except Memorystore</div></div><div class="signal-row"><div class="sig-dot" style="background:#888"></div><div class="sig-text">Top-N sorted query (scores)</div><div class="sig-badge sig-neutral">fits Redis Sorted Set perfectly</div></div></div><div class="drill-answer"><div class="da-label">Answer</div><div class="da-content"><strong>Memorystore (Redis Sorted Set).</strong> Under 5ms disqualifies Bigtable, BigQuery, and Firestore. Redis Sorted Set: ZADD to update scores, ZREVRANGE to get top-100 in under 1ms.</div></div></div>
+
+<div class="drill"><div class="drill-q">F: Bank processes credit card transactions. Each transaction must be scored for fraud probability within 200ms. A custom TensorFlow model with proprietary C++ operations is used. Deployed on Vertex AI.</div><div class="drill-signals"><div class="signal-row"><div class="sig-dot" style="background:#888"></div><div class="sig-text">TensorFlow model</div><div class="sig-badge sig-neutral">compatible with TPU or GPU</div></div><div class="signal-row"><div class="sig-dot" style="background:#ff4d4d"></div><div class="sig-text">Custom proprietary C++ operations</div><div class="sig-badge sig-deciding">DISQUALIFIES TPU</div></div></div><div class="drill-answer"><div class="da-label">Answer</div><div class="da-content"><strong>GPU-accelerated Vertex AI Endpoint.</strong> Custom C++ TF ops disqualify TPU — TPU only runs standard TF ops compiled by XLA. GPU supports arbitrary CUDA/C++ kernels.</div></div></div>
+
+<div class="drill"><div class="drill-q">G: 500,000 industrial machines send sensor readings every second. Engineers need to look up the current status of any specific machine in under 10ms. Data scientists need to run complex SQL trend analysis across all machines over 3 years. Single service OR multiple?</div><div class="drill-signals"><div class="signal-row"><div class="sig-dot" style="background:#ff4d4d"></div><div class="sig-text">Under 10ms machine status lookup</div><div class="sig-badge sig-deciding">DISQUALIFIES BigQuery for operational lookup</div></div><div class="signal-row"><div class="sig-dot" style="background:#ff4d4d"></div><div class="sig-text">Complex SQL trend analysis, 3 years</div><div class="sig-badge sig-deciding">DISQUALIFIES Bigtable (no SQL)</div></div></div><div class="drill-answer"><div class="da-label">Answer</div><div class="da-content"><strong>Two services.</strong> Bigtable for operational lookups (row key = machine_id + reverse_timestamp, &lt;10ms). BigQuery for historical analytics (3-year SQL analysis). Stream all data via Pub/Sub → Dataflow → write to both Bigtable (hot) and BigQuery (all history).</div></div></div>
+
+<div class="drill"><div class="drill-q">H: A Dataflow streaming pipeline uses 5-minute FixedWindows. The team wants to change to 10-minute SlidingWindows(600, 60) to get a rolling average. How do you deploy this change with no data loss?</div><div class="drill-signals"><div class="signal-row"><div class="sig-dot" style="background:#ff4d4d"></div><div class="sig-text">Windowing strategy is changing</div><div class="sig-badge sig-deciding">INCOMPATIBLE graph change — Update not possible</div></div><div class="signal-row"><div class="sig-dot" style="background:#888"></div><div class="sig-text">No data loss required</div><div class="sig-badge sig-neutral">means Cancel is also wrong</div></div></div><div class="drill-answer"><div class="da-label">Answer</div><div class="da-content"><strong>Drain the existing job, then launch new job.</strong> Windowing change = incompatible graph. Drain lets in-flight 5-minute windows complete processing before the job stops (no data loss). Once drained, launch new job with SlidingWindows(600, 60).</div></div></div>
+
+<div class="drill"><div class="drill-q">I: A financial application uses Cloud SQL PostgreSQL. The team has already added three read replicas to handle reporting load. The CTO asks: "If the primary zone goes down, how quickly do we recover?" The current setup has no HA enabled.</div><div class="drill-signals"><div class="signal-row"><div class="sig-dot" style="background:#ff4d4d"></div><div class="sig-text">Primary zone goes down</div><div class="sig-badge sig-deciding">Zone failure scenario</div></div><div class="signal-row"><div class="sig-dot" style="background:#ff4d4d"></div><div class="sig-text">Three read replicas already exist</div><div class="sig-badge sig-deciding">READ REPLICAS DON'T PROTECT AGAINST ZONE FAILURE</div></div></div><div class="drill-answer"><div class="da-label">Answer</div><div class="da-content"><strong>Current answer: manual intervention required, significant downtime.</strong> Read replicas are asynchronous and do NOT automatically failover. Fix: enable Cloud SQL HA configuration. HA creates a synchronous standby in a different zone with automatic failover in ~60 seconds.</div></div></div>
+
+<div class="drill"><div class="drill-q">J: A linear regression model trained to predict customer lifetime value shows training RMSE of 340 and validation RMSE of 310. The team is considering adding L2 regularization to improve the model. Is this the right fix?</div><div class="drill-signals"><div class="signal-row"><div class="sig-dot" style="background:#ff4d4d"></div><div class="sig-text">Training RMSE (340) &gt; Validation RMSE (310)</div><div class="sig-badge sig-deciding">Train error &gt; test error = UNDERFITTING signal</div></div><div class="signal-row"><div class="sig-dot" style="background:#ff4d4d"></div><div class="sig-text">L2 regularization proposed</div><div class="sig-badge sig-deciding">WRONG direction for underfitting</div></div></div><div class="drill-answer"><div class="da-label">Answer</div><div class="da-content"><strong>No — L2 regularization makes underfitting worse.</strong> Train &gt; validation error means the model is too simple (high bias/underfitting). Regularization reduces model complexity further — the opposite of what's needed. Correct fixes: increase model complexity (switch from linear to polynomial or XGBoost), add more features, or train longer.</div></div></div>`},
+
+{title:'8 additional signal-prioritization drills (Part 2)',body:`
+<div class="drill"><div class="drill-q">Drill A: A telemetry platform stores metrics from 1M devices. Data scientists run complex SQL analyses. The team also builds ML models trained on this data. Recent metrics must be queryable within 500ms.</div><div class="drill-signals"><div class="signal-row"><div class="sig-dot" style="background:#4d9fff"></div><div class="sig-text">Metrics from 1M devices → time-series, high write volume</div><div class="sig-badge sig-points">→ Bigtable</div></div><div class="signal-row"><div class="sig-dot" style="background:#ff4d4d"></div><div class="sig-text">Complex SQL analyses by data scientists</div><div class="sig-badge sig-deciding">DISQUALIFIES Bigtable</div></div></div><div class="drill-answer"><div class="da-label">Answer</div><div class="da-content"><strong>BigQuery</strong> with partitioning + clustering on device_id and time. SQL analytics requirement disqualifies Bigtable. 500ms is achievable for partition-pruned BQ queries on recent data. The deciding signal is "complex SQL analyses."</div></div></div>
+
+<div class="drill"><div class="drill-q">Drill B: An e-commerce platform needs to store 5 years of order history. The application updates order statuses 10,000 times per second. Marketing analysts query order trends in SQL. Which storage service?</div><div class="drill-signals"><div class="signal-row"><div class="sig-dot" style="background:#ff4d4d"></div><div class="sig-text">Updates order statuses 10,000/second</div><div class="sig-badge sig-deciding">DISQUALIFIES BigQuery</div></div><div class="signal-row"><div class="sig-dot" style="background:#ff4d4d"></div><div class="sig-text">Marketing analysts query trends in SQL</div><div class="sig-badge sig-deciding">DISQUALIFIES Bigtable</div></div></div><div class="drill-answer"><div class="da-label">Answer</div><div class="da-content"><strong>Two-service architecture.</strong> Neither BigQuery nor Bigtable alone works. Use <strong>Cloud Spanner or Firestore</strong> for operational order updates (10K updates/sec, ACID). Sync to <strong>BigQuery</strong> via Datastream or Change Streams for marketing SQL analytics. This is the HTAP pattern.</div></div></div>
+
+<div class="drill"><div class="drill-q">Drill C: A Dataflow job processes IoT events. After deploying a fix, predictions in Vertex AI serving have gotten worse, but the model itself hasn't changed. What is the likely cause?</div><div class="drill-signals"><div class="signal-row"><div class="sig-dot" style="background:#4d9fff"></div><div class="sig-text">Dataflow job was modified (fix deployed)</div><div class="sig-badge sig-points">key signal</div></div><div class="signal-row"><div class="sig-dot" style="background:#ff4d4d"></div><div class="sig-text">Serving predictions got worse</div><div class="sig-badge sig-deciding">points to input change</div></div><div class="signal-row"><div class="sig-dot" style="background:#888"></div><div class="sig-text">Model hasn't changed</div><div class="sig-badge sig-neutral">eliminates model retraining needed</div></div></div><div class="drill-answer"><div class="da-label">Answer</div><div class="da-content"><strong>Training/serving skew introduced by the Dataflow fix.</strong> The pipeline change altered how features are computed. The model was trained on the OLD feature computation. Fix: review the Dataflow change for feature computation differences, and use Vertex AI Feature Store to centralize feature computation.</div></div></div>
+
+<div class="drill"><div class="drill-q">Drill D: A company wants to query data stored in AWS S3 from BigQuery for cross-cloud analytics. Data cannot be copied to GCP. Which feature?</div><div class="drill-signals"><div class="signal-row"><div class="sig-dot" style="background:#4d9fff"></div><div class="sig-text">Query from BigQuery</div><div class="sig-badge sig-points">→ BigQuery feature</div></div><div class="signal-row"><div class="sig-dot" style="background:#ff4d4d"></div><div class="sig-text">Data is in AWS S3 (not GCS)</div><div class="sig-badge sig-deciding">DISQUALIFIES external tables (GCS only)</div></div><div class="signal-row"><div class="sig-dot" style="background:#ff4d4d"></div><div class="sig-text">Cannot be copied to GCP</div><div class="sig-badge sig-deciding">DISQUALIFIES Storage Transfer + load</div></div></div><div class="drill-answer"><div class="da-label">Answer</div><div class="da-content"><strong>BigQuery Omni.</strong> Specifically designed for cross-cloud queries — run BigQuery SQL on data in AWS S3 or Azure Blob without moving data. BigQuery external tables only work with GCS.</div></div></div>
+
+<div class="drill"><div class="drill-q">Drill E: A pipeline writes 50,000 rows/second to a BigQuery table. The team reports seeing duplicate rows in the destination table. What is the most likely cause and fix?</div><div class="drill-signals"><div class="signal-row"><div class="sig-dot" style="background:#4d9fff"></div><div class="sig-text">High write throughput to BigQuery</div><div class="sig-badge sig-points">→ streaming inserts</div></div><div class="signal-row"><div class="sig-dot" style="background:#ff4d4d"></div><div class="sig-text">Duplicate rows appearing</div><div class="sig-badge sig-deciding">at-least-once insert behavior</div></div></div><div class="drill-answer"><div class="da-label">Answer</div><div class="da-content"><strong>Legacy streaming inserts are at-least-once.</strong> Under retries, rows can be inserted more than once. Fix: switch to <strong>Storage Write API with committed streams</strong> (exactly-once semantics). Alternatively, deduplicate in downstream queries using ROW_NUMBER() OVER (PARTITION BY id ORDER BY insert_time).</div></div></div>
+
+<div class="drill"><div class="drill-q">Drill F: A Composer DAG is supposed to run at 6am daily. It runs successfully but analysts notice the reports show data from 2 days ago instead of yesterday. Why?</div><div class="drill-signals"><div class="signal-row"><div class="sig-dot" style="background:#4d9fff"></div><div class="sig-text">DAG runs at 6am daily</div><div class="sig-badge sig-points">normal schedule</div></div><div class="signal-row"><div class="sig-dot" style="background:#ff4d4d"></div><div class="sig-text">Reports show data from 2 days ago, not yesterday</div><div class="sig-badge sig-deciding">off-by-one signal</div></div></div><div class="drill-answer"><div class="da-label">Answer</div><div class="da-content"><strong>Airflow execution_date off-by-one.</strong> The DAG uses {{ ds }} to parameterize the data query. For a daily DAG triggered on Jan 16 at 6am, {{ ds }} = <strong>Jan 15</strong> (the execution date is the START of the schedule interval, not the trigger date). If reports show data from 2 days ago, check that the SQL uses {{ ds }} not {{ prev_ds }}, or that the schedule_interval and start_date are aligned correctly.</div></div></div>
+
+<div class="drill"><div class="drill-q">Drill G: A Cloud Spanner database serves a global banking application. Read-heavy dashboard queries are slowing down transactional workloads. The dashboard data can be 30 seconds stale. Fix?</div><div class="drill-signals"><div class="signal-row"><div class="sig-dot" style="background:#4d9fff"></div><div class="sig-text">Global banking application</div><div class="sig-badge sig-points">→ Spanner is correct choice</div></div><div class="signal-row"><div class="sig-dot" style="background:#4d9fff"></div><div class="sig-text">Read-heavy dashboards slowing transactions</div><div class="sig-badge sig-points">→ read/write contention</div></div><div class="signal-row"><div class="sig-dot" style="background:#4dff91"></div><div class="sig-text">Dashboard data can be 30 seconds stale</div><div class="sig-badge sig-points">ENABLING signal — stale reads OK</div></div></div><div class="drill-answer"><div class="da-label">Answer</div><div class="da-content"><strong>Spanner bounded staleness reads.</strong> Configure dashboard queries with a 30-second staleness bound. Spanner serves these reads from the nearest replica without cross-replica coordination — much lower latency, no contention with transactional writes.</div></div></div>
+
+<div class="drill"><div class="drill-q">Drill H: A Dataproc job migrated from on-premises Hadoop runs correctly but takes 3× longer than expected on GCP. The job is shuffle-heavy. GCS connector is configured for all I/O.</div><div class="drill-signals"><div class="signal-row"><div class="sig-dot" style="background:#4d9fff"></div><div class="sig-text">Migrated from on-premises Hadoop</div><div class="sig-badge sig-points">→ Dataproc is correct</div></div><div class="signal-row"><div class="sig-dot" style="background:#ff4d4d"></div><div class="sig-text">Shuffle-heavy job</div><div class="sig-badge sig-deciding">key signal</div></div><div class="signal-row"><div class="sig-dot" style="background:#ff4d4d"></div><div class="sig-text">GCS connector configured for ALL I/O</div><div class="sig-badge sig-deciding">DECIDING — shuffle going to GCS</div></div></div><div class="drill-answer"><div class="da-label">Answer</div><div class="da-content"><strong>Shuffle data routed to GCS causing high I/O latency.</strong> GCS has high per-operation overhead for the millions of small reads/writes in a Spark shuffle. Fix: configure Spark to write shuffle data to local HDFS (on worker disk) or enable Dataproc Shuffle Service. Keep GCS for persistent input/output data only.</div></div></div>`}
+]},
+
+/* ══ 10. CHEAT SHEET ══ */
+{id:'cheatsheet',label:'Cheat Sheet & Quick Lookup',freq:'Review',topics:[
+{title:'All new concepts — rapid lookup',body:`
+<div class="lbl">Vertex AI additions</div>
+<div class="kv-row"><div class="kv-key">Vertex AI Vizier</div><div class="kv-val">→ Automated hyperparameter tuning using Bayesian optimization. "Optimal learning rate / batch size" scenarios.</div></div>
+<div class="kv-row"><div class="kv-key">Explainable AI</div><div class="kv-val">→ Per-prediction feature attributions. Sampled Shapley for tabular, Integrated Gradients for neural nets. "Why was this loan denied?"</div></div>
+<div class="kv-row"><div class="kv-key">Matching Engine (Vector Search)</div><div class="kv-val">→ Approximate nearest neighbor search on embeddings. "Find similar items from 10M vectors."</div></div>
+<div class="kv-row"><div class="kv-key">Managed vs User-Managed notebooks</div><div class="kv-val">→ Managed = serverless, auto-shutdown. User-managed = custom config, SSH access.</div></div>
+<div class="lbl">Security additions</div>
+<div class="kv-row"><div class="kv-key">Private Google Access</div><div class="kv-val">→ VMs with no external IP reach GCP APIs via internal path. Enable on subnet. "Dataflow workers on private subnet can't reach BigQuery."</div></div>
+<div class="kv-row"><div class="kv-key">Shared VPC</div><div class="kv-val">→ Centralized network shared across projects. Host project owns network. Service projects attach. "Cross-project network access."</div></div>
+<div class="kv-row"><div class="kv-key">Secret Manager</div><div class="kv-val">→ Secure versioned credential storage. "API keys / passwords must not be in code." Grant secretAccessor to service accounts.</div></div>
+<div class="kv-row"><div class="kv-key">Binary Authorization</div><div class="kv-val">→ Only signed/attested container images can deploy to GKE. "Only security-scanned Dataflow Flex Template images."</div></div>
+<div class="lbl">Dataflow additions</div>
+<div class="kv-row"><div class="kv-key">Autoscaling metrics</div><div class="kv-val">→ Pub/Sub backlog (streaming) and CPU utilization (batch). maxNumWorkers caps scaling.</div></div>
+<div class="kv-row"><div class="kv-key">Reshuffle</div><div class="kv-val">→ beam.Reshuffle() breaks fusion and redistributes data. Use after GroupByKey to fix hot-key imbalance.</div></div>
+<div class="lbl">BigQuery additions</div>
+<div class="kv-row"><div class="kv-key">Slot reservations + assignments</div><div class="kv-val">→ Admin project holds reservations. Assignments link projects to reservations. Workload isolation.</div></div>
+<div class="kv-row"><div class="kv-key">Authorized UDFs</div><div class="kv-val">→ Functions authorized to access sensitive datasets. Dynamic de-identification without column-level IAM.</div></div>
+<div class="kv-row"><div class="kv-key">Scripting + stored procedures</div><div class="kv-val">→ BEGIN/COMMIT transactions, DECLARE, IF, FOR loops in BigQuery SQL. Complex conditional ETL without Composer.</div></div>
+<div class="kv-row"><div class="kv-key">Flex slots</div><div class="kv-val">→ Burst capacity by-the-minute. Base reservation + flex slots = cost-efficient peak handling.</div></div>
+<div class="lbl">Pub/Sub additions</div>
+<div class="kv-row"><div class="kv-key">Flow control</div><div class="kv-val">→ max_outstanding_messages/bytes on pull subscriber. Prevents consumer OOM on traffic spikes.</div></div>
+<div class="kv-row"><div class="kv-key">Schema validation</div><div class="kv-val">→ Avro/Protobuf schema on topic. Rejects malformed messages at publish time. Different from dead-letter topics.</div></div>
+<div class="kv-row"><div class="kv-key">Exactly-once delivery</div><div class="kv-val">→ Subscription-level opt-in. Higher latency. Use when idempotency is hard. Default is still at-least-once.</div></div>
+<div class="lbl">Spanner additions</div>
+<div class="kv-row"><div class="kv-key">Stale reads</div><div class="kv-val">→ Bounded staleness = serve from nearest replica. Reduces latency for read-heavy workloads tolerating slight staleness.</div></div>
+<div class="kv-row"><div class="kv-key">Mutations vs DML</div><div class="kv-val">→ DML for read-then-write. Mutations for bulk write-only (faster, lower latency for pure inserts).</div></div>`},
+
+{title:'Positive signals — this phrase means this service',body:`
+<div class="cs-grid">
+<div class="cs-row"><div style="flex:1"><div class="cs-signal">Time-series / IoT / sensor readings / HBase migration</div><div class="cs-why">Row key = entity + reverse timestamp. High write throughput.</div></div><div class="cs-ans" style="background:var(--alert-teal-bg);color:var(--alert-teal-text);border:1px solid var(--alert-teal-border)">Bigtable</div></div>
+<div class="cs-row"><div style="flex:1"><div class="cs-signal">Global ACID / multi-region transactions / 5-nines SLA / replace sharded MySQL</div><div class="cs-why">TrueTime, horizontal scale, petabytes.</div></div><div class="cs-ans" style="background:var(--alert-blue-bg);color:var(--alert-blue-text);border:1px solid var(--alert-blue-border)">Spanner</div></div>
+<div class="cs-row"><div style="flex:1"><div class="cs-signal">Mobile/web app / real-time sync / offline support / document model</div><div class="cs-why">Real-time listeners, offline SDK, no-ops scaling.</div></div><div class="cs-ans" style="background:var(--alert-red-bg);color:var(--alert-red-text);border:1px solid var(--alert-red-border)">Firestore</div></div>
+<div class="cs-row"><div style="flex:1"><div class="cs-signal">Existing MySQL / PostgreSQL / SQL Server / lift-and-shift RDBMS</div><div class="cs-why">Managed, same SQL dialect, DMS for migration.</div></div><div class="cs-ans" style="background:var(--alert-teal-bg);color:var(--alert-teal-text);border:1px solid var(--alert-teal-border)">Cloud SQL</div></div>
+<div class="cs-row"><div style="flex:1"><div class="cs-signal">Leaderboard / sorted set / rate limiting / session cache</div><div class="cs-why">Redis data structures match perfectly.</div></div><div class="cs-ans" style="background:var(--alert-amber-bg);color:var(--alert-amber-text);border:1px solid var(--alert-amber-border)">Memorystore</div></div>
+<div class="cs-row"><div style="flex:1"><div class="cs-signal">New streaming pipeline / serverless / windowing / no legacy code</div><div class="cs-why">Apache Beam, managed, exactly-once processing.</div></div><div class="cs-ans" style="background:var(--alert-teal-bg);color:var(--alert-teal-text);border:1px solid var(--alert-teal-border)">Dataflow</div></div>
+<div class="cs-row"><div style="flex:1"><div class="cs-signal">Existing Spark / PySpark / Hive / migrating on-prem Hadoop</div><div class="cs-why">Same Spark API, gs:// replaces hdfs://, DPMS for metastore.</div></div><div class="cs-ans" style="background:var(--alert-amber-bg);color:var(--alert-amber-text);border:1px solid var(--alert-amber-border)">Dataproc</div></div>
+<div class="cs-row"><div style="flex:1"><div class="cs-signal">Visual ETL / drag-and-drop / no-code / pre-built connectors / non-engineers</div><div class="cs-why">Runs Spark under the hood via managed Dataproc.</div></div><div class="cs-ans" style="background:var(--alert-amber-bg);color:var(--alert-amber-text);border:1px solid var(--alert-amber-border)">Data Fusion</div></div>
+<div class="cs-row"><div style="flex:1"><div class="cs-signal">SQL transforms in BQ / version control for SQL / ref() dependencies / assertions</div><div class="cs-why">SQLX files, dependency graph, Git integration.</div></div><div class="cs-ans" style="background:var(--alert-blue-bg);color:var(--alert-blue-text);border:1px solid var(--alert-blue-border)">Dataform</div></div>
+<div class="cs-row"><div style="flex:1"><div class="cs-signal">Multi-step cross-service orchestration / complex DAG / retry + SLA</div><div class="cs-why">Airflow operators for every GCP service.</div></div><div class="cs-ans" style="background:var(--alert-teal-bg);color:var(--alert-teal-text);border:1px solid var(--alert-teal-border)">Composer</div></div>
+<div class="cs-row"><div style="flex:1"><div class="cs-signal">Data lake management / auto-discovery GCS / data mesh / quality rules</div><div class="cs-why">Lakes, zones, assets, auto-schema detection.</div></div><div class="cs-ans" style="background:var(--alert-teal-bg);color:var(--alert-teal-text);border:1px solid var(--alert-teal-border)">Dataplex</div></div>
+<div class="cs-row"><div style="flex:1"><div class="cs-signal">Metadata search / policy tags / column-level security in BQ</div><div class="cs-why">Taxonomy → policy tags → Fine-Grained Reader role.</div></div><div class="cs-ans" style="background:var(--alert-blue-bg);color:var(--alert-blue-text);border:1px solid var(--alert-blue-border)">Data Catalog</div></div>
+<div class="cs-row"><div style="flex:1"><div class="cs-signal">Share BQ datasets cross-org without copying / data marketplace</div><div class="cs-why">Listings, exchanges, linked datasets.</div></div><div class="cs-ans" style="background:var(--alert-red-bg);color:var(--alert-red-text);border:1px solid var(--alert-red-border)">Analytics Hub</div></div>
+<div class="cs-row"><div style="flex:1"><div class="cs-signal">De-identify PII / scan for sensitive data / mask SSN / tokenize</div><div class="cs-why">InfoTypes, de-identification transforms, streaming or batch.</div></div><div class="cs-ans" style="background:var(--alert-amber-bg);color:var(--alert-amber-text);border:1px solid var(--alert-amber-border)">Cloud DLP</div></div>
+<div class="cs-row"><div style="flex:1"><div class="cs-signal">CDC from MySQL/PostgreSQL/Oracle → BigQuery in real time</div><div class="cs-why">Reads binlog/WAL, streams changes, auto schema evolution.</div></div><div class="cs-ans" style="background:var(--alert-teal-bg);color:var(--alert-teal-text);border:1px solid var(--alert-teal-border)">Datastream</div></div>
+<div class="cs-row"><div style="flex:1"><div class="cs-signal">Prevent data exfiltration / block access despite valid IAM / network perimeter</div><div class="cs-why">Blocks requests from outside the perimeter.</div></div><div class="cs-ans" style="background:var(--alert-red-bg);color:var(--alert-red-text);border:1px solid var(--alert-red-border)">VPC-SC</div></div>
+<div class="cs-row"><div style="flex:1"><div class="cs-signal">External workload (GitHub Actions, AWS) → GCP without key files</div><div class="cs-why">OIDC token exchange for short-lived GCP credentials.</div></div><div class="cs-ans" style="background:var(--alert-blue-bg);color:var(--alert-blue-text);border:1px solid var(--alert-blue-border)">Workload Identity</div></div>
+<div class="cs-row"><div style="flex:1"><div class="cs-signal">Compliance encryption with revocable customer-controlled keys</div><div class="cs-why">Cloud KMS key, revoking key = crypto-shredding.</div></div><div class="cs-ans" style="background:var(--alert-teal-bg);color:var(--alert-teal-text);border:1px solid var(--alert-teal-border)">CMEK</div></div>
+<div class="cs-row"><div style="flex:1"><div class="cs-signal">No-code ML / labeled data / fast prototype / team has no ML expertise</div><div class="cs-why">Handles feature engineering, model selection, tuning.</div></div><div class="cs-ans" style="background:var(--alert-blue-bg);color:var(--alert-blue-text);border:1px solid var(--alert-blue-border)">Vertex AI AutoML</div></div>
+<div class="cs-row"><div style="flex:1"><div class="cs-signal">Training/serving skew / same features in training and serving</div><div class="cs-why">Centralized computation, consistent values, point-in-time lookup.</div></div><div class="cs-ans" style="background:var(--alert-blue-bg);color:var(--alert-blue-text);border:1px solid var(--alert-blue-border)">Vertex Feature Store</div></div>
+<div class="cs-row"><div style="flex:1"><div class="cs-signal">Model accuracy degrading over time / pandemic changed behavior / concept drift</div><div class="cs-why">Retrain with recent data. Set up Vertex AI Model Monitoring.</div></div><div class="cs-ans" style="background:var(--alert-red-bg);color:var(--alert-red-text);border:1px solid var(--alert-red-border)">Retrain + Monitor</div></div>
+</div>`},
+
+{title:'Operational setup completeness — multi-step sequences',body:`
+<p class="prose">The exam sometimes asks "what is the complete setup?" not just "what service?" These are the multi-step sequences that must be complete — partial answers lose full marks.</p>
+<div class="op-kv"><div class="op-k">BQ audit logging</div><div class="op-v">Enable Data Access logs (off by default) → create log sink to BQ dataset or GCS → grant audit team access to sink destination only (not the production project).</div></div>
+<div class="op-kv"><div class="op-k">Authorized view access</div><div class="op-v">Create view in new dataset → authorize view on source dataset → grant team access to view dataset only. Three steps — missing step 2 means the view cannot query the source tables.</div></div>
+<div class="op-kv"><div class="op-k">CMEK on BigQuery</div><div class="op-v">Create key in Cloud KMS → grant BQ service account roles/cloudkms.cryptoKeyEncrypterDecrypter on the key → specify kms_key_name when creating dataset or table. Missing the IAM grant = BQ cannot use the key.</div></div>
+<div class="op-kv"><div class="op-k">Dataproc ephemeral + BQ output</div><div class="op-v">Store input/output data in GCS (not HDFS) → DataprocCreateCluster → DataprocSubmitJob → DataprocDeleteCluster with trigger_rule="all_done" → GCSToBigQueryOperator to load output. Missing trigger_rule = cluster stays running on job failure.</div></div>
+<div class="op-kv"><div class="op-k">Exactly-once to BigQuery</div><div class="op-v">Dataflow pipeline → use Storage Write API (not legacy streaming inserts) → use committed stream mode → Finalize() + CommitStream() after writing. Missing committed stream = at-least-once writes.</div></div>
+<div class="op-kv"><div class="op-k">Cloud SQL HA</div><div class="op-v">Enable HA configuration (creates synchronous standby in different zone) → single IP address handles failover automatically. Read replicas are separate and do NOT provide zone failover.</div></div>
+<div class="op-kv"><div class="op-k">BQ bulk update</div><div class="op-v">Load CSV to staging table (free LOAD job) → single MERGE statement (1 DML quota unit, covers all rows) → drop staging table. Running individual UPDATEs hits the 1,500 DML/day/table quota.</div></div>
+<div class="alert alert-teal">Pattern for exam questions about setup: when a question asks "how do you set up X", write out all the steps mentally before answering. Exam answers that describe only the final state but skip steps are partial answers — and partial answers usually correspond to wrong answer choices.</div>`}
+]}
+
+]; // END TABS
+
+/* ── BUILD TABS ── */
+const tabBar = document.getElementById('tabBar');
+const tabContent = document.getElementById('tabContent');
+
+TABS.forEach((tab, ti) => {
+  const btn = document.createElement('button');
+  btn.className = 'tab-btn' + (ti === 0 ? ' active' : '');
+  btn.textContent = tab.label;
+  btn.onclick = () => {
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.tab-section').forEach(s => s.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById('sec-' + ti).classList.add('active');
+  };
+  tabBar.appendChild(btn);
+
+  const sec = document.createElement('div');
+  sec.className = 'tab-section' + (ti === 0 ? ' active' : '');
+  sec.id = 'sec-' + ti;
+
+  tab.topics.forEach((topic, tpi) => {
+    const gid = `g${ti}_${tpi}`;
+    const cid = `c${ti}_${tpi}`;
+    const cardId = `${tab.id}_${tpi}`;
+    const div = document.createElement('div');
+    div.className = 'gap';
+    div.innerHTML = `
+      <div class="gap-header" onclick="tog('${gid}','${cid}')">
+        <div class="gap-num">${tpi + 1}</div>
+        <div class="gap-title">${topic.title}</div>
+        <span class="gap-tag">${tab.freq}</span>
+        <span class="chevron${tpi === 0 ? ' open' : ''}" id="${cid}">▶</span>
+      </div>
+      <div class="gap-body${tpi === 0 ? ' open' : ''}" id="${gid}">${topic.body}${buildNoteZone(cardId)}</div>`;
+    sec.appendChild(div);
+  });
+  tabContent.appendChild(sec);
+});
+
+TABS.forEach((tab, ti) => {
+  tab.topics.forEach((_, tpi) => { initNotes(`${tab.id}_${tpi}`); });
+});
+
+function tog(b, c) {
+  document.getElementById(b).classList.toggle('open');
+  document.getElementById(c).classList.toggle('open');
+}
+
+/* ── NOTES ENGINE ── */
+const NOTES_PREFIX = 'gcp_pde_notes_';
+function getCardNotes(id) {
+  try { const r = localStorage.getItem(NOTES_PREFIX + id); return r ? JSON.parse(r) : []; } catch(e) { return []; }
+}
+function saveCardNotes(id, notes) {
+  try { localStorage.setItem(NOTES_PREFIX + id, JSON.stringify(notes)); } catch(e) {}
+  try { window.storage && window.storage.set(NOTES_PREFIX + id, JSON.stringify(notes), false); } catch(e) {}
+}
+async function initNotes(id) {
+  try { if (window.storage) { const r = await window.storage.get(NOTES_PREFIX + id, false); if (r) { try { localStorage.setItem(NOTES_PREFIX + id, r.value); } catch(e) {} } } } catch(e) {}
+  renderNotes(id);
+}
+function formatTs(ts) {
+  const d = new Date(ts);
+  return d.toLocaleDateString('en-CA',{month:'short',day:'numeric',year:'numeric'})+' '+d.toLocaleTimeString('en-CA',{hour:'2-digit',minute:'2-digit'});
+}
+function escHtml(s) { return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\n/g,'<br>'); }
+function buildNoteZone(id) {
+  return `<div class="note-zone" id="notes-zone-${id}">
+    <div class="notes-list"></div>
+    <div class="note-form" style="display:none" data-edit-idx="">
+      <textarea placeholder="Add your study note…" rows="3"></textarea>
+      <div class="note-form-actions">
+        <button class="note-save-btn" onclick="saveNote('${id}')">save note</button>
+        <button class="note-cancel-btn" onclick="cancelNote('${id}')">cancel</button>
+      </div>
+    </div>
+    <button class="note-add-trigger" onclick="showNoteForm('${id}')">
+      <svg width="13" height="13" viewBox="0 0 13 13" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="1" y="1" width="11" height="11" rx="2"/><line x1="3.5" y1="4" x2="9.5" y2="4"/><line x1="3.5" y1="6.5" x2="9.5" y2="6.5"/><line x1="3.5" y1="9" x2="6.5" y2="9"/><line x1="9.5" y1="7.5" x2="9.5" y2="11"/><line x1="7.5" y1="9.5" x2="11.5" y2="9.5"/></svg>
+      add note
+    </button>
+  </div>`;
+}
+function renderNotes(id) {
+  const zone = document.getElementById('notes-zone-' + id);
+  if (!zone) return;
+  const notes = getCardNotes(id);
+  const list = zone.querySelector('.notes-list');
+  list.innerHTML = '';
+  notes.forEach((note, idx) => {
+    const item = document.createElement('div');
+    item.className = 'note-item';
+    item.innerHTML = `<div class="note-item-text">${escHtml(note.text)}</div>
+      <div class="note-item-footer">
+        <span class="note-ts">${formatTs(note.ts)}</span>
+        <div class="note-item-actions">
+          <button class="note-action-btn" onclick="editNote('${id}',${idx})">edit</button>
+          <button class="note-action-btn del" onclick="deleteNote('${id}',${idx})">delete</button>
+        </div>
+      </div>`;
+    list.appendChild(item);
+  });
+}
+function showNoteForm(id) {
+  const zone = document.getElementById('notes-zone-' + id);
+  const form = zone.querySelector('.note-form');
+  form.dataset.editIdx = '';
+  form.querySelector('textarea').value = '';
+  form.style.display = 'block';
+  zone.querySelector('.note-add-trigger').style.display = 'none';
+  form.querySelector('textarea').focus();
+}
+function cancelNote(id) {
+  const zone = document.getElementById('notes-zone-' + id);
+  zone.querySelector('.note-form').style.display = 'none';
+  zone.querySelector('.note-add-trigger').style.display = 'flex';
+}
+function saveNote(id) {
+  const zone = document.getElementById('notes-zone-' + id);
+  const form = zone.querySelector('.note-form');
+  const text = form.querySelector('textarea').value.trim();
+  if (!text) return;
+  const notes = getCardNotes(id);
+  const idx = form.dataset.editIdx;
+  if (idx !== '') { notes[parseInt(idx)] = {text, ts: notes[parseInt(idx)].ts}; }
+  else { notes.push({text, ts: Date.now()}); }
+  saveCardNotes(id, notes);
+  renderNotes(id);
+  form.style.display = 'none';
+  zone.querySelector('.note-add-trigger').style.display = 'flex';
+}
+function editNote(id, idx) {
+  const zone = document.getElementById('notes-zone-' + id);
+  const form = zone.querySelector('.note-form');
+  form.dataset.editIdx = idx;
+  form.querySelector('textarea').value = getCardNotes(id)[idx].text;
+  form.style.display = 'block';
+  zone.querySelector('.note-add-trigger').style.display = 'none';
+  form.querySelector('textarea').focus();
+}
+function deleteNote(id, idx) {
+  const notes = getCardNotes(id);
+  notes.splice(idx, 1);
+  saveCardNotes(id, notes);
+  renderNotes(id);
+}
+
+
+
+
+/* ════ SIDEBAR + BOTTOM BAR JS ════ */
+(function () {
+  var sidebar = document.getElementById('sidebar');
+  var btn     = document.getElementById('sbCollapseBtn');
+  var overlay = document.getElementById('sbOverlay');
+  if (!sidebar) return;
+
+  // ── Restore collapsed state from localStorage ──
+  var isCollapsed = localStorage.getItem('sbCollapsed') === '1';
+  if (isCollapsed) {
+    sidebar.classList.add('collapsed');
+    document.body.classList.add('sb-closed');
+  } else {
+    document.body.classList.add('sb-open');
+  }
+
+  // ── Mark active page ──
+  var path    = window.location.pathname.split('/').pop().replace('.html', '') || 'index';
+  var hash    = window.location.hash.replace('#', '');
+
+  // Activate module links
+  document.querySelectorAll('.sb-mod-link[data-page]').forEach(function (el) {
+    if (el.getAttribute('data-page') === path) el.classList.add('active');
+  });
+  // Activate bottom bar items
+  document.querySelectorAll('.bb-item[data-page]').forEach(function (el) {
+    if (el.getAttribute('data-page') === path) el.classList.add('active');
+  });
+
+  // ── Open subtopic group for current page ──
+  var grp = document.querySelector('.sb-mod-group[data-group="' + path + '"]');
+  if (grp) {
+    grp.classList.add('open');
+    // Highlight active subtopic if hash present
+    if (hash) {
+      var sub = grp.querySelector('.sb-sub-link[data-tab="' + hash + '"]');
+      if (sub) sub.classList.add('active');
+    }
+  }
+
+  // ── Expand/collapse on group header click (toggle subtopics) ──
+  document.querySelectorAll('.sb-mod-group').forEach(function (grp) {
+    var link = grp.querySelector(':scope > .sb-mod-link');
+    if (!link) return;
+    link.addEventListener('click', function (e) {
+      // Only intercept the expand toggle, not navigation to other pages
+      var targetPage = link.getAttribute('data-page');
+      if (targetPage && targetPage !== path) return; // let it navigate
+      // Same page or no page change — toggle subtopics
+      e.preventDefault();
+      grp.classList.toggle('open');
+    });
+  });
+
+  // ── Hash change: update active subtopic ──
+  window.addEventListener('hashchange', function () {
+    var h = window.location.hash.replace('#', '');
+    document.querySelectorAll('.sb-sub-link').forEach(function (el) { el.classList.remove('active'); });
+    if (h && grp) {
+      var sub = grp.querySelector('.sb-sub-link[data-tab="' + h + '"]');
+      if (sub) sub.classList.add('active');
+    }
+  });
+})();
+
+function toggleSidebar() {
+  var sidebar = document.getElementById('sidebar');
+  if (!sidebar) return;
+  var collapsed = sidebar.classList.toggle('collapsed');
+  document.body.classList.toggle('sb-open',   !collapsed);
+  document.body.classList.toggle('sb-closed', collapsed);
+  localStorage.setItem('sbCollapsed', collapsed ? '1' : '0');
+}
+function closeSidebar() {
+  // no-op on desktop; overlay not shown
+}
+/* ════ END SIDEBAR JS ════ */
+
+</script>
+</body>
+</html>
