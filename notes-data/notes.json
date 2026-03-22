@@ -1,0 +1,13 @@
+{
+  "beam_1": [
+    {
+      "text": "Any new DoFn class inherits from beam.DoFn and has a function process in it. \n\nimport apache_beam as beam\n\nclass ParseOrder(beam.DoFn):\n    def process(self, element):\n        # element is one raw message from Pub/Sub, looks like:\n        # b'{\"order_id\": \"123\", \"amount\": 75.0, \"city\": \"Toronto\"}'\n        \n        import json\n        order = json.loads(element)\n        yield order  # sends the parsed dict to the next PCollection\n\nAnd each of these DoFn classes are given as inputs to beam.ParDo transform as below: \nwith beam.Pipeline() as p:\n    \n    raw_messages = (\n        p\n        | 'Read from Pub/Sub' >> beam.io.ReadFromPubSub(\n            topic='projects/my-project/topics/pizza-orders'\n          )\n    )\n    \n    parsed_orders = (\n        raw_messages\n        | 'Parse each order' >> beam.ParDo(ParseOrder())\n    )",
+      "ts": 1774132645703
+    },
+    {
+      "text": "Full DoFn class structure: \nclass MyDoFn(beam.DoFn):\n    \n    def setup(self):\n        # ONCE per worker at startup\n        # initialize expensive resources\n        self.model = load_model()\n        self.db = open_connection()\n    \n    def start_bundle(self):\n        # once per BUNDLE (a small batch of elements)\n        # rarely needed — reset per-bundle counters here\n        self.bundle_count = 0\n    \n    def process(self, element):\n        # ONCE PER ELEMENT — keep this fast and lean\n        self.bundle_count += 1\n        result = self.model.predict(element)\n        yield result\n    \n    def finish_bundle(self):\n        # once per BUNDLE after all elements processed\n        # flush buffers, log bundle stats\n        print(f\"Processed {self.bundle_count} elements in this bundle\")\n    \n    def teardown(self):\n        # ONCE per worker at shutdown\n        # close connections, release resources\n        self.db.close()",
+      "ts": 1774133335093
+    }
+  ],
+  "beam_0": []
+}
