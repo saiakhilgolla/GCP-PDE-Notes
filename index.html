@@ -1,6 +1,12 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="dark">
+<html lang="en" data-theme="light">
 <head>
+<script>
+(function(){
+  var t = sessionStorage.getItem('gcp_pde_theme') || 'light';
+  document.documentElement.setAttribute('data-theme', t);
+})();
+</script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>GCP PDE Study Notes</title>
@@ -650,40 +656,60 @@ body.sb-closed { padding-left: var(--sb-w-collapsed) !important; }
    END SIDEBAR + BOTTOM BAR
 ════════════════════════════════════════════════════════ */
 
+
+/* ── GitHub Settings Panel ── */
+.gs-overlay {
+  display: none; position: fixed; inset: 0;
+  background: rgba(0,0,0,0.55); z-index: 8888;
+  align-items: center; justify-content: center;
+}
+.gs-overlay.open { display: flex; }
+.gs-panel {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: 12px; padding: 28px; width: min(460px, 92vw);
+  box-shadow: 0 16px 48px rgba(0,0,0,.3);
+}
+.gs-panel h3 { font-size: 16px; font-weight: 600; color: var(--text); margin-bottom: 6px; }
+.gs-panel p  { font-size: 12.5px; color: var(--muted); margin-bottom: 18px; line-height: 1.6; }
+.gs-field { margin-bottom: 14px; }
+.gs-field label {
+  display: block; font-family: 'IBM Plex Mono', monospace;
+  font-size: 10px; letter-spacing: .1em; text-transform: uppercase;
+  color: var(--muted); margin-bottom: 5px;
+}
+.gs-field input {
+  width: 100%; font-size: 12.5px; font-family: 'IBM Plex Mono', monospace;
+  padding: 8px 10px; border-radius: 7px;
+  border: 1px solid var(--border); background: var(--bg);
+  color: var(--text); outline: none; transition: border-color .15s;
+}
+.gs-field input:focus { border-color: var(--accent); }
+.gs-hint { font-size: 11px; color: var(--muted); margin-top: 4px; line-height: 1.5; }
+.gs-hint a { color: var(--accent); }
+.gs-actions { display: flex; gap: 8px; justify-content: flex-end; margin-top: 20px; align-items: center; }
+.gs-save {
+  font-size: 12px; font-family: 'IBM Plex Mono', monospace; padding: 7px 18px;
+  border-radius: 99px; border: 1px solid var(--accent-border);
+  background: var(--accent-bg); color: var(--accent-text);
+  cursor: pointer; font-weight: 600; transition: all .15s;
+}
+.gs-save:hover { background: var(--accent); color: var(--bg); }
+.gs-cancel {
+  font-size: 12px; font-family: 'IBM Plex Mono', monospace; padding: 7px 18px;
+  border-radius: 99px; border: 1px solid var(--border); background: transparent;
+  color: var(--muted); cursor: pointer; transition: all .15s;
+}
+.gs-cancel:hover { background: var(--surface2); color: var(--text); }
+.gs-status {
+  font-family: 'IBM Plex Mono', monospace; font-size: 11px;
+  color: var(--muted); margin-right: auto; min-height: 16px;
+}
+/* ── End GitHub Settings Panel ── */
+
 </style>
 </head>
 <body>
 
-<!-- ═══ LIGHTBOX ═══ -->
-<div class="ne-lightbox" id="neLightbox" onclick="this.classList.remove('open')">
-  <img id="neLightboxImg" src="" alt="note image">
-</div>
-
-<!-- ═══ GITHUB SETTINGS MODAL ═══ -->
-<div class="ne-settings-overlay" id="neSettingsOverlay">
-  <div class="ne-settings-modal">
-    <h3>GitHub Sync Settings</h3>
-    <p>Notes and images will auto-commit to your GitHub repo on every save. Your PAT is stored only in your browser's localStorage and never sent anywhere except GitHub's API.</p>
-    <div class="ne-field">
-      <label>Personal Access Token</label>
-      <input type="password" id="nePatInput" placeholder="ghp_xxxxxxxxxxxxxxxxxxxx">
-      <div class="ne-hint">Needs <strong>repo</strong> scope. <a href="https://github.com/settings/tokens/new" target="_blank">Create one here ↗</a></div>
-    </div>
-    <div class="ne-field">
-      <label>Repository (owner/repo)</label>
-      <input type="text" id="neRepoInput" placeholder="yourname/gcp-pde-notes">
-    </div>
-    <div class="ne-field">
-      <label>Branch</label>
-      <input type="text" id="neBranchInput" placeholder="main">
-    </div>
-    <div class="ne-modal-status" id="neModalStatus"></div>
-    <div class="ne-modal-actions">
-      <button class="ne-modal-cancel" onclick="neCloseSettings()">Cancel</button>
-      <button class="ne-modal-save" onclick="neTestAndSave()">Save &amp; Test</button>
-    </div>
-  </div>
-</div>
 
 <!-- ═══ SIDEBAR ═══ -->
 <div class="sb-overlay" id="sbOverlay" onclick="closeSidebar()"></div>
@@ -804,7 +830,7 @@ body.sb-closed { padding-left: var(--sb-w-collapsed) !important; }
       </div>
     </div>
   </div>
-  <button class="sb-settings-btn" onclick="neOpenSettings()"><span class="sb-settings-icon">⚙</span><span class="sb-settings-label">GitHub Sync</span></button>
+  <button class="sb-settings-btn" onclick="gsOpen()"><span class="sb-settings-icon">⚙</span><span class="sb-settings-label">GitHub Sync</span></button>
 </aside>
 <!-- ═══ END SIDEBAR ═══ -->
 
@@ -1032,8 +1058,10 @@ body.sb-closed { padding-left: var(--sb-w-collapsed) !important; }
 
 <script>
 function toggleTheme() {
-  const h = document.documentElement;
-  h.setAttribute('data-theme', h.getAttribute('data-theme') === 'dark' ? 'light' : 'dark');
+  var h = document.documentElement;
+  var next = h.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+  h.setAttribute('data-theme', next);
+  sessionStorage.setItem('gcp_pde_theme', next);
 }
 
 
@@ -1118,48 +1146,89 @@ function closeSidebar() {
 /* ════ END SIDEBAR JS ════ */
 
 
-/* ── GitHub Settings (index.html) ── */
+
+
+/* ── GitHub Settings ── */
 var GH_CFG_KEY = 'gcp_pde_gh_cfg';
 function ghCfg() {
   try { return JSON.parse(localStorage.getItem(GH_CFG_KEY) || 'null'); } catch(e) { return null; }
 }
-function neOpenSettings() {
+function gsOpen() {
   var cfg = ghCfg() || {};
-  document.getElementById('nePatInput').value    = cfg.pat    || '';
-  document.getElementById('neRepoInput').value   = cfg.repo   || '';
-  document.getElementById('neBranchInput').value = cfg.branch || 'main';
-  document.getElementById('neModalStatus').textContent = '';
-  document.getElementById('neSettingsOverlay').classList.add('open');
+  document.getElementById('gsPatInput').value    = cfg.pat    || '';
+  document.getElementById('gsRepoInput').value   = cfg.repo   || '';
+  document.getElementById('gsBranchInput').value = cfg.branch || 'main';
+  document.getElementById('gsStatus').textContent = '';
+  document.getElementById('gsStatus').style.color = '';
+  document.getElementById('gsOverlay').classList.add('open');
 }
-function neCloseSettings() {
-  document.getElementById('neSettingsOverlay').classList.remove('open');
+function gsClose() {
+  document.getElementById('gsOverlay').classList.remove('open');
 }
-function neTestAndSave() {
-  var pat    = document.getElementById('nePatInput').value.trim();
-  var repo   = document.getElementById('neRepoInput').value.trim();
-  var branch = document.getElementById('neBranchInput').value.trim() || 'main';
-  var status = document.getElementById('neModalStatus');
-  if (!pat || !repo) { status.textContent = '\u26a0 PAT and repo are required.'; return; }
-  status.textContent = 'Testing connection\u2026';
+function gsTestAndSave() {
+  var pat    = document.getElementById('gsPatInput').value.trim();
+  var repo   = document.getElementById('gsRepoInput').value.trim();
+  var branch = document.getElementById('gsBranchInput').value.trim() || 'main';
+  var status = document.getElementById('gsStatus');
+  if (!pat || !repo) {
+    status.style.color = '#ffb84d';
+    status.textContent = '⚠ PAT and repo are required.';
+    return;
+  }
+  status.style.color = '';
+  status.textContent = 'Testing…';
   fetch('https://api.github.com/repos/' + repo, {
     headers: { Authorization: 'token ' + pat }
   }).then(function(r) {
     if (r.ok) {
       localStorage.setItem(GH_CFG_KEY, JSON.stringify({ pat: pat, repo: repo, branch: branch }));
-      status.style.color = 'var(--ne-github-ok, #4dff91)';
-      status.textContent = '\u2713 Connected! Settings saved. Notes will sync to ' + repo;
-      setTimeout(neCloseSettings, 2000);
+      status.style.color = '#4dff91';
+      status.textContent = '✓ Connected — ' + repo;
+      setTimeout(gsClose, 1800);
     } else {
-      status.style.color = 'var(--ne-github-err, #ff4d4d)';
-      status.textContent = '\u2715 Error ' + r.status + ' \u2014 check your PAT and repo name.';
+      status.style.color = '#ff4d4d';
+      status.textContent = '✕ Error ' + r.status + ' — check PAT and repo name.';
     }
   }).catch(function() {
-    status.style.color = 'var(--ne-github-err, #ff4d4d)';
-    status.textContent = '\u2715 Network error. If running locally, deploy to GitHub Pages first \u2014 file:// blocks API calls.';
+    status.style.color = '#ff4d4d';
+    status.textContent = '✕ Deploy to GitHub Pages to test — file:// blocks API calls.';
   });
 }
+// Close on overlay click
+document.addEventListener('click', function(e) {
+  var overlay = document.getElementById('gsOverlay');
+  if (e.target === overlay) gsClose();
+});
 /* ── End GitHub Settings ── */
 
 </script>
+
+<!-- ═══ GITHUB SETTINGS PANEL ═══ -->
+<div class="gs-overlay" id="gsOverlay">
+  <div class="gs-panel">
+    <h3>⚙ GitHub Sync Settings</h3>
+    <p>Notes and images will auto-commit to your GitHub repo on every save. Your PAT is stored only in your browser's localStorage and never sent anywhere except GitHub's API.</p>
+    <div class="gs-field">
+      <label>Personal Access Token</label>
+      <input type="password" id="gsPatInput" placeholder="ghp_xxxxxxxxxxxxxxxxxxxx">
+      <div class="gs-hint">Needs <strong>repo</strong> scope. <a href="https://github.com/settings/tokens/new" target="_blank">Create one here ↗</a></div>
+    </div>
+    <div class="gs-field">
+      <label>Repository (owner/repo)</label>
+      <input type="text" id="gsRepoInput" placeholder="yourname/gcp-pde-notes">
+    </div>
+    <div class="gs-field">
+      <label>Branch</label>
+      <input type="text" id="gsBranchInput" placeholder="main">
+    </div>
+    <div class="gs-actions">
+      <span class="gs-status" id="gsStatus"></span>
+      <button class="gs-cancel" onclick="gsClose()">Cancel</button>
+      <button class="gs-save" onclick="gsTestAndSave()">Save &amp; Test</button>
+    </div>
+  </div>
+</div>
+<!-- ═══ END GITHUB SETTINGS PANEL ═══ -->
+
 </body>
 </html>

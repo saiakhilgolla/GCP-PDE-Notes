@@ -1,181 +1,188 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="dark">
+<html lang="en" data-theme="light">
 <head>
+<script>
+(function(){
+  var t = sessionStorage.getItem('gcp_pde_theme') || 'light';
+  document.documentElement.setAttribute('data-theme', t);
+})();
+</script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Module 4 — Data Processing & Governance</title>
+<title>Module 4 — Data Processing &amp; Governance</title>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap');
 
 [data-theme="dark"] {
-  --bg:#0d0f14; --surface:#161920; --surface2:#1e2230;
-  --border:#2a2f3d; --border2:#373d52;
-  --text:#e8eaf0; --muted:#7a8099; --dim:#4a5168;
-  --prose-color:#c0c4d4; --kv-val-color:#9aa0b8; --code-color:#c8d0e8;
-  --accent:#4dff91; --accent-bg:#091a11; --accent-border:#0f4024; --accent-text:#4dff91; --num-fg:#0d0f14;
-  --alert-info-bg:#091a11;  --alert-info-text:#99ffcc;  --alert-info-border:#4dff91;
-  --alert-warn-bg:#1a1000;  --alert-warn-text:#ffd699;  --alert-warn-border:#ffb84d;
-  --alert-red-bg:#1a0a0a;   --alert-red-text:#ffaaaa;   --alert-red-border:#ff4d4d;
-  --alert-green-bg:#091a11; --alert-green-text:#99ffcc; --alert-green-border:#4dff91;
-  --code-bg:#0a0c10; --scenario-bg:#1e2230; --section-label-color:#2a6641;
-  --toggle-track:#0f4024; --toggle-border:#0f4024; --toggle-knob:#4dff91; --toggle-shadow:rgba(77,255,145,0.3);
-  --sun-op:0.35; --moon-op:1;
-  --mini-bg:#1e2230; --mini-good-bg:#091a11; --mini-bad-bg:#1a0a0a;
-  --mini-good-text:#4dff91; --mini-bad-text:#ff4d4d;
-  --table-head:#4a5168; --table-row-border:#1e2230; --table-td:#9aa0b8;
-  --dt-bg:#1e2230; --dt-q:#9aa0b8;
-  --pipe-bg:#1e2230; --pipe-border:#2a2f3d;
-  --op-bg:#1e2230; --op-name-bg:#0a0c10; --op-name-color:#c8d0e8;
-  --note-bg:#091a11; --note-border:#0f4024; --note-text:#99ffcc;
-  --note-ts:#2a6641; --note-input-bg:#0a0c10; --note-input-border:#0f4024;
-  --note-trigger-color:#2a6641; --note-trigger-hover:#4dff91;
+  --bg:#0d0f14;--surface:#161920;--surface2:#1e2230;--border:#2a2f3d;--text:#e8eaf0;--muted:#7a8099;--dim:#4a5168;
+  --prose-color:#c0c4d4;--kv-val-color:#9aa0b8;--code-color:#c8d0e8;
+  --accent:#4dff91;--accent-bg:#091a11;--accent-border:#0f4024;--accent-text:#4dff91;--num-fg:#0d0f14;
+  --alert-info-bg:#091a11;--alert-info-text:#99ffcc;--alert-info-border:#4dff91;
+  --alert-warn-bg:#1a1000;--alert-warn-text:#ffd699;--alert-warn-border:#ffb84d;
+  --alert-red-bg:#1a0a0a;--alert-red-text:#ffaaaa;--alert-red-border:#ff4d4d;
+  --alert-green-bg:#091a11;--alert-green-text:#99ffcc;--alert-green-border:#4dff91;
+  --code-bg:#0a0c10;--scenario-bg:#1e2230;--section-label-color:#2a6641;
+  --toggle-track:#0f4024;--toggle-border:#0f4024;--toggle-knob:#4dff91;--toggle-shadow:rgba(77,255,145,0.3);
+  --sun-op:0.35;--moon-op:1;
+  --mini-bg:#1e2230;--mini-good-bg:#091a11;--mini-bad-bg:#1a0a0a;
+  --mini-good-text:#4dff91;--mini-bad-text:#ff4d4d;
+  --table-head:#4a5168;--table-row-border:#1e2230;--table-td:#9aa0b8;
+  --dt-bg:#1e2230;--dt-q:#9aa0b8;--pipe-bg:#1e2230;--pipe-border:#2a2f3d;
+  --op-bg:#1e2230;--op-name-bg:#0a0c10;--op-name-color:#c8d0e8;
 }
 [data-theme="light"] {
-  --bg:#f7f8f4; --surface:#ffffff; --surface2:#f0f2ec;
-  --border:#dde0d8; --border2:#c8ccc2;
-  --text:#1c1f18; --muted:#5a6052; --dim:#9aa090;
-  --prose-color:#4a5240; --kv-val-color:#5a6052; --code-color:#2a3820;
-  --accent:#1e8a45; --accent-bg:#eaf6ee; --accent-border:#9ed4b2; --accent-text:#1e8a45; --num-fg:#ffffff;
-  --alert-info-bg:#eaf6ee;  --alert-info-text:#155c2e;  --alert-info-border:#1e8a45;
-  --alert-warn-bg:#fdf6e8;  --alert-warn-text:#7a4400;  --alert-warn-border:#c08020;
-  --alert-red-bg:#fdf0f0;   --alert-red-text:#8a2020;   --alert-red-border:#c04040;
-  --alert-green-bg:#eaf6ee; --alert-green-text:#155c2e; --alert-green-border:#1e8a45;
-  --code-bg:#f0f2ec; --scenario-bg:#f4f6f0; --section-label-color:#1e8a45;
-  --toggle-track:#1e8a45; --toggle-border:#9ed4b2; --toggle-knob:#ffffff; --toggle-shadow:rgba(0,0,0,0.15);
-  --sun-op:1; --moon-op:0.4;
-  --mini-bg:#f0f2ec; --mini-good-bg:#eaf6ee; --mini-bad-bg:#fdf0f0;
-  --mini-good-text:#155c2e; --mini-bad-text:#8a2020;
-  --table-head:#9aa090; --table-row-border:#f0f2ec; --table-td:#5a6052;
-  --dt-bg:#f0f2ec; --dt-q:#5a6052;
-  --pipe-bg:#f0f2ec; --pipe-border:#dde0d8;
-  --op-bg:#f0f2ec; --op-name-bg:#e0e4dc; --op-name-color:#2a3820;
-  --note-bg:#eaf6ee; --note-border:#9ed4b2; --note-text:#155c2e;
-  --note-ts:#9ed4b2; --note-input-bg:#f7f8f4; --note-input-border:#9ed4b2;
-  --note-trigger-color:#9ed4b2; --note-trigger-hover:#1e8a45;
+  --bg:#f7f8f4;--surface:#ffffff;--surface2:#f0f2ec;--border:#dde0d8;--text:#1c1f18;--muted:#5a6052;--dim:#9aa090;
+  --prose-color:#4a5240;--kv-val-color:#5a6052;--code-color:#2a3820;
+  --accent:#1e8a45;--accent-bg:#eaf6ee;--accent-border:#9ed4b2;--accent-text:#1e8a45;--num-fg:#ffffff;
+  --alert-info-bg:#eaf6ee;--alert-info-text:#155c2e;--alert-info-border:#1e8a45;
+  --alert-warn-bg:#fdf6e8;--alert-warn-text:#7a4400;--alert-warn-border:#c08020;
+  --alert-red-bg:#fdf0f0;--alert-red-text:#8a2020;--alert-red-border:#c04040;
+  --alert-green-bg:#eaf6ee;--alert-green-text:#155c2e;--alert-green-border:#1e8a45;
+  --code-bg:#f0f2ec;--scenario-bg:#f4f6f0;--section-label-color:#1e8a45;
+  --toggle-track:#1e8a45;--toggle-border:#9ed4b2;--toggle-knob:#ffffff;--toggle-shadow:rgba(0,0,0,0.15);
+  --sun-op:1;--moon-op:0.4;
+  --mini-bg:#f0f2ec;--mini-good-bg:#eaf6ee;--mini-bad-bg:#fdf0f0;
+  --mini-good-text:#155c2e;--mini-bad-text:#8a2020;
+  --table-head:#9aa090;--table-row-border:#f0f2ec;--table-td:#5a6052;
+  --dt-bg:#f0f2ec;--dt-q:#5a6052;--pipe-bg:#f0f2ec;--pipe-border:#dde0d8;
+  --op-bg:#f0f2ec;--op-name-bg:#e0e4dc;--op-name-color:#2a3820;
 }
 
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:'IBM Plex Sans',sans-serif;background:var(--bg);color:var(--text);padding:28px 20px;max-width:860px;margin:0 auto;line-height:1.6;transition:background .3s,color .3s}
-
-/* HEADER */
 .page-header{margin-bottom:24px;padding-bottom:18px;border-bottom:1px solid var(--border);display:flex;align-items:flex-start;justify-content:space-between;gap:16px}
 .header-text .label{font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--accent);letter-spacing:.15em;text-transform:uppercase;margin-bottom:7px}
 .header-text h1{font-size:22px;font-weight:600;color:var(--text);margin-bottom:4px}
 .header-text p{font-size:13px;color:var(--muted)}
-
-/* TOGGLE */
 .theme-toggle{display:flex;align-items:center;gap:7px;flex-shrink:0;margin-top:2px;cursor:pointer;user-select:none}
 .ti-sun,.ti-moon{font-size:14px;line-height:1;transition:opacity .3s}
 .ti-sun{opacity:var(--sun-op)}.ti-moon{opacity:var(--moon-op)}
 .toggle-track{position:relative;width:42px;height:24px;background:var(--toggle-track);border-radius:99px;border:1px solid var(--toggle-border);flex-shrink:0;transition:background .3s}
 .toggle-knob{position:absolute;top:3px;left:3px;width:16px;height:16px;border-radius:50%;background:var(--toggle-knob);box-shadow:0 1px 4px var(--toggle-shadow);transition:transform .25s cubic-bezier(.4,0,.2,1)}
 [data-theme="light"] .toggle-knob{transform:translateX(18px)}
-
-/* TABS */
 .tab-bar{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:20px;position:sticky;top:0;background:var(--bg);padding:10px 0;z-index:10;border-bottom:1px solid var(--border);transition:background .3s}
 .tab-btn{font-family:'IBM Plex Mono',monospace;font-size:11px;padding:5px 12px;border-radius:99px;border:1px solid var(--border);background:transparent;color:var(--muted);cursor:pointer;white-space:nowrap;transition:all .15s;letter-spacing:.03em}
 .tab-btn:hover{background:var(--surface2);color:var(--text)}
 .tab-btn.active{background:var(--accent-bg);color:var(--accent-text);border-color:var(--accent-border);font-weight:600}
 .tab-section{display:none}.tab-section.active{display:block}
-
-/* CARDS */
 .gap{border:1px solid var(--border);border-radius:10px;margin-bottom:14px;overflow:hidden;background:var(--surface);transition:background .3s,border-color .3s}
 .gap-header{display:flex;align-items:center;gap:10px;padding:13px 16px;cursor:pointer;transition:background .15s}
 .gap-header:hover{background:var(--surface2)}
-.gap-num{font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:600;color:var(--num-fg);background:var(--accent);width:22px;height:22px;border-radius:5px;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:background .3s}
+.gap-num{font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:600;color:var(--num-fg);background:var(--accent);width:22px;height:22px;border-radius:5px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
 .gap-title{flex:1;font-size:13.5px;font-weight:600;color:var(--text)}
-.gap-tag{font-family:'IBM Plex Mono',monospace;font-size:10px;padding:2px 8px;border-radius:99px;font-weight:600;letter-spacing:.04em;background:var(--accent-bg);color:var(--accent-text);border:1px solid var(--accent-border);white-space:nowrap;transition:all .3s}
+.gap-tag{font-family:'IBM Plex Mono',monospace;font-size:10px;padding:2px 8px;border-radius:99px;font-weight:600;letter-spacing:.04em;background:var(--accent-bg);color:var(--accent-text);border:1px solid var(--accent-border);white-space:nowrap}
 .chevron{font-size:10px;color:var(--dim);transition:transform .2s;margin-left:4px;flex-shrink:0}
 .chevron.open{transform:rotate(90deg)}
-.gap-body{display:none;border-top:1px solid var(--border);padding:16px 18px;transition:border-color .3s}
+.gap-body{display:none;border-top:1px solid var(--border);padding:16px 18px}
 .gap-body.open{display:block}
-
-/* CONTENT */
 .section-label{font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--section-label-color);margin:14px 0 7px;opacity:.85}
 .section-label:first-child{margin-top:0}
 p.prose{font-size:13px;color:var(--prose-color);line-height:1.7;margin-bottom:8px}
-p.prose:last-child{margin-bottom:0}
 .kv-row{display:flex;gap:12px;margin-bottom:8px;font-size:13px}
-.kv-key{font-weight:600;color:var(--text);min-width:185px;flex-shrink:0}
+.kv-key{font-weight:600;color:var(--text);min-width:200px;flex-shrink:0}
 .kv-val{color:var(--kv-val-color);line-height:1.55}
-.alert{padding:10px 14px;font-size:12.5px;line-height:1.6;border-left:3px solid;margin:10px 0;transition:background .3s,color .3s}
-.alert-blue  {background:var(--alert-info-bg);  color:var(--alert-info-text);  border-color:var(--alert-info-border)}
-.alert-amber {background:var(--alert-warn-bg);  color:var(--alert-warn-text);  border-color:var(--alert-warn-border)}
-.alert-red   {background:var(--alert-red-bg);   color:var(--alert-red-text);   border-color:var(--alert-red-border)}
-.alert-green {background:var(--alert-green-bg); color:var(--alert-green-text); border-color:var(--alert-green-border)}
-.code{font-family:'IBM Plex Mono',monospace;font-size:11.5px;background:var(--code-bg);border:1px solid var(--border);border-radius:6px;padding:12px 14px;color:var(--code-color);line-height:1.65;white-space:pre;overflow-x:auto;margin:8px 0;transition:background .3s,color .3s}
+.alert{padding:10px 14px;font-size:12.5px;line-height:1.6;border-left:3px solid;margin:10px 0}
+.alert-blue{background:var(--alert-info-bg);color:var(--alert-info-text);border-color:var(--alert-info-border)}
+.alert-amber{background:var(--alert-warn-bg);color:var(--alert-warn-text);border-color:var(--alert-warn-border)}
+.alert-red{background:var(--alert-red-bg);color:var(--alert-red-text);border-color:var(--alert-red-border)}
+.alert-green{background:var(--alert-green-bg);color:var(--alert-green-text);border-color:var(--alert-green-border)}
+.code{font-family:'IBM Plex Mono',monospace;font-size:11.5px;background:var(--code-bg);border:1px solid var(--border);border-radius:6px;padding:12px 14px;color:var(--code-color);line-height:1.65;white-space:pre;overflow-x:auto;margin:8px 0}
 .g2{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:8px 0}
 .g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin:8px 0}
-.mini{background:var(--mini-bg);border:1px solid var(--border);border-radius:8px;padding:10px 12px;transition:background .3s}
+.mini{background:var(--mini-bg);border:1px solid var(--border);border-radius:8px;padding:10px 12px}
 .mini.good{background:var(--mini-good-bg);border-color:var(--accent-border)}
-.mini.bad {background:var(--mini-bad-bg); border-color:var(--alert-red-border)}
+.mini.bad{background:var(--mini-bad-bg);border-color:var(--alert-red-border)}
 .mt{font-size:12px;font-weight:600;margin-bottom:4px;color:var(--text)}
 .mini.good .mt{color:var(--mini-good-text)}.mini.bad .mt{color:var(--mini-bad-text)}
 .mb{font-size:12px;color:var(--kv-val-color);line-height:1.5}
-.scenario-box{border:1px solid var(--border);border-radius:8px;padding:12px 14px;margin-bottom:10px;background:var(--scenario-bg);transition:background .3s,border-color .3s}
+.scenario-box{border:1px solid var(--border);border-radius:8px;padding:12px 14px;margin-bottom:10px;background:var(--scenario-bg)}
 .scenario-q{font-size:13px;font-weight:600;color:var(--text);margin-bottom:7px;line-height:1.5}
-.scenario-a{font-size:12.5px;color:var(--kv-val-color);line-height:1.6}
+.scenario-a{font-size:12.5px;color:var(--kv-val-color);line-height:1.6;white-space:pre-line}
 .scenario-a strong{color:var(--accent);font-weight:600}
-
-/* DECISION TABLE */
-.dt{background:var(--dt-bg);border-radius:8px;padding:12px 14px;margin:8px 0;transition:background .3s}
+.dt{background:var(--dt-bg);border-radius:8px;padding:12px 14px;margin:8px 0}
 .dr{display:flex;align-items:center;gap:10px;margin-bottom:7px;font-size:13px}
 .dr:last-child{margin-bottom:0}
 .dq{flex:1;color:var(--dt-q);font-size:12.5px;line-height:1.45}
 .da{font-family:'IBM Plex Mono',monospace;font-weight:600;font-size:11px;white-space:nowrap;padding:3px 10px;border-radius:99px}
-
-/* PIPELINE FLOW */
 .pipe{display:flex;align-items:center;flex-wrap:wrap;gap:4px;margin:10px 0}
-.ps{background:var(--pipe-bg);border:1px solid var(--pipe-border);border-radius:7px;padding:7px 11px;font-size:12px;font-weight:600;color:var(--text);white-space:nowrap;transition:background .3s}
+.ps{background:var(--pipe-bg);border:1px solid var(--pipe-border);border-radius:7px;padding:7px 11px;font-size:12px;font-weight:600;color:var(--text);white-space:nowrap;line-height:1.4}
 .pa{font-size:12px;color:var(--dim);padding:0 2px}
-
-/* OPERATOR ROWS */
-.op-r{display:flex;gap:8px;margin-bottom:7px;align-items:flex-start}
-.op-n{font-family:'IBM Plex Mono',monospace;font-size:11px;background:var(--op-name-bg);color:var(--op-name-color);border-radius:5px;padding:2px 7px;white-space:nowrap;flex-shrink:0;min-width:240px;transition:background .3s}
-.op-d{color:var(--kv-val-color);line-height:1.5;font-size:12.5px}
-
-/* COMPARISON TABLE */
+.ps-sub{font-size:10px;font-weight:400;opacity:.7;display:block}
 .cmp-wrap{overflow-x:auto;margin:10px 0}
 .cmp{width:100%;border-collapse:collapse;font-size:12px}
-.cmp th{padding:7px 10px;text-align:left;font-weight:600;font-size:11px;text-transform:uppercase;letter-spacing:.05em;color:var(--table-head);border-bottom:1px solid var(--border);font-family:'IBM Plex Mono',monospace}
-.cmp td{padding:7px 10px;border-bottom:1px solid var(--table-row-border);vertical-align:top;color:var(--table-td);line-height:1.5;font-size:12px;transition:color .3s,border-color .3s}
+.cmp th{padding:7px 10px;text-align:left;font-weight:600;font-size:10px;text-transform:uppercase;letter-spacing:.08em;color:var(--table-head);border-bottom:1px solid var(--border);font-family:'IBM Plex Mono',monospace}
+.cmp td{padding:7px 10px;border-bottom:1px solid var(--table-row-border);vertical-align:top;color:var(--table-td);line-height:1.5;font-size:12px}
 .cmp td:first-child{font-weight:600;color:var(--text);white-space:nowrap}
 .cmp tr:last-child td{border-bottom:none}
+.op-r{display:flex;gap:8px;margin-bottom:7px;align-items:flex-start}
+.op-n{font-family:'IBM Plex Mono',monospace;font-size:11px;background:var(--op-name-bg);color:var(--op-name-color);border-radius:5px;padding:2px 7px;white-space:nowrap;flex-shrink:0;min-width:240px}
+.op-d{color:var(--kv-val-color);line-height:1.5;font-size:12.5px}
+.divider{height:1px;background:var(--border);margin:14px 0}
+@media(max-width:600px){
+  body{padding:14px 12px}
+  .page-header{flex-direction:column;gap:12px}
+  .header-text h1{font-size:18px}
+  .tab-bar{gap:5px;padding:8px 0}
+  .tab-btn{font-size:10px;padding:4px 9px}
+  .gap-header{padding:11px 13px;gap:8px}
+  .gap-title{font-size:12.5px}
+  .gap-tag{display:none}
+  .gap-body{padding:13px 14px}
+  .kv-row{flex-direction:column;gap:3px}.kv-key{min-width:unset}
+  .g2,.g3{grid-template-columns:1fr}
+  .code{font-size:10.5px;padding:10px 11px}
+}
 
-
-/* ══ NOTES ENGINE ════════════════════════════════════════════════ */
-/* Theme vars */
+/* ══ NOTES ENGINE v3 ══════════════════════════════════════════════ */
 [data-theme="dark"] {
-  --ne-bg: #0d1117; --ne-border: #2a2f3d; --ne-surface: #161920;
-  --ne-surface2: #1e2230; --ne-text: #e8eaf0; --ne-muted: #7a8099;
+  --ne-bg: #0d0f14; --ne-surface: #161920; --ne-surface2: #1e2230;
+  --ne-border: #2a2f3d; --ne-text: #e8eaf0; --ne-muted: #7a8099; --ne-dim: #4a5168;
   --ne-accent: #4dff91; --ne-accent-bg: #091a11; --ne-accent-border: #0f4024;
-  --ne-code-bg: #0a0c10; --ne-code-text: #c8d0e8;
+  --ne-code-bg: #0a0c10; --ne-code-text: #c8d0e8; --ne-code-border: #2a2f3d;
   --ne-toolbar-bg: #1e2230; --ne-toolbar-border: #2a2f3d;
-  --ne-btn-bg: #1e2230; --ne-btn-hover: #252d3a; --ne-btn-active-bg: #091a11;
-  --ne-btn-active-text: #4dff91; --ne-btn-active-border: #0f4024;
-  --ne-img-border: #2a2f3d; --ne-img-bg: #0a0c10;
-  --ne-toggle-icon-bg: #1e2230;
+  --ne-editor-bg: #161920; --ne-editor-border: #2a2f3d;
+  --ne-placeholder: #4a5168;
   --ne-warn-bg: #1a1000; --ne-warn-text: #ffd699; --ne-warn-border: #ffb84d;
   --ne-danger-bg: #1a0a0a; --ne-danger-text: #ffaaaa; --ne-danger-border: #ff4d4d;
-  --ne-settings-overlay: rgba(0,0,0,0.7);
+  --ne-modal-overlay: rgba(0,0,0,0.7);
   --ne-input-bg: #0a0c10; --ne-input-border: #2a2f3d;
-  --ne-github-ok: #4dff91; --ne-github-err: #ff4d4d; --ne-github-syncing: #ffb84d;
+  --ne-gh-ok: #4dff91; --ne-gh-err: #ff4d4d; --ne-gh-busy: #ffb84d;
+  /* note style: Notes */
+  --ns-notes-bg: transparent; --ns-notes-border-l: #4a5168; --ns-notes-border: transparent;
+  /* note style: Code */
+  --ns-code-bg: #0a0c10; --ns-code-border-l: #4dff91; --ns-code-border: #2a2f3d;
+  /* note style: Info */
+  --ns-info-bg: #0c1520; --ns-info-border-l: #4d9fff; --ns-info-border: #1e3a5c;
+  /* style chip */
+  --chip-notes-bg: #1e2230; --chip-notes-text: #9aa0b8; --chip-notes-border: #2a2f3d;
+  --chip-code-bg:  #091a11; --chip-code-text:  #4dff91; --chip-code-border:  #0f4024;
+  --chip-info-bg:  #0c1520; --chip-info-text:  #4d9fff; --chip-info-border:  #1e3a5c;
+  --chip-active-outline: #e8eaf0;
 }
 [data-theme="light"] {
-  --ne-bg: #f7f8f4; --ne-border: #dde0d8; --ne-surface: #ffffff;
-  --ne-surface2: #f0f2ec; --ne-text: #1c1f18; --ne-muted: #5a6052;
+  --ne-bg: #f7f8f4; --ne-surface: #ffffff; --ne-surface2: #f0f2ec;
+  --ne-border: #dde0d8; --ne-text: #1c1f18; --ne-muted: #5a6052; --ne-dim: #9aa090;
   --ne-accent: #1e8a45; --ne-accent-bg: #eaf6ee; --ne-accent-border: #9ed4b2;
-  --ne-code-bg: #f0f2ec; --ne-code-text: #2a3820;
+  --ne-code-bg: #f0f2ec; --ne-code-text: #2a3820; --ne-code-border: #dde0d8;
   --ne-toolbar-bg: #f0f2ec; --ne-toolbar-border: #dde0d8;
-  --ne-btn-bg: #f0f2ec; --ne-btn-hover: #e4e8e0; --ne-btn-active-bg: #eaf6ee;
-  --ne-btn-active-text: #1e8a45; --ne-btn-active-border: #9ed4b2;
-  --ne-img-border: #dde0d8; --ne-img-bg: #f0f2ec;
-  --ne-toggle-icon-bg: #f0f2ec;
+  --ne-editor-bg: #ffffff; --ne-editor-border: #dde0d8;
+  --ne-placeholder: #b0b8a8;
   --ne-warn-bg: #fdf6e8; --ne-warn-text: #7a4400; --ne-warn-border: #c08020;
   --ne-danger-bg: #fdf0f0; --ne-danger-text: #8a2020; --ne-danger-border: #c04040;
-  --ne-settings-overlay: rgba(0,0,0,0.35);
+  --ne-modal-overlay: rgba(0,0,0,0.35);
   --ne-input-bg: #ffffff; --ne-input-border: #dde0d8;
-  --ne-github-ok: #1e8a45; --ne-github-err: #c04040; --ne-github-syncing: #c08020;
+  --ne-gh-ok: #1e8a45; --ne-gh-err: #c04040; --ne-gh-busy: #c08020;
+  /* note style: Notes */
+  --ns-notes-bg: transparent; --ns-notes-border-l: #b0b8a8; --ns-notes-border: transparent;
+  /* note style: Code */
+  --ns-code-bg: #f0f2ec; --ns-code-border-l: #1e8a45; --ns-code-border: #dde0d8;
+  /* note style: Info */
+  --ns-info-bg: #f0f6ff; --ns-info-border-l: #4d9fff; --ns-info-border: #c4d8f5;
+  /* style chip */
+  --chip-notes-bg: #f0f2ec; --chip-notes-text: #5a6052; --chip-notes-border: #dde0d8;
+  --chip-code-bg:  #eaf6ee; --chip-code-text:  #1e8a45; --chip-code-border:  #9ed4b2;
+  --chip-info-bg:  #f0f6ff; --chip-info-text:  #1a5fa8; --chip-info-border:  #c4d8f5;
+  --chip-active-outline: #1c1f18;
 }
 
 /* ── Zone wrapper ── */
@@ -183,82 +190,158 @@ p.prose:last-child{margin-bottom:0}
 .notes-list { display: flex; flex-direction: column; gap: 10px; margin-bottom: 10px; }
 
 /* ── Saved note card ── */
-.note-item {
-  background: var(--ne-accent-bg);
-  border-left: 2px solid var(--ne-accent);
+.note-card {
   border-radius: 0 7px 7px 0;
-  padding: 10px 12px;
+  padding: 10px 13px;
+  font-size: 13px;
+  line-height: 1.65;
+  color: var(--ne-text);
+  border-left: 2px solid;
+  transition: background .2s, border-color .2s;
 }
-.note-item-body { font-size: 12.5px; color: var(--ne-text); line-height: 1.65; }
-/* Rich text rendering inside saved notes */
-.note-item-body strong { font-weight: 700; }
-.note-item-body em { font-style: italic; }
-.note-item-body u  { text-decoration: underline; }
-.note-item-body code {
+.note-card.ns-notes {
+  background: var(--ns-notes-bg);
+  border-left-color: var(--ns-notes-border-l);
+  border-top: 1px solid var(--ns-notes-border);
+  border-right: 1px solid var(--ns-notes-border);
+  border-bottom: 1px solid var(--ns-notes-border);
+}
+.note-card.ns-code {
+  background: var(--ns-code-bg);
+  border-left-color: var(--ns-code-border);
+  border-top: 1px solid var(--ns-code-border);
+  border-right: 1px solid var(--ns-code-border);
+  border-bottom: 1px solid var(--ns-code-border);
+}
+.note-card.ns-info {
+  background: var(--ns-info-bg);
+  border-left-color: var(--ns-info-border);
+  border-top: 1px solid var(--ns-info-border);
+  border-right: 1px solid var(--ns-info-border);
+  border-bottom: 1px solid var(--ns-info-border);
+}
+
+/* ── Rich content inside saved note ── */
+.note-body { outline: none; }
+.note-body b, .note-body strong { font-weight: 700; }
+.note-body i, .note-body em { font-style: italic; }
+.note-body u { text-decoration: underline; }
+.note-body code {
   font-family: 'IBM Plex Mono', monospace; font-size: 11px;
   background: var(--ne-code-bg); color: var(--ne-code-text);
-  border: 1px solid var(--ne-border); border-radius: 4px; padding: 1px 5px;
+  border: 1px solid var(--ne-code-border); border-radius: 4px; padding: 1px 5px;
 }
-.note-item-body pre {
-  font-family: 'IBM Plex Mono', monospace; font-size: 11px;
+.note-body pre {
+  font-family: 'IBM Plex Mono', monospace; font-size: 11.5px;
   background: var(--ne-code-bg); color: var(--ne-code-text);
-  border: 1px solid var(--ne-border); border-radius: 6px;
-  padding: 10px 12px; margin: 6px 0; white-space: pre; overflow-x: auto; line-height: 1.6;
+  border: 1px solid var(--ne-code-border); border-radius: 6px;
+  padding: 10px 12px; margin: 6px 0; white-space: pre-wrap; overflow-x: auto;
 }
-.note-item-body ul { padding-left: 18px; margin: 4px 0; }
-.note-item-body ul li { margin-bottom: 2px; }
-/* Toggle (collapsible) in saved note */
-.note-toggle-wrap { margin: 4px 0; }
-.note-toggle-head {
-  display: flex; align-items: center; gap: 6px;
-  cursor: pointer; font-weight: 600; font-size: 12.5px;
-  user-select: none; padding: 3px 0;
+.note-body ul { padding-left: 18px; margin: 3px 0; }
+.note-body ol { padding-left: 18px; margin: 3px 0; }
+.note-body li { margin-bottom: 2px; }
+
+/* ── Toggle block ── */
+.ne-toggle {
+  margin: 4px 0;
+  border-left: 2px solid var(--ne-border);
+  border-radius: 0 4px 4px 0;
+  overflow: hidden;
 }
-.note-toggle-icon {
-  font-size: 9px; transition: transform .2s; flex-shrink: 0;
-  background: var(--ne-toggle-icon-bg); border-radius: 3px; padding: 2px 4px;
+.ne-toggle-head {
+  display: flex; align-items: center; gap: 7px;
+  padding: 4px 8px; cursor: pointer;
+  font-weight: 600; font-size: 13px; color: var(--ne-text);
+  user-select: none;
+  background: transparent;
+  transition: background .1s;
 }
-.note-toggle-icon.open { transform: rotate(90deg); }
-.note-toggle-body { display: none; padding: 4px 0 4px 18px; }
-.note-toggle-body.open { display: block; }
-/* Images in saved note */
+.ne-toggle-head:hover { background: var(--ne-surface2); }
+.ne-toggle-arrow {
+  font-size: 9px; color: var(--ne-dim);
+  transition: transform .18s; flex-shrink: 0;
+  width: 14px; text-align: center;
+}
+.ne-toggle.open > .ne-toggle-head > .ne-toggle-arrow { transform: rotate(90deg); }
+.ne-toggle-label { flex: 1; }
+.ne-toggle-body {
+  display: none;
+  padding: 4px 8px 6px 29px;
+  font-size: 13px; color: var(--ne-text); line-height: 1.65;
+}
+.ne-toggle.open > .ne-toggle-body { display: block; }
+
+/* ── Images in saved note ── */
 .note-img-zone { margin-top: 8px; display: flex; flex-direction: column; gap: 6px; }
 .note-img-wrap { position: relative; display: inline-block; max-width: 100%; }
 .note-img-wrap img {
   display: block; max-width: 100%; max-height: 300px; object-fit: contain;
-  border-radius: 6px; border: 1px solid var(--ne-img-border); background: var(--ne-img-bg);
-  cursor: zoom-in;
+  border-radius: 6px; border: 1px solid var(--ne-border); cursor: zoom-in;
 }
 .note-img-del {
   position: absolute; top: 4px; right: 4px;
   background: var(--ne-danger-bg); color: var(--ne-danger-text);
-  border: 1px solid var(--ne-danger-border);
-  border-radius: 99px; font-size: 10px; font-family: 'IBM Plex Mono', monospace;
+  border: 1px solid var(--ne-danger-border); border-radius: 99px;
+  font-size: 10px; font-family: 'IBM Plex Mono', monospace;
   padding: 2px 7px; cursor: pointer; opacity: 0; transition: opacity .15s;
 }
 .note-img-wrap:hover .note-img-del { opacity: 1; }
 
-/* Footer (timestamp + actions) */
-.note-item-footer { display: flex; align-items: center; justify-content: space-between; margin-top: 7px; }
-.note-ts { font-family: 'IBM Plex Mono', monospace; font-size: 10px; color: var(--ne-muted); }
-.note-sync-badge {
-  font-family: 'IBM Plex Mono', monospace; font-size: 10px; padding: 1px 6px;
-  border-radius: 99px; border: 1px solid; margin-left: 6px;
+/* ── Note footer ── */
+.note-footer {
+  display: flex; align-items: center; gap: 6px; margin-top: 8px;
+  flex-wrap: wrap;
 }
-.note-sync-ok     { background: var(--ne-accent-bg); color: var(--ne-github-ok);    border-color: var(--ne-accent-border); }
-.note-sync-err    { background: var(--ne-danger-bg);  color: var(--ne-github-err);   border-color: var(--ne-danger-border); }
-.note-sync-saving { background: var(--ne-warn-bg);   color: var(--ne-github-syncing); border-color: var(--ne-warn-border); }
-.note-item-actions { display: flex; gap: 4px; }
+.note-ts {
+  font-family: 'IBM Plex Mono', monospace; font-size: 10px;
+  color: var(--ne-dim); margin-right: auto;
+}
+.note-sync-badge {
+  font-family: 'IBM Plex Mono', monospace; font-size: 10px;
+  padding: 1px 6px; border-radius: 99px; border: 1px solid;
+}
+.nsb-ok  { color: var(--ne-gh-ok);   border-color: var(--ne-accent-border); background: var(--ne-accent-bg); }
+.nsb-err { color: var(--ne-gh-err);  border-color: var(--ne-danger-border);  background: var(--ne-danger-bg); }
+
+/* Style switcher chips on saved note */
+.note-style-switcher { display: flex; gap: 4px; }
+.nss-chip {
+  font-family: 'IBM Plex Mono', monospace; font-size: 10px; font-weight: 600;
+  padding: 2px 8px; border-radius: 99px; border: 1px solid; cursor: pointer;
+  transition: all .15s; outline: none;
+}
+.nss-chip.nsc-notes { background: var(--chip-notes-bg); color: var(--chip-notes-text); border-color: var(--chip-notes-border); }
+.nss-chip.nsc-code  { background: var(--chip-code-bg);  color: var(--chip-code-text);  border-color: var(--chip-code-border);  }
+.nss-chip.nsc-info  { background: var(--chip-info-bg);  color: var(--chip-info-text);  border-color: var(--chip-info-border);  }
+.nss-chip.active    { outline: 2px solid var(--chip-active-outline); outline-offset: 1px; }
+
 .note-action-btn {
-  font-size: 10px; font-family: 'IBM Plex Mono', monospace; padding: 2px 8px;
-  border-radius: 99px; border: 1px solid var(--ne-border); background: transparent;
+  font-size: 10px; font-family: 'IBM Plex Mono', monospace;
+  padding: 2px 8px; border-radius: 99px;
+  border: 1px solid var(--ne-border); background: transparent;
   color: var(--ne-muted); cursor: pointer; transition: all .15s;
 }
 .note-action-btn:hover { background: var(--ne-surface2); color: var(--ne-text); }
 .note-action-btn.del:hover { background: var(--ne-danger-bg); color: var(--ne-danger-text); border-color: var(--ne-danger-border); }
 
 /* ── Editor form ── */
-.note-form { margin-top: 10px; }
+.note-form { margin-top: 10px; display: none; }
+
+/* Style picker row (top of form) */
+.ne-style-picker { display: flex; align-items: center; gap: 6px; margin-bottom: 8px; }
+.ne-style-picker-label {
+  font-family: 'IBM Plex Mono', monospace; font-size: 10px;
+  color: var(--ne-dim); letter-spacing: .06em; text-transform: uppercase;
+}
+.ne-sp-chip {
+  font-family: 'IBM Plex Mono', monospace; font-size: 10px; font-weight: 600;
+  padding: 3px 10px; border-radius: 99px; border: 1px solid; cursor: pointer;
+  transition: all .15s;
+}
+.ne-sp-chip.nsc-notes { background: var(--chip-notes-bg); color: var(--chip-notes-text); border-color: var(--chip-notes-border); }
+.ne-sp-chip.nsc-code  { background: var(--chip-code-bg);  color: var(--chip-code-text);  border-color: var(--chip-code-border);  }
+.ne-sp-chip.nsc-info  { background: var(--chip-info-bg);  color: var(--chip-info-text);  border-color: var(--chip-info-border);  }
+.ne-sp-chip.active    { outline: 2px solid var(--chip-active-outline); outline-offset: 1px; }
 
 /* Toolbar */
 .ne-toolbar {
@@ -270,59 +353,86 @@ p.prose:last-child{margin-bottom:0}
   font-family: 'IBM Plex Mono', monospace; font-size: 11px; font-weight: 600;
   padding: 3px 8px; border-radius: 5px; border: 1px solid transparent;
   background: transparent; color: var(--ne-muted); cursor: pointer;
-  transition: all .12s; line-height: 1.4; white-space: nowrap;
+  transition: all .12s; line-height: 1.4;
 }
-.ne-tb-btn:hover { background: var(--ne-btn-hover); color: var(--ne-text); }
-.ne-tb-btn.active { background: var(--ne-btn-active-bg); color: var(--ne-btn-active-text); border-color: var(--ne-btn-active-border); }
+.ne-tb-btn:hover { background: var(--ne-editor-bg); color: var(--ne-text); }
 .ne-tb-sep { width: 1px; height: 16px; background: var(--ne-toolbar-border); margin: 0 2px; flex-shrink: 0; }
 .ne-tb-img-btn {
   display: inline-flex; align-items: center; gap: 4px;
   font-family: 'IBM Plex Mono', monospace; font-size: 11px;
   padding: 3px 8px; border-radius: 5px; border: 1px solid transparent;
-  background: transparent; color: var(--ne-muted); cursor: pointer;
-  transition: all .12s;
+  background: transparent; color: var(--ne-muted); cursor: pointer; transition: all .12s;
 }
-.ne-tb-img-btn:hover { background: var(--ne-btn-hover); color: var(--ne-text); }
+.ne-tb-img-btn:hover { background: var(--ne-editor-bg); color: var(--ne-text); }
 
-/* Editing area — contenteditable div */
+/* Editor area — contenteditable */
 .ne-editor {
-  width: 100%; min-height: 90px; max-height: 320px; overflow-y: auto;
+  width: 100%; min-height: 90px; max-height: 400px; overflow-y: auto;
   font-size: 13px; font-family: 'IBM Plex Sans', sans-serif;
   line-height: 1.65; padding: 10px 12px;
-  background: var(--ne-input-bg); color: var(--ne-text);
-  border: 1px solid var(--ne-input-border); border-radius: 0 0 7px 7px;
-  outline: none; transition: border-color .15s;
-  white-space: pre-wrap; word-break: break-word;
+  background: var(--ne-editor-bg); color: var(--ne-text);
+  border: 1px solid var(--ne-editor-border); border-radius: 0 0 7px 7px;
+  outline: none; transition: border-color .15s; word-break: break-word;
 }
 .ne-editor:focus { border-color: var(--ne-accent); }
 .ne-editor.drag-over { border-color: var(--ne-accent); background: var(--ne-accent-bg); }
+.ne-editor:empty:before {
+  content: attr(data-placeholder);
+  color: var(--ne-placeholder);
+  pointer-events: none;
+}
+/* Live formatting inside editor */
+.ne-editor b, .ne-editor strong { font-weight: 700; }
+.ne-editor i, .ne-editor em { font-style: italic; }
+.ne-editor u { text-decoration: underline; }
 .ne-editor code {
   font-family: 'IBM Plex Mono', monospace; font-size: 11px;
   background: var(--ne-code-bg); color: var(--ne-code-text);
-  border: 1px solid var(--ne-border); border-radius: 4px; padding: 1px 5px;
+  border: 1px solid var(--ne-code-border); border-radius: 4px; padding: 1px 5px;
 }
 .ne-editor pre {
-  font-family: 'IBM Plex Mono', monospace; font-size: 11px;
+  font-family: 'IBM Plex Mono', monospace; font-size: 11.5px;
   background: var(--ne-code-bg); color: var(--ne-code-text);
-  border: 1px solid var(--ne-border); border-radius: 6px;
-  padding: 10px 12px; margin: 6px 0; white-space: pre; overflow-x: auto;
+  border: 1px solid var(--ne-code-border); border-radius: 6px;
+  padding: 10px 12px; margin: 6px 0; white-space: pre-wrap; overflow-x: auto;
+  outline: none;
 }
-.ne-editor ul { padding-left: 18px; margin: 2px 0; }
-.ne-editor img { max-width: 100%; max-height: 200px; border-radius: 5px; margin: 4px 0; border: 1px solid var(--ne-img-border); display: block; }
-.ne-editor .ne-toggle-wrap { border-left: 2px solid var(--ne-border); padding-left: 8px; margin: 4px 0; }
-.ne-editor .ne-toggle-summary { font-weight: 600; cursor: text; }
+.ne-editor ul, .ne-editor ol { padding-left: 18px; margin: 3px 0; }
+.ne-editor li { margin-bottom: 2px; }
+.ne-editor img {
+  max-width: 100%; max-height: 200px; border-radius: 5px;
+  margin: 4px 0; border: 1px solid var(--ne-border); display: block;
+}
+/* Toggle block inside editor */
+.ne-editor .ne-toggle { margin: 4px 0; border-left: 2px solid var(--ne-border); border-radius: 0 4px 4px 0; }
+.ne-editor .ne-toggle-head {
+  display: flex; align-items: center; gap: 7px;
+  padding: 4px 8px; cursor: pointer; font-weight: 600; font-size: 13px;
+  color: var(--ne-text); user-select: none;
+}
+.ne-editor .ne-toggle-head:hover { background: var(--ne-surface2); }
+.ne-editor .ne-toggle-arrow { font-size: 9px; color: var(--ne-dim); transition: transform .18s; width: 14px; text-align: center; }
+.ne-editor .ne-toggle.open .ne-toggle-arrow { transform: rotate(90deg); }
+.ne-editor .ne-toggle-label { flex: 1; outline: none; }
+.ne-editor .ne-toggle-body {
+  display: none; padding: 4px 8px 6px 29px; outline: none;
+  font-size: 13px; color: var(--ne-text); line-height: 1.65;
+  min-height: 24px;
+}
+.ne-editor .ne-toggle.open .ne-toggle-body { display: block; }
 
-/* Pending images preview */
+/* Pending images thumbnails */
 .ne-pending-imgs { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 6px; }
 .ne-pending-thumb { position: relative; }
-.ne-pending-thumb img { width: 64px; height: 64px; object-fit: cover; border-radius: 5px; border: 1px solid var(--ne-img-border); }
+.ne-pending-thumb img { width: 64px; height: 64px; object-fit: cover; border-radius: 5px; border: 1px solid var(--ne-border); }
 .ne-pending-del {
   position: absolute; top: -4px; right: -4px; width: 16px; height: 16px;
-  background: var(--ne-danger-bg); color: var(--ne-danger-text); border: 1px solid var(--ne-danger-border);
-  border-radius: 50%; font-size: 9px; cursor: pointer; display: flex; align-items: center; justify-content: center;
+  background: var(--ne-danger-bg); color: var(--ne-danger-text);
+  border: 1px solid var(--ne-danger-border); border-radius: 50%;
+  font-size: 9px; cursor: pointer; display: flex; align-items: center; justify-content: center;
 }
 
-/* Form actions */
+/* Form action row */
 .note-form-actions { display: flex; gap: 6px; margin-top: 8px; align-items: center; flex-wrap: wrap; }
 .note-save-btn {
   font-size: 11px; font-family: 'IBM Plex Mono', monospace; padding: 5px 14px;
@@ -330,48 +440,37 @@ p.prose:last-child{margin-bottom:0}
   background: var(--ne-accent-bg); color: var(--ne-accent); cursor: pointer;
   font-weight: 600; transition: all .15s;
 }
-.note-save-btn:hover { background: var(--ne-accent); color: #0d0f14; }
+.note-save-btn:hover { background: var(--ne-accent); color: var(--ne-bg); }
 .note-cancel-btn {
   font-size: 11px; font-family: 'IBM Plex Mono', monospace; padding: 5px 14px;
   border-radius: 99px; border: 1px solid var(--ne-border); background: transparent;
   color: var(--ne-muted); cursor: pointer; transition: all .15s;
 }
 .note-cancel-btn:hover { background: var(--ne-surface2); color: var(--ne-text); }
-.ne-sync-status {
-  font-family: 'IBM Plex Mono', monospace; font-size: 10px;
-  color: var(--ne-muted); margin-left: auto;
-}
-
-/* Warn */
-.note-storage-warn {
-  font-family: 'IBM Plex Mono', monospace; font-size: 10px;
-  color: var(--ne-warn-text); background: var(--ne-warn-bg);
-  border: 1px solid var(--ne-warn-border); border-radius: 6px;
-  padding: 4px 9px; margin-top: 4px; display: none;
-}
-.note-storage-warn.visible { display: block; }
+.ne-sync-status { font-family: 'IBM Plex Mono', monospace; font-size: 10px; color: var(--ne-muted); margin-left: auto; }
 
 /* Add-note trigger */
 .note-add-trigger {
   display: flex; align-items: center; gap: 6px;
   font-family: 'IBM Plex Mono', monospace; font-size: 11px;
-  color: var(--ne-accent-border); cursor: pointer; padding: 4px 0;
+  color: var(--ne-dim); cursor: pointer; padding: 4px 0;
   background: none; border: none; transition: color .15s; letter-spacing: .03em;
 }
 .note-add-trigger:hover { color: var(--ne-accent); }
 
-/* ── Lightbox ── */
+/* Lightbox */
 .ne-lightbox {
-  display: none; position: fixed; inset: 0; background: rgba(0,0,0,.85);
-  z-index: 9999; align-items: center; justify-content: center; cursor: zoom-out;
+  display: none; position: fixed; inset: 0;
+  background: rgba(0,0,0,.85); z-index: 9999;
+  align-items: center; justify-content: center; cursor: zoom-out;
 }
 .ne-lightbox.open { display: flex; }
-.ne-lightbox img { max-width: 92vw; max-height: 90vh; border-radius: 8px; box-shadow: 0 8px 40px rgba(0,0,0,.6); }
+.ne-lightbox img { max-width: 92vw; max-height: 90vh; border-radius: 8px; }
 
-/* ── GitHub Settings Modal ── */
+/* Settings modal */
 .ne-settings-overlay {
   display: none; position: fixed; inset: 0;
-  background: var(--ne-settings-overlay); z-index: 8888;
+  background: var(--ne-modal-overlay); z-index: 8888;
   align-items: center; justify-content: center;
 }
 .ne-settings-overlay.open { display: flex; }
@@ -380,100 +479,21 @@ p.prose:last-child{margin-bottom:0}
   border-radius: 12px; padding: 28px; width: min(480px, 92vw);
   box-shadow: 0 16px 48px rgba(0,0,0,.3);
 }
-.ne-settings-modal h3 {
-  font-size: 16px; font-weight: 600; color: var(--ne-text); margin-bottom: 4px;
-}
-.ne-settings-modal p {
-  font-size: 12.5px; color: var(--ne-muted); margin-bottom: 18px; line-height: 1.6;
-}
+.ne-settings-modal h3 { font-size: 16px; font-weight: 600; color: var(--ne-text); margin-bottom: 6px; }
+.ne-settings-modal p  { font-size: 12.5px; color: var(--ne-muted); margin-bottom: 18px; line-height: 1.6; }
 .ne-field { margin-bottom: 14px; }
 .ne-field label { display: block; font-family: 'IBM Plex Mono', monospace; font-size: 10px; letter-spacing: .1em; text-transform: uppercase; color: var(--ne-muted); margin-bottom: 5px; }
-.ne-field input {
-  width: 100%; font-size: 12.5px; font-family: 'IBM Plex Mono', monospace;
-  padding: 8px 10px; border-radius: 7px;
-  border: 1px solid var(--ne-input-border); background: var(--ne-input-bg);
-  color: var(--ne-text); outline: none; transition: border-color .15s;
-}
+.ne-field input { width: 100%; font-size: 12.5px; font-family: 'IBM Plex Mono', monospace; padding: 8px 10px; border-radius: 7px; border: 1px solid var(--ne-input-border); background: var(--ne-input-bg); color: var(--ne-text); outline: none; transition: border-color .15s; }
 .ne-field input:focus { border-color: var(--ne-accent); }
-.ne-field .ne-hint { font-size: 11px; color: var(--ne-muted); margin-top: 4px; line-height: 1.5; }
-.ne-field .ne-hint a { color: var(--ne-accent); }
-.ne-modal-actions { display: flex; gap: 8px; justify-content: flex-end; margin-top: 20px; }
-.ne-modal-save {
-  font-size: 12px; font-family: 'IBM Plex Mono', monospace; padding: 7px 18px;
-  border-radius: 99px; border: 1px solid var(--ne-accent-border);
-  background: var(--ne-accent-bg); color: var(--ne-accent); cursor: pointer;
-  font-weight: 600; transition: all .15s;
-}
-.ne-modal-save:hover { background: var(--ne-accent); color: #0d0f14; }
-.ne-modal-cancel {
-  font-size: 12px; font-family: 'IBM Plex Mono', monospace; padding: 7px 18px;
-  border-radius: 99px; border: 1px solid var(--ne-border); background: transparent;
-  color: var(--ne-muted); cursor: pointer; transition: all .15s;
-}
+.ne-hint { font-size: 11px; color: var(--ne-muted); margin-top: 4px; line-height: 1.5; }
+.ne-hint a { color: var(--ne-accent); }
+.ne-modal-actions { display: flex; gap: 8px; justify-content: flex-end; margin-top: 20px; align-items: center; }
+.ne-modal-save { font-size: 12px; font-family: 'IBM Plex Mono', monospace; padding: 7px 18px; border-radius: 99px; border: 1px solid var(--ne-accent-border); background: var(--ne-accent-bg); color: var(--ne-accent); cursor: pointer; font-weight: 600; transition: all .15s; }
+.ne-modal-save:hover { background: var(--ne-accent); color: var(--ne-bg); }
+.ne-modal-cancel { font-size: 12px; font-family: 'IBM Plex Mono', monospace; padding: 7px 18px; border-radius: 99px; border: 1px solid var(--ne-border); background: transparent; color: var(--ne-muted); cursor: pointer; transition: all .15s; }
 .ne-modal-cancel:hover { background: var(--ne-surface2); color: var(--ne-text); }
-.ne-modal-status { font-family: 'IBM Plex Mono', monospace; font-size: 11px; color: var(--ne-muted); margin-top: 8px; min-height: 16px; }
-
-/* Settings gear in sidebar */
-.sb-settings-btn {
-  display: flex; align-items: center; gap: 8px; padding: 8px 14px;
-  color: var(--sb-text, #7a8099); font-size: 12px; cursor: pointer;
-  border: none; background: none; width: 100%; text-align: left;
-  border-top: 1px solid var(--sb-border, #1e2230); margin-top: auto;
-  transition: background .12s, color .12s;
-}
-.sb-settings-btn:hover { background: var(--sb-hover, #1a1f2e); color: var(--sb-text-strong, #c0c4d4); }
-.sb-settings-icon { font-size: 13px; flex-shrink: 0; }
-.sb-settings-label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; letter-spacing: .03em; }
-.sidebar.collapsed .sb-settings-label { display: none; }
-/* ══ END NOTES ENGINE ════════════════════════════════════════════ */
-
-/* ══════════════════════════════════════
-   NOTES SYSTEM
-══════════════════════════════════════ */
-.note-zone{margin-top:14px;border-top:1px solid var(--border);padding-top:12px}
-.notes-list{display:flex;flex-direction:column;gap:8px;margin-bottom:8px}
-.note-item{background:var(--note-bg);border-left:2px solid var(--accent);border-radius:0 6px 6px 0;padding:9px 11px;position:relative}
-.note-item-text{font-size:12.5px;color:var(--note-text);line-height:1.6;white-space:pre-wrap;word-break:break-word}
-.note-item-footer{display:flex;align-items:center;justify-content:space-between;margin-top:6px}
-.note-ts{font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--note-ts)}
-.note-item-actions{display:flex;gap:4px}
-.note-action-btn{font-size:10px;font-family:'IBM Plex Mono',monospace;padding:2px 8px;border-radius:99px;border:1px solid var(--border);background:transparent;color:var(--muted);cursor:pointer;transition:all .15s}
-.note-action-btn:hover{background:var(--surface2);color:var(--text)}
-.note-action-btn.del:hover{background:var(--alert-red-bg);color:var(--alert-red-text);border-color:var(--alert-red-border)}
-
-.note-form{margin-top:8px}
-.note-form textarea{width:100%;font-size:12.5px;font-family:'IBM Plex Sans',sans-serif;line-height:1.55;resize:vertical;min-height:68px;padding:8px 10px;border-radius:6px;border:1px solid var(--note-input-border);background:var(--note-input-bg);color:var(--text);transition:background .3s,border-color .3s}
-.note-form textarea:focus{outline:none;border-color:var(--accent)}
-.note-form-actions{display:flex;gap:6px;margin-top:6px}
-.note-save-btn{font-size:11px;font-family:'IBM Plex Mono',monospace;padding:4px 12px;border-radius:99px;border:1px solid var(--accent-border);background:var(--accent-bg);color:var(--accent-text);cursor:pointer;transition:all .15s;font-weight:600}
-.note-save-btn:hover{background:var(--accent);color:var(--num-fg)}
-.note-cancel-btn{font-size:11px;font-family:'IBM Plex Mono',monospace;padding:4px 12px;border-radius:99px;border:1px solid var(--border);background:transparent;color:var(--muted);cursor:pointer;transition:all .15s}
-.note-cancel-btn:hover{background:var(--surface2);color:var(--text)}
-
-.note-add-trigger{display:flex;align-items:center;gap:6px;font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--note-trigger-color);cursor:pointer;padding:4px 0;background:none;border:none;transition:color .15s;letter-spacing:.03em}
-.note-add-trigger:hover{color:var(--note-trigger-hover)}
-.note-add-trigger svg{flex-shrink:0;transition:color .15s}
-
-/* MOBILE */
-@media(max-width:600px){
-  body{padding:14px 12px}
-  .page-header{flex-direction:column;gap:12px}
-  .header-text h1{font-size:18px}
-  .tab-bar{gap:5px;padding:8px 0}
-  .tab-btn{font-size:10px;padding:4px 9px}
-  .gap-header{padding:11px 13px;gap:8px}
-  .gap-title{font-size:12.5px}
-  .gap-tag{display:none}
-  .gap-body{padding:13px 14px}
-  .kv-row{flex-direction:column;gap:3px}
-  .kv-key{min-width:unset}
-  .g2,.g3{grid-template-columns:1fr}
-  .dr{flex-direction:column;align-items:flex-start;gap:4px}
-  .code{font-size:10.5px;padding:10px 11px}
-  .op-n{min-width:unset}
-}
-
-
+.ne-modal-status { font-family: 'IBM Plex Mono', monospace; font-size: 11px; color: var(--ne-muted); margin-right: auto; }
+/* ══ END NOTES ENGINE v3 ══════════════════════════════════════════ */
 
 
 /* ════════════════════════════════════════════════════════
@@ -795,10 +815,11 @@ body.sb-closed { padding-left: var(--sb-w-collapsed) !important; }
   line-height: 1.6;
 }
 
+
 </style>
 </head>
 <body>
-<!-- ═══ SIDEBAR ═══ -->
+
 <div class="sb-overlay" id="sbOverlay" onclick="closeSidebar()"></div>
 <aside class="sidebar" id="sidebar">
   <div class="sb-head">
@@ -973,13 +994,333 @@ body.sb-closed { padding-left: var(--sb-w-collapsed) !important; }
 <div id="tabContent"></div>
 
 <script>
-function toggleTheme(){
-  const h=document.documentElement;
-  h.setAttribute('data-theme',h.getAttribute('data-theme')==='dark'?'light':'dark');
+function toggleTheme() {
+  var h = document.documentElement;
+  var next = h.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+  h.setAttribute('data-theme', next);
+  sessionStorage.setItem('gcp_pde_theme', next);
 }
 
+const TABS = [
 
-/* ════ NOTES ENGINE v2 ════════════════════════════════════════════ */
+{id:'dataproc',label:'Dataproc',freq:'High',topics:[
+{title:'What Dataproc is and the core selection rule',body:`
+<p class="prose">Cloud Dataproc is Google's fully managed Hadoop and Spark service. It provisions clusters of VMs running the open-source ecosystem (Hadoop, Spark, Hive, Pig, Presto) on GCP. The fundamental value proposition is running existing Hadoop and Spark workloads on Google Cloud with minimal code changes.</p>
+<div class="section-label">The core selection rule — memorize this</div>
+<div class="dt">
+<div class="dr"><div class="dq">Existing Spark / PySpark / Scala Spark code</div><div class="da" style="background:#1a1000;color:#ffb84d;border:1px solid #4d3000">→ Dataproc</div></div>
+<div class="dr"><div class="dq">Migrating from on-premises Hadoop cluster</div><div class="da" style="background:#1a1000;color:#ffb84d;border:1px solid #4d3000">→ Dataproc</div></div>
+<div class="dr"><div class="dq">Need Spark MLlib for ML training</div><div class="da" style="background:#1a1000;color:#ffb84d;border:1px solid #4d3000">→ Dataproc</div></div>
+<div class="dr"><div class="dq">Hive queries on a Hive Metastore</div><div class="da" style="background:#1a1000;color:#ffb84d;border:1px solid #4d3000">→ Dataproc</div></div>
+<div class="dr"><div class="dq">Custom OS config, init actions, third-party libraries</div><div class="da" style="background:#1a1000;color:#ffb84d;border:1px solid #4d3000">→ Dataproc</div></div>
+<div class="dr"><div class="dq">Building a NEW pipeline from scratch, no legacy code</div><div class="da" style="background:#091a11;color:#4dff91;border:1px solid #0f4024">→ Dataflow instead</div></div>
+<div class="dr"><div class="dq">Need serverless streaming with windowing</div><div class="da" style="background:#091a11;color:#4dff91;border:1px solid #0f4024">→ Dataflow instead</div></div>
+</div>
+<div class="alert alert-red">The single most-tested Dataproc rule: if a scenario mentions "existing Spark jobs," "existing Hadoop workloads," or "migrating from on-premises Hadoop" — the answer is Dataproc, not Dataflow. Dataflow uses the Apache Beam model, not Spark. New pipelines with no legacy code → Dataflow.</div>`},
+
+{title:'Cluster types, configuration, and the ephemeral pattern',body:`
+<div class="section-label">Cluster types</div>
+<div class="kv-row"><div class="kv-key">Standard cluster</div><div class="kv-val">One master node + N worker nodes. Workers run both YARN NodeManager (compute) and HDFS DataNode (storage). Most common configuration.</div></div>
+<div class="kv-row"><div class="kv-key">High availability (HA)</div><div class="kv-val">Three master nodes instead of one. Master node failure does not bring down the cluster. Required for production workloads that cannot tolerate master failure.</div></div>
+<div class="kv-row"><div class="kv-key">Single-node</div><div class="kv-val">One VM runs both master and worker roles. Development, testing, and small datasets only. Never for production.</div></div>
+<div class="section-label">Worker node types</div>
+<div class="kv-row"><div class="kv-key">Primary workers</div><div class="kv-val">Always present. Run both YARN (compute) and HDFS DataNode (storage). Cannot be preempted.</div></div>
+<div class="kv-row"><div class="kv-key">Secondary workers (preemptible/Spot)</div><div class="kv-val">50–80% cheaper than regular VMs. Can be preempted with 30-second notice. Run YARN compute tasks ONLY — no HDFS DataNode. Storing data on them causes data loss on preemption.</div></div>
+<div class="alert alert-red">Critical exam trap: preemptible/Spot secondary workers do NOT run HDFS DataNode. They run compute (YARN) only. Solution: store ALL data in Cloud Storage (GCS) — then preemptible workers can safely read from GCS and process without data loss risk.</div>
+<div class="section-label">Ephemeral cluster pipeline — the canonical pattern</div>
+<div class="pipe">
+<div class="ps" style="background:#050f1a;color:#4d9fff;border-color:#0f3050">GCS (raw data)</div>
+<div class="pa">→</div>
+<div class="ps" style="background:#1a1000;color:#ffb84d;border-color:#4d3000">Create cluster</div>
+<div class="pa">→</div>
+<div class="ps" style="background:#1a1000;color:#ffb84d;border-color:#4d3000">Submit Spark job</div>
+<div class="pa">→</div>
+<div class="ps" style="background:#1a1000;color:#ffb84d;border-color:#4d3000">Delete cluster<span class="ps-sub">(trigger_rule=all_done)</span></div>
+<div class="pa">→</div>
+<div class="ps" style="background:#050f1a;color:#4d9fff;border-color:#0f3050">GCS (output)</div>
+<div class="pa">→</div>
+<div class="ps" style="background:#050f1a;color:#4d9fff;border-color:#0f3050">BigQuery load</div>
+</div>
+<div class="alert alert-amber">Always set trigger_rule="all_done" on the DataprocDeleteClusterOperator in Composer. Default is all_success — if the Spark job fails, the delete task is skipped and the cluster keeps running, accumulating billing charges.</div>`},
+
+{title:'GCS as Dataproc storage layer + Metastore Service',body:`
+<p class="prose">On Dataproc, the recommended pattern is to store all data in Cloud Storage and use HDFS only for temporary shuffle files during job execution.</p>
+<div class="kv-row"><div class="kv-key">Why GCS over HDFS</div><div class="kv-val">GCS is durable and persists after cluster deletion. HDFS on Dataproc workers is ephemeral — deleted with the cluster. Storing data in GCS enables the ephemeral cluster pattern.</div></div>
+<div class="kv-row"><div class="kv-key">GCS connector</div><div class="kv-val">Dataproc includes the GCS connector. Spark and Hive jobs use gs:// paths directly as if they were hdfs:// paths. Zero code change — just change the path prefix.</div></div>
+<div class="kv-row"><div class="kv-key">HDFS for temp only</div><div class="kv-val">Shuffle data, intermediate results, and temp files can use local HDFS for I/O performance. Final inputs and outputs always go through GCS.</div></div>
+<div class="code"># PySpark reading from GCS
+df = spark.read.parquet("gs://my-bucket/events/year=2024/month=01/")
+df.write.mode("overwrite").parquet("gs://my-bucket/processed/2024-01/")
+
+# Writing directly to BigQuery
+df.write.format("bigquery") \
+  .option("table", "project:dataset.table") \
+  .option("temporaryGcsBucket", "my-temp-bucket") \
+  .save()</div>
+<div class="section-label">Dataproc Metastore Service (DPMS)</div>
+<div class="kv-row"><div class="kv-key">The problem</div><div class="kv-val">Each Dataproc cluster has its own Hive Metastore by default — table schema definitions deleted with the cluster. When using ephemeral clusters, schemas are lost after every job. Multiple teams cannot share schemas.</div></div>
+<div class="kv-row"><div class="kv-key">DPMS solution</div><div class="kv-val">Google's fully managed Hive Metastore service. A persistent, standalone metastore that multiple Dataproc clusters can attach to at startup. Schemas, table definitions, and GCS locations persist independently of any cluster lifecycle.</div></div>
+<div class="alert alert-blue">DPMS exam pattern: "Multiple ephemeral Dataproc clusters need to share Hive table schemas and GCS data locations across jobs without a persistent cluster." Answer: Dataproc Metastore Service. Each ephemeral cluster connects to DPMS at startup — schemas persist across all cluster deletions.</div>`},
+
+{title:'Cost optimization and Serverless Dataproc',body:`
+<div class="kv-row"><div class="kv-key">Preemptible secondary workers</div><div class="kv-val">Add 10–50 preemptible secondary workers for batch processing at 50–80% discount. They run YARN tasks only (no HDFS). If preempted, YARN re-runs the task on a surviving worker.</div></div>
+<div class="kv-row"><div class="kv-key">Autoscaling policies</div><div class="kv-val">Dataproc monitors YARN pending memory and automatically adds or removes workers. Define scale-up and scale-down thresholds, cooldown periods, and max worker counts.</div></div>
+<div class="kv-row"><div class="kv-key">Dataproc Workflow Templates</div><div class="kv-val">Define a DAG of Dataproc operations (create cluster, submit jobs, delete cluster) as a single managed unit. Lighter-weight than Cloud Composer for simple Dataproc-only pipelines.</div></div>
+<div class="alert alert-green">Cost optimization checklist: (1) use ephemeral clusters — biggest saving, (2) store data in GCS not HDFS, (3) add preemptible secondary workers for batch, (4) use autoscaling, (5) right-size VM types for the workload.</div>
+<div class="section-label">Serverless Dataproc</div>
+<div class="cmp-wrap"><table class="cmp">
+<thead><tr><th>Dimension</th><th>Classic Dataproc</th><th>Serverless Dataproc</th><th>Dataflow</th></tr></thead>
+<tbody>
+<tr><td>Cluster management</td><td>You manage create/delete</td><td>None — fully managed</td><td>None — serverless</td></tr>
+<tr><td>Programming model</td><td>Spark / Hive / Hadoop</td><td>Spark (PySpark)</td><td>Apache Beam</td></tr>
+<tr><td>Streaming support</td><td>Spark Streaming</td><td>Limited</td><td>Full streaming</td></tr>
+<tr><td>Custom init actions</td><td>Yes</td><td>No</td><td>No</td></tr>
+<tr><td>Use when</td><td>Existing Spark/Hadoop, custom config</td><td>Spark API, no cluster ops</td><td>New pipelines, Beam</td></tr>
+</tbody>
+</table></div>
+<div class="alert alert-blue">Serverless Dataproc is the answer when: you want Spark's API (not Beam), you don't want to manage cluster lifecycles, and the job is batch (not streaming).</div>`},
+
+{title:'Dataproc exam scenarios',body:`
+<div class="scenario-box"><div class="scenario-q">A company has 3 years of PySpark ETL jobs running on an on-premises Hadoop cluster. They want to move to GCP with minimal code changes. Which service?</div><div class="scenario-a"><strong>Answer: Dataproc.</strong> Existing PySpark code runs on Dataproc with zero or minimal changes. Store data in GCS (gs:// paths replace hdfs:// paths). Use ephemeral clusters per job for cost efficiency.</div></div>
+<div class="scenario-box"><div class="scenario-q">A Dataproc cluster runs a 2-hour Spark job nightly. The cluster sits idle for 22 hours. Monthly cost is $15,000. How do you reduce it?</div><div class="scenario-a"><strong>Answer: Switch to ephemeral cluster pattern.</strong> DataprocCreateCluster → DataprocSubmitJob → DataprocDeleteCluster (trigger_rule="all_done"). Cluster lives only during the ~2-hour job. Cost drops to roughly 2/24 of current cost.</div></div>
+<div class="scenario-box"><div class="scenario-q">Multiple data engineering teams run ephemeral Dataproc clusters for different projects. All teams query the same Hive tables pointing to shared GCS data. Clusters are deleted after each job. How do they share schemas?</div><div class="scenario-a"><strong>Answer: Dataproc Metastore Service (DPMS).</strong> Each ephemeral cluster connects to the shared DPMS instance at startup. Table schemas persist independently of cluster lifecycles.</div></div>
+<div class="scenario-box"><div class="scenario-q">A Dataproc job is slow. The team adds 30 secondary preemptible workers. Three hours in, many tasks fail because preemptible workers were reclaimed and HDFS data was lost. What went wrong?</div><div class="scenario-a"><strong>Answer: Data was stored on HDFS on the preemptible workers.</strong> Preemptible workers do not run HDFS DataNode. Fix: move all data to Cloud Storage.</div></div>`}
+]},
+
+{id:'datafusion',label:'Cloud Data Fusion',freq:'Medium',topics:[
+{title:'Cloud Data Fusion — visual ETL for non-engineers',body:`
+<p class="prose">Cloud Data Fusion is a fully managed, cloud-native, enterprise data integration service built on the open-source CDAP framework. It provides a visual, drag-and-drop interface for building ETL/ELT pipelines — no coding required. Pipelines are translated into Apache Spark jobs that run on Dataproc.</p>
+<div class="section-label">Key capabilities</div>
+<div class="kv-row"><div class="kv-key">Visual pipeline builder</div><div class="kv-val">Drag-and-drop nodes (sources, transformations, sinks) connected by data flow edges. Non-engineers can build production pipelines. Business analysts and data engineers share the same tool.</div></div>
+<div class="kv-row"><div class="kv-key">Pre-built connectors</div><div class="kv-val">100+ pre-built connectors for databases (MySQL, Oracle, SQL Server, PostgreSQL), SaaS apps (Salesforce, ServiceNow, SAP), cloud storage (GCS, S3), BigQuery, Pub/Sub, Kafka, and more.</div></div>
+<div class="kv-row"><div class="kv-key">Wrangler (data prep)</div><div class="kv-val">Interactive UI for exploring, cleaning, and transforming data. Point-and-click transformations generate transformation code. Sample data shown in real time as you apply transformations.</div></div>
+<div class="kv-row"><div class="kv-key">Execution engine</div><div class="kv-val">Data Fusion pipelines run as Apache Spark jobs on a managed Dataproc cluster provisioned by Data Fusion. You don't manage the underlying Dataproc cluster — Data Fusion handles it.</div></div>
+<div class="section-label">Data Fusion editions</div>
+<div class="g3">
+<div class="mini"><div class="mt">Developer</div><div class="mb">Lowest cost. Single user. No SLA. Development and testing only.</div></div>
+<div class="mini"><div class="mt">Basic</div><div class="mb">Small teams. Limited pipelines. No advanced features (streaming, preview).</div></div>
+<div class="mini"><div class="mt">Enterprise</div><div class="mb">Full feature set: streaming pipelines, pipeline preview, metadata management, advanced security, SLA.</div></div>
+</div>
+<div class="alert alert-blue">Data Fusion exam keyword: "visual ETL," "drag-and-drop pipeline builder," "no-code data integration," "business analysts building pipelines," "pre-built connectors to SaaS systems." Any of these → Cloud Data Fusion.</div>
+<div class="section-label">Data Fusion vs Dataflow vs Dataproc</div>
+<div class="kv-row"><div class="kv-key">Data Fusion</div><div class="kv-val">Visual/no-code ETL. Non-engineers. Pre-built connectors. Runs on Dataproc under the hood.</div></div>
+<div class="kv-row"><div class="kv-key">Dataflow</div><div class="kv-val">Code-based (Apache Beam). Engineers. New streaming or batch pipelines. Complex custom logic. Serverless.</div></div>
+<div class="kv-row"><div class="kv-key">Dataproc</div><div class="kv-val">Existing Spark/Hadoop code. Engineers. Lift-and-shift. Full control of Spark configuration.</div></div>`}
+]},
+
+{id:'dataform',label:'Dataform',freq:'Medium',topics:[
+{title:'What Dataform is and how it works',body:`
+<p class="prose">Dataform is a managed service for developing, testing, versioning, and deploying SQL-based data transformation workflows in BigQuery. It is built on the open-source SQLX framework and provides software engineering best practices for SQL — version control, dependency management, testing, and documentation.</p>
+<div class="section-label">Core concepts</div>
+<div class="kv-row"><div class="kv-key">SQLX files</div><div class="kv-val">A .sqlx file contains a config block (table type, description, tags) and a SQL SELECT statement. Dataform compiles these into BigQuery DDL/DML statements.</div></div>
+<div class="kv-row"><div class="kv-key">ref() function</div><div class="kv-val">Reference another table using ${'{'}ref('table_name'){'}'}. Dataform automatically resolves the full BigQuery path and builds a dependency graph. This is how Dataform knows the execution order.</div></div>
+<div class="kv-row"><div class="kv-key">Table types</div><div class="kv-val">table (truncate and recreate), view (no data stored), incremental (append only new rows), assertion (data quality test that fails if rows returned).</div></div>
+<div class="code">-- Example SQLX file
+config {
+  type: "incremental",
+  assertions: { nonNull: ["order_date", "total_revenue"] }
+}
+SELECT DATE(o.created_at) AS order_date, SUM(o.amount) AS total_revenue
+FROM ${'{'}ref('raw_orders'){'}'} o
+WHERE o.status = 'completed'</div>
+<div class="section-label">Assertions and version control</div>
+<div class="kv-row"><div class="kv-key">nonNull / uniqueKey / rowConditions</div><div class="kv-val">Built-in assertion types. Fail the workflow if nulls, duplicates, or invalid values are found. Run automatically with each workflow execution.</div></div>
+<div class="kv-row"><div class="kv-key">Git integration</div><div class="kv-val">Dataform workspaces are backed by Git repositories (GitHub, GitLab, Bitbucket, or Cloud Source Repositories). Full PR review workflow before deploying to production.</div></div>
+<div class="alert alert-blue">Dataform keyword checklist: "SQL-based transformations in BigQuery," "version control for SQL," "data quality assertions on BigQuery tables," "dependency management between SQL transformations," "dbt-like workflow on GCP." Any of these → Dataform.</div>
+<div class="section-label">Dataform vs alternatives</div>
+<div class="kv-row"><div class="kv-key">vs BQ Scheduled Queries</div><div class="kv-val">Scheduled Queries: simple single SQL jobs on a schedule. No dependency management, no testing, no version control. Use Dataform when you have many interconnected SQL transformations.</div></div>
+<div class="kv-row"><div class="kv-key">vs Cloud Composer</div><div class="kv-val">Dataform manages dependencies between SQL transformations within a project. Composer orchestrates multi-service pipelines. Use both together — Composer triggers Dataform workflow executions as one step in a larger pipeline.</div></div>`}
+]},
+
+{id:'datastream',label:'Datastream',freq:'Medium',topics:[
+{title:'Datastream — change data capture (CDC)',body:`
+<p class="prose">Datastream is a serverless change data capture (CDC) and replication service. It streams changes from operational databases (MySQL, PostgreSQL, Oracle, SQL Server) into Google Cloud in real time — enabling data to flow from OLTP systems into BigQuery, GCS, or Spanner without manual ETL jobs.</p>
+<div class="kv-row"><div class="kv-key">CDC from operational databases</div><div class="kv-val">Reads the database transaction log (binlog for MySQL, WAL for PostgreSQL, redo log for Oracle) and streams every INSERT, UPDATE, and DELETE as an event. Near-zero latency — changes replicate in seconds.</div></div>
+<div class="kv-row"><div class="kv-key">Supported sources</div><div class="kv-val">MySQL, PostgreSQL, Oracle, SQL Server (Cloud SQL, AlloyDB, on-premises, or other clouds). Initial backfill + ongoing CDC from a single configuration.</div></div>
+<div class="kv-row"><div class="kv-key">Supported destinations</div><div class="kv-val">BigQuery (direct streaming with automatic schema updates), Cloud Storage (as Avro or JSON files), Cloud Spanner (as a replication target).</div></div>
+<div class="kv-row"><div class="kv-key">Schema evolution handling</div><div class="kv-val">When the source schema changes (new column added), Datastream detects the change and automatically updates the BigQuery schema. No manual intervention required.</div></div>
+<div class="kv-row"><div class="kv-key">Merge mode (BigQuery destination)</div><div class="kv-val">Datastream can write in append-only mode or merge mode (apply UPDATEs and DELETEs to maintain current state). Merge mode creates a BigQuery table that mirrors the operational database's current state.</div></div>
+<div class="pipe">
+<div class="ps" style="background:#091a11;color:#4dff91;border-color:#0f4024">MySQL / PostgreSQL<span class="ps-sub">(operational DB)</span></div>
+<div class="pa">→</div>
+<div class="ps" style="background:#050f1a;color:#4d9fff;border-color:#0f3050">Datastream<span class="ps-sub">(CDC replication)</span></div>
+<div class="pa">→</div>
+<div class="ps" style="background:#100a1a;color:#b84dff;border-color:#3d1550">BigQuery<span class="ps-sub">(analytics)</span></div>
+</div>
+<div class="alert alert-blue">Datastream exam keyword: "real-time replication from MySQL/PostgreSQL to BigQuery," "CDC pipeline," "operational database to data warehouse sync," "change data capture," "stream database changes to BigQuery." Any of these → Datastream. Datastream is GCP's native CDC service — the alternative to building your own Debezium + Kafka + Dataflow pipeline.</div>`}
+]},
+
+{id:'composer',label:'Cloud Composer',freq:'High',topics:[
+{title:'What Cloud Composer is — and when NOT to use it',body:`
+<p class="prose">Cloud Composer is Google's fully managed Apache Airflow service. It orchestrates multi-service, multi-step data pipelines with complex dependencies, branching, retries, and SLA monitoring. The key exam skill is knowing when Composer is the right choice vs simpler alternatives.</p>
+<div class="section-label">Use Composer when</div>
+<div class="kv-row"><div class="kv-key">Multi-step, multi-service workflows</div><div class="kv-val">Run a Dataproc job, wait for it, load output to BigQuery, run a Dataform workflow, send a notification — this cross-service DAG is exactly what Composer handles.</div></div>
+<div class="kv-row"><div class="kv-key">Complex scheduling logic</div><div class="kv-val">Run only on business days, skip weekends, retry 3 times with exponential backoff — cron alone cannot express this.</div></div>
+<div class="section-label">Do NOT use Composer when</div>
+<div class="dt">
+<div class="dr"><div class="dq">Single recurring SQL aggregation</div><div class="da" style="background:#091a11;color:#4dff91;border:1px solid #0f4024">→ BQ Scheduled Query</div></div>
+<div class="dr"><div class="dq">Schedule a single Dataflow job</div><div class="da" style="background:#091a11;color:#4dff91;border:1px solid #0f4024">→ Cloud Scheduler + template</div></div>
+<div class="dr"><div class="dq">Simple event → trigger action</div><div class="da" style="background:#091a11;color:#4dff91;border:1px solid #0f4024">→ Cloud Functions / Eventarc</div></div>
+<div class="dr"><div class="dq">Simple Dataproc-only workflow</div><div class="da" style="background:#091a11;color:#4dff91;border:1px solid #0f4024">→ Dataproc Workflow Templates</div></div>
+</div>
+<div class="alert alert-amber">Composer is expensive (minimum cost = GKE cluster + Cloud SQL). It has idle infrastructure cost even when no DAGs are running. The exam tests whether you can recognize when simpler tools are sufficient.</div>`},
+
+{title:'DAG structure, critical parameters, and Jinja templating',body:`
+<div class="code">from airflow import DAG
+from airflow.providers.google.cloud.operators.dataproc import (
+    DataprocCreateClusterOperator, DataprocSubmitJobOperator,
+    DataprocDeleteClusterOperator
+)
+from datetime import datetime, timedelta
+
+with DAG(
+    dag_id='daily_etl',
+    schedule_interval='0 2 * * *',
+    start_date=datetime(2024, 1, 1),
+    catchup=False,                   # IMPORTANT: don't backfill
+    max_active_runs=1,
+) as dag:
+    create = DataprocCreateClusterOperator(task_id='create_cluster', ...)
+    run    = DataprocSubmitJobOperator(task_id='run_spark', ...)
+    delete = DataprocDeleteClusterOperator(
+        task_id='delete_cluster',
+        trigger_rule='all_done',    # CRITICAL: runs even if job fails
+    )
+    create >> run >> delete</div>
+<div class="section-label">Critical DAG parameters</div>
+<div class="kv-row"><div class="kv-key">catchup=False</div><div class="kv-val">ALWAYS set in production. If catchup=True and start_date is 6 months ago, activating the DAG schedules ~180 immediate backfill runs, overwhelming workers.</div></div>
+<div class="kv-row"><div class="kv-key">max_active_runs=1</div><div class="kv-val">Prevents overlapping runs for daily ETL pipelines that cannot safely run concurrently.</div></div>
+<div class="kv-row"><div class="kv-key">depends_on_past</div><div class="kv-val">If True, a task instance will not run until the same task in the previous DAG run succeeded. Use for sequential incremental processing.</div></div>
+<div class="section-label">Jinja templating macros</div>
+<div class="kv-row"><div class="kv-key">&#123;&#123; ds &#125;&#125;</div><div class="kv-val">Execution date as YYYY-MM-DD. This is the DATE of the schedule interval being processed, NOT the current date.</div></div>
+<div class="kv-row"><div class="kv-key">&#123;&#123; ds_nodash &#125;&#125;</div><div class="kv-val">Execution date as YYYYMMDD. Used in BigQuery partition decorators like events$&#123;&#123; ds_nodash &#125;&#125;.</div></div>
+<div class="alert alert-amber">&#123;&#123; ds &#125;&#125; trap: it is the execution_date formatted as YYYY-MM-DD — NOT today's date. For a daily DAG triggered on Jan 16, execution_date = Jan 15. A DAG run triggered "today" processes "yesterday's" data interval. This off-by-one is a classic exam question.</div>`},
+
+{title:'GCP operators — the ones the exam tests',body:`
+<div class="section-label">BigQuery operators</div>
+<div class="op-r"><div class="op-n">BigQueryInsertJobOperator</div><div class="op-d">Modern universal BQ operator. Runs any BQ job: query, load, extract, copy. Replaces all older BQ operators.</div></div>
+<div class="op-r"><div class="op-n">BigQueryCheckOperator</div><div class="op-d">Runs a query. FAILS the task if result is falsy (zero, empty, null). Use as a data quality gate.</div></div>
+<div class="op-r"><div class="op-n">BigQueryIntervalCheckOperator</div><div class="op-d">Compares a metric between two date intervals. "Today's row count should not deviate more than 20% from yesterday." Detects anomalies in recurring loads.</div></div>
+<div class="op-r"><div class="op-n">GCSToBigQueryOperator</div><div class="op-d">Loads files from GCS into a BigQuery table. Specify format, schema, write disposition.</div></div>
+<div class="section-label">Dataproc operators</div>
+<div class="op-r"><div class="op-n">DataprocCreateClusterOperator</div><div class="op-d">Creates a Dataproc cluster. First step of ephemeral cluster pattern.</div></div>
+<div class="op-r"><div class="op-n">DataprocSubmitJobOperator</div><div class="op-d">Submits a Spark, PySpark, Hive, Pig, or Hadoop job to an existing cluster.</div></div>
+<div class="op-r"><div class="op-n">DataprocDeleteClusterOperator</div><div class="op-d">Deletes a Dataproc cluster. ALWAYS use trigger_rule="all_done" so it runs even if the Spark job fails.</div></div>
+<div class="section-label">Sensor operators</div>
+<div class="op-r"><div class="op-n">GCSObjectExistenceSensor</div><div class="op-d">Waits until a specific GCS object exists before proceeding. Use mode="reschedule" for waits longer than ~5 minutes to avoid holding worker slots.</div></div>
+<div class="op-r"><div class="op-n">ExternalTaskSensor</div><div class="op-d">Waits for a task in ANOTHER DAG to complete. Enables cross-DAG dependencies without merging the DAGs.</div></div>
+<div class="section-label">Trigger rules and XComs</div>
+<div class="kv-row"><div class="kv-key">all_done</div><div class="kv-val">Runs when ALL upstream tasks have finished, regardless of state. Use for cleanup tasks: DataprocDeleteCluster, temp file deletion.</div></div>
+<div class="kv-row"><div class="kv-key">one_failed</div><div class="kv-val">Runs as soon as ONE upstream task fails. Use for immediate failure notification or rollback tasks.</div></div>
+<div class="kv-row"><div class="kv-key">XCom size limit</div><div class="kv-val">XComs are stored in Cloud SQL. Only use for small values: strings, integers, short JSON. NEVER for DataFrames or large objects. Large data → GCS. XCom only the file path.</div></div>
+<div class="section-label">Sensor poke vs reschedule mode</div>
+<div class="g2">
+<div class="mini bad"><div class="mt">Poke mode — avoid for long waits</div><div class="mb">Sensor holds the worker slot continuously while polling. If 50 sensors wait in poke mode for hours, 50 workers are consumed doing nothing.</div></div>
+<div class="mini good"><div class="mt">Reschedule mode — always use for long waits</div><div class="mb">Sensor releases the worker slot between polls. Worker freed for other tasks during the wait interval. Use mode="reschedule" for any wait &gt; 5 minutes.</div></div>
+</div>
+<div class="kv-row"><div class="kv-key">Composer 2 (recommended)</div><div class="kv-val">GKE Autopilot. Workers scale to zero when idle — no idle worker cost. Workload Identity (no key file management). Always prefer Composer 2 for new environments.</div></div>`},
+
+{title:'Composer exam scenarios',body:`
+<div class="scenario-box"><div class="scenario-q">A pipeline must: (1) run a Spark job on Dataproc, (2) load output to BigQuery, (3) run a data quality check, (4) if check fails → send alert; if it passes → trigger a Dataflow pipeline.</div><div class="scenario-a"><strong>Answer: Cloud Composer.</strong> Multi-step, multi-service, branching workflow. Use DataprocSubmitJobOperator → GCSToBigQueryOperator → BigQueryCheckOperator → BranchPythonOperator → (DataflowStartFlexTemplateOperator or alert task).</div></div>
+<div class="scenario-box"><div class="scenario-q">A DAG was deployed with start_date 6 months ago and catchup=True. On activation, the Composer environment became overloaded with hundreds of queued runs. Why and how do you fix?</div><div class="scenario-a"><strong>Answer: catchup=True triggers backfill.</strong> For a daily DAG with 6-month-old start_date, ~180 runs are immediately queued. Fix: set catchup=False and set start_date to a recent date.</div></div>
+<div class="scenario-box"><div class="scenario-q">A Dataproc cluster is still running and billing after the Spark job failed in a Composer DAG. Why?</div><div class="scenario-a"><strong>Answer: DataprocDeleteClusterOperator has trigger_rule="all_success" (default).</strong> When the Spark job failed, the delete task was skipped. Fix: set trigger_rule="all_done" on the delete operator.</div></div>
+<div class="scenario-box"><div class="scenario-q">50 GCSObjectExistenceSensors are all in poke mode, waiting for partner file deliveries. All worker slots are consumed and other pipeline tasks are stuck. Fix?</div><div class="scenario-a"><strong>Answer: Switch all sensors to mode="reschedule".</strong> Reschedule mode releases the worker slot between polling intervals — the worker is freed for other tasks during the wait.</div></div>`}
+]},
+
+{id:'dataplex',label:'Dataplex',freq:'Medium',topics:[
+{title:'Dataplex — intelligent data lake management',body:`
+<p class="prose">Dataplex is an intelligent data fabric that enables organizations to centrally discover, manage, monitor, and govern distributed data across data lakes, data warehouses, and data marts — without moving or duplicating the data.</p>
+<div class="kv-row"><div class="kv-key">Lake</div><div class="kv-val">The top-level organizational unit. Represents a business domain (e.g., "Marketing Lake," "Finance Lake"). A lake spans data across GCS buckets and BigQuery datasets within a GCP project or organization.</div></div>
+<div class="kv-row"><div class="kv-key">Zone</div><div class="kv-val">A classification within a lake. Two types: Raw zone (unprocessed landing data, flexible schema) and Curated zone (processed, governed data with enforced schemas). Zones map to GCS buckets or BigQuery datasets.</div></div>
+<div class="kv-row"><div class="kv-key">Asset</div><div class="kv-val">A reference to an actual data resource — a GCS bucket, a GCS folder, or a BigQuery dataset. Assets are attached to zones. Dataplex discovers and catalogs all data within attached assets.</div></div>
+<div class="kv-row"><div class="kv-key">Auto-discovery</div><div class="kv-val">Dataplex automatically discovers data files in GCS, infers schemas from Parquet/Avro/ORC/CSV, detects partitioning structure, and registers discovered tables in the Data Catalog.</div></div>
+<div class="kv-row"><div class="kv-key">Data quality tasks</div><div class="kv-val">Dataplex can run automated data quality checks (completeness, uniqueness, validity, freshness) on GCS and BigQuery data. Results published to BigQuery for monitoring and alerting.</div></div>
+<div class="kv-row"><div class="kv-key">Data lineage</div><div class="kv-val">Dataplex tracks how data flows between systems — where data came from and where it goes. Lineage is captured automatically for BigQuery jobs and Dataflow pipelines.</div></div>
+<div class="alert alert-blue">Dataplex keyword checklist: "data mesh," "centralized governance across data lake and warehouse," "auto-discovery of GCS data," "data quality checks across GCS and BigQuery," "data lineage tracking," "raw vs curated zones." Any of these → Dataplex.</div>
+<div class="section-label">Zone-level IAM</div>
+<div class="kv-row"><div class="kv-key">Zone-level IAM</div><div class="kv-val">Grant IAM roles at the Dataplex zone level — permissions are automatically propagated to all assets (GCS buckets and BigQuery datasets) within the zone. Manage access for an entire zone rather than each individual resource.</div></div>
+<div class="alert alert-green">Dataplex data quality vs Dataform assertions: Dataform assertions run during SQL transformation workflows inside BigQuery. Dataplex data quality rules run on-schedule across GCS files and BigQuery tables independently of any transformation pipeline. Use Dataplex for ongoing data health monitoring; use Dataform assertions for pipeline-time validation.</div>`}
+]},
+
+{id:'datacatalog',label:'Data Catalog',freq:'Medium',topics:[
+{title:'Data Catalog — metadata and discoverability',body:`
+<p class="prose">Cloud Data Catalog is a fully managed, scalable metadata management and data discovery service. It enables organizations to find, understand, and manage data assets across GCP services.</p>
+<div class="kv-row"><div class="kv-key">Automatic metadata ingestion</div><div class="kv-val">Data Catalog automatically syncs technical metadata from BigQuery (tables, columns, schemas, statistics), Pub/Sub (topics, subscriptions), Dataflow (pipeline metadata), and Dataplex assets. No manual entry required for GCP-native resources.</div></div>
+<div class="kv-row"><div class="kv-key">Search</div><div class="kv-val">Full-text search across all cataloged assets — search by table name, column name, description, or tag value. Respects IAM — search results only show assets the user has permission to access.</div></div>
+<div class="kv-row"><div class="kv-key">Tag templates</div><div class="kv-val">Define structured metadata schemas and attach instances (tags) to any cataloged asset. Example: a "PII" tag template with fields: pii_type, data_owner, retention_period. Tags are searchable and can drive automated governance actions.</div></div>
+<div class="kv-row"><div class="kv-key">Policy tags (column-level security)</div><div class="kv-val">Data Catalog's Policy Tag Manager is where you create taxonomies and policy tags that are applied to BigQuery columns for column-level security.</div></div>
+<div class="section-label">Policy tags for BigQuery column security</div>
+<div class="kv-row"><div class="kv-key">Step 1: Create taxonomy</div><div class="kv-val">In Data Catalog Policy Tag Manager, create a taxonomy (e.g., "Sensitivity") with policy tags (e.g., "PII-SSN", "PII-CreditCard", "Confidential").</div></div>
+<div class="kv-row"><div class="kv-key">Step 2: Apply to columns</div><div class="kv-val">Attach policy tags to specific BigQuery table columns. Can be done in the BigQuery UI, via the BQ API, or in DDL schema definitions.</div></div>
+<div class="kv-row"><div class="kv-key">Step 3: Grant access</div><div class="kv-val">Grant roles/datacatalog.categoryFineGrainedReader on the specific policy tag to users/groups who should see that column. Users without this role get a hard ACCESS DENIED error — not NULL, an error.</div></div>
+<div class="alert alert-red">Column security enforcement: policy tags return an ACCESS DENIED error — they do NOT return NULL or masked values. If the scenario requires data masking, use BigQuery's managed data masking rules or pre-process the data with Cloud DLP before storing it.</div>`}
+]},
+
+{id:'dlp',label:'Cloud DLP',freq:'Medium',topics:[
+{title:'Cloud DLP — sensitive data discovery and de-identification',body:`
+<p class="prose">Cloud Data Loss Prevention (Cloud DLP) is a fully managed service for discovering, classifying, and de-identifying sensitive data. It scans data in BigQuery, Cloud Storage, and Datastore/Firestore to detect PII, financial data, health information, and credentials.</p>
+<div class="section-label">InfoTypes — what DLP can detect</div>
+<div class="kv-row"><div class="kv-key">PII</div><div class="kv-val">Social Security Numbers, passport numbers, driver's license numbers, names, email addresses, phone numbers, physical addresses.</div></div>
+<div class="kv-row"><div class="kv-key">Financial</div><div class="kv-val">Credit card numbers, bank account numbers, IBAN, SWIFT codes.</div></div>
+<div class="kv-row"><div class="kv-key">Credentials</div><div class="kv-val">API keys, authentication tokens, passwords embedded in data files or source code.</div></div>
+<div class="section-label">De-identification transformations</div>
+<div class="kv-row"><div class="kv-key">Masking (character masking)</div><div class="kv-val">Replace sensitive characters with a mask character. E.g., SSN "123-45-6789" → "XXX-XX-6789". Configurable: mask all, or preserve last N digits.</div></div>
+<div class="kv-row"><div class="kv-key">Tokenization (format-preserving encryption)</div><div class="kv-val">Replace sensitive value with a surrogate token that preserves the format. Re-identification is possible if you hold the key.</div></div>
+<div class="kv-row"><div class="kv-key">Pseudonymization</div><div class="kv-val">Replace sensitive value with a deterministic hash or encryption. Same input always maps to the same output — enables cross-table joins on pseudonymized keys without exposing raw PII.</div></div>
+<div class="kv-row"><div class="kv-key">Generalization (bucketing)</div><div class="kv-val">Replace a specific value with a range. Age 34 → "30-40". ZIP code "94103" → "94XXX". Reduces precision to protect privacy while preserving statistical utility.</div></div>
+<div class="kv-row"><div class="kv-key">Date shifting</div><div class="kv-val">Shift dates by a random number of days (consistent per individual within a dataset). Preserves relative temporal relationships while obscuring absolute dates. Common for healthcare data.</div></div>
+<div class="section-label">DLP inspection job types</div>
+<div class="kv-row"><div class="kv-key">BigQuery inspection</div><div class="kv-val">Scan BigQuery tables to find columns containing sensitive data. Useful for discovering where PII lives across a data warehouse.</div></div>
+<div class="kv-row"><div class="kv-key">Cloud Storage inspection</div><div class="kv-val">Scan GCS files (CSV, JSON, text, PDF, images) for sensitive data. Detect PII in raw landing files before they are processed.</div></div>
+<div class="kv-row"><div class="kv-key">Streaming inspection via Dataflow</div><div class="kv-val">Embed DLP inspection in a Dataflow pipeline. Inspect each message/record in real time, de-identify on-the-fly, and route to different sinks.</div></div>
+<div class="alert alert-blue">DLP in a streaming pipeline exam pattern: "A Dataflow pipeline ingests customer data from Pub/Sub. PII must be removed before the data reaches BigQuery." Answer: integrate Cloud DLP inspection and de-identification as a Dataflow transform step. Inspect each record, apply masking/tokenization to detected PII fields, then write cleaned records to BigQuery.</div>`}
+]},
+
+{id:'analyticshub',label:'Analytics Hub',freq:'Low',topics:[
+{title:'Analytics Hub — data sharing across organizations',body:`
+<p class="prose">Analytics Hub is a data exchange platform that enables organizations to securely share BigQuery datasets — both within an organization and with external subscribers — without copying or moving the underlying data.</p>
+<div class="kv-row"><div class="kv-key">Data exchange</div><div class="kv-val">A container for data listings. Can be private (within organization/VPC-SC perimeter) or public (discoverable by anyone).</div></div>
+<div class="kv-row"><div class="kv-key">Listing</div><div class="kv-val">A published dataset or subset within an exchange. Publishers create listings pointing to BigQuery datasets. Include description, documentation, and access terms.</div></div>
+<div class="kv-row"><div class="kv-key">Linked dataset (subscriber)</div><div class="kv-val">When a subscriber subscribes to a listing, they get a linked BigQuery dataset in their own project. The linked dataset is a read-only view of the publisher's data — it always reflects the latest data without any copy. Zero data egress cost.</div></div>
+<div class="kv-row"><div class="kv-key">No data copying</div><div class="kv-val">The publisher's BigQuery data is shared in-place. Subscribers always see the current data. No storage cost for copies. No ETL pipelines to keep copies in sync.</div></div>
+<div class="alert alert-blue">Analytics Hub keyword checklist: "share BigQuery datasets without copying," "data exchange between organizations," "subscribe to external datasets in BigQuery," "data marketplace," "cross-organization data sharing." Any of these → Analytics Hub.</div>`}
+]},
+
+{id:'decision',label:'Decision Reference',freq:'Review',topics:[
+{title:'Pipeline processing and orchestration decision reference',body:`
+<div class="section-label">Pipeline processing services</div>
+<div class="kv-row"><div class="kv-key">Existing Spark/Hadoop code</div><div class="kv-val">→ Dataproc (classic)</div></div>
+<div class="kv-row"><div class="kv-key">New pipeline, no legacy code, serverless</div><div class="kv-val">→ Dataflow (Apache Beam)</div></div>
+<div class="kv-row"><div class="kv-key">Spark API, no cluster management</div><div class="kv-val">→ Serverless Dataproc</div></div>
+<div class="kv-row"><div class="kv-key">Visual/no-code ETL, pre-built connectors</div><div class="kv-val">→ Cloud Data Fusion</div></div>
+<div class="kv-row"><div class="kv-key">SQL transformations in BigQuery with dependencies and testing</div><div class="kv-val">→ Dataform</div></div>
+<div class="section-label">Orchestration services</div>
+<div class="kv-row"><div class="kv-key">Multi-step, multi-service complex pipeline</div><div class="kv-val">→ Cloud Composer (Airflow)</div></div>
+<div class="kv-row"><div class="kv-key">Single recurring SQL job</div><div class="kv-val">→ BigQuery Scheduled Query</div></div>
+<div class="kv-row"><div class="kv-key">Single scheduled Dataflow/API call</div><div class="kv-val">→ Cloud Scheduler</div></div>
+<div class="kv-row"><div class="kv-key">Simple Dataproc-only workflow</div><div class="kv-val">→ Dataproc Workflow Templates</div></div>
+<div class="section-label">Governance services</div>
+<div class="kv-row"><div class="kv-key">Data lake management, zones, auto-discovery, data mesh</div><div class="kv-val">→ Dataplex</div></div>
+<div class="kv-row"><div class="kv-key">Metadata discovery, search, tagging, policy tags</div><div class="kv-val">→ Data Catalog</div></div>
+<div class="kv-row"><div class="kv-key">Column-level security in BigQuery</div><div class="kv-val">→ Data Catalog policy tags (returns ACCESS DENIED — not NULL)</div></div>
+<div class="kv-row"><div class="kv-key">Share BigQuery data across orgs without copying</div><div class="kv-val">→ Analytics Hub</div></div>
+<div class="kv-row"><div class="kv-key">Find/de-identify PII in BigQuery, GCS, streaming data</div><div class="kv-val">→ Cloud DLP</div></div>
+<div class="kv-row"><div class="kv-key">Real-time CDC from MySQL/PostgreSQL/Oracle to BigQuery</div><div class="kv-val">→ Datastream</div></div>
+<div class="section-label">Key exam traps</div>
+<div class="kv-row"><div class="kv-key">Dataproc vs Dataflow</div><div class="kv-val">Existing Spark → Dataproc. New pipeline → Dataflow. Never use Dataflow for existing PySpark code.</div></div>
+<div class="kv-row"><div class="kv-key">Composer vs simpler tools</div><div class="kv-val">Single SQL job → Scheduled Query. Single Dataflow job → Cloud Scheduler. Multi-service with dependencies → Composer.</div></div>
+<div class="kv-row"><div class="kv-key">Policy tags block, not mask</div><div class="kv-val">Column-level security returns ACCESS DENIED. For masking → BQ managed masking or Cloud DLP pre-processing.</div></div>
+<div class="kv-row"><div class="kv-key">catchup=False in Composer</div><div class="kv-val">Always. catchup=True with old start_date = hundreds of queued runs on activation.</div></div>
+<div class="kv-row"><div class="kv-key">trigger_rule=all_done on cluster delete</div><div class="kv-val">Always. Default all_success means cluster stays running if Spark job fails.</div></div>
+<div class="kv-row"><div class="kv-key">XCom size limit</div><div class="kv-val">Small values only (strings, numbers). Large data → GCS. XCom only the file path.</div></div>
+<div class="kv-row"><div class="kv-key">Sensor poke vs reschedule</div><div class="kv-val">Long waits → reschedule mode. Poke mode holds worker slots indefinitely.</div></div>
+<div class="kv-row"><div class="kv-key">Preemptible workers and HDFS</div><div class="kv-val">Preemptible workers run YARN compute only — no HDFS DataNode. Store all persistent data in GCS.</div></div>`}
+]}
+
+]; // END TABS
+
+/* ── BUILD TABS ── */
+
 (function() {
 
 // ── Storage keys ──────────────────────────────────────────────────
@@ -1264,9 +1605,8 @@ function buildNoteZone(cardId) {
         '<button class="ne-tb-btn" title="Bold (**text**)" onclick="neFmt(\'' + cardId + '\',\'bold\')"><b>B</b></button>' +
         '<button class="ne-tb-btn" title="Italic (*text*)" onclick="neFmt(\'' + cardId + '\',\'italic\')"><i>I</i></button>' +
         '<button class="ne-tb-btn" title="Underline (__text__)" onclick="neFmt(\'' + cardId + '\',\'underline\')"><u>U</u></button>' +
-        '<div class="ne-tb-sep"></div>' +
-        '<button class="ne-tb-btn" title="Inline code (`code`)" onclick="neFmt(\'' + cardId + '\',\'code\')">`&nbsp;`</button>' +
-        '<button class="ne-tb-btn" title="Code block (```)" onclick="neFmt(\'' + cardId + '\',\'codeblock\')">```</button>' +
+        
+        '<button class="ne-tb-btn" title="Code block (```)" onclick="neFmt(\'' + cardId + '\',\'codeblock\'">code block</button>' +
         '<div class="ne-tb-sep"></div>' +
         '<button class="ne-tb-btn" title="Bullet list (- item)" onclick="neFmt(\'' + cardId + '\',\'bullet\')">• list</button>' +
         '<button class="ne-tb-btn" title="Toggle/collapsible (> heading)" onclick="neFmt(\'' + cardId + '\',\'toggle\')">▸ toggle</button>' +
@@ -1340,7 +1680,7 @@ window.neFmt = function(cardId, type) {
     code:      { wrap: ['`','`'],             placeholder: 'code'           },
     codeblock: { wrap: ['```\n','\n```'],     placeholder: 'code here'      },
     bullet:    { wrap: ['- ',''],             placeholder: 'list item'      },
-    toggle:    { wrap: ['> ',''],             placeholder: 'Toggle heading' },
+    toggle:    { wrap: ['> ', '\nToggle body text'], placeholder: 'Toggle heading' },
   };
 
   var cfg = inserts[type];
@@ -1601,16 +1941,69 @@ window.neTestAndSave = function() {
 };
 
 })(); /* end IIFE */
-/* ════ END NOTES ENGINE v2 ════════════════════════════════════════ */
+const tabBar = document.getElementById('tabBar');
+const tabContent = document.getElementById('tabContent');
+
+TABS.forEach((tab, ti) => {
+  const btn = document.createElement('button');
+  btn.className = 'tab-btn' + (ti === 0 ? ' active' : '');
+  btn.textContent = tab.label;
+  btn.onclick = () => {
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.tab-section').forEach(s => s.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById('sec-' + ti).classList.add('active');
+  };
+  tabBar.appendChild(btn);
+
+  const sec = document.createElement('div');
+  sec.className = 'tab-section' + (ti === 0 ? ' active' : '');
+  sec.id = 'sec-' + ti;
+
+  tab.topics.forEach((topic, tpi) => {
+    const gid = `g${ti}_${tpi}`;
+    const cid = `c${ti}_${tpi}`;
+    const cardId = `${tab.id}_${tpi}`;
+    const div = document.createElement('div');
+    div.className = 'gap';
+    // Set card HTML without note zone (avoids backtick conflicts in template literal)
+    div.innerHTML = `
+      <div class="gap-header" onclick="tog('${gid}','${cid}')">
+        <div class="gap-num">${tpi + 1}</div>
+        <div class="gap-title">${topic.title}</div>
+        <span class="gap-tag">${tab.freq}</span>
+        <span class="chevron${tpi === 0 ? ' open' : ''}" id="${cid}">▶</span>
+      </div>
+      <div class="gap-body${tpi === 0 ? ' open' : ''}" id="${gid}">${topic.body}</div>`;
+    // Append note zone separately (its HTML contains backticks which break template literals)
+    const bodyEl = div.querySelector('#' + gid);
+    const noteZoneEl = document.createElement('div');
+    noteZoneEl.innerHTML = buildNoteZone(cardId);
+    bodyEl.appendChild(noteZoneEl.firstElementChild || noteZoneEl);
+    sec.appendChild(div);
+  });
+
+  tabContent.appendChild(sec);
+});
+
+/* init notes for all cards */
+TABS.forEach((tab, ti) => {
+  tab.topics.forEach((_, tpi) => { initNotes(`${tab.id}_${tpi}`); });
+});
+
+function tog(b, c) {
+  document.getElementById(b).classList.toggle('open');
+  document.getElementById(c).classList.toggle('open');
+}
+
+
 
 /* ════ SIDEBAR + BOTTOM BAR JS ════ */
 (function () {
-  var sidebar = document.getElementById('sidebar');
-  var btn     = document.getElementById('sbCollapseBtn');
-  var overlay = document.getElementById('sbOverlay');
+  var sidebar  = document.getElementById('sidebar');
   if (!sidebar) return;
 
-  // ── Restore collapsed state from localStorage ──
+  // ── Restore collapsed state ──────────────────────────────────
   var isCollapsed = localStorage.getItem('sbCollapsed') === '1';
   if (isCollapsed) {
     sidebar.classList.add('collapsed');
@@ -1619,1324 +2012,117 @@ window.neTestAndSave = function() {
     document.body.classList.add('sb-open');
   }
 
-  // ── Mark active page ──
-  var path    = window.location.pathname.split('/').pop().replace('.html', '') || 'index';
-  var hash    = window.location.hash.replace('#', '');
+  // ── Active page ───────────────────────────────────────────────
+  var pagePath = window.location.pathname.split('/').pop().replace('.html','') || 'index';
 
-  // Activate module links
-  document.querySelectorAll('.sb-mod-link[data-page]').forEach(function (el) {
-    if (el.getAttribute('data-page') === path) el.classList.add('active');
+  document.querySelectorAll('.sb-mod-link[data-page]').forEach(function(el) {
+    if (el.getAttribute('data-page') === pagePath) el.classList.add('active');
   });
-  // Activate bottom bar items
-  document.querySelectorAll('.bb-item[data-page]').forEach(function (el) {
-    if (el.getAttribute('data-page') === path) el.classList.add('active');
+  document.querySelectorAll('.bb-item[data-page]').forEach(function(el) {
+    if (el.getAttribute('data-page') === pagePath) el.classList.add('active');
   });
 
-  // ── Open subtopic group for current page ──
-  var grp = document.querySelector('.sb-mod-group[data-group="' + path + '"]');
-  if (grp) {
-    grp.classList.add('open');
-    // Highlight active subtopic if hash present
-    if (hash) {
-      var sub = grp.querySelector('.sb-sub-link[data-tab="' + hash + '"]');
-      if (sub) sub.classList.add('active');
-    }
-  }
+  // ── Open current module group in sidebar ─────────────────────
+  var grp = document.querySelector('.sb-mod-group[data-group="' + pagePath + '"]');
+  if (grp) grp.classList.add('open');
 
-  // ── Expand/collapse on group header click (toggle subtopics) ──
-  document.querySelectorAll('.sb-mod-group').forEach(function (grp) {
-    var link = grp.querySelector(':scope > .sb-mod-link');
-    if (!link) return;
-    link.addEventListener('click', function (e) {
-      // Only intercept the expand toggle, not navigation to other pages
-      var targetPage = link.getAttribute('data-page');
-      if (targetPage && targetPage !== path) return; // let it navigate
-      // Same page or no page change — toggle subtopics
+  // ── Sidebar subtopic click → activate tab ────────────────────
+  document.querySelectorAll('.sb-sub-link[data-tab]').forEach(function(link) {
+    link.addEventListener('click', function(e) {
       e.preventDefault();
-      grp.classList.toggle('open');
+      var tabId = link.getAttribute('data-tab');
+      sbActivateTab(tabId, true);
     });
   });
 
-  // ── Hash change: update active subtopic ──
-  window.addEventListener('hashchange', function () {
-    var h = window.location.hash.replace('#', '');
-    document.querySelectorAll('.sb-sub-link').forEach(function (el) { el.classList.remove('active'); });
-    if (h && grp) {
-      var sub = grp.querySelector('.sb-sub-link[data-tab="' + h + '"]');
-      if (sub) sub.classList.add('active');
-    }
+  // ── Expand/collapse module group header ──────────────────────
+  document.querySelectorAll('.sb-mod-group').forEach(function(g) {
+    var modLink = g.querySelector(':scope > .sb-mod-link');
+    if (!modLink) return;
+    modLink.addEventListener('click', function(e) {
+      var targetPage = modLink.getAttribute('data-page');
+      if (targetPage && targetPage !== pagePath) return; // navigate normally
+      e.preventDefault();
+      g.classList.toggle('open');
+    });
   });
+
 })();
+
+// ── sbActivateTab: activate a tab and sync sidebar highlight ──
+function sbActivateTab(tabId, scrollTop) {
+  // 1. Find and click the tab button with matching data-tab-id
+  var tabBtn = document.querySelector('.tab-btn[data-tab-id="' + tabId + '"]');
+  if (tabBtn) tabBtn.click();
+
+  // 2. Highlight the matching sidebar subtopic link
+  sbHighlightSubtopic(tabId);
+
+  // 3. Scroll page to top of content
+  if (scrollTop) {
+    var content = document.getElementById('tabContent');
+    if (content) content.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+}
+
+// ── sbHighlightSubtopic: set active on matching sidebar link ──
+function sbHighlightSubtopic(tabId) {
+  document.querySelectorAll('.sb-sub-link').forEach(function(el) {
+    el.classList.remove('active');
+  });
+  var active = document.querySelector('.sb-sub-link[data-tab="' + tabId + '"]');
+  if (active) {
+    active.classList.add('active');
+    // Scroll it into view in sidebar if needed
+    active.scrollIntoView({ block: 'nearest' });
+  }
+}
 
 function toggleSidebar() {
   var sidebar = document.getElementById('sidebar');
   if (!sidebar) return;
   var collapsed = sidebar.classList.toggle('collapsed');
   document.body.classList.toggle('sb-open',   !collapsed);
-  document.body.classList.toggle('sb-closed', collapsed);
+  document.body.classList.toggle('sb-closed',  collapsed);
   localStorage.setItem('sbCollapsed', collapsed ? '1' : '0');
 }
-function closeSidebar() {
-  // no-op on desktop; overlay not shown
-}
+function closeSidebar() {}
 /* ════ END SIDEBAR JS ════ */
 
+
+
 </script>
-</body>
-/* ══════════════════════════════════════
-   NOTES SYSTEM
-══════════════════════════════════════ */
-.note-zone{margin-top:14px;border-top:1px solid var(--border);padding-top:12px}
-.notes-list{display:flex;flex-direction:column;gap:8px;margin-bottom:8px}
-.note-item{background:var(--note-bg);border-left:2px solid var(--accent);border-radius:0 6px 6px 0;padding:9px 11px;position:relative}
-.note-item-text{font-size:12.5px;color:var(--note-text);line-height:1.6;white-space:pre-wrap;word-break:break-word}
-.note-item-footer{display:flex;align-items:center;justify-content:space-between;margin-top:6px}
-.note-ts{font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--note-ts)}
-.note-item-actions{display:flex;gap:4px}
-.note-action-btn{font-size:10px;font-family:'IBM Plex Mono',monospace;padding:2px 8px;border-radius:99px;border:1px solid var(--border);background:transparent;color:var(--muted);cursor:pointer;transition:all .15s}
-.note-action-btn:hover{background:var(--surface2);color:var(--text)}
-.note-action-btn.del:hover{background:var(--alert-red-bg);color:var(--alert-red-text);border-color:var(--alert-red-border)}
 
-.note-form{margin-top:8px}
-.note-form textarea{width:100%;font-size:12.5px;font-family:'IBM Plex Sans',sans-serif;line-height:1.55;resize:vertical;min-height:68px;padding:8px 10px;border-radius:6px;border:1px solid var(--note-input-border);background:var(--note-input-bg);color:var(--text);transition:background .3s,border-color .3s}
-.note-form textarea:focus{outline:none;border-color:var(--accent)}
-.note-form-actions{display:flex;gap:6px;margin-top:6px}
-.note-save-btn{font-size:11px;font-family:'IBM Plex Mono',monospace;padding:4px 12px;border-radius:99px;border:1px solid var(--accent-border);background:var(--accent-bg);color:var(--accent-text);cursor:pointer;transition:all .15s;font-weight:600}
-.note-save-btn:hover{background:var(--accent);color:var(--num-fg)}
-.note-cancel-btn{font-size:11px;font-family:'IBM Plex Mono',monospace;padding:4px 12px;border-radius:99px;border:1px solid var(--border);background:transparent;color:var(--muted);cursor:pointer;transition:all .15s}
-.note-cancel-btn:hover{background:var(--surface2);color:var(--text)}
+<!-- ═══ LIGHTBOX ═══ -->
+<div class="ne-lightbox" id="neLightbox" onclick="this.classList.remove('open')">
+  <img id="neLightboxImg" src="" alt="note image">
+</div>
 
-.note-add-trigger{display:flex;align-items:center;gap:6px;font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--note-trigger-color);cursor:pointer;padding:4px 0;background:none;border:none;transition:color .15s;letter-spacing:.03em}
-.note-add-trigger:hover{color:var(--note-trigger-hover)}
-.note-add-trigger svg{flex-shrink:0;transition:color .15s}
-
-/* MOBILE */
-@media(max-width:600px){
-  body{padding:14px 12px}
-  .page-header{flex-direction:column;gap:12px}
-  .header-text h1{font-size:18px}
-  .tab-bar{gap:5px;padding:8px 0}
-  .tab-btn{font-size:10px;padding:4px 9px}
-  .gap-header{padding:11px 13px;gap:8px}
-  .gap-title{font-size:12.5px}
-  .gap-tag{display:none}
-  .gap-body{padding:13px 14px}
-  .kv-row{flex-direction:column;gap:3px}
-  .kv-key{min-width:unset}
-  .g2,.g3{grid-template-columns:1fr}
-  .dr{flex-direction:column;align-items:flex-start;gap:4px}
-  .code{font-size:10.5px;padding:10px 11px}
-  .op-n{min-width:unset}
-}
-
-
-
-
-/* ════════════════════════════════════════════════════════
-   SIDEBAR + BOTTOM BAR
-════════════════════════════════════════════════════════ */
-:root { --sb-w: 220px; --sb-w-collapsed: 48px; --bb-h: 56px; }
-
-[data-theme="dark"] {
-  --sb-bg: #0f1118;
-  --sb-border: #1e2230;
-  --sb-hover: #1a1f2e;
-  --sb-active-bg: #091a11;
-  --sb-active-text: #4dff91;
-  --sb-active-border: #0f4024;
-  --sb-text: #7a8099;
-  --sb-text-strong: #c0c4d4;
-  --sb-num: #3a3f52;
-  --sb-badge-bg: #091a11;
-  --sb-badge-text: #4dff91;
-  --sb-badge-border: #0f4024;
-  --sb-sub-text: #5a6070;
-  --sb-sub-hover: #1e2230;
-  --sb-section: #252b3a;
-  --sb-collapse-color: #4a5168;
-  --sb-overlay-bg: rgba(0,0,0,0.55);
-  --bb-bg: #0f1118;
-  --bb-border: #1e2230;
-  --bb-text: #5a6070;
-  --bb-active: #4dff91;
-}
-[data-theme="light"] {
-  --sb-bg: #ffffff;
-  --sb-border: #e4e8e0;
-  --sb-hover: #f4f6f0;
-  --sb-active-bg: #eaf6ee;
-  --sb-active-text: #1e8a45;
-  --sb-active-border: #9ed4b2;
-  --sb-text: #6a7060;
-  --sb-text-strong: #2a3020;
-  --sb-num: #c0c8b8;
-  --sb-badge-bg: #eaf6ee;
-  --sb-badge-text: #1e8a45;
-  --sb-badge-border: #9ed4b2;
-  --sb-sub-text: #9aa090;
-  --sb-sub-hover: #f0f4ec;
-  --sb-section: #eaeee6;
-  --sb-collapse-color: #b0b8a8;
-  --sb-overlay-bg: rgba(0,0,0,0.25);
-  --bb-bg: #ffffff;
-  --bb-border: #e4e8e0;
-  --bb-text: #9aa090;
-  --bb-active: #1e8a45;
-}
-
-/* ── LAYOUT SHIFT ── */
-body { transition: padding-left .25s cubic-bezier(.4,0,.2,1); }
-body.sb-open   { padding-left: var(--sb-w) !important; }
-body.sb-closed { padding-left: var(--sb-w-collapsed) !important; }
-
-/* ── SIDEBAR ── */
-.sidebar {
-  position: fixed;
-  top: 0; left: 0;
-  width: var(--sb-w);
-  height: 100vh;
-  background: var(--sb-bg);
-  border-right: 1px solid var(--sb-border);
-  display: flex;
-  flex-direction: column;
-  z-index: 200;
-  overflow: hidden;
-  transition: width .25s cubic-bezier(.4,0,.2,1), background .3s, border-color .3s;
-}
-.sidebar.collapsed { width: var(--sb-w-collapsed); }
-.sidebar.collapsed .sb-mod-label,
-.sidebar.collapsed .sb-expand-icon,
-.sidebar.collapsed .sb-brand,
-.sidebar.collapsed .sb-subtopics { display: none; }
-.sidebar.collapsed .sb-mod-num,
-.sidebar.collapsed .sb-mod-icon { margin: 0 auto; }
-.sidebar.collapsed .sb-mod-link { justify-content: center; padding: 10px 0; }
-.sidebar.collapsed .sb-nav { padding-top: 4px; }
-
-/* ── SIDEBAR HEAD ── */
-.sb-head {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 16px 14px 12px;
-  border-bottom: 1px solid var(--sb-border);
-  flex-shrink: 0;
-  min-height: 52px;
-  gap: 8px;
-}
-.sb-brand {
-  text-decoration: none;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  overflow: hidden;
-}
-.sb-badge {
-  font-family: "IBM Plex Mono", monospace;
-  font-size: 10px;
-  font-weight: 600;
-  background: var(--sb-badge-bg);
-  color: var(--sb-badge-text);
-  border: 1px solid var(--sb-badge-border);
-  border-radius: 5px;
-  padding: 3px 7px;
-  letter-spacing: .06em;
-  white-space: nowrap;
-  flex-shrink: 0;
-}
-.sb-collapse-btn {
-  background: none;
-  border: 1px solid var(--sb-border);
-  border-radius: 6px;
-  color: var(--sb-collapse-color);
-  font-size: 10px;
-  cursor: pointer;
-  padding: 4px 7px;
-  line-height: 1;
-  transition: all .15s;
-  flex-shrink: 0;
-  white-space: nowrap;
-}
-.sb-collapse-btn:hover { background: var(--sb-hover); color: var(--sb-text-strong); }
-.sidebar.collapsed .sb-collapse-btn { transform: rotate(180deg); }
-
-/* ── SIDEBAR NAV ── */
-.sb-nav {
-  flex: 1;
-  overflow-y: auto;
-  overflow-x: hidden;
-  padding: 8px 0 24px;
-  scrollbar-width: thin;
-  scrollbar-color: var(--sb-border) transparent;
-}
-
-.sb-mod-link {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 8px 12px 8px 14px;
-  text-decoration: none;
-  color: var(--sb-text);
-  font-size: 12.5px;
-  font-weight: 500;
-  border-left: 2px solid transparent;
-  transition: background .1s, color .1s, border-color .1s;
-  line-height: 1.3;
-}
-.sb-mod-link:hover {
-  background: var(--sb-hover);
-  color: var(--sb-text-strong);
-}
-.sb-mod-link.active {
-  background: var(--sb-active-bg);
-  color: var(--sb-active-text);
-  border-left-color: var(--sb-active-border);
-  font-weight: 600;
-}
-.sb-mod-num {
-  font-family: "IBM Plex Mono", monospace;
-  font-size: 10px;
-  color: var(--sb-num);
-  flex-shrink: 0;
-  width: 20px;
-  text-align: right;
-  transition: color .1s;
-}
-.sb-mod-icon { font-size: 13px; flex-shrink: 0; width: 20px; text-align: center; }
-.sb-mod-label { flex: 1; }
-.sb-mod-link.active .sb-mod-num { color: var(--sb-active-text); opacity: .55; }
-
-.sb-expand-icon {
-  font-size: 9px;
-  color: var(--sb-num);
-  flex-shrink: 0;
-  transition: transform .18s;
-}
-.sb-mod-group.open > .sb-mod-link .sb-expand-icon { transform: rotate(90deg); }
-
-/* ── SUBTOPICS ── */
-.sb-subtopics {
-  display: none;
-  flex-direction: column;
-  border-left: 1px solid var(--sb-border);
-  margin: 0 0 2px 28px;
-}
-.sb-mod-group.open > .sb-subtopics { display: flex; }
-
-.sb-sub-link {
-  display: block;
-  padding: 5px 10px 5px 12px;
-  font-size: 11.5px;
-  color: var(--sb-sub-text);
-  text-decoration: none;
-  border-left: 2px solid transparent;
-  transition: background .1s, color .1s, border-color .1s;
-  line-height: 1.4;
-}
-.sb-sub-link:hover {
-  background: var(--sb-sub-hover);
-  color: var(--sb-text-strong);
-}
-.sb-sub-link.active {
-  color: var(--sb-active-text);
-  border-left-color: var(--sb-active-border);
-  font-weight: 600;
-}
-
-/* ── OVERLAY ── */
-.sb-overlay {
-  display: none;
-  position: fixed;
-  inset: 0;
-  background: var(--sb-overlay-bg);
-  z-index: 199;
-}
-
-/* ════════════════════════════════════════════════════════
-   MOBILE — BOTTOM TAB BAR (≤768px)
-════════════════════════════════════════════════════════ */
-.bottom-bar {
-  display: none;
-}
-
-@media (max-width: 768px) {
-  /* hide desktop sidebar entirely */
-  .sidebar, .sb-overlay { display: none !important; }
-
-  /* undo layout shift */
-  body.sb-open, body.sb-closed { padding-left: 0 !important; }
-
-  /* push content up so bottom bar doesn't overlap */
-  body { padding-bottom: calc(var(--bb-h) + 4px) !important; }
-
-  .bottom-bar {
-    display: flex;
-    position: fixed;
-    bottom: 0; left: 0; right: 0;
-    height: var(--bb-h);
-    background: var(--bb-bg);
-    border-top: 1px solid var(--bb-border);
-    z-index: 200;
-    align-items: stretch;
-    transition: background .3s, border-color .3s;
-    overflow-x: auto;
-    scrollbar-width: none;
-  }
-  .bottom-bar::-webkit-scrollbar { display: none; }
-
-  .bb-item {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    gap: 3px;
-    flex: 1;
-    min-width: 52px;
-    text-decoration: none;
-    color: var(--bb-text);
-    padding: 6px 4px;
-    border-top: 2px solid transparent;
-    transition: color .15s, border-color .15s;
-  }
-  .bb-item.active {
-    color: var(--bb-active);
-    border-top-color: var(--bb-active);
-  }
-  .bb-icon {
-    font-family: "IBM Plex Mono", monospace;
-    font-size: 12px;
-    font-weight: 600;
-    line-height: 1;
-  }
-  .bb-label {
-    font-size: 9px;
-    font-family: "IBM Plex Mono", monospace;
-    letter-spacing: .02em;
-    white-space: nowrap;
-  }
-
-  /* keep tab-bar sticky above bottom bar on module pages */
-  .tab-bar { bottom: var(--bb-h) !important; }
-}
-
-/* also hide toggle button from index page header on desktop
-   (hamburger only needed on mobile, but we removed that approach) */
-.sb-menu-btn { display: none; }
-/* ════════════════════════════════════════════════════════
-   END SIDEBAR + BOTTOM BAR
-════════════════════════════════════════════════════════ */
-
-
-/* ── NOTE CODE BLOCKS ── */
-.note-item-text code {
-  font-family: 'IBM Plex Mono', monospace;
-  font-size: 11px;
-  background: var(--code-bg);
-  color: var(--code-color);
-  border: 1px solid var(--border);
-  border-radius: 4px;
-  padding: 1px 5px;
-}
-.note-item-text pre {
-  font-family: 'IBM Plex Mono', monospace;
-  font-size: 11px;
-  background: var(--code-bg);
-  color: var(--code-color);
-  border: 1px solid var(--border);
-  border-radius: 6px;
-  padding: 10px 12px;
-  margin: 6px 0;
-  white-space: pre;
-  overflow-x: auto;
-  line-height: 1.6;
-}
-
-</style>
-</head>
-<body>
-<!-- ═══ SIDEBAR ═══ -->
-<div class="sb-overlay" id="sbOverlay" onclick="closeSidebar()"></div>
-<aside class="sidebar" id="sidebar">
-  <div class="sb-head">
-    <a href="index.html" class="sb-brand">
-      <span class="sb-badge">GCP PDE</span>
-    </a>
-    <button class="sb-collapse-btn" id="sbCollapseBtn" onclick="toggleSidebar()" title="Collapse sidebar">◀</button>
-  </div>
-  <div class="sb-nav">
-    <a href="index.html" class="sb-mod-link" data-page="index">
-      <span class="sb-mod-icon">⌂</span>
-      <span class="sb-mod-label">Home</span>
-    </a>
-    <div class="sb-mod-group" data-group="m1_bigquery">
-      <a href="m1_bigquery.html" class="sb-mod-link" data-page="m1_bigquery">
-        <span class="sb-mod-num">01</span>
-        <span class="sb-mod-label">BigQuery</span>
-        <span class="sb-expand-icon">▸</span>
-      </a>
-      <div class="sb-subtopics" id="sub-m1_bigquery">
-        <a href="m1_bigquery.html#partitioning" class="sb-sub-link" data-page="m1_bigquery" data-tab="partitioning">Partitioning & clustering</a>
-        <a href="m1_bigquery.html#pricing" class="sb-sub-link" data-page="m1_bigquery" data-tab="pricing">Pricing & slots</a>
-        <a href="m1_bigquery.html#bqml" class="sb-sub-link" data-page="m1_bigquery" data-tab="bqml">BigQuery ML</a>
-        <a href="m1_bigquery.html#security" class="sb-sub-link" data-page="m1_bigquery" data-tab="security">Security & access control</a>
-        <a href="m1_bigquery.html#external" class="sb-sub-link" data-page="m1_bigquery" data-tab="external">External tables & BigLake</a>
-        <a href="m1_bigquery.html#advanced" class="sb-sub-link" data-page="m1_bigquery" data-tab="advanced">Advanced SQL & features</a>
-        <a href="m1_bigquery.html#scenarios" class="sb-sub-link" data-page="m1_bigquery" data-tab="scenarios">Exam scenarios</a>
-      </div>
+<!-- ═══ GITHUB SETTINGS MODAL ═══ -->
+<div class="ne-settings-overlay" id="neSettingsOverlay">
+  <div class="ne-settings-modal">
+    <h3>GitHub Sync Settings</h3>
+    <p>Notes and images will auto-commit to your GitHub repo on every save. Your PAT is stored only in your browser's localStorage and never sent anywhere except GitHub's API.</p>
+    <div class="ne-field">
+      <label>Personal Access Token</label>
+      <input type="password" id="nePatInput" placeholder="ghp_xxxxxxxxxxxxxxxxxxxx">
+      <div class="ne-hint">Needs <strong>repo</strong> scope. <a href="https://github.com/settings/tokens/new" target="_blank">Create one here ↗</a></div>
     </div>
-    <div class="sb-mod-group" data-group="m2_dataflow_pubsub">
-      <a href="m2_dataflow_pubsub.html" class="sb-mod-link" data-page="m2_dataflow_pubsub">
-        <span class="sb-mod-num">02</span>
-        <span class="sb-mod-label">Dataflow & Pub/Sub</span>
-        <span class="sb-expand-icon">▸</span>
-      </a>
-      <div class="sb-subtopics" id="sub-m2_dataflow_pubsub">
-        <a href="m2_dataflow_pubsub.html#beam" class="sb-sub-link" data-page="m2_dataflow_pubsub" data-tab="beam">Apache Beam model</a>
-        <a href="m2_dataflow_pubsub.html#windowing" class="sb-sub-link" data-page="m2_dataflow_pubsub" data-tab="windowing">Windowing</a>
-        <a href="m2_dataflow_pubsub.html#dataflow" class="sb-sub-link" data-page="m2_dataflow_pubsub" data-tab="dataflow">Dataflow service</a>
-        <a href="m2_dataflow_pubsub.html#pubsub" class="sb-sub-link" data-page="m2_dataflow_pubsub" data-tab="pubsub">Pub/Sub</a>
-        <a href="m2_dataflow_pubsub.html#pipeline" class="sb-sub-link" data-page="m2_dataflow_pubsub" data-tab="pipeline">The canonical pipeline</a>
-        <a href="m2_dataflow_pubsub.html#scenarios" class="sb-sub-link" data-page="m2_dataflow_pubsub" data-tab="scenarios">Exam scenarios</a>
-      </div>
+    <div class="ne-field">
+      <label>Repository (owner/repo)</label>
+      <input type="text" id="neRepoInput" placeholder="yourname/gcp-pde-notes">
     </div>
-    <div class="sb-mod-group" data-group="m3_storage_services">
-      <a href="m3_storage_services.html" class="sb-mod-link" data-page="m3_storage_services">
-        <span class="sb-mod-num">03</span>
-        <span class="sb-mod-label">Storage Services</span>
-        <span class="sb-expand-icon">▸</span>
-      </a>
-      <div class="sb-subtopics" id="sub-m3_storage_services">
-        <a href="m3_storage_services.html#decision" class="sb-sub-link" data-page="m3_storage_services" data-tab="decision">Decision Framework</a>
-        <a href="m3_storage_services.html#bigtable" class="sb-sub-link" data-page="m3_storage_services" data-tab="bigtable">Bigtable</a>
-        <a href="m3_storage_services.html#spanner" class="sb-sub-link" data-page="m3_storage_services" data-tab="spanner">Cloud Spanner</a>
-        <a href="m3_storage_services.html#firestore" class="sb-sub-link" data-page="m3_storage_services" data-tab="firestore">Firestore</a>
-        <a href="m3_storage_services.html#cloudsql" class="sb-sub-link" data-page="m3_storage_services" data-tab="cloudsql">Cloud SQL</a>
-        <a href="m3_storage_services.html#memorystore" class="sb-sub-link" data-page="m3_storage_services" data-tab="memorystore">Memorystore</a>
-        <a href="m3_storage_services.html#scenarios" class="sb-sub-link" data-page="m3_storage_services" data-tab="scenarios">Exam Scenarios</a>
-        <a href="m3_storage_services.html#traps" class="sb-sub-link" data-page="m3_storage_services" data-tab="traps">Traps & Cheatsheet</a>
-      </div>
+    <div class="ne-field">
+      <label>Branch</label>
+      <input type="text" id="neBranchInput" placeholder="main">
     </div>
-    <div class="sb-mod-group" data-group="m4_data_processing_governance">
-      <a href="m4_data_processing_governance.html" class="sb-mod-link" data-page="m4_data_processing_governance">
-        <span class="sb-mod-num">04</span>
-        <span class="sb-mod-label">Data Processing</span>
-        <span class="sb-expand-icon">▸</span>
-      </a>
-      <div class="sb-subtopics" id="sub-m4_data_processing_governance">
-        <a href="m4_data_processing_governance.html#dataproc" class="sb-sub-link" data-page="m4_data_processing_governance" data-tab="dataproc">Dataproc</a>
-        <a href="m4_data_processing_governance.html#datafusion" class="sb-sub-link" data-page="m4_data_processing_governance" data-tab="datafusion">Cloud Data Fusion</a>
-        <a href="m4_data_processing_governance.html#dataform" class="sb-sub-link" data-page="m4_data_processing_governance" data-tab="dataform">Dataform</a>
-        <a href="m4_data_processing_governance.html#datastream" class="sb-sub-link" data-page="m4_data_processing_governance" data-tab="datastream">Datastream</a>
-        <a href="m4_data_processing_governance.html#composer" class="sb-sub-link" data-page="m4_data_processing_governance" data-tab="composer">Cloud Composer</a>
-        <a href="m4_data_processing_governance.html#dataplex" class="sb-sub-link" data-page="m4_data_processing_governance" data-tab="dataplex">Dataplex</a>
-        <a href="m4_data_processing_governance.html#datacatalog" class="sb-sub-link" data-page="m4_data_processing_governance" data-tab="datacatalog">Data Catalog</a>
-        <a href="m4_data_processing_governance.html#dlp" class="sb-sub-link" data-page="m4_data_processing_governance" data-tab="dlp">Cloud DLP</a>
-        <a href="m4_data_processing_governance.html#analyticshub" class="sb-sub-link" data-page="m4_data_processing_governance" data-tab="analyticshub">Analytics Hub</a>
-        <a href="m4_data_processing_governance.html#decision" class="sb-sub-link" data-page="m4_data_processing_governance" data-tab="decision">Decision Reference</a>
-      </div>
+    <div class="ne-modal-status" id="neModalStatus"></div>
+    <div class="ne-modal-actions">
+      <button class="ne-modal-cancel" onclick="neCloseSettings()">Cancel</button>
+      <button class="ne-modal-save" onclick="neTestAndSave()">Save &amp; Test</button>
     </div>
-    <div class="sb-mod-group" data-group="m5_security_ml_architecture">
-      <a href="m5_security_ml_architecture.html" class="sb-mod-link" data-page="m5_security_ml_architecture">
-        <span class="sb-mod-num">05</span>
-        <span class="sb-mod-label">Security & ML</span>
-        <span class="sb-expand-icon">▸</span>
-      </a>
-      <div class="sb-subtopics" id="sub-m5_security_ml_architecture">
-        <a href="m5_security_ml_architecture.html#iam" class="sb-sub-link" data-page="m5_security_ml_architecture" data-tab="iam">IAM</a>
-        <a href="m5_security_ml_architecture.html#encryption" class="sb-sub-link" data-page="m5_security_ml_architecture" data-tab="encryption">Encryption</a>
-        <a href="m5_security_ml_architecture.html#vpcsc" class="sb-sub-link" data-page="m5_security_ml_architecture" data-tab="vpcsc">VPC Service Controls</a>
-        <a href="m5_security_ml_architecture.html#audit" class="sb-sub-link" data-page="m5_security_ml_architecture" data-tab="audit">Audit Logging</a>
-        <a href="m5_security_ml_architecture.html#ml" class="sb-sub-link" data-page="m5_security_ml_architecture" data-tab="ml">ML Fundamentals</a>
-        <a href="m5_security_ml_architecture.html#vertex" class="sb-sub-link" data-page="m5_security_ml_architecture" data-tab="vertex">Vertex AI</a>
-        <a href="m5_security_ml_architecture.html#batchstream" class="sb-sub-link" data-page="m5_security_ml_architecture" data-tab="batchstream">Batch vs Streaming</a>
-        <a href="m5_security_ml_architecture.html#refarch" class="sb-sub-link" data-page="m5_security_ml_architecture" data-tab="refarch">Reference Architecture</a>
-        <a href="m5_security_ml_architecture.html#scenarios" class="sb-sub-link" data-page="m5_security_ml_architecture" data-tab="scenarios">Architecture Scenarios</a>
-      </div>
-    </div>
-    <div class="sb-mod-group" data-group="m6_advanced_topics">
-      <a href="m6_advanced_topics.html" class="sb-mod-link" data-page="m6_advanced_topics">
-        <span class="sb-mod-num">06</span>
-        <span class="sb-mod-label">Advanced Topics</span>
-        <span class="sb-expand-icon">▸</span>
-      </a>
-      <div class="sb-subtopics" id="sub-m6_advanced_topics">
-        <a href="m6_advanced_topics.html#bq" class="sb-sub-link" data-page="m6_advanced_topics" data-tab="bq">BigQuery</a>
-        <a href="m6_advanced_topics.html#dataflow" class="sb-sub-link" data-page="m6_advanced_topics" data-tab="dataflow">Dataflow</a>
-        <a href="m6_advanced_topics.html#pubsub" class="sb-sub-link" data-page="m6_advanced_topics" data-tab="pubsub">Pub/Sub</a>
-        <a href="m6_advanced_topics.html#spanner" class="sb-sub-link" data-page="m6_advanced_topics" data-tab="spanner">Cloud Spanner</a>
-        <a href="m6_advanced_topics.html#dataproc" class="sb-sub-link" data-page="m6_advanced_topics" data-tab="dataproc">Dataproc</a>
-        <a href="m6_advanced_topics.html#vertex" class="sb-sub-link" data-page="m6_advanced_topics" data-tab="vertex">Vertex AI</a>
-        <a href="m6_advanced_topics.html#security" class="sb-sub-link" data-page="m6_advanced_topics" data-tab="security">Security</a>
-        <a href="m6_advanced_topics.html#exactlyonce" class="sb-sub-link" data-page="m6_advanced_topics" data-tab="exactlyonce">Exactly-Once Semantics</a>
-        <a href="m6_advanced_topics.html#signals" class="sb-sub-link" data-page="m6_advanced_topics" data-tab="signals">Signal Prioritization</a>
-        <a href="m6_advanced_topics.html#cheatsheet" class="sb-sub-link" data-page="m6_advanced_topics" data-tab="cheatsheet">Cheat Sheet</a>
-      </div>
-    </div>
-  </div>
-  <button class="sb-settings-btn" onclick="neOpenSettings()"><span class="sb-settings-icon">⚙</span><span class="sb-settings-label">GitHub Sync</span></button>
-</aside>
-<!-- ═══ END SIDEBAR ═══ -->
-
-<!-- ═══ MOBILE BOTTOM BAR ═══ -->
-<nav class="bottom-bar" id="bottomBar">
-  <a href="index.html" class="bb-item" data-page="index">
-    <span class="bb-icon">⌂</span>
-    <span class="bb-label">Home</span>
-  </a>
-  <a href="m1_bigquery.html" class="bb-item" data-page="m1_bigquery">
-    <span class="bb-icon">01</span>
-    <span class="bb-label">BigQuery</span>
-  </a>
-  <a href="m2_dataflow_pubsub.html" class="bb-item" data-page="m2_dataflow_pubsub">
-    <span class="bb-icon">02</span>
-    <span class="bb-label">Dataflow</span>
-  </a>
-  <a href="m3_storage_services.html" class="bb-item" data-page="m3_storage_services">
-    <span class="bb-icon">03</span>
-    <span class="bb-label">Storage</span>
-  </a>
-  <a href="m4_data_processing_governance.html" class="bb-item" data-page="m4_data_processing_governance">
-    <span class="bb-icon">04</span>
-    <span class="bb-label">Data</span>
-  </a>
-  <a href="m5_security_ml_architecture.html" class="bb-item" data-page="m5_security_ml_architecture">
-    <span class="bb-icon">05</span>
-    <span class="bb-label">Security</span>
-  </a>
-  <a href="m6_advanced_topics.html" class="bb-item" data-page="m6_advanced_topics">
-    <span class="bb-icon">06</span>
-    <span class="bb-label">Advanced</span>
-  </a>
-</nav>
-<!-- ═══ END MOBILE BOTTOM BAR ═══ -->
-
-
-
-<div class="page-header">
-  <div class="header-text">
-    <div class="label">GCP PDE Study Notes — Module 4</div>
-    <h1>Data Processing &amp; Governance</h1>
-    <p>10 subtopics · tap a tab to switch · tap cards to expand · add notes per card</p>
-  </div>
-  <div class="theme-toggle" onclick="toggleTheme()">
-    <span class="ti-sun">☀️</span>
-    <div class="toggle-track"><div class="toggle-knob"></div></div>
-    <span class="ti-moon">🌙</span>
   </div>
 </div>
 
-<div class="tab-bar" id="tabBar"></div>
-<div id="tabContent"></div>
-
-<script>
-function toggleTheme(){
-  const h=document.documentElement;
-  h.setAttribute('data-theme',h.getAttribute('data-theme')==='dark'?'light':'dark');
-}
-
-
-/* ════ NOTES ENGINE v2 ════════════════════════════════════════════ */
-(function() {
-
-// ── Storage keys ──────────────────────────────────────────────────
-var NP = 'gcp_pde_notes_';      // prefix for note data
-var IP = 'gcp_pde_imgs_';       // prefix for image data (base64)
-var GH_CFG_KEY = 'gcp_pde_gh_cfg';
-
-// ── GitHub config ─────────────────────────────────────────────────
-function ghCfg() {
-  try { return JSON.parse(localStorage.getItem(GH_CFG_KEY) || 'null'); } catch(e) { return null; }
-}
-
-// ── Local note storage ────────────────────────────────────────────
-function getCardNotes(id) {
-  try { var r = localStorage.getItem(NP + id); return r ? JSON.parse(r) : []; } catch(e) { return []; }
-}
-function saveCardNotes(id, notes) {
-  try { localStorage.setItem(NP + id, JSON.stringify(notes)); } catch(e) {}
-}
-
-// ── Image storage (base64 keyed by imgKey) ────────────────────────
-function getImg(imgKey) {
-  try { return localStorage.getItem(IP + imgKey) || null; } catch(e) { return null; }
-}
-function setImg(imgKey, dataUrl) {
-  try { localStorage.setItem(IP + imgKey, dataUrl); } catch(e) {
-    alert('Storage full — please delete some images to add new ones.'); return false;
-  }
-  return true;
-}
-function delImg(imgKey) { try { localStorage.removeItem(IP + imgKey); } catch(e) {} }
-
-// ── Image compression ─────────────────────────────────────────────
-function compressImage(file, cb) {
-  var reader = new FileReader();
-  reader.onload = function(e) {
-    var img = new Image();
-    img.onload = function() {
-      var MAX = 1200, q = 0.78;
-      var w = img.width, h = img.height;
-      if (w > MAX) { h = Math.round(h * MAX / w); w = MAX; }
-      var canvas = document.createElement('canvas');
-      canvas.width = w; canvas.height = h;
-      canvas.getContext('2d').drawImage(img, 0, 0, w, h);
-      cb(canvas.toDataURL('image/jpeg', q));
-    };
-    img.src = e.target.result;
-  };
-  reader.readAsDataURL(file);
-}
-
-// ── GitHub API ────────────────────────────────────────────────────
-function ghSaveNotes(allNotesPayload, statusCb) {
-  var cfg = ghCfg();
-  if (!cfg || !cfg.pat || !cfg.repo) { if (statusCb) statusCb('local'); return; }
-  var path = 'notes-data/notes.json';
-  var content = btoa(unescape(encodeURIComponent(JSON.stringify(allNotesPayload, null, 2))));
-  ghPut(cfg, path, content, 'Update notes', statusCb);
-}
-
-function ghSaveImage(imgKey, dataUrl, statusCb) {
-  var cfg = ghCfg();
-  if (!cfg || !cfg.pat || !cfg.repo) return;
-  // strip the data:image/...;base64, prefix
-  var b64 = dataUrl.split(',')[1];
-  var path = 'notes-data/images/' + imgKey + '.jpg';
-  ghPut(cfg, path, b64, 'Add image ' + imgKey, statusCb);
-}
-
-function ghDeleteImage(imgKey) {
-  var cfg = ghCfg();
-  if (!cfg || !cfg.pat || !cfg.repo) return;
-  var path = 'notes-data/images/' + imgKey + '.jpg';
-  // Get SHA first, then delete
-  var url = 'https://api.github.com/repos/' + cfg.repo + '/contents/' + path + '?ref=' + cfg.branch;
-  fetch(url, { headers: { Authorization: 'token ' + cfg.pat } })
-    .then(function(r) { return r.ok ? r.json() : null; })
-    .then(function(data) {
-      if (!data || !data.sha) return;
-      fetch(url, { method: 'DELETE', headers: { Authorization: 'token ' + cfg.pat, 'Content-Type': 'application/json' },
-        body: JSON.stringify({ message: 'Delete image ' + imgKey, sha: data.sha, branch: cfg.branch }) });
-    }).catch(function(){});
-}
-
-function ghPut(cfg, path, contentB64, message, statusCb) {
-  var url = 'https://api.github.com/repos/' + cfg.repo + '/contents/' + path;
-  // Get existing SHA (needed for updates)
-  fetch(url + '?ref=' + cfg.branch, { headers: { Authorization: 'token ' + cfg.pat } })
-    .then(function(r) { return r.ok ? r.json() : null; })
-    .then(function(existing) {
-      var body = { message: message, content: contentB64, branch: cfg.branch };
-      if (existing && existing.sha) body.sha = existing.sha;
-      return fetch(url, { method: 'PUT', headers: { Authorization: 'token ' + cfg.pat, 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
-    })
-    .then(function(r) { if (statusCb) statusCb(r.ok ? 'ok' : 'err'); })
-    .catch(function() { if (statusCb) statusCb('err'); });
-}
-
-// ── Load notes from GitHub on init ───────────────────────────────
-function ghLoadNotes(cb) {
-  var cfg = ghCfg();
-  if (!cfg || !cfg.pat || !cfg.repo) { cb(null); return; }
-  var url = 'https://api.github.com/repos/' + cfg.repo + '/contents/notes-data/notes.json?ref=' + cfg.branch;
-  fetch(url, { headers: { Authorization: 'token ' + cfg.pat } })
-    .then(function(r) { return r.ok ? r.json() : null; })
-    .then(function(data) {
-      if (!data || !data.content) { cb(null); return; }
-      try {
-        var json = JSON.parse(decodeURIComponent(escape(atob(data.content.replace(/\n/g, '')))));
-        cb(json);
-      } catch(e) { cb(null); }
-    }).catch(function() { cb(null); });
-}
-
-// ── Collect ALL notes for GitHub sync ────────────────────────────
-function collectAllNotes() {
-  var all = {};
-  for (var i = 0; i < localStorage.length; i++) {
-    var k = localStorage.key(i);
-    if (k && k.startsWith(NP)) {
-      try { all[k.slice(NP.length)] = JSON.parse(localStorage.getItem(k)); } catch(e) {}
-    }
-  }
-  return all;
-}
-
-// ── Timestamp format ──────────────────────────────────────────────
-function fmtTs(ts) {
-  var d = new Date(ts);
-  return d.toLocaleDateString('en-CA',{month:'short',day:'numeric',year:'numeric'}) + ' ' +
-         d.toLocaleTimeString('en-CA',{hour:'2-digit',minute:'2-digit'});
-}
-
-// ── Markdown → HTML for display ───────────────────────────────────
-function mdToHtml(md) {
-  if (!md) return '';
-  var s = md
-    .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
-
-  // fenced code blocks
-  s = s.replace(/```([\s\S]*?)```/g, function(_,c){ return '<pre>' + c.trim() + '</pre>'; });
-  // inline code
-  s = s.replace(/`([^`\n]+)`/g, '<code>$1</code>');
-  // bold **text**
-  s = s.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
-  // italic *text*
-  s = s.replace(/\*(.+?)\*/g, '<em>$1</em>');
-  // underline __text__
-  s = s.replace(/__(.+?)__/g, '<u>$1</u>');
-
-  // toggles: lines starting with "> " become collapsibles
-  var lines = s.split('\n');
-  var out = [], inToggle = false, toggleContent = [];
-  for (var i = 0; i < lines.length; i++) {
-    var line = lines[i];
-    if (line.startsWith('&gt; ')) {
-      if (!inToggle) {
-        inToggle = true;
-        var summary = line.slice(5);
-        out.push('<div class="note-toggle-wrap"><div class="note-toggle-head" onclick="neToggle(this)"><span class="note-toggle-icon">▸</span>' + summary + '</div><div class="note-toggle-body">');
-        toggleContent = [];
-      } else {
-        toggleContent.push(line.slice(5));
-      }
-    } else {
-      if (inToggle) {
-        out.push(toggleContent.join('<br>') + '</div></div>');
-        inToggle = false; toggleContent = [];
-      }
-      // bullet lines
-      if (line.startsWith('- ') || line.startsWith('• ')) {
-        out.push('<ul><li>' + line.slice(2) + '</li></ul>');
-      } else {
-        out.push(line);
-      }
-    }
-  }
-  if (inToggle) { out.push(toggleContent.join('<br>') + '</div></div>'); }
-
-  // join, convert remaining newlines, merge adjacent <ul>
-  s = out.join('\n');
-  s = s.replace(/(<\/ul>)\n(<ul>)/g, '');
-  s = s.replace(/\n(?!<pre|<ul|<\/ul|<div)/g, '<br>');
-
-  return s;
-}
-
-// ── Toggle handler for saved notes ───────────────────────────────
-window.neToggle = function(head) {
-  var icon = head.querySelector('.note-toggle-icon');
-  var body = head.nextElementSibling;
-  if (!body) return;
-  icon.classList.toggle('open');
-  body.classList.toggle('open');
-};
-
-// ── Render a saved note ───────────────────────────────────────────
-function renderNote(cardId, note, idx) {
-  var item = document.createElement('div');
-  item.className = 'note-item';
-  item.dataset.idx = idx;
-
-  // body
-  var body = document.createElement('div');
-  body.className = 'note-item-body';
-  body.innerHTML = mdToHtml(note.text || '');
-
-  // images
-  var imgZone = document.createElement('div');
-  imgZone.className = 'note-img-zone';
-  if (note.imgs && note.imgs.length) {
-    note.imgs.forEach(function(imgKey, ii) {
-      var dataUrl = getImg(imgKey);
-      if (!dataUrl) return;
-      var wrap = document.createElement('div');
-      wrap.className = 'note-img-wrap';
-      var img = document.createElement('img');
-      img.src = dataUrl; img.alt = 'note image';
-      img.onclick = function() { neLightbox(dataUrl); };
-      var del = document.createElement('button');
-      del.className = 'note-img-del'; del.textContent = '✕ remove';
-      (function(key, noteIdx, imgIdx) {
-        del.onclick = function(e) { e.stopPropagation(); neDeleteImg(cardId, noteIdx, imgIdx); };
-      })(imgKey, idx, ii);
-      wrap.appendChild(img); wrap.appendChild(del);
-      imgZone.appendChild(wrap);
-    });
-  }
-
-  // footer
-  var footer = document.createElement('div');
-  footer.className = 'note-item-footer';
-  var ts = document.createElement('span');
-  ts.className = 'note-ts'; ts.textContent = fmtTs(note.ts);
-
-  // sync badge
-  var syncBadge = document.createElement('span');
-  syncBadge.className = 'note-sync-badge';
-  if (note.synced) {
-    syncBadge.textContent = '✓ synced'; syncBadge.classList.add('note-sync-ok');
-  } else if (ghCfg()) {
-    syncBadge.textContent = 'local only'; syncBadge.classList.add('note-sync-err');
-  }
-  ts.appendChild(syncBadge);
-
-  var actions = document.createElement('div');
-  actions.className = 'note-item-actions';
-  var editBtn = document.createElement('button');
-  editBtn.className = 'note-action-btn'; editBtn.textContent = 'edit';
-  editBtn.onclick = function() { neEdit(cardId, idx); };
-  var delBtn = document.createElement('button');
-  delBtn.className = 'note-action-btn del'; delBtn.textContent = 'delete';
-  delBtn.onclick = function() { neDelete(cardId, idx); };
-  actions.appendChild(editBtn); actions.appendChild(delBtn);
-  footer.appendChild(ts); footer.appendChild(actions);
-
-  item.appendChild(body);
-  if (imgZone.children.length) item.appendChild(imgZone);
-  item.appendChild(footer);
-  return item;
-}
-
-// ── Render all notes for a card ───────────────────────────────────
-function renderNotes(cardId) {
-  var zone = document.getElementById('nz-' + cardId);
-  if (!zone) return;
-  var list = zone.querySelector('.notes-list');
-  list.innerHTML = '';
-  getCardNotes(cardId).forEach(function(note, idx) {
-    list.appendChild(renderNote(cardId, note, idx));
-  });
-}
-window.renderNotes = renderNotes;
-
-// ── Build the note zone HTML ──────────────────────────────────────
-function buildNoteZone(cardId) {
-  return '<div class="note-zone" id="nz-' + cardId + '">' +
-    '<div class="notes-list"></div>' +
-    '<div class="note-form" id="nf-' + cardId + '" style="display:none" data-edit-idx="" data-pending-imgs="[]">' +
-      // Toolbar
-      '<div class="ne-toolbar">' +
-        '<button class="ne-tb-btn" title="Bold (**text**)" onclick="neFmt(\'' + cardId + '\',\'bold\')"><b>B</b></button>' +
-        '<button class="ne-tb-btn" title="Italic (*text*)" onclick="neFmt(\'' + cardId + '\',\'italic\')"><i>I</i></button>' +
-        '<button class="ne-tb-btn" title="Underline (__text__)" onclick="neFmt(\'' + cardId + '\',\'underline\')"><u>U</u></button>' +
-        '<div class="ne-tb-sep"></div>' +
-        '<button class="ne-tb-btn" title="Inline code (`code`)" onclick="neFmt(\'' + cardId + '\',\'code\')">`&nbsp;`</button>' +
-        '<button class="ne-tb-btn" title="Code block (```)" onclick="neFmt(\'' + cardId + '\',\'codeblock\')">```</button>' +
-        '<div class="ne-tb-sep"></div>' +
-        '<button class="ne-tb-btn" title="Bullet list (- item)" onclick="neFmt(\'' + cardId + '\',\'bullet\')">• list</button>' +
-        '<button class="ne-tb-btn" title="Toggle/collapsible (> heading)" onclick="neFmt(\'' + cardId + '\',\'toggle\')">▸ toggle</button>' +
-        '<div class="ne-tb-sep"></div>' +
-        '<button class="ne-tb-img-btn" title="Add image" onclick="neTriggerPicker(\'' + cardId + '\')">' +
-          '<svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="1" y="2" width="10" height="8" rx="1.5"/><circle cx="4" cy="5" r="1"/><polyline points="1,9 4,6 6.5,8.5 8,7 11,10"/></svg>' +
-          'img' +
-        '</button>' +
-        '<input type="file" accept="image/*" multiple style="display:none" id="np-' + cardId + '" onchange="nePickerChange(event,\'' + cardId + '\')">' +
-      '</div>' +
-      // Editor (contenteditable)
-      '<div class="ne-editor" id="ne-' + cardId + '" contenteditable="true" ' +
-        'data-placeholder="Write your note… (markdown: **bold**, *italic*, `code`, ```block```, - bullet, > toggle)" ' +
-        'onpaste="nePaste(event,\'' + cardId + '\')" ' +
-        'ondragover="neDragOver(event)" ondragleave="neDragLeave(event)" ondrop="neDrop(event,\'' + cardId + '\')" ' +
-        'onkeydown="neKeyDown(event,\'' + cardId + '\')">' +
-      '</div>' +
-      '<div class="ne-pending-imgs" id="npi-' + cardId + '"></div>' +
-      '<div class="note-storage-warn" id="nsw-' + cardId + '"></div>' +
-      '<div class="note-form-actions">' +
-        '<button class="note-save-btn" onclick="neSave(\'' + cardId + '\')">save note</button>' +
-        '<button class="note-cancel-btn" onclick="neCancel(\'' + cardId + '\')">cancel</button>' +
-        '<span class="ne-sync-status" id="nss-' + cardId + '"></span>' +
-      '</div>' +
-    '</div>' +
-    '<button class="note-add-trigger" id="nat-' + cardId + '" onclick="neShow(\'' + cardId + '\')">' +
-      '<svg width="13" height="13" viewBox="0 0 13 13" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="1" y="1" width="11" height="11" rx="2"/><line x1="3.5" y1="4" x2="9.5" y2="4"/><line x1="3.5" y1="6.5" x2="9.5" y2="6.5"/><line x1="3.5" y1="9" x2="6.5" y2="9"/><line x1="9.5" y1="7.5" x2="9.5" y2="11"/><line x1="7.5" y1="9.5" x2="11.5" y2="9.5"/></svg>' +
-      ' add note' +
-    '</button>' +
-  '</div>';
-}
-window.buildNoteZone = buildNoteZone;
-
-// ── Placeholder behaviour for contenteditable ────────────────────
-document.addEventListener('focusin', function(e) {
-  if (e.target.classList.contains('ne-editor') && !e.target.textContent.trim()) {
-    e.target.style.color = '';
-  }
-});
-
-// ── Show/hide form ────────────────────────────────────────────────
-window.neShow = function(cardId) {
-  var form = document.getElementById('nf-' + cardId);
-  var trigger = document.getElementById('nat-' + cardId);
-  var editor = document.getElementById('ne-' + cardId);
-  form.dataset.editIdx = '';
-  form.dataset.pendingImgs = '[]';
-  editor.innerHTML = '';
-  document.getElementById('npi-' + cardId).innerHTML = '';
-  form.style.display = 'block';
-  trigger.style.display = 'none';
-  editor.focus();
-};
-
-window.neCancel = function(cardId) {
-  document.getElementById('nf-' + cardId).style.display = 'none';
-  document.getElementById('nat-' + cardId).style.display = 'flex';
-};
-
-// ── Editor: toolbar format actions ───────────────────────────────
-window.neFmt = function(cardId, type) {
-  var editor = document.getElementById('ne-' + cardId);
-  editor.focus();
-  var sel = window.getSelection();
-  var selText = sel && sel.toString() ? sel.toString() : '';
-
-  var inserts = {
-    bold:      { wrap: ['**','**'],           placeholder: 'bold text'      },
-    italic:    { wrap: ['*','*'],             placeholder: 'italic text'    },
-    underline: { wrap: ['__','__'],           placeholder: 'underlined text'},
-    code:      { wrap: ['`','`'],             placeholder: 'code'           },
-    codeblock: { wrap: ['```\n','\n```'],     placeholder: 'code here'      },
-    bullet:    { wrap: ['- ',''],             placeholder: 'list item'      },
-    toggle:    { wrap: ['> ',''],             placeholder: 'Toggle heading' },
-  };
-
-  var cfg = inserts[type];
-  if (!cfg) return;
-
-  var text = selText || cfg.placeholder;
-  var toInsert = cfg.wrap[0] + text + cfg.wrap[1];
-
-  // Insert at cursor in contenteditable
-  if (sel && sel.rangeCount > 0 && editor.contains(sel.anchorNode)) {
-    var range = sel.getRangeAt(0);
-    range.deleteContents();
-    var textNode = document.createTextNode(toInsert);
-    range.insertNode(textNode);
-    // Move cursor to end of insertion
-    range.setStartAfter(textNode);
-    range.setEndAfter(textNode);
-    sel.removeAllRanges();
-    sel.addRange(range);
-  } else {
-    editor.focus();
-    document.execCommand('insertText', false, toInsert);
-  }
-};
-
-// ── Keyboard shortcuts ────────────────────────────────────────────
-window.neKeyDown = function(e, cardId) {
-  if ((e.ctrlKey || e.metaKey) && e.key === 'b') { e.preventDefault(); neFmt(cardId, 'bold'); }
-  if ((e.ctrlKey || e.metaKey) && e.key === 'i') { e.preventDefault(); neFmt(cardId, 'italic'); }
-  if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') { e.preventDefault(); neSave(cardId); }
-};
-
-// ── Image handling ────────────────────────────────────────────────
-window.neTriggerPicker = function(cardId) {
-  document.getElementById('np-' + cardId).click();
-};
-
-window.nePickerChange = function(e, cardId) {
-  Array.from(e.target.files).forEach(function(file) { neAddImage(cardId, file); });
-  e.target.value = '';
-};
-
-window.nePaste = function(e, cardId) {
-  var items = e.clipboardData && e.clipboardData.items;
-  if (!items) return;
-  for (var i = 0; i < items.length; i++) {
-    if (items[i].type.startsWith('image/')) {
-      e.preventDefault();
-      neAddImage(cardId, items[i].getAsFile());
-      return;
-    }
-  }
-  // plain text paste — let default happen (contenteditable handles it)
-};
-
-window.neDragOver = function(e) { e.preventDefault(); e.currentTarget.classList.add('drag-over'); };
-window.neDragLeave = function(e) { e.currentTarget.classList.remove('drag-over'); };
-window.neDrop = function(e, cardId) {
-  e.preventDefault(); e.currentTarget.classList.remove('drag-over');
-  var files = e.dataTransfer && e.dataTransfer.files;
-  if (!files) return;
-  for (var i = 0; i < files.length; i++) {
-    if (files[i].type.startsWith('image/')) neAddImage(cardId, files[i]);
-  }
-};
-
-function neAddImage(cardId, file) {
-  compressImage(file, function(dataUrl) {
-    var form = document.getElementById('nf-' + cardId);
-    var pending = JSON.parse(form.dataset.pendingImgs || '[]');
-    var key = cardId + '_pending_' + Date.now() + '_' + pending.length;
-    pending.push({ key: key, dataUrl: dataUrl });
-    form.dataset.pendingImgs = JSON.stringify(pending);
-
-    // Show thumb
-    var zone = document.getElementById('npi-' + cardId);
-    var wrap = document.createElement('div'); wrap.className = 'ne-pending-thumb'; wrap.dataset.key = key;
-    var img = document.createElement('img'); img.src = dataUrl;
-    var del = document.createElement('div'); del.className = 'ne-pending-del'; del.textContent = '✕';
-    del.onclick = function() {
-      var p2 = JSON.parse(form.dataset.pendingImgs || '[]');
-      form.dataset.pendingImgs = JSON.stringify(p2.filter(function(x){ return x.key !== key; }));
-      wrap.remove();
-    };
-    wrap.appendChild(img); wrap.appendChild(del);
-    zone.appendChild(wrap);
-  });
-}
-
-// ── Save ──────────────────────────────────────────────────────────
-window.neSave = function(cardId) {
-  var form   = document.getElementById('nf-' + cardId);
-  var editor = document.getElementById('ne-' + cardId);
-  var statusEl = document.getElementById('nss-' + cardId);
-
-  // Get markdown text from contenteditable (innerText preserves newlines)
-  var text = editor.innerText.trim();
-  var pending = JSON.parse(form.dataset.pendingImgs || '[]');
-
-  if (!text && !pending.length) return;
-
-  var notes = getCardNotes(cardId);
-  var editIdx = form.dataset.editIdx;
-
-  // Save images to localStorage
-  var imgKeys = [];
-  pending.forEach(function(p) {
-    // Assign permanent key
-    var permKey = cardId + '_' + Date.now() + '_' + Math.random().toString(36).slice(2,7);
-    if (setImg(permKey, p.dataUrl)) {
-      imgKeys.push(permKey);
-      // Also push to GitHub
-      if (statusEl) { statusEl.textContent = 'syncing…'; }
-      ghSaveImage(permKey, p.dataUrl, null);
-    }
-  });
-
-  var noteObj = { text: text, ts: Date.now(), imgs: imgKeys };
-
-  if (editIdx !== '') {
-    var idx = parseInt(editIdx);
-    // Keep existing images unless removed
-    var existing = notes[idx] || {};
-    noteObj.imgs = (existing.imgs || []).concat(imgKeys);
-    noteObj.ts = existing.ts || noteObj.ts;
-    notes[idx] = noteObj;
-  } else {
-    notes.push(noteObj);
-  }
-
-  saveCardNotes(cardId, notes);
-  renderNotes(cardId);
-
-  // Reset form
-  editor.innerHTML = '';
-  form.dataset.pendingImgs = '[]';
-  document.getElementById('npi-' + cardId).innerHTML = '';
-  form.style.display = 'none';
-  document.getElementById('nat-' + cardId).style.display = 'flex';
-
-  // GitHub sync
-  var cfg = ghCfg();
-  if (cfg && cfg.pat) {
-    if (statusEl) statusEl.textContent = 'syncing…';
-    ghSaveNotes(collectAllNotes(), function(status) {
-      // Mark note as synced in localStorage
-      var ns2 = getCardNotes(cardId);
-      var lastIdx = editIdx !== '' ? parseInt(editIdx) : ns2.length - 1;
-      if (ns2[lastIdx]) { ns2[lastIdx].synced = (status === 'ok'); saveCardNotes(cardId, ns2); renderNotes(cardId); }
-    });
-  }
-};
-
-// ── Edit ──────────────────────────────────────────────────────────
-window.neEdit = function(cardId, idx) {
-  var notes  = getCardNotes(cardId);
-  var note   = notes[idx];
-  if (!note) return;
-  var form   = document.getElementById('nf-' + cardId);
-  var editor = document.getElementById('ne-' + cardId);
-  form.dataset.editIdx    = idx;
-  form.dataset.pendingImgs = '[]';
-  editor.innerText = note.text || '';
-  document.getElementById('npi-' + cardId).innerHTML = '';
-  form.style.display = 'block';
-  document.getElementById('nat-' + cardId).style.display = 'none';
-  editor.focus();
-};
-
-// ── Delete note ───────────────────────────────────────────────────
-window.neDelete = function(cardId, idx) {
-  var notes = getCardNotes(cardId);
-  var note  = notes[idx];
-  // Delete images
-  if (note && note.imgs) {
-    note.imgs.forEach(function(k) { delImg(k); ghDeleteImage(k); });
-  }
-  notes.splice(idx, 1);
-  saveCardNotes(cardId, notes);
-  renderNotes(cardId);
-  // Re-sync to GitHub
-  if (ghCfg()) ghSaveNotes(collectAllNotes(), null);
-};
-
-// ── Delete image from saved note ──────────────────────────────────
-window.neDeleteImg = function(cardId, noteIdx, imgArrIdx) {
-  var notes = getCardNotes(cardId);
-  var note  = notes[noteIdx];
-  if (!note || !note.imgs) return;
-  var imgKey = note.imgs[imgArrIdx];
-  delImg(imgKey);
-  ghDeleteImage(imgKey);
-  note.imgs.splice(imgArrIdx, 1);
-  saveCardNotes(cardId, notes);
-  renderNotes(cardId);
-  if (ghCfg()) ghSaveNotes(collectAllNotes(), null);
-};
-
-// ── Lightbox ──────────────────────────────────────────────────────
-window.neLightbox = function(src) {
-  var lb = document.getElementById('neLightbox');
-  if (!lb) return;
-  document.getElementById('neLightboxImg').src = src;
-  lb.classList.add('open');
-};
-
-// ── Init: load from GitHub if configured, else use localStorage ──
-window.initNotes = function(cardId) {
-  renderNotes(cardId);
-};
-
-// On first load, try to pull latest from GitHub and merge
-(function ghInitLoad() {
-  ghLoadNotes(function(data) {
-    if (!data) return;
-    Object.keys(data).forEach(function(cid) {
-      var remote = data[cid];
-      var local  = getCardNotes(cid);
-      if (!local.length && remote.length) {
-        saveCardNotes(cid, remote);
-        renderNotes(cid);
-      }
-    });
-  });
-})();
-
-// ════ GITHUB SETTINGS ════════════════════════════════════════════
-window.neOpenSettings = function() {
-  var cfg = ghCfg() || {};
-  document.getElementById('nePatInput').value    = cfg.pat    || '';
-  document.getElementById('neRepoInput').value   = cfg.repo   || '';
-  document.getElementById('neBranchInput').value = cfg.branch || 'main';
-  document.getElementById('neModalStatus').textContent = '';
-  document.getElementById('neSettingsOverlay').classList.add('open');
-};
-window.neCloseSettings = function() {
-  document.getElementById('neSettingsOverlay').classList.remove('open');
-};
-window.neTestAndSave = function() {
-  var pat    = document.getElementById('nePatInput').value.trim();
-  var repo   = document.getElementById('neRepoInput').value.trim();
-  var branch = document.getElementById('neBranchInput').value.trim() || 'main';
-  var status = document.getElementById('neModalStatus');
-  if (!pat || !repo) { status.textContent = '⚠ PAT and repo are required.'; return; }
-  status.textContent = 'Testing connection…';
-  fetch('https://api.github.com/repos/' + repo, { headers: { Authorization: 'token ' + pat } })
-    .then(function(r) {
-      if (r.ok) {
-        localStorage.setItem(GH_CFG_KEY, JSON.stringify({ pat:pat, repo:repo, branch:branch }));
-        status.textContent = '✓ Connected! Notes will sync to ' + repo;
-        // Push all local notes immediately
-        ghSaveNotes(collectAllNotes(), null);
-        setTimeout(neCloseSettings, 1800);
-      } else {
-        status.textContent = '✕ Error ' + r.status + ' — check your PAT and repo name.';
-      }
-    }).catch(function() { status.textContent = '✕ Network error — check your connection.'; });
-};
-
-})(); /* end IIFE */
-/* ════ END NOTES ENGINE v2 ════════════════════════════════════════ */
-
-/* ════ SIDEBAR + BOTTOM BAR JS ════ */
-(function () {
-  var sidebar = document.getElementById('sidebar');
-  var btn     = document.getElementById('sbCollapseBtn');
-  var overlay = document.getElementById('sbOverlay');
-  if (!sidebar) return;
-
-  // ── Restore collapsed state from localStorage ──
-  var isCollapsed = localStorage.getItem('sbCollapsed') === '1';
-  if (isCollapsed) {
-    sidebar.classList.add('collapsed');
-    document.body.classList.add('sb-closed');
-  } else {
-    document.body.classList.add('sb-open');
-  }
-
-  // ── Mark active page ──
-  var path    = window.location.pathname.split('/').pop().replace('.html', '') || 'index';
-  var hash    = window.location.hash.replace('#', '');
-
-  // Activate module links
-  document.querySelectorAll('.sb-mod-link[data-page]').forEach(function (el) {
-    if (el.getAttribute('data-page') === path) el.classList.add('active');
-  });
-  // Activate bottom bar items
-  document.querySelectorAll('.bb-item[data-page]').forEach(function (el) {
-    if (el.getAttribute('data-page') === path) el.classList.add('active');
-  });
-
-  // ── Open subtopic group for current page ──
-  var grp = document.querySelector('.sb-mod-group[data-group="' + path + '"]');
-  if (grp) {
-    grp.classList.add('open');
-    // Highlight active subtopic if hash present
-    if (hash) {
-      var sub = grp.querySelector('.sb-sub-link[data-tab="' + hash + '"]');
-      if (sub) sub.classList.add('active');
-    }
-  }
-
-  // ── Expand/collapse on group header click (toggle subtopics) ──
-  document.querySelectorAll('.sb-mod-group').forEach(function (grp) {
-    var link = grp.querySelector(':scope > .sb-mod-link');
-    if (!link) return;
-    link.addEventListener('click', function (e) {
-      // Only intercept the expand toggle, not navigation to other pages
-      var targetPage = link.getAttribute('data-page');
-      if (targetPage && targetPage !== path) return; // let it navigate
-      // Same page or no page change — toggle subtopics
-      e.preventDefault();
-      grp.classList.toggle('open');
-    });
-  });
-
-  // ── Hash change: update active subtopic ──
-  window.addEventListener('hashchange', function () {
-    var h = window.location.hash.replace('#', '');
-    document.querySelectorAll('.sb-sub-link').forEach(function (el) { el.classList.remove('active'); });
-    if (h && grp) {
-      var sub = grp.querySelector('.sb-sub-link[data-tab="' + h + '"]');
-      if (sub) sub.classList.add('active');
-    }
-  });
-})();
-
-function toggleSidebar() {
-  var sidebar = document.getElementById('sidebar');
-  if (!sidebar) return;
-  var collapsed = sidebar.classList.toggle('collapsed');
-  document.body.classList.toggle('sb-open',   !collapsed);
-  document.body.classList.toggle('sb-closed', collapsed);
-  localStorage.setItem('sbCollapsed', collapsed ? '1' : '0');
-}
-function closeSidebar() {
-  // no-op on desktop; overlay not shown
-}
-/* ════ END SIDEBAR JS ════ */
-
-</script>
 </body>
 </html>
