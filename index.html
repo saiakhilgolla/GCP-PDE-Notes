@@ -1117,6 +1117,49 @@ function closeSidebar() {
 }
 /* ════ END SIDEBAR JS ════ */
 
+
+/* ── GitHub Settings (index.html) ── */
+var GH_CFG_KEY = 'gcp_pde_gh_cfg';
+function ghCfg() {
+  try { return JSON.parse(localStorage.getItem(GH_CFG_KEY) || 'null'); } catch(e) { return null; }
+}
+function neOpenSettings() {
+  var cfg = ghCfg() || {};
+  document.getElementById('nePatInput').value    = cfg.pat    || '';
+  document.getElementById('neRepoInput').value   = cfg.repo   || '';
+  document.getElementById('neBranchInput').value = cfg.branch || 'main';
+  document.getElementById('neModalStatus').textContent = '';
+  document.getElementById('neSettingsOverlay').classList.add('open');
+}
+function neCloseSettings() {
+  document.getElementById('neSettingsOverlay').classList.remove('open');
+}
+function neTestAndSave() {
+  var pat    = document.getElementById('nePatInput').value.trim();
+  var repo   = document.getElementById('neRepoInput').value.trim();
+  var branch = document.getElementById('neBranchInput').value.trim() || 'main';
+  var status = document.getElementById('neModalStatus');
+  if (!pat || !repo) { status.textContent = '\u26a0 PAT and repo are required.'; return; }
+  status.textContent = 'Testing connection\u2026';
+  fetch('https://api.github.com/repos/' + repo, {
+    headers: { Authorization: 'token ' + pat }
+  }).then(function(r) {
+    if (r.ok) {
+      localStorage.setItem(GH_CFG_KEY, JSON.stringify({ pat: pat, repo: repo, branch: branch }));
+      status.style.color = 'var(--ne-github-ok, #4dff91)';
+      status.textContent = '\u2713 Connected! Settings saved. Notes will sync to ' + repo;
+      setTimeout(neCloseSettings, 2000);
+    } else {
+      status.style.color = 'var(--ne-github-err, #ff4d4d)';
+      status.textContent = '\u2715 Error ' + r.status + ' \u2014 check your PAT and repo name.';
+    }
+  }).catch(function() {
+    status.style.color = 'var(--ne-github-err, #ff4d4d)';
+    status.textContent = '\u2715 Network error. If running locally, deploy to GitHub Pages first \u2014 file:// blocks API calls.';
+  });
+}
+/* ── End GitHub Settings ── */
+
 </script>
 </body>
 </html>
