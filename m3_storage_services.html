@@ -1,6 +1,12 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="dark">
+<html lang="en" data-theme="light">
 <head>
+<script>
+(function(){
+  var t = sessionStorage.getItem('gcp_pde_theme') || 'light';
+  document.documentElement.setAttribute('data-theme', t);
+})();
+</script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Module 3 — Storage Services</title>
@@ -316,39 +322,56 @@ p.prose:last-child { margin-bottom: 0; }
 
 
 
-/* ══ NOTES ENGINE ════════════════════════════════════════════════ */
-/* Theme vars */
+/* ══ NOTES ENGINE v3 ══════════════════════════════════════════════ */
 [data-theme="dark"] {
-  --ne-bg: #0d1117; --ne-border: #2a2f3d; --ne-surface: #161920;
-  --ne-surface2: #1e2230; --ne-text: #e8eaf0; --ne-muted: #7a8099;
+  --ne-bg: #0d0f14; --ne-surface: #161920; --ne-surface2: #1e2230;
+  --ne-border: #2a2f3d; --ne-text: #e8eaf0; --ne-muted: #7a8099; --ne-dim: #4a5168;
   --ne-accent: #4dff91; --ne-accent-bg: #091a11; --ne-accent-border: #0f4024;
-  --ne-code-bg: #0a0c10; --ne-code-text: #c8d0e8;
+  --ne-code-bg: #0a0c10; --ne-code-text: #c8d0e8; --ne-code-border: #2a2f3d;
   --ne-toolbar-bg: #1e2230; --ne-toolbar-border: #2a2f3d;
-  --ne-btn-bg: #1e2230; --ne-btn-hover: #252d3a; --ne-btn-active-bg: #091a11;
-  --ne-btn-active-text: #4dff91; --ne-btn-active-border: #0f4024;
-  --ne-img-border: #2a2f3d; --ne-img-bg: #0a0c10;
-  --ne-toggle-icon-bg: #1e2230;
+  --ne-editor-bg: #161920; --ne-editor-border: #2a2f3d;
+  --ne-placeholder: #4a5168;
   --ne-warn-bg: #1a1000; --ne-warn-text: #ffd699; --ne-warn-border: #ffb84d;
   --ne-danger-bg: #1a0a0a; --ne-danger-text: #ffaaaa; --ne-danger-border: #ff4d4d;
-  --ne-settings-overlay: rgba(0,0,0,0.7);
+  --ne-modal-overlay: rgba(0,0,0,0.7);
   --ne-input-bg: #0a0c10; --ne-input-border: #2a2f3d;
-  --ne-github-ok: #4dff91; --ne-github-err: #ff4d4d; --ne-github-syncing: #ffb84d;
+  --ne-gh-ok: #4dff91; --ne-gh-err: #ff4d4d; --ne-gh-busy: #ffb84d;
+  /* note style: Notes */
+  --ns-notes-bg: transparent; --ns-notes-border-l: #4a5168; --ns-notes-border: transparent;
+  /* note style: Code */
+  --ns-code-bg: #0a0c10; --ns-code-border-l: #4dff91; --ns-code-border: #2a2f3d;
+  /* note style: Info */
+  --ns-info-bg: #0c1520; --ns-info-border-l: #4d9fff; --ns-info-border: #1e3a5c;
+  /* style chip */
+  --chip-notes-bg: #1e2230; --chip-notes-text: #9aa0b8; --chip-notes-border: #2a2f3d;
+  --chip-code-bg:  #091a11; --chip-code-text:  #4dff91; --chip-code-border:  #0f4024;
+  --chip-info-bg:  #0c1520; --chip-info-text:  #4d9fff; --chip-info-border:  #1e3a5c;
+  --chip-active-outline: #e8eaf0;
 }
 [data-theme="light"] {
-  --ne-bg: #f7f8f4; --ne-border: #dde0d8; --ne-surface: #ffffff;
-  --ne-surface2: #f0f2ec; --ne-text: #1c1f18; --ne-muted: #5a6052;
+  --ne-bg: #f7f8f4; --ne-surface: #ffffff; --ne-surface2: #f0f2ec;
+  --ne-border: #dde0d8; --ne-text: #1c1f18; --ne-muted: #5a6052; --ne-dim: #9aa090;
   --ne-accent: #1e8a45; --ne-accent-bg: #eaf6ee; --ne-accent-border: #9ed4b2;
-  --ne-code-bg: #f0f2ec; --ne-code-text: #2a3820;
+  --ne-code-bg: #f0f2ec; --ne-code-text: #2a3820; --ne-code-border: #dde0d8;
   --ne-toolbar-bg: #f0f2ec; --ne-toolbar-border: #dde0d8;
-  --ne-btn-bg: #f0f2ec; --ne-btn-hover: #e4e8e0; --ne-btn-active-bg: #eaf6ee;
-  --ne-btn-active-text: #1e8a45; --ne-btn-active-border: #9ed4b2;
-  --ne-img-border: #dde0d8; --ne-img-bg: #f0f2ec;
-  --ne-toggle-icon-bg: #f0f2ec;
+  --ne-editor-bg: #ffffff; --ne-editor-border: #dde0d8;
+  --ne-placeholder: #b0b8a8;
   --ne-warn-bg: #fdf6e8; --ne-warn-text: #7a4400; --ne-warn-border: #c08020;
   --ne-danger-bg: #fdf0f0; --ne-danger-text: #8a2020; --ne-danger-border: #c04040;
-  --ne-settings-overlay: rgba(0,0,0,0.35);
+  --ne-modal-overlay: rgba(0,0,0,0.35);
   --ne-input-bg: #ffffff; --ne-input-border: #dde0d8;
-  --ne-github-ok: #1e8a45; --ne-github-err: #c04040; --ne-github-syncing: #c08020;
+  --ne-gh-ok: #1e8a45; --ne-gh-err: #c04040; --ne-gh-busy: #c08020;
+  /* note style: Notes */
+  --ns-notes-bg: transparent; --ns-notes-border-l: #b0b8a8; --ns-notes-border: transparent;
+  /* note style: Code */
+  --ns-code-bg: #f0f2ec; --ns-code-border-l: #1e8a45; --ns-code-border: #dde0d8;
+  /* note style: Info */
+  --ns-info-bg: #f0f6ff; --ns-info-border-l: #4d9fff; --ns-info-border: #c4d8f5;
+  /* style chip */
+  --chip-notes-bg: #f0f2ec; --chip-notes-text: #5a6052; --chip-notes-border: #dde0d8;
+  --chip-code-bg:  #eaf6ee; --chip-code-text:  #1e8a45; --chip-code-border:  #9ed4b2;
+  --chip-info-bg:  #f0f6ff; --chip-info-text:  #1a5fa8; --chip-info-border:  #c4d8f5;
+  --chip-active-outline: #1c1f18;
 }
 
 /* ── Zone wrapper ── */
@@ -356,82 +379,158 @@ p.prose:last-child { margin-bottom: 0; }
 .notes-list { display: flex; flex-direction: column; gap: 10px; margin-bottom: 10px; }
 
 /* ── Saved note card ── */
-.note-item {
-  background: var(--ne-accent-bg);
-  border-left: 2px solid var(--ne-accent);
+.note-card {
   border-radius: 0 7px 7px 0;
-  padding: 10px 12px;
+  padding: 10px 13px;
+  font-size: 13px;
+  line-height: 1.65;
+  color: var(--ne-text);
+  border-left: 2px solid;
+  transition: background .2s, border-color .2s;
 }
-.note-item-body { font-size: 12.5px; color: var(--ne-text); line-height: 1.65; }
-/* Rich text rendering inside saved notes */
-.note-item-body strong { font-weight: 700; }
-.note-item-body em { font-style: italic; }
-.note-item-body u  { text-decoration: underline; }
-.note-item-body code {
+.note-card.ns-notes {
+  background: var(--ns-notes-bg);
+  border-left-color: var(--ns-notes-border-l);
+  border-top: 1px solid var(--ns-notes-border);
+  border-right: 1px solid var(--ns-notes-border);
+  border-bottom: 1px solid var(--ns-notes-border);
+}
+.note-card.ns-code {
+  background: var(--ns-code-bg);
+  border-left-color: var(--ns-code-border);
+  border-top: 1px solid var(--ns-code-border);
+  border-right: 1px solid var(--ns-code-border);
+  border-bottom: 1px solid var(--ns-code-border);
+}
+.note-card.ns-info {
+  background: var(--ns-info-bg);
+  border-left-color: var(--ns-info-border);
+  border-top: 1px solid var(--ns-info-border);
+  border-right: 1px solid var(--ns-info-border);
+  border-bottom: 1px solid var(--ns-info-border);
+}
+
+/* ── Rich content inside saved note ── */
+.note-body { outline: none; }
+.note-body b, .note-body strong { font-weight: 700; }
+.note-body i, .note-body em { font-style: italic; }
+.note-body u { text-decoration: underline; }
+.note-body code {
   font-family: 'IBM Plex Mono', monospace; font-size: 11px;
   background: var(--ne-code-bg); color: var(--ne-code-text);
-  border: 1px solid var(--ne-border); border-radius: 4px; padding: 1px 5px;
+  border: 1px solid var(--ne-code-border); border-radius: 4px; padding: 1px 5px;
 }
-.note-item-body pre {
-  font-family: 'IBM Plex Mono', monospace; font-size: 11px;
+.note-body pre {
+  font-family: 'IBM Plex Mono', monospace; font-size: 11.5px;
   background: var(--ne-code-bg); color: var(--ne-code-text);
-  border: 1px solid var(--ne-border); border-radius: 6px;
-  padding: 10px 12px; margin: 6px 0; white-space: pre; overflow-x: auto; line-height: 1.6;
+  border: 1px solid var(--ne-code-border); border-radius: 6px;
+  padding: 10px 12px; margin: 6px 0; white-space: pre-wrap; overflow-x: auto;
 }
-.note-item-body ul { padding-left: 18px; margin: 4px 0; }
-.note-item-body ul li { margin-bottom: 2px; }
-/* Toggle (collapsible) in saved note */
-.note-toggle-wrap { margin: 4px 0; }
-.note-toggle-head {
-  display: flex; align-items: center; gap: 6px;
-  cursor: pointer; font-weight: 600; font-size: 12.5px;
-  user-select: none; padding: 3px 0;
+.note-body ul { padding-left: 18px; margin: 3px 0; }
+.note-body ol { padding-left: 18px; margin: 3px 0; }
+.note-body li { margin-bottom: 2px; }
+
+/* ── Toggle block ── */
+.ne-toggle {
+  margin: 4px 0;
+  border-left: 2px solid var(--ne-border);
+  border-radius: 0 4px 4px 0;
+  overflow: hidden;
 }
-.note-toggle-icon {
-  font-size: 9px; transition: transform .2s; flex-shrink: 0;
-  background: var(--ne-toggle-icon-bg); border-radius: 3px; padding: 2px 4px;
+.ne-toggle-head {
+  display: flex; align-items: center; gap: 7px;
+  padding: 4px 8px; cursor: pointer;
+  font-weight: 600; font-size: 13px; color: var(--ne-text);
+  user-select: none;
+  background: transparent;
+  transition: background .1s;
 }
-.note-toggle-icon.open { transform: rotate(90deg); }
-.note-toggle-body { display: none; padding: 4px 0 4px 18px; }
-.note-toggle-body.open { display: block; }
-/* Images in saved note */
+.ne-toggle-head:hover { background: var(--ne-surface2); }
+.ne-toggle-arrow {
+  font-size: 9px; color: var(--ne-dim);
+  transition: transform .18s; flex-shrink: 0;
+  width: 14px; text-align: center;
+}
+.ne-toggle.open > .ne-toggle-head > .ne-toggle-arrow { transform: rotate(90deg); }
+.ne-toggle-label { flex: 1; }
+.ne-toggle-body {
+  display: none;
+  padding: 4px 8px 6px 29px;
+  font-size: 13px; color: var(--ne-text); line-height: 1.65;
+}
+.ne-toggle.open > .ne-toggle-body { display: block; }
+
+/* ── Images in saved note ── */
 .note-img-zone { margin-top: 8px; display: flex; flex-direction: column; gap: 6px; }
 .note-img-wrap { position: relative; display: inline-block; max-width: 100%; }
 .note-img-wrap img {
   display: block; max-width: 100%; max-height: 300px; object-fit: contain;
-  border-radius: 6px; border: 1px solid var(--ne-img-border); background: var(--ne-img-bg);
-  cursor: zoom-in;
+  border-radius: 6px; border: 1px solid var(--ne-border); cursor: zoom-in;
 }
 .note-img-del {
   position: absolute; top: 4px; right: 4px;
   background: var(--ne-danger-bg); color: var(--ne-danger-text);
-  border: 1px solid var(--ne-danger-border);
-  border-radius: 99px; font-size: 10px; font-family: 'IBM Plex Mono', monospace;
+  border: 1px solid var(--ne-danger-border); border-radius: 99px;
+  font-size: 10px; font-family: 'IBM Plex Mono', monospace;
   padding: 2px 7px; cursor: pointer; opacity: 0; transition: opacity .15s;
 }
 .note-img-wrap:hover .note-img-del { opacity: 1; }
 
-/* Footer (timestamp + actions) */
-.note-item-footer { display: flex; align-items: center; justify-content: space-between; margin-top: 7px; }
-.note-ts { font-family: 'IBM Plex Mono', monospace; font-size: 10px; color: var(--ne-muted); }
-.note-sync-badge {
-  font-family: 'IBM Plex Mono', monospace; font-size: 10px; padding: 1px 6px;
-  border-radius: 99px; border: 1px solid; margin-left: 6px;
+/* ── Note footer ── */
+.note-footer {
+  display: flex; align-items: center; gap: 6px; margin-top: 8px;
+  flex-wrap: wrap;
 }
-.note-sync-ok     { background: var(--ne-accent-bg); color: var(--ne-github-ok);    border-color: var(--ne-accent-border); }
-.note-sync-err    { background: var(--ne-danger-bg);  color: var(--ne-github-err);   border-color: var(--ne-danger-border); }
-.note-sync-saving { background: var(--ne-warn-bg);   color: var(--ne-github-syncing); border-color: var(--ne-warn-border); }
-.note-item-actions { display: flex; gap: 4px; }
+.note-ts {
+  font-family: 'IBM Plex Mono', monospace; font-size: 10px;
+  color: var(--ne-dim); margin-right: auto;
+}
+.note-sync-badge {
+  font-family: 'IBM Plex Mono', monospace; font-size: 10px;
+  padding: 1px 6px; border-radius: 99px; border: 1px solid;
+}
+.nsb-ok  { color: var(--ne-gh-ok);   border-color: var(--ne-accent-border); background: var(--ne-accent-bg); }
+.nsb-err { color: var(--ne-gh-err);  border-color: var(--ne-danger-border);  background: var(--ne-danger-bg); }
+
+/* Style switcher chips on saved note */
+.note-style-switcher { display: flex; gap: 4px; }
+.nss-chip {
+  font-family: 'IBM Plex Mono', monospace; font-size: 10px; font-weight: 600;
+  padding: 2px 8px; border-radius: 99px; border: 1px solid; cursor: pointer;
+  transition: all .15s; outline: none;
+}
+.nss-chip.nsc-notes { background: var(--chip-notes-bg); color: var(--chip-notes-text); border-color: var(--chip-notes-border); }
+.nss-chip.nsc-code  { background: var(--chip-code-bg);  color: var(--chip-code-text);  border-color: var(--chip-code-border);  }
+.nss-chip.nsc-info  { background: var(--chip-info-bg);  color: var(--chip-info-text);  border-color: var(--chip-info-border);  }
+.nss-chip.active    { outline: 2px solid var(--chip-active-outline); outline-offset: 1px; }
+
 .note-action-btn {
-  font-size: 10px; font-family: 'IBM Plex Mono', monospace; padding: 2px 8px;
-  border-radius: 99px; border: 1px solid var(--ne-border); background: transparent;
+  font-size: 10px; font-family: 'IBM Plex Mono', monospace;
+  padding: 2px 8px; border-radius: 99px;
+  border: 1px solid var(--ne-border); background: transparent;
   color: var(--ne-muted); cursor: pointer; transition: all .15s;
 }
 .note-action-btn:hover { background: var(--ne-surface2); color: var(--ne-text); }
 .note-action-btn.del:hover { background: var(--ne-danger-bg); color: var(--ne-danger-text); border-color: var(--ne-danger-border); }
 
 /* ── Editor form ── */
-.note-form { margin-top: 10px; }
+.note-form { margin-top: 10px; display: none; }
+
+/* Style picker row (top of form) */
+.ne-style-picker { display: flex; align-items: center; gap: 6px; margin-bottom: 8px; }
+.ne-style-picker-label {
+  font-family: 'IBM Plex Mono', monospace; font-size: 10px;
+  color: var(--ne-dim); letter-spacing: .06em; text-transform: uppercase;
+}
+.ne-sp-chip {
+  font-family: 'IBM Plex Mono', monospace; font-size: 10px; font-weight: 600;
+  padding: 3px 10px; border-radius: 99px; border: 1px solid; cursor: pointer;
+  transition: all .15s;
+}
+.ne-sp-chip.nsc-notes { background: var(--chip-notes-bg); color: var(--chip-notes-text); border-color: var(--chip-notes-border); }
+.ne-sp-chip.nsc-code  { background: var(--chip-code-bg);  color: var(--chip-code-text);  border-color: var(--chip-code-border);  }
+.ne-sp-chip.nsc-info  { background: var(--chip-info-bg);  color: var(--chip-info-text);  border-color: var(--chip-info-border);  }
+.ne-sp-chip.active    { outline: 2px solid var(--chip-active-outline); outline-offset: 1px; }
 
 /* Toolbar */
 .ne-toolbar {
@@ -443,59 +542,86 @@ p.prose:last-child { margin-bottom: 0; }
   font-family: 'IBM Plex Mono', monospace; font-size: 11px; font-weight: 600;
   padding: 3px 8px; border-radius: 5px; border: 1px solid transparent;
   background: transparent; color: var(--ne-muted); cursor: pointer;
-  transition: all .12s; line-height: 1.4; white-space: nowrap;
+  transition: all .12s; line-height: 1.4;
 }
-.ne-tb-btn:hover { background: var(--ne-btn-hover); color: var(--ne-text); }
-.ne-tb-btn.active { background: var(--ne-btn-active-bg); color: var(--ne-btn-active-text); border-color: var(--ne-btn-active-border); }
+.ne-tb-btn:hover { background: var(--ne-editor-bg); color: var(--ne-text); }
 .ne-tb-sep { width: 1px; height: 16px; background: var(--ne-toolbar-border); margin: 0 2px; flex-shrink: 0; }
 .ne-tb-img-btn {
   display: inline-flex; align-items: center; gap: 4px;
   font-family: 'IBM Plex Mono', monospace; font-size: 11px;
   padding: 3px 8px; border-radius: 5px; border: 1px solid transparent;
-  background: transparent; color: var(--ne-muted); cursor: pointer;
-  transition: all .12s;
+  background: transparent; color: var(--ne-muted); cursor: pointer; transition: all .12s;
 }
-.ne-tb-img-btn:hover { background: var(--ne-btn-hover); color: var(--ne-text); }
+.ne-tb-img-btn:hover { background: var(--ne-editor-bg); color: var(--ne-text); }
 
-/* Editing area — contenteditable div */
+/* Editor area — contenteditable */
 .ne-editor {
-  width: 100%; min-height: 90px; max-height: 320px; overflow-y: auto;
+  width: 100%; min-height: 90px; max-height: 400px; overflow-y: auto;
   font-size: 13px; font-family: 'IBM Plex Sans', sans-serif;
   line-height: 1.65; padding: 10px 12px;
-  background: var(--ne-input-bg); color: var(--ne-text);
-  border: 1px solid var(--ne-input-border); border-radius: 0 0 7px 7px;
-  outline: none; transition: border-color .15s;
-  white-space: pre-wrap; word-break: break-word;
+  background: var(--ne-editor-bg); color: var(--ne-text);
+  border: 1px solid var(--ne-editor-border); border-radius: 0 0 7px 7px;
+  outline: none; transition: border-color .15s; word-break: break-word;
 }
 .ne-editor:focus { border-color: var(--ne-accent); }
 .ne-editor.drag-over { border-color: var(--ne-accent); background: var(--ne-accent-bg); }
+.ne-editor:empty:before {
+  content: attr(data-placeholder);
+  color: var(--ne-placeholder);
+  pointer-events: none;
+}
+/* Live formatting inside editor */
+.ne-editor b, .ne-editor strong { font-weight: 700; }
+.ne-editor i, .ne-editor em { font-style: italic; }
+.ne-editor u { text-decoration: underline; }
 .ne-editor code {
   font-family: 'IBM Plex Mono', monospace; font-size: 11px;
   background: var(--ne-code-bg); color: var(--ne-code-text);
-  border: 1px solid var(--ne-border); border-radius: 4px; padding: 1px 5px;
+  border: 1px solid var(--ne-code-border); border-radius: 4px; padding: 1px 5px;
 }
 .ne-editor pre {
-  font-family: 'IBM Plex Mono', monospace; font-size: 11px;
+  font-family: 'IBM Plex Mono', monospace; font-size: 11.5px;
   background: var(--ne-code-bg); color: var(--ne-code-text);
-  border: 1px solid var(--ne-border); border-radius: 6px;
-  padding: 10px 12px; margin: 6px 0; white-space: pre; overflow-x: auto;
+  border: 1px solid var(--ne-code-border); border-radius: 6px;
+  padding: 10px 12px; margin: 6px 0; white-space: pre-wrap; overflow-x: auto;
+  outline: none;
 }
-.ne-editor ul { padding-left: 18px; margin: 2px 0; }
-.ne-editor img { max-width: 100%; max-height: 200px; border-radius: 5px; margin: 4px 0; border: 1px solid var(--ne-img-border); display: block; }
-.ne-editor .ne-toggle-wrap { border-left: 2px solid var(--ne-border); padding-left: 8px; margin: 4px 0; }
-.ne-editor .ne-toggle-summary { font-weight: 600; cursor: text; }
+.ne-editor ul, .ne-editor ol { padding-left: 18px; margin: 3px 0; }
+.ne-editor li { margin-bottom: 2px; }
+.ne-editor img {
+  max-width: 100%; max-height: 200px; border-radius: 5px;
+  margin: 4px 0; border: 1px solid var(--ne-border); display: block;
+}
+/* Toggle block inside editor */
+.ne-editor .ne-toggle { margin: 4px 0; border-left: 2px solid var(--ne-border); border-radius: 0 4px 4px 0; }
+.ne-editor .ne-toggle-head {
+  display: flex; align-items: center; gap: 7px;
+  padding: 4px 8px; cursor: pointer; font-weight: 600; font-size: 13px;
+  color: var(--ne-text); user-select: none;
+}
+.ne-editor .ne-toggle-head:hover { background: var(--ne-surface2); }
+.ne-editor .ne-toggle-arrow { font-size: 9px; color: var(--ne-dim); transition: transform .18s; width: 14px; text-align: center; }
+.ne-editor .ne-toggle.open .ne-toggle-arrow { transform: rotate(90deg); }
+.ne-editor .ne-toggle-label { flex: 1; outline: none; }
+.ne-editor .ne-toggle-body {
+  display: none; padding: 4px 8px 6px 29px; outline: none;
+  font-size: 13px; color: var(--ne-text); line-height: 1.65;
+  min-height: 24px;
+}
+.ne-editor .ne-toggle.open .ne-toggle-body { display: block; }
 
-/* Pending images preview */
+/* Pending images thumbnails */
 .ne-pending-imgs { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 6px; }
 .ne-pending-thumb { position: relative; }
-.ne-pending-thumb img { width: 64px; height: 64px; object-fit: cover; border-radius: 5px; border: 1px solid var(--ne-img-border); }
+.ne-pending-thumb img { width: 64px; height: 64px; object-fit: cover; border-radius: 5px; border: 1px solid var(--ne-border); }
 .ne-pending-del {
   position: absolute; top: -4px; right: -4px; width: 16px; height: 16px;
-  background: var(--ne-danger-bg); color: var(--ne-danger-text); border: 1px solid var(--ne-danger-border);
-  border-radius: 50%; font-size: 9px; cursor: pointer; display: flex; align-items: center; justify-content: center;
+  background: var(--ne-danger-bg); color: var(--ne-danger-text);
+  border: 1px solid var(--ne-danger-border); border-radius: 50%;
+  font-size: 9px; cursor: pointer; display: flex; align-items: center; justify-content: center;
 }
 
-/* Form actions */
+/* Form action row */
 .note-form-actions { display: flex; gap: 6px; margin-top: 8px; align-items: center; flex-wrap: wrap; }
 .note-save-btn {
   font-size: 11px; font-family: 'IBM Plex Mono', monospace; padding: 5px 14px;
@@ -503,48 +629,37 @@ p.prose:last-child { margin-bottom: 0; }
   background: var(--ne-accent-bg); color: var(--ne-accent); cursor: pointer;
   font-weight: 600; transition: all .15s;
 }
-.note-save-btn:hover { background: var(--ne-accent); color: #0d0f14; }
+.note-save-btn:hover { background: var(--ne-accent); color: var(--ne-bg); }
 .note-cancel-btn {
   font-size: 11px; font-family: 'IBM Plex Mono', monospace; padding: 5px 14px;
   border-radius: 99px; border: 1px solid var(--ne-border); background: transparent;
   color: var(--ne-muted); cursor: pointer; transition: all .15s;
 }
 .note-cancel-btn:hover { background: var(--ne-surface2); color: var(--ne-text); }
-.ne-sync-status {
-  font-family: 'IBM Plex Mono', monospace; font-size: 10px;
-  color: var(--ne-muted); margin-left: auto;
-}
-
-/* Warn */
-.note-storage-warn {
-  font-family: 'IBM Plex Mono', monospace; font-size: 10px;
-  color: var(--ne-warn-text); background: var(--ne-warn-bg);
-  border: 1px solid var(--ne-warn-border); border-radius: 6px;
-  padding: 4px 9px; margin-top: 4px; display: none;
-}
-.note-storage-warn.visible { display: block; }
+.ne-sync-status { font-family: 'IBM Plex Mono', monospace; font-size: 10px; color: var(--ne-muted); margin-left: auto; }
 
 /* Add-note trigger */
 .note-add-trigger {
   display: flex; align-items: center; gap: 6px;
   font-family: 'IBM Plex Mono', monospace; font-size: 11px;
-  color: var(--ne-accent-border); cursor: pointer; padding: 4px 0;
+  color: var(--ne-dim); cursor: pointer; padding: 4px 0;
   background: none; border: none; transition: color .15s; letter-spacing: .03em;
 }
 .note-add-trigger:hover { color: var(--ne-accent); }
 
-/* ── Lightbox ── */
+/* Lightbox */
 .ne-lightbox {
-  display: none; position: fixed; inset: 0; background: rgba(0,0,0,.85);
-  z-index: 9999; align-items: center; justify-content: center; cursor: zoom-out;
+  display: none; position: fixed; inset: 0;
+  background: rgba(0,0,0,.85); z-index: 9999;
+  align-items: center; justify-content: center; cursor: zoom-out;
 }
 .ne-lightbox.open { display: flex; }
-.ne-lightbox img { max-width: 92vw; max-height: 90vh; border-radius: 8px; box-shadow: 0 8px 40px rgba(0,0,0,.6); }
+.ne-lightbox img { max-width: 92vw; max-height: 90vh; border-radius: 8px; }
 
-/* ── GitHub Settings Modal ── */
+/* Settings modal */
 .ne-settings-overlay {
   display: none; position: fixed; inset: 0;
-  background: var(--ne-settings-overlay); z-index: 8888;
+  background: var(--ne-modal-overlay); z-index: 8888;
   align-items: center; justify-content: center;
 }
 .ne-settings-overlay.open { display: flex; }
@@ -553,52 +668,22 @@ p.prose:last-child { margin-bottom: 0; }
   border-radius: 12px; padding: 28px; width: min(480px, 92vw);
   box-shadow: 0 16px 48px rgba(0,0,0,.3);
 }
-.ne-settings-modal h3 {
-  font-size: 16px; font-weight: 600; color: var(--ne-text); margin-bottom: 4px;
-}
-.ne-settings-modal p {
-  font-size: 12.5px; color: var(--ne-muted); margin-bottom: 18px; line-height: 1.6;
-}
+.ne-settings-modal h3 { font-size: 16px; font-weight: 600; color: var(--ne-text); margin-bottom: 6px; }
+.ne-settings-modal p  { font-size: 12.5px; color: var(--ne-muted); margin-bottom: 18px; line-height: 1.6; }
 .ne-field { margin-bottom: 14px; }
 .ne-field label { display: block; font-family: 'IBM Plex Mono', monospace; font-size: 10px; letter-spacing: .1em; text-transform: uppercase; color: var(--ne-muted); margin-bottom: 5px; }
-.ne-field input {
-  width: 100%; font-size: 12.5px; font-family: 'IBM Plex Mono', monospace;
-  padding: 8px 10px; border-radius: 7px;
-  border: 1px solid var(--ne-input-border); background: var(--ne-input-bg);
-  color: var(--ne-text); outline: none; transition: border-color .15s;
-}
+.ne-field input { width: 100%; font-size: 12.5px; font-family: 'IBM Plex Mono', monospace; padding: 8px 10px; border-radius: 7px; border: 1px solid var(--ne-input-border); background: var(--ne-input-bg); color: var(--ne-text); outline: none; transition: border-color .15s; }
 .ne-field input:focus { border-color: var(--ne-accent); }
-.ne-field .ne-hint { font-size: 11px; color: var(--ne-muted); margin-top: 4px; line-height: 1.5; }
-.ne-field .ne-hint a { color: var(--ne-accent); }
-.ne-modal-actions { display: flex; gap: 8px; justify-content: flex-end; margin-top: 20px; }
-.ne-modal-save {
-  font-size: 12px; font-family: 'IBM Plex Mono', monospace; padding: 7px 18px;
-  border-radius: 99px; border: 1px solid var(--ne-accent-border);
-  background: var(--ne-accent-bg); color: var(--ne-accent); cursor: pointer;
-  font-weight: 600; transition: all .15s;
-}
-.ne-modal-save:hover { background: var(--ne-accent); color: #0d0f14; }
-.ne-modal-cancel {
-  font-size: 12px; font-family: 'IBM Plex Mono', monospace; padding: 7px 18px;
-  border-radius: 99px; border: 1px solid var(--ne-border); background: transparent;
-  color: var(--ne-muted); cursor: pointer; transition: all .15s;
-}
+.ne-hint { font-size: 11px; color: var(--ne-muted); margin-top: 4px; line-height: 1.5; }
+.ne-hint a { color: var(--ne-accent); }
+.ne-modal-actions { display: flex; gap: 8px; justify-content: flex-end; margin-top: 20px; align-items: center; }
+.ne-modal-save { font-size: 12px; font-family: 'IBM Plex Mono', monospace; padding: 7px 18px; border-radius: 99px; border: 1px solid var(--ne-accent-border); background: var(--ne-accent-bg); color: var(--ne-accent); cursor: pointer; font-weight: 600; transition: all .15s; }
+.ne-modal-save:hover { background: var(--ne-accent); color: var(--ne-bg); }
+.ne-modal-cancel { font-size: 12px; font-family: 'IBM Plex Mono', monospace; padding: 7px 18px; border-radius: 99px; border: 1px solid var(--ne-border); background: transparent; color: var(--ne-muted); cursor: pointer; transition: all .15s; }
 .ne-modal-cancel:hover { background: var(--ne-surface2); color: var(--ne-text); }
-.ne-modal-status { font-family: 'IBM Plex Mono', monospace; font-size: 11px; color: var(--ne-muted); margin-top: 8px; min-height: 16px; }
+.ne-modal-status { font-family: 'IBM Plex Mono', monospace; font-size: 11px; color: var(--ne-muted); margin-right: auto; }
+/* ══ END NOTES ENGINE v3 ══════════════════════════════════════════ */
 
-/* Settings gear in sidebar */
-.sb-settings-btn {
-  display: flex; align-items: center; gap: 8px; padding: 8px 14px;
-  color: var(--sb-text, #7a8099); font-size: 12px; cursor: pointer;
-  border: none; background: none; width: 100%; text-align: left;
-  border-top: 1px solid var(--sb-border, #1e2230); margin-top: auto;
-  transition: background .12s, color .12s;
-}
-.sb-settings-btn:hover { background: var(--sb-hover, #1a1f2e); color: var(--sb-text-strong, #c0c4d4); }
-.sb-settings-icon { font-size: 13px; flex-shrink: 0; }
-.sb-settings-label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; letter-spacing: .03em; }
-.sidebar.collapsed .sb-settings-label { display: none; }
-/* ══ END NOTES ENGINE ════════════════════════════════════════════ */
 
 /* ════════════════════════════════════════════════════════
    SIDEBAR + BOTTOM BAR
@@ -1130,8 +1215,10 @@ body.sb-closed { padding-left: var(--sb-w-collapsed) !important; }
 
 <script>
 function toggleTheme() {
-  const h = document.documentElement;
-  h.setAttribute('data-theme', h.getAttribute('data-theme') === 'dark' ? 'light' : 'dark');
+  var h = document.documentElement;
+  var next = h.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+  h.setAttribute('data-theme', next);
+  sessionStorage.setItem('gcp_pde_theme', next);
 }
 
 const TABS = [
@@ -1569,15 +1656,539 @@ def is_rate_limited(user_id: str) -> bool:
 const tabBar = document.getElementById('tabBar');
 const tabContent = document.getElementById('tabContent');
 
+/* ════ NOTES ENGINE v3 ════════════════════════════════════════════ */
+(function() {
+
+var NP = 'gcp_pde_notes_';
+var IP = 'gcp_pde_imgs_';
+var GH_CFG_KEY = 'gcp_pde_gh_cfg';
+
+function ghCfg() { try { return JSON.parse(localStorage.getItem(GH_CFG_KEY)||'null'); } catch(e){return null;} }
+function getCardNotes(id) { try{var r=localStorage.getItem(NP+id);return r?JSON.parse(r):[];}catch(e){return[];} }
+function saveCardNotes(id,notes) { try{localStorage.setItem(NP+id,JSON.stringify(notes));}catch(e){} }
+function getImg(k) { try{return localStorage.getItem(IP+k)||null;}catch(e){return null;} }
+function setImg(k,d) { try{localStorage.setItem(IP+k,d);return true;}catch(e){alert('Storage full.');return false;} }
+function delImg(k) { try{localStorage.removeItem(IP+k);}catch(e){} }
+
+function compressImage(file,cb) {
+  var r=new FileReader();
+  r.onload=function(e){
+    var img=new Image();
+    img.onload=function(){
+      var M=1200,q=0.78,w=img.width,h=img.height;
+      if(w>M){h=Math.round(h*M/w);w=M;}
+      var c=document.createElement('canvas');c.width=w;c.height=h;
+      c.getContext('2d').drawImage(img,0,0,w,h);
+      cb(c.toDataURL('image/jpeg',q));
+    };
+    img.src=e.target.result;
+  };
+  r.readAsDataURL(file);
+}
+
+/* ── GitHub API ── */
+function ghPut(cfg,path,b64,msg,cb) {
+  var url='https://api.github.com/repos/'+cfg.repo+'/contents/'+path;
+  fetch(url+'?ref='+cfg.branch,{headers:{Authorization:'token '+cfg.pat}})
+    .then(function(r){return r.ok?r.json():null;})
+    .then(function(ex){
+      var body={message:msg,content:b64,branch:cfg.branch};
+      if(ex&&ex.sha)body.sha=ex.sha;
+      return fetch(url,{method:'PUT',headers:{Authorization:'token '+cfg.pat,'Content-Type':'application/json'},body:JSON.stringify(body)});
+    })
+    .then(function(r){if(cb)cb(r.ok?'ok':'err');})
+    .catch(function(){if(cb)cb('err');});
+}
+function ghSaveNotes(all,cb) {
+  var cfg=ghCfg();if(!cfg||!cfg.pat)return;
+  ghPut(cfg,'notes-data/notes.json',btoa(unescape(encodeURIComponent(JSON.stringify(all,null,2)))),'Update notes',cb);
+}
+function ghSaveImage(key,dataUrl) {
+  var cfg=ghCfg();if(!cfg||!cfg.pat)return;
+  ghPut(cfg,'notes-data/images/'+key+'.jpg',dataUrl.split(',')[1],'Add image '+key,null);
+}
+function ghDeleteImage(key) {
+  var cfg=ghCfg();if(!cfg||!cfg.pat)return;
+  var url='https://api.github.com/repos/'+cfg.repo+'/contents/notes-data/images/'+key+'.jpg?ref='+cfg.branch;
+  fetch(url,{headers:{Authorization:'token '+cfg.pat}})
+    .then(function(r){return r.ok?r.json():null;})
+    .then(function(d){
+      if(!d||!d.sha)return;
+      fetch(url.split('?')[0],{method:'DELETE',headers:{Authorization:'token '+cfg.pat,'Content-Type':'application/json'},
+        body:JSON.stringify({message:'Delete '+key,sha:d.sha,branch:cfg.branch})});
+    }).catch(function(){});
+}
+function collectAllNotes() {
+  var all={};
+  for(var i=0;i<localStorage.length;i++){
+    var k=localStorage.key(i);
+    if(k&&k.startsWith(NP)){try{all[k.slice(NP.length)]=JSON.parse(localStorage.getItem(k));}catch(e){}}
+  }
+  return all;
+}
+function ghLoadNotes(cb) {
+  var cfg=ghCfg();if(!cfg||!cfg.pat){cb(null);return;}
+  fetch('https://api.github.com/repos/'+cfg.repo+'/contents/notes-data/notes.json?ref='+cfg.branch,
+    {headers:{Authorization:'token '+cfg.pat}})
+    .then(function(r){return r.ok?r.json():null;})
+    .then(function(d){
+      if(!d||!d.content){cb(null);return;}
+      try{cb(JSON.parse(decodeURIComponent(escape(atob(d.content.replace(/\n/g,''))))));}catch(e){cb(null);}
+    }).catch(function(){cb(null);});
+}
+
+/* ── Utilities ── */
+function fmtTs(ts){
+  var d=new Date(ts);
+  return d.toLocaleDateString('en-CA',{month:'short',day:'numeric',year:'numeric'})+' '+
+         d.toLocaleTimeString('en-CA',{hour:'2-digit',minute:'2-digit'});
+}
+
+/* ── Toggle helpers ── */
+function makeToggle(headText, bodyHtml) {
+  var wrap = document.createElement('div');
+  wrap.className = 'ne-toggle';
+  wrap.innerHTML =
+    '<div class="ne-toggle-head" contenteditable="false">' +
+      '<span class="ne-toggle-arrow">▶</span>' +
+      '<span class="ne-toggle-label" contenteditable="true">' + (headText||'Toggle heading') + '</span>' +
+    '</div>' +
+    '<div class="ne-toggle-body" contenteditable="true">' + (bodyHtml||'<br>') + '</div>';
+  // click arrow to toggle
+  wrap.querySelector('.ne-toggle-head').addEventListener('click', function(e) {
+    if (e.target.classList.contains('ne-toggle-label')) return;
+    wrap.classList.toggle('open');
+  });
+  return wrap;
+}
+
+function attachToggleListeners(root) {
+  root.querySelectorAll('.ne-toggle:not([data-tl])').forEach(function(t) {
+    t.setAttribute('data-tl','1');
+    var head = t.querySelector('.ne-toggle-head');
+    if (head) head.addEventListener('click', function(e) {
+      if (e.target.closest('.ne-toggle-label')) return;
+      t.classList.toggle('open');
+    });
+  });
+}
+
+/* ── Render saved note ── */
+function renderNote(cardId, note, idx) {
+  var style = note.style || 'notes';
+  var card = document.createElement('div');
+  card.className = 'note-card ns-' + style;
+  card.dataset.idx = idx;
+
+  // Body (rich HTML stored directly)
+  var body = document.createElement('div');
+  body.className = 'note-body';
+  body.innerHTML = note.html || '';
+  attachToggleListeners(body);
+
+  // Images
+  var imgZone = document.createElement('div');
+  imgZone.className = 'note-img-zone';
+  if (note.imgs && note.imgs.length) {
+    note.imgs.forEach(function(key, ii) {
+      var dataUrl = getImg(key); if (!dataUrl) return;
+      var wrap = document.createElement('div'); wrap.className = 'note-img-wrap';
+      var img = document.createElement('img'); img.src = dataUrl;
+      img.onclick = function(){ neLightbox(dataUrl); };
+      var del = document.createElement('button'); del.className = 'note-img-del'; del.textContent = '✕ remove';
+      (function(k,ni,ii2){ del.onclick = function(e){ e.stopPropagation(); neDeleteImg(cardId,ni,ii2); }; })(key,idx,ii);
+      wrap.appendChild(img); wrap.appendChild(del); imgZone.appendChild(wrap);
+    });
+  }
+
+  // Footer
+  var footer = document.createElement('div');
+  footer.className = 'note-footer';
+
+  var ts = document.createElement('span');
+  ts.className = 'note-ts'; ts.textContent = fmtTs(note.ts);
+  if (ghCfg()) {
+    var sb = document.createElement('span');
+    sb.className = 'note-sync-badge ' + (note.synced ? 'nsb-ok' : 'nsb-err');
+    sb.textContent = note.synced ? '✓ synced' : 'local';
+    ts.appendChild(sb);
+  }
+
+  // Style switcher
+  var switcher = document.createElement('div');
+  switcher.className = 'note-style-switcher';
+  ['notes','code','info'].forEach(function(s) {
+    var chip = document.createElement('button');
+    chip.className = 'nss-chip nsc-' + s + (s === style ? ' active' : '');
+    chip.textContent = s.charAt(0).toUpperCase() + s.slice(1);
+    chip.onclick = function() {
+      var ns = getCardNotes(cardId);
+      if (!ns[idx]) return;
+      ns[idx].style = s;
+      saveCardNotes(cardId, ns);
+      renderNotes(cardId);
+      if (ghCfg()) ghSaveNotes(collectAllNotes(), null);
+    };
+    switcher.appendChild(chip);
+  });
+
+  // Edit / Delete
+  var editBtn = document.createElement('button');
+  editBtn.className = 'note-action-btn'; editBtn.textContent = 'edit';
+  editBtn.onclick = function(){ neEdit(cardId, idx); };
+  var delBtn = document.createElement('button');
+  delBtn.className = 'note-action-btn del'; delBtn.textContent = 'delete';
+  delBtn.onclick = function(){ neDelete(cardId, idx); };
+
+  footer.appendChild(ts);
+  footer.appendChild(switcher);
+  footer.appendChild(editBtn);
+  footer.appendChild(delBtn);
+
+  card.appendChild(body);
+  if (imgZone.children.length) card.appendChild(imgZone);
+  card.appendChild(footer);
+  return card;
+}
+
+function renderNotes(cardId) {
+  var zone = document.getElementById('nz-'+cardId); if(!zone)return;
+  var list = zone.querySelector('.notes-list'); list.innerHTML='';
+  getCardNotes(cardId).forEach(function(note,idx){ list.appendChild(renderNote(cardId,note,idx)); });
+}
+window.renderNotes = renderNotes;
+
+/* ── Build note zone HTML ── */
+function buildNoteZone(cardId) {
+  return '<div class="note-zone" id="nz-'+cardId+'">' +
+    '<div class="notes-list"></div>' +
+    '<div class="note-form" id="nf-'+cardId+'" data-edit-idx="" data-pending-imgs="[]" data-style="notes">' +
+      // Style picker
+      '<div class="ne-style-picker">' +
+        '<span class="ne-style-picker-label">Style</span>' +
+        '<button class="ne-sp-chip nsc-notes active" onclick="neSetStyle(\''+cardId+'\',\'notes\',this)">Notes</button>' +
+        '<button class="ne-sp-chip nsc-code"  onclick="neSetStyle(\''+cardId+'\',\'code\',this)">Code</button>' +
+        '<button class="ne-sp-chip nsc-info"  onclick="neSetStyle(\''+cardId+'\',\'info\',this)">Info</button>' +
+      '</div>' +
+      // Toolbar
+      '<div class="ne-toolbar">' +
+        '<button class="ne-tb-btn" title="Bold (Ctrl+B)" onclick="neFmt(\'bold\')"><b>B</b></button>' +
+        '<button class="ne-tb-btn" title="Italic (Ctrl+I)" onclick="neFmt(\'italic\')"><i>I</i></button>' +
+        '<button class="ne-tb-btn" title="Underline (Ctrl+U)" onclick="neFmt(\'underline\')"><u>U</u></button>' +
+        '<div class="ne-tb-sep"></div>' +
+        
+        '<button class="ne-tb-btn" title="Code block" onclick="neInsertCodeBlock(\''+cardId+'\')">code block</button>' +
+        '<div class="ne-tb-sep"></div>' +
+        '<button class="ne-tb-btn" title="Bullet list" onclick="neFmt(\'insertUnorderedList\')">• list</button>' +
+        '<button class="ne-tb-btn" title="Toggle block" onclick="neInsertToggle(\''+cardId+'\')">▸ toggle</button>' +
+        '<div class="ne-tb-sep"></div>' +
+        '<button class="ne-tb-img-btn" title="Add image" onclick="neTriggerPicker(\''+cardId+'\')">' +
+          '<svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="1" y="2" width="10" height="8" rx="1.5"/><circle cx="4" cy="5" r="1"/><polyline points="1,9 4,6 6.5,8.5 8,7 11,10"/></svg>' +
+          'img</button>' +
+        '<input type="file" accept="image/*" multiple style="display:none" id="np-'+cardId+'" onchange="nePickerChange(event,\''+cardId+'\')">' +
+      '</div>' +
+      // Editor
+      '<div class="ne-editor" id="ne-'+cardId+'" contenteditable="true" ' +
+        'data-placeholder="Write your note… use toolbar or Ctrl+B/I/U" ' +
+        'onpaste="nePaste(event,\''+cardId+'\')" ' +
+        'ondragover="neDragOver(event)" ondragleave="neDragLeave(event)" ondrop="neDrop(event,\''+cardId+'\')" ' +
+        'onkeydown="neKeyDown(event,\''+cardId+'\')">' +
+      '</div>' +
+      '<div class="ne-pending-imgs" id="npi-'+cardId+'"></div>' +
+      '<div class="note-form-actions">' +
+        '<button class="note-save-btn" onclick="neSave(\''+cardId+'\')">save note</button>' +
+        '<button class="note-cancel-btn" onclick="neCancel(\''+cardId+'\')">cancel</button>' +
+        '<span class="ne-sync-status" id="nss-'+cardId+'"></span>' +
+      '</div>' +
+    '</div>' +
+    '<button class="note-add-trigger" id="nat-'+cardId+'" onclick="neShow(\''+cardId+'\')">' +
+      '<svg width="13" height="13" viewBox="0 0 13 13" fill="none" stroke="currentColor" stroke-width="1.5">' +
+        '<rect x="1" y="1" width="11" height="11" rx="2"/>' +
+        '<line x1="3.5" y1="4" x2="9.5" y2="4"/><line x1="3.5" y1="6.5" x2="9.5" y2="6.5"/>' +
+        '<line x1="3.5" y1="9" x2="6.5" y2="9"/><line x1="9.5" y1="7.5" x2="9.5" y2="11"/>' +
+        '<line x1="7.5" y1="9.5" x2="11.5" y2="9.5"/>' +
+      '</svg> add note' +
+    '</button>' +
+  '</div>';
+}
+window.buildNoteZone = buildNoteZone;
+
+/* ── Show / cancel ── */
+window.neShow = function(cardId) {
+  var form=document.getElementById('nf-'+cardId);
+  var trigger=document.getElementById('nat-'+cardId);
+  var editor=document.getElementById('ne-'+cardId);
+  form.dataset.editIdx=''; form.dataset.pendingImgs='[]'; form.dataset.style='notes';
+  editor.innerHTML='';
+  document.getElementById('npi-'+cardId).innerHTML='';
+  // reset style chips to Notes
+  form.querySelectorAll('.ne-sp-chip').forEach(function(c){c.classList.remove('active');});
+  var first=form.querySelector('.ne-sp-chip');if(first)first.classList.add('active');
+  form.style.display='block'; trigger.style.display='none'; editor.focus();
+};
+window.neCancel = function(cardId) {
+  document.getElementById('nf-'+cardId).style.display='none';
+  document.getElementById('nat-'+cardId).style.display='flex';
+};
+
+/* ── Style picker ── */
+window.neSetStyle = function(cardId, style, btn) {
+  var form=document.getElementById('nf-'+cardId);
+  form.dataset.style=style;
+  form.querySelectorAll('.ne-sp-chip').forEach(function(c){c.classList.remove('active');});
+  btn.classList.add('active');
+};
+
+/* ── Toolbar: execCommand for basic formatting ── */
+window.neFmt = function(cmd) { document.execCommand(cmd, false, null); };
+
+/* inline code removed */
+
+/* ── Code block insertion ── */
+window.neInsertCodeBlock = function(cardId) {
+  var editor=document.getElementById('ne-'+cardId);
+  editor.focus();
+  var sel=window.getSelection();
+  var selText = sel && sel.rangeCount > 0 ? sel.toString() : '';
+  var pre=document.createElement('pre');
+  pre.contentEditable='true';
+  pre.textContent=selText||'code here';
+  var br=document.createElement('br');
+  if(sel&&sel.rangeCount>0){
+    var range=sel.getRangeAt(0);
+    range.deleteContents();
+    range.insertNode(br);
+    range.insertNode(pre);
+    range.setStart(pre,0);range.setEnd(pre,pre.childNodes.length);
+    sel.removeAllRanges();sel.addRange(range);
+  } else {
+    editor.appendChild(pre);
+  }
+};
+
+/* ── Toggle block insertion ── */
+window.neInsertToggle = function(cardId) {
+  var editor=document.getElementById('ne-'+cardId);
+  editor.focus();
+  var toggle=makeToggle('Toggle heading','Body text goes here');
+  toggle.classList.add('open');
+  var sel=window.getSelection();
+  if(sel&&sel.rangeCount>0){
+    var range=sel.getRangeAt(0);
+    range.deleteContents();
+    range.insertNode(toggle);
+    // place cursor in the body
+    var tbody=toggle.querySelector('.ne-toggle-body');
+    var nr=document.createRange();
+    nr.setStart(tbody,0);nr.collapse(true);
+    sel.removeAllRanges();sel.addRange(nr);
+  } else {
+    editor.appendChild(toggle);
+    var tbody=toggle.querySelector('.ne-toggle-body');tbody.focus();
+  }
+};
+
+/* ── Keyboard shortcuts ── */
+window.neKeyDown = function(e, cardId) {
+  if ((e.ctrlKey||e.metaKey)&&e.key==='b'){e.preventDefault();neFmt('bold');}
+  if ((e.ctrlKey||e.metaKey)&&e.key==='i'){e.preventDefault();neFmt('italic');}
+  if ((e.ctrlKey||e.metaKey)&&e.key==='u'){e.preventDefault();neFmt('underline');}
+  if ((e.ctrlKey||e.metaKey)&&e.key==='Enter'){e.preventDefault();neSave(cardId);}
+};
+
+/* ── Image handling ── */
+window.neTriggerPicker = function(cardId){ document.getElementById('np-'+cardId).click(); };
+window.nePickerChange = function(e,cardId){
+  Array.from(e.target.files).forEach(function(f){neAddImage(cardId,f);});
+  e.target.value='';
+};
+window.nePaste = function(e,cardId){
+  var items=e.clipboardData&&e.clipboardData.items;if(!items)return;
+  for(var i=0;i<items.length;i++){
+    if(items[i].type.startsWith('image/')){e.preventDefault();neAddImage(cardId,items[i].getAsFile());return;}
+  }
+};
+window.neDragOver = function(e){e.preventDefault();e.currentTarget.classList.add('drag-over');};
+window.neDragLeave = function(e){e.currentTarget.classList.remove('drag-over');};
+window.neDrop = function(e,cardId){
+  e.preventDefault();e.currentTarget.classList.remove('drag-over');
+  var files=e.dataTransfer&&e.dataTransfer.files;if(!files)return;
+  for(var i=0;i<files.length;i++){if(files[i].type.startsWith('image/'))neAddImage(cardId,files[i]);}
+};
+function neAddImage(cardId,file){
+  compressImage(file,function(dataUrl){
+    var form=document.getElementById('nf-'+cardId);
+    var pending=JSON.parse(form.dataset.pendingImgs||'[]');
+    var key=cardId+'_p_'+Date.now()+'_'+pending.length;
+    pending.push({key:key,dataUrl:dataUrl});
+    form.dataset.pendingImgs=JSON.stringify(pending);
+    var zone=document.getElementById('npi-'+cardId);
+    var wrap=document.createElement('div');wrap.className='ne-pending-thumb';wrap.dataset.key=key;
+    var img=document.createElement('img');img.src=dataUrl;
+    var del=document.createElement('div');del.className='ne-pending-del';del.textContent='✕';
+    del.onclick=function(){
+      var p2=JSON.parse(form.dataset.pendingImgs||'[]');
+      form.dataset.pendingImgs=JSON.stringify(p2.filter(function(x){return x.key!==key;}));
+      wrap.remove();
+    };
+    wrap.appendChild(img);wrap.appendChild(del);zone.appendChild(wrap);
+  });
+}
+
+/* ── Save ── */
+window.neSave = function(cardId) {
+  var form=document.getElementById('nf-'+cardId);
+  var editor=document.getElementById('ne-'+cardId);
+  var statusEl=document.getElementById('nss-'+cardId);
+  var html=editor.innerHTML.trim();
+  var pending=JSON.parse(form.dataset.pendingImgs||'[]');
+  if(!html&&!pending.length)return;
+
+  var notes=getCardNotes(cardId);
+  var editIdx=form.dataset.editIdx;
+  var style=form.dataset.style||'notes';
+
+  // Save pending images
+  var imgKeys=[];
+  pending.forEach(function(p){
+    var k=cardId+'_'+Date.now()+'_'+Math.random().toString(36).slice(2,6);
+    if(setImg(k,p.dataUrl)){imgKeys.push(k);ghSaveImage(k,p.dataUrl);}
+  });
+
+  var noteObj={html:html,ts:Date.now(),imgs:imgKeys,style:style};
+  if(editIdx!==''){
+    var idx=parseInt(editIdx);
+    var ex=notes[idx]||{};
+    noteObj.imgs=(ex.imgs||[]).concat(imgKeys);
+    noteObj.ts=ex.ts||noteObj.ts;
+    notes[idx]=noteObj;
+  } else {
+    notes.push(noteObj);
+  }
+  saveCardNotes(cardId,notes);
+  renderNotes(cardId);
+
+  editor.innerHTML='';
+  form.dataset.pendingImgs='[]';
+  document.getElementById('npi-'+cardId).innerHTML='';
+  form.style.display='none';
+  document.getElementById('nat-'+cardId).style.display='flex';
+
+  if(ghCfg()&&ghCfg().pat){
+    if(statusEl)statusEl.textContent='syncing…';
+    ghSaveNotes(collectAllNotes(),function(status){
+      var ns2=getCardNotes(cardId);
+      var li=editIdx!==''?parseInt(editIdx):ns2.length-1;
+      if(ns2[li]){ns2[li].synced=(status==='ok');saveCardNotes(cardId,ns2);renderNotes(cardId);}
+    });
+  }
+};
+
+/* ── Edit ── */
+window.neEdit = function(cardId,idx) {
+  var notes=getCardNotes(cardId);var note=notes[idx];if(!note)return;
+  var form=document.getElementById('nf-'+cardId);
+  var editor=document.getElementById('ne-'+cardId);
+  form.dataset.editIdx=idx;form.dataset.pendingImgs='[]';
+  var style=note.style||'notes';
+  form.dataset.style=style;
+  form.querySelectorAll('.ne-sp-chip').forEach(function(c){c.classList.remove('active');});
+  var chip=form.querySelector('.ne-sp-chip.nsc-'+style);
+  if(chip)chip.classList.add('active');
+  editor.innerHTML=note.html||'';
+  attachToggleListeners(editor);
+  document.getElementById('npi-'+cardId).innerHTML='';
+  form.style.display='block';
+  document.getElementById('nat-'+cardId).style.display='none';
+  editor.focus();
+};
+
+/* ── Delete note ── */
+window.neDelete = function(cardId,idx) {
+  var notes=getCardNotes(cardId);var note=notes[idx];
+  if(note&&note.imgs)note.imgs.forEach(function(k){delImg(k);ghDeleteImage(k);});
+  notes.splice(idx,1);saveCardNotes(cardId,notes);renderNotes(cardId);
+  if(ghCfg())ghSaveNotes(collectAllNotes(),null);
+};
+
+/* ── Delete image ── */
+window.neDeleteImg = function(cardId,noteIdx,imgIdx) {
+  var notes=getCardNotes(cardId);var note=notes[noteIdx];if(!note||!note.imgs)return;
+  var k=note.imgs[imgIdx];delImg(k);ghDeleteImage(k);
+  note.imgs.splice(imgIdx,1);saveCardNotes(cardId,notes);renderNotes(cardId);
+  if(ghCfg())ghSaveNotes(collectAllNotes(),null);
+};
+
+/* ── Lightbox ── */
+window.neLightbox = function(src){
+  var lb=document.getElementById('neLightbox');if(!lb)return;
+  document.getElementById('neLightboxImg').src=src;lb.classList.add('open');
+};
+
+/* ── Init ── */
+window.initNotes = function(cardId){ renderNotes(cardId); };
+
+/* ── GitHub settings ── */
+window.neOpenSettings = function(){
+  var cfg=ghCfg()||{};
+  document.getElementById('nePatInput').value=cfg.pat||'';
+  document.getElementById('neRepoInput').value=cfg.repo||'';
+  document.getElementById('neBranchInput').value=cfg.branch||'main';
+  document.getElementById('neModalStatus').textContent='';
+  document.getElementById('neSettingsOverlay').classList.add('open');
+};
+window.neCloseSettings = function(){ document.getElementById('neSettingsOverlay').classList.remove('open'); };
+window.neTestAndSave = function(){
+  var pat=document.getElementById('nePatInput').value.trim();
+  var repo=document.getElementById('neRepoInput').value.trim();
+  var branch=document.getElementById('neBranchInput').value.trim()||'main';
+  var status=document.getElementById('neModalStatus');
+  if(!pat||!repo){status.textContent='\u26a0 PAT and repo are required.';return;}
+  status.textContent='Testing\u2026';
+  fetch('https://api.github.com/repos/'+repo,{headers:{Authorization:'token '+pat}})
+    .then(function(r){
+      if(r.ok){
+        localStorage.setItem(GH_CFG_KEY,JSON.stringify({pat:pat,repo:repo,branch:branch}));
+        status.style.color='var(--ne-gh-ok)';
+        status.textContent='\u2713 Connected \u2014 '+repo;
+        ghSaveNotes(collectAllNotes(),null);
+        setTimeout(neCloseSettings,1800);
+      } else {
+        status.style.color='var(--ne-gh-err)';
+        status.textContent='\u2715 Error '+r.status+' \u2014 check PAT and repo name.';
+      }
+    }).catch(function(){
+      status.style.color='var(--ne-gh-err)';
+      status.textContent='\u2715 Network error \u2014 deploy to GitHub Pages to test.';
+    });
+};
+
+/* ── Load from GitHub on page open ── */
+(function(){
+  ghLoadNotes(function(data){
+    if(!data)return;
+    Object.keys(data).forEach(function(cid){
+      var remote=data[cid];var local=getCardNotes(cid);
+      if(!local.length&&remote.length){saveCardNotes(cid,remote);renderNotes(cid);}
+    });
+  });
+})();
+
+})();
+/* ════ END NOTES ENGINE v3 ════════════════════════════════════════ */
+
+
 TABS.forEach((tab, ti) => {
   const btn = document.createElement('button');
   btn.className = 'tab-btn' + (ti === 0 ? ' active' : '');
   btn.textContent = tab.label;
+  btn.dataset.tabId = tab.id;
   btn.onclick = () => {
     document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
     document.querySelectorAll('.tab-section').forEach(s => s.classList.remove('active'));
     btn.classList.add('active');
     document.getElementById('sec-' + ti).classList.add('active');
+    if (typeof sbHighlightSubtopic === 'function') sbHighlightSubtopic(tab.id);
   };
   tabBar.appendChild(btn);
 
@@ -1588,8 +2199,10 @@ TABS.forEach((tab, ti) => {
   tab.topics.forEach((topic, tpi) => {
     const gid = `g${ti}_${tpi}`;
     const cid = `c${ti}_${tpi}`;
+    const cardId = `${tab.id}_${tpi}`;
     const div = document.createElement('div');
     div.className = 'gap';
+    // Set card HTML without note zone (avoids backtick conflicts in template literal)
     div.innerHTML = `
       <div class="gap-header" onclick="tog('${gid}','${cid}')">
         <div class="gap-num">${tpi + 1}</div>
@@ -1598,6 +2211,73 @@ TABS.forEach((tab, ti) => {
         <span class="chevron${tpi === 0 ? ' open' : ''}" id="${cid}">▶</span>
       </div>
       <div class="gap-body${tpi === 0 ? ' open' : ''}" id="${gid}">${topic.body}</div>`;
+    // Append note zone separately (its HTML contains backticks which break template literals)
+    const bodyEl = div.querySelector('#' + gid);
+    const noteZoneEl = document.createElement('div');
+    noteZoneEl.innerHTML = buildNoteZone(cardId);
+    bodyEl.appendChild(noteZoneEl.firstElementChild || noteZoneEl);
+    sec.appendChild(div);
+  });
+
+  tabContent.appendChild(sec);
+});
+
+/* init notes for all cards */
+TABS.forEach((tab, ti) => {
+  tab.topics.forEach((_, tpi) => { initNotes(`${tab.id}_${tpi}`); });
+});
+
+// Sync sidebar with first active tab on load
+if (typeof sbHighlightSubtopic === 'function' && TABS.length > 0) {
+  sbHighlightSubtopic(TABS[0].id);
+}
+
+function tog(b, c) {
+  document.getElementById(b).classList.toggle('open');
+  document.getElementById(c).classList.toggle('open');
+}
+
+
+
+
+TABS.forEach((tab, ti) => {
+  const btn = document.createElement('button');
+  btn.className = 'tab-btn' + (ti === 0 ? ' active' : '');
+  btn.textContent = tab.label;
+  btn.dataset.tabId = tab.id;
+  btn.onclick = () => {
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.tab-section').forEach(s => s.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById('sec-' + ti).classList.add('active');
+    if (typeof sbHighlightSubtopic === 'function') sbHighlightSubtopic(tab.id);
+  };
+  tabBar.appendChild(btn);
+
+  const sec = document.createElement('div');
+  sec.className = 'tab-section' + (ti === 0 ? ' active' : '');
+  sec.id = 'sec-' + ti;
+
+    tab.topics.forEach((topic, tpi) => {
+    const gid = `g${ti}_${tpi}`;
+    const cid = `c${ti}_${tpi}`;
+    const cardId = `${tab.id}_${tpi}`;
+    const div = document.createElement('div');
+    div.className = 'gap';
+    // Set card HTML without note zone (avoids backtick conflicts in template literal)
+    div.innerHTML = `
+      <div class="gap-header" onclick="tog('${gid}','${cid}')">
+        <div class="gap-num">${tpi + 1}</div>
+        <div class="gap-title">${topic.title}</div>
+        <span class="gap-tag">${tab.freq}</span>
+        <span class="chevron${tpi === 0 ? ' open' : ''}" id="${cid}">▶</span>
+      </div>
+      <div class="gap-body${tpi === 0 ? ' open' : ''}" id="${gid}">${topic.body}</div>`;
+    // Append note zone separately (its HTML contains backticks which break template literals)
+    const bodyEl = div.querySelector('#' + gid);
+    const noteZoneEl = document.createElement('div');
+    noteZoneEl.innerHTML = buildNoteZone(cardId);
+    bodyEl.appendChild(noteZoneEl.firstElementChild || noteZoneEl);
     sec.appendChild(div);
   });
 
@@ -1613,638 +2293,12 @@ function tog(b, c) {
 
 
 
-/* ════ NOTES ENGINE v2 ════════════════════════════════════════════ */
-(function() {
-
-// ── Storage keys ──────────────────────────────────────────────────
-var NP = 'gcp_pde_notes_';      // prefix for note data
-var IP = 'gcp_pde_imgs_';       // prefix for image data (base64)
-var GH_CFG_KEY = 'gcp_pde_gh_cfg';
-
-// ── GitHub config ─────────────────────────────────────────────────
-function ghCfg() {
-  try { return JSON.parse(localStorage.getItem(GH_CFG_KEY) || 'null'); } catch(e) { return null; }
-}
-
-// ── Local note storage ────────────────────────────────────────────
-function getCardNotes(id) {
-  try { var r = localStorage.getItem(NP + id); return r ? JSON.parse(r) : []; } catch(e) { return []; }
-}
-function saveCardNotes(id, notes) {
-  try { localStorage.setItem(NP + id, JSON.stringify(notes)); } catch(e) {}
-}
-
-// ── Image storage (base64 keyed by imgKey) ────────────────────────
-function getImg(imgKey) {
-  try { return localStorage.getItem(IP + imgKey) || null; } catch(e) { return null; }
-}
-function setImg(imgKey, dataUrl) {
-  try { localStorage.setItem(IP + imgKey, dataUrl); } catch(e) {
-    alert('Storage full — please delete some images to add new ones.'); return false;
-  }
-  return true;
-}
-function delImg(imgKey) { try { localStorage.removeItem(IP + imgKey); } catch(e) {} }
-
-// ── Image compression ─────────────────────────────────────────────
-function compressImage(file, cb) {
-  var reader = new FileReader();
-  reader.onload = function(e) {
-    var img = new Image();
-    img.onload = function() {
-      var MAX = 1200, q = 0.78;
-      var w = img.width, h = img.height;
-      if (w > MAX) { h = Math.round(h * MAX / w); w = MAX; }
-      var canvas = document.createElement('canvas');
-      canvas.width = w; canvas.height = h;
-      canvas.getContext('2d').drawImage(img, 0, 0, w, h);
-      cb(canvas.toDataURL('image/jpeg', q));
-    };
-    img.src = e.target.result;
-  };
-  reader.readAsDataURL(file);
-}
-
-// ── GitHub API ────────────────────────────────────────────────────
-function ghSaveNotes(allNotesPayload, statusCb) {
-  var cfg = ghCfg();
-  if (!cfg || !cfg.pat || !cfg.repo) { if (statusCb) statusCb('local'); return; }
-  var path = 'notes-data/notes.json';
-  var content = btoa(unescape(encodeURIComponent(JSON.stringify(allNotesPayload, null, 2))));
-  ghPut(cfg, path, content, 'Update notes', statusCb);
-}
-
-function ghSaveImage(imgKey, dataUrl, statusCb) {
-  var cfg = ghCfg();
-  if (!cfg || !cfg.pat || !cfg.repo) return;
-  // strip the data:image/...;base64, prefix
-  var b64 = dataUrl.split(',')[1];
-  var path = 'notes-data/images/' + imgKey + '.jpg';
-  ghPut(cfg, path, b64, 'Add image ' + imgKey, statusCb);
-}
-
-function ghDeleteImage(imgKey) {
-  var cfg = ghCfg();
-  if (!cfg || !cfg.pat || !cfg.repo) return;
-  var path = 'notes-data/images/' + imgKey + '.jpg';
-  // Get SHA first, then delete
-  var url = 'https://api.github.com/repos/' + cfg.repo + '/contents/' + path + '?ref=' + cfg.branch;
-  fetch(url, { headers: { Authorization: 'token ' + cfg.pat } })
-    .then(function(r) { return r.ok ? r.json() : null; })
-    .then(function(data) {
-      if (!data || !data.sha) return;
-      fetch(url, { method: 'DELETE', headers: { Authorization: 'token ' + cfg.pat, 'Content-Type': 'application/json' },
-        body: JSON.stringify({ message: 'Delete image ' + imgKey, sha: data.sha, branch: cfg.branch }) });
-    }).catch(function(){});
-}
-
-function ghPut(cfg, path, contentB64, message, statusCb) {
-  var url = 'https://api.github.com/repos/' + cfg.repo + '/contents/' + path;
-  // Get existing SHA (needed for updates)
-  fetch(url + '?ref=' + cfg.branch, { headers: { Authorization: 'token ' + cfg.pat } })
-    .then(function(r) { return r.ok ? r.json() : null; })
-    .then(function(existing) {
-      var body = { message: message, content: contentB64, branch: cfg.branch };
-      if (existing && existing.sha) body.sha = existing.sha;
-      return fetch(url, { method: 'PUT', headers: { Authorization: 'token ' + cfg.pat, 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
-    })
-    .then(function(r) { if (statusCb) statusCb(r.ok ? 'ok' : 'err'); })
-    .catch(function() { if (statusCb) statusCb('err'); });
-}
-
-// ── Load notes from GitHub on init ───────────────────────────────
-function ghLoadNotes(cb) {
-  var cfg = ghCfg();
-  if (!cfg || !cfg.pat || !cfg.repo) { cb(null); return; }
-  var url = 'https://api.github.com/repos/' + cfg.repo + '/contents/notes-data/notes.json?ref=' + cfg.branch;
-  fetch(url, { headers: { Authorization: 'token ' + cfg.pat } })
-    .then(function(r) { return r.ok ? r.json() : null; })
-    .then(function(data) {
-      if (!data || !data.content) { cb(null); return; }
-      try {
-        var json = JSON.parse(decodeURIComponent(escape(atob(data.content.replace(/\n/g, '')))));
-        cb(json);
-      } catch(e) { cb(null); }
-    }).catch(function() { cb(null); });
-}
-
-// ── Collect ALL notes for GitHub sync ────────────────────────────
-function collectAllNotes() {
-  var all = {};
-  for (var i = 0; i < localStorage.length; i++) {
-    var k = localStorage.key(i);
-    if (k && k.startsWith(NP)) {
-      try { all[k.slice(NP.length)] = JSON.parse(localStorage.getItem(k)); } catch(e) {}
-    }
-  }
-  return all;
-}
-
-// ── Timestamp format ──────────────────────────────────────────────
-function fmtTs(ts) {
-  var d = new Date(ts);
-  return d.toLocaleDateString('en-CA',{month:'short',day:'numeric',year:'numeric'}) + ' ' +
-         d.toLocaleTimeString('en-CA',{hour:'2-digit',minute:'2-digit'});
-}
-
-// ── Markdown → HTML for display ───────────────────────────────────
-function mdToHtml(md) {
-  if (!md) return '';
-  var s = md
-    .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
-
-  // fenced code blocks
-  s = s.replace(/```([\s\S]*?)```/g, function(_,c){ return '<pre>' + c.trim() + '</pre>'; });
-  // inline code
-  s = s.replace(/`([^`\n]+)`/g, '<code>$1</code>');
-  // bold **text**
-  s = s.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
-  // italic *text*
-  s = s.replace(/\*(.+?)\*/g, '<em>$1</em>');
-  // underline __text__
-  s = s.replace(/__(.+?)__/g, '<u>$1</u>');
-
-  // toggles: lines starting with "> " become collapsibles
-  var lines = s.split('\n');
-  var out = [], inToggle = false, toggleContent = [];
-  for (var i = 0; i < lines.length; i++) {
-    var line = lines[i];
-    if (line.startsWith('&gt; ')) {
-      if (!inToggle) {
-        inToggle = true;
-        var summary = line.slice(5);
-        out.push('<div class="note-toggle-wrap"><div class="note-toggle-head" onclick="neToggle(this)"><span class="note-toggle-icon">▸</span>' + summary + '</div><div class="note-toggle-body">');
-        toggleContent = [];
-      } else {
-        toggleContent.push(line.slice(5));
-      }
-    } else {
-      if (inToggle) {
-        out.push(toggleContent.join('<br>') + '</div></div>');
-        inToggle = false; toggleContent = [];
-      }
-      // bullet lines
-      if (line.startsWith('- ') || line.startsWith('• ')) {
-        out.push('<ul><li>' + line.slice(2) + '</li></ul>');
-      } else {
-        out.push(line);
-      }
-    }
-  }
-  if (inToggle) { out.push(toggleContent.join('<br>') + '</div></div>'); }
-
-  // join, convert remaining newlines, merge adjacent <ul>
-  s = out.join('\n');
-  s = s.replace(/(<\/ul>)\n(<ul>)/g, '');
-  s = s.replace(/\n(?!<pre|<ul|<\/ul|<div)/g, '<br>');
-
-  return s;
-}
-
-// ── Toggle handler for saved notes ───────────────────────────────
-window.neToggle = function(head) {
-  var icon = head.querySelector('.note-toggle-icon');
-  var body = head.nextElementSibling;
-  if (!body) return;
-  icon.classList.toggle('open');
-  body.classList.toggle('open');
-};
-
-// ── Render a saved note ───────────────────────────────────────────
-function renderNote(cardId, note, idx) {
-  var item = document.createElement('div');
-  item.className = 'note-item';
-  item.dataset.idx = idx;
-
-  // body
-  var body = document.createElement('div');
-  body.className = 'note-item-body';
-  body.innerHTML = mdToHtml(note.text || '');
-
-  // images
-  var imgZone = document.createElement('div');
-  imgZone.className = 'note-img-zone';
-  if (note.imgs && note.imgs.length) {
-    note.imgs.forEach(function(imgKey, ii) {
-      var dataUrl = getImg(imgKey);
-      if (!dataUrl) return;
-      var wrap = document.createElement('div');
-      wrap.className = 'note-img-wrap';
-      var img = document.createElement('img');
-      img.src = dataUrl; img.alt = 'note image';
-      img.onclick = function() { neLightbox(dataUrl); };
-      var del = document.createElement('button');
-      del.className = 'note-img-del'; del.textContent = '✕ remove';
-      (function(key, noteIdx, imgIdx) {
-        del.onclick = function(e) { e.stopPropagation(); neDeleteImg(cardId, noteIdx, imgIdx); };
-      })(imgKey, idx, ii);
-      wrap.appendChild(img); wrap.appendChild(del);
-      imgZone.appendChild(wrap);
-    });
-  }
-
-  // footer
-  var footer = document.createElement('div');
-  footer.className = 'note-item-footer';
-  var ts = document.createElement('span');
-  ts.className = 'note-ts'; ts.textContent = fmtTs(note.ts);
-
-  // sync badge
-  var syncBadge = document.createElement('span');
-  syncBadge.className = 'note-sync-badge';
-  if (note.synced) {
-    syncBadge.textContent = '✓ synced'; syncBadge.classList.add('note-sync-ok');
-  } else if (ghCfg()) {
-    syncBadge.textContent = 'local only'; syncBadge.classList.add('note-sync-err');
-  }
-  ts.appendChild(syncBadge);
-
-  var actions = document.createElement('div');
-  actions.className = 'note-item-actions';
-  var editBtn = document.createElement('button');
-  editBtn.className = 'note-action-btn'; editBtn.textContent = 'edit';
-  editBtn.onclick = function() { neEdit(cardId, idx); };
-  var delBtn = document.createElement('button');
-  delBtn.className = 'note-action-btn del'; delBtn.textContent = 'delete';
-  delBtn.onclick = function() { neDelete(cardId, idx); };
-  actions.appendChild(editBtn); actions.appendChild(delBtn);
-  footer.appendChild(ts); footer.appendChild(actions);
-
-  item.appendChild(body);
-  if (imgZone.children.length) item.appendChild(imgZone);
-  item.appendChild(footer);
-  return item;
-}
-
-// ── Render all notes for a card ───────────────────────────────────
-function renderNotes(cardId) {
-  var zone = document.getElementById('nz-' + cardId);
-  if (!zone) return;
-  var list = zone.querySelector('.notes-list');
-  list.innerHTML = '';
-  getCardNotes(cardId).forEach(function(note, idx) {
-    list.appendChild(renderNote(cardId, note, idx));
-  });
-}
-window.renderNotes = renderNotes;
-
-// ── Build the note zone HTML ──────────────────────────────────────
-function buildNoteZone(cardId) {
-  return '<div class="note-zone" id="nz-' + cardId + '">' +
-    '<div class="notes-list"></div>' +
-    '<div class="note-form" id="nf-' + cardId + '" style="display:none" data-edit-idx="" data-pending-imgs="[]">' +
-      // Toolbar
-      '<div class="ne-toolbar">' +
-        '<button class="ne-tb-btn" title="Bold (**text**)" onclick="neFmt(\'' + cardId + '\',\'bold\')"><b>B</b></button>' +
-        '<button class="ne-tb-btn" title="Italic (*text*)" onclick="neFmt(\'' + cardId + '\',\'italic\')"><i>I</i></button>' +
-        '<button class="ne-tb-btn" title="Underline (__text__)" onclick="neFmt(\'' + cardId + '\',\'underline\')"><u>U</u></button>' +
-        '<div class="ne-tb-sep"></div>' +
-        '<button class="ne-tb-btn" title="Inline code (`code`)" onclick="neFmt(\'' + cardId + '\',\'code\')">`&nbsp;`</button>' +
-        '<button class="ne-tb-btn" title="Code block (```)" onclick="neFmt(\'' + cardId + '\',\'codeblock\')">```</button>' +
-        '<div class="ne-tb-sep"></div>' +
-        '<button class="ne-tb-btn" title="Bullet list (- item)" onclick="neFmt(\'' + cardId + '\',\'bullet\')">• list</button>' +
-        '<button class="ne-tb-btn" title="Toggle/collapsible (> heading)" onclick="neFmt(\'' + cardId + '\',\'toggle\')">▸ toggle</button>' +
-        '<div class="ne-tb-sep"></div>' +
-        '<button class="ne-tb-img-btn" title="Add image" onclick="neTriggerPicker(\'' + cardId + '\')">' +
-          '<svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="1" y="2" width="10" height="8" rx="1.5"/><circle cx="4" cy="5" r="1"/><polyline points="1,9 4,6 6.5,8.5 8,7 11,10"/></svg>' +
-          'img' +
-        '</button>' +
-        '<input type="file" accept="image/*" multiple style="display:none" id="np-' + cardId + '" onchange="nePickerChange(event,\'' + cardId + '\')">' +
-      '</div>' +
-      // Editor (contenteditable)
-      '<div class="ne-editor" id="ne-' + cardId + '" contenteditable="true" ' +
-        'data-placeholder="Write your note… (markdown: **bold**, *italic*, `code`, ```block```, - bullet, > toggle)" ' +
-        'onpaste="nePaste(event,\'' + cardId + '\')" ' +
-        'ondragover="neDragOver(event)" ondragleave="neDragLeave(event)" ondrop="neDrop(event,\'' + cardId + '\')" ' +
-        'onkeydown="neKeyDown(event,\'' + cardId + '\')">' +
-      '</div>' +
-      '<div class="ne-pending-imgs" id="npi-' + cardId + '"></div>' +
-      '<div class="note-storage-warn" id="nsw-' + cardId + '"></div>' +
-      '<div class="note-form-actions">' +
-        '<button class="note-save-btn" onclick="neSave(\'' + cardId + '\')">save note</button>' +
-        '<button class="note-cancel-btn" onclick="neCancel(\'' + cardId + '\')">cancel</button>' +
-        '<span class="ne-sync-status" id="nss-' + cardId + '"></span>' +
-      '</div>' +
-    '</div>' +
-    '<button class="note-add-trigger" id="nat-' + cardId + '" onclick="neShow(\'' + cardId + '\')">' +
-      '<svg width="13" height="13" viewBox="0 0 13 13" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="1" y="1" width="11" height="11" rx="2"/><line x1="3.5" y1="4" x2="9.5" y2="4"/><line x1="3.5" y1="6.5" x2="9.5" y2="6.5"/><line x1="3.5" y1="9" x2="6.5" y2="9"/><line x1="9.5" y1="7.5" x2="9.5" y2="11"/><line x1="7.5" y1="9.5" x2="11.5" y2="9.5"/></svg>' +
-      ' add note' +
-    '</button>' +
-  '</div>';
-}
-window.buildNoteZone = buildNoteZone;
-
-// ── Placeholder behaviour for contenteditable ────────────────────
-document.addEventListener('focusin', function(e) {
-  if (e.target.classList.contains('ne-editor') && !e.target.textContent.trim()) {
-    e.target.style.color = '';
-  }
-});
-
-// ── Show/hide form ────────────────────────────────────────────────
-window.neShow = function(cardId) {
-  var form = document.getElementById('nf-' + cardId);
-  var trigger = document.getElementById('nat-' + cardId);
-  var editor = document.getElementById('ne-' + cardId);
-  form.dataset.editIdx = '';
-  form.dataset.pendingImgs = '[]';
-  editor.innerHTML = '';
-  document.getElementById('npi-' + cardId).innerHTML = '';
-  form.style.display = 'block';
-  trigger.style.display = 'none';
-  editor.focus();
-};
-
-window.neCancel = function(cardId) {
-  document.getElementById('nf-' + cardId).style.display = 'none';
-  document.getElementById('nat-' + cardId).style.display = 'flex';
-};
-
-// ── Editor: toolbar format actions ───────────────────────────────
-window.neFmt = function(cardId, type) {
-  var editor = document.getElementById('ne-' + cardId);
-  editor.focus();
-  var sel = window.getSelection();
-  var selText = sel && sel.toString() ? sel.toString() : '';
-
-  var inserts = {
-    bold:      { wrap: ['**','**'],           placeholder: 'bold text'      },
-    italic:    { wrap: ['*','*'],             placeholder: 'italic text'    },
-    underline: { wrap: ['__','__'],           placeholder: 'underlined text'},
-    code:      { wrap: ['`','`'],             placeholder: 'code'           },
-    codeblock: { wrap: ['```\n','\n```'],     placeholder: 'code here'      },
-    bullet:    { wrap: ['- ',''],             placeholder: 'list item'      },
-    toggle:    { wrap: ['> ',''],             placeholder: 'Toggle heading' },
-  };
-
-  var cfg = inserts[type];
-  if (!cfg) return;
-
-  var text = selText || cfg.placeholder;
-  var toInsert = cfg.wrap[0] + text + cfg.wrap[1];
-
-  // Insert at cursor in contenteditable
-  if (sel && sel.rangeCount > 0 && editor.contains(sel.anchorNode)) {
-    var range = sel.getRangeAt(0);
-    range.deleteContents();
-    var textNode = document.createTextNode(toInsert);
-    range.insertNode(textNode);
-    // Move cursor to end of insertion
-    range.setStartAfter(textNode);
-    range.setEndAfter(textNode);
-    sel.removeAllRanges();
-    sel.addRange(range);
-  } else {
-    editor.focus();
-    document.execCommand('insertText', false, toInsert);
-  }
-};
-
-// ── Keyboard shortcuts ────────────────────────────────────────────
-window.neKeyDown = function(e, cardId) {
-  if ((e.ctrlKey || e.metaKey) && e.key === 'b') { e.preventDefault(); neFmt(cardId, 'bold'); }
-  if ((e.ctrlKey || e.metaKey) && e.key === 'i') { e.preventDefault(); neFmt(cardId, 'italic'); }
-  if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') { e.preventDefault(); neSave(cardId); }
-};
-
-// ── Image handling ────────────────────────────────────────────────
-window.neTriggerPicker = function(cardId) {
-  document.getElementById('np-' + cardId).click();
-};
-
-window.nePickerChange = function(e, cardId) {
-  Array.from(e.target.files).forEach(function(file) { neAddImage(cardId, file); });
-  e.target.value = '';
-};
-
-window.nePaste = function(e, cardId) {
-  var items = e.clipboardData && e.clipboardData.items;
-  if (!items) return;
-  for (var i = 0; i < items.length; i++) {
-    if (items[i].type.startsWith('image/')) {
-      e.preventDefault();
-      neAddImage(cardId, items[i].getAsFile());
-      return;
-    }
-  }
-  // plain text paste — let default happen (contenteditable handles it)
-};
-
-window.neDragOver = function(e) { e.preventDefault(); e.currentTarget.classList.add('drag-over'); };
-window.neDragLeave = function(e) { e.currentTarget.classList.remove('drag-over'); };
-window.neDrop = function(e, cardId) {
-  e.preventDefault(); e.currentTarget.classList.remove('drag-over');
-  var files = e.dataTransfer && e.dataTransfer.files;
-  if (!files) return;
-  for (var i = 0; i < files.length; i++) {
-    if (files[i].type.startsWith('image/')) neAddImage(cardId, files[i]);
-  }
-};
-
-function neAddImage(cardId, file) {
-  compressImage(file, function(dataUrl) {
-    var form = document.getElementById('nf-' + cardId);
-    var pending = JSON.parse(form.dataset.pendingImgs || '[]');
-    var key = cardId + '_pending_' + Date.now() + '_' + pending.length;
-    pending.push({ key: key, dataUrl: dataUrl });
-    form.dataset.pendingImgs = JSON.stringify(pending);
-
-    // Show thumb
-    var zone = document.getElementById('npi-' + cardId);
-    var wrap = document.createElement('div'); wrap.className = 'ne-pending-thumb'; wrap.dataset.key = key;
-    var img = document.createElement('img'); img.src = dataUrl;
-    var del = document.createElement('div'); del.className = 'ne-pending-del'; del.textContent = '✕';
-    del.onclick = function() {
-      var p2 = JSON.parse(form.dataset.pendingImgs || '[]');
-      form.dataset.pendingImgs = JSON.stringify(p2.filter(function(x){ return x.key !== key; }));
-      wrap.remove();
-    };
-    wrap.appendChild(img); wrap.appendChild(del);
-    zone.appendChild(wrap);
-  });
-}
-
-// ── Save ──────────────────────────────────────────────────────────
-window.neSave = function(cardId) {
-  var form   = document.getElementById('nf-' + cardId);
-  var editor = document.getElementById('ne-' + cardId);
-  var statusEl = document.getElementById('nss-' + cardId);
-
-  // Get markdown text from contenteditable (innerText preserves newlines)
-  var text = editor.innerText.trim();
-  var pending = JSON.parse(form.dataset.pendingImgs || '[]');
-
-  if (!text && !pending.length) return;
-
-  var notes = getCardNotes(cardId);
-  var editIdx = form.dataset.editIdx;
-
-  // Save images to localStorage
-  var imgKeys = [];
-  pending.forEach(function(p) {
-    // Assign permanent key
-    var permKey = cardId + '_' + Date.now() + '_' + Math.random().toString(36).slice(2,7);
-    if (setImg(permKey, p.dataUrl)) {
-      imgKeys.push(permKey);
-      // Also push to GitHub
-      if (statusEl) { statusEl.textContent = 'syncing…'; }
-      ghSaveImage(permKey, p.dataUrl, null);
-    }
-  });
-
-  var noteObj = { text: text, ts: Date.now(), imgs: imgKeys };
-
-  if (editIdx !== '') {
-    var idx = parseInt(editIdx);
-    // Keep existing images unless removed
-    var existing = notes[idx] || {};
-    noteObj.imgs = (existing.imgs || []).concat(imgKeys);
-    noteObj.ts = existing.ts || noteObj.ts;
-    notes[idx] = noteObj;
-  } else {
-    notes.push(noteObj);
-  }
-
-  saveCardNotes(cardId, notes);
-  renderNotes(cardId);
-
-  // Reset form
-  editor.innerHTML = '';
-  form.dataset.pendingImgs = '[]';
-  document.getElementById('npi-' + cardId).innerHTML = '';
-  form.style.display = 'none';
-  document.getElementById('nat-' + cardId).style.display = 'flex';
-
-  // GitHub sync
-  var cfg = ghCfg();
-  if (cfg && cfg.pat) {
-    if (statusEl) statusEl.textContent = 'syncing…';
-    ghSaveNotes(collectAllNotes(), function(status) {
-      // Mark note as synced in localStorage
-      var ns2 = getCardNotes(cardId);
-      var lastIdx = editIdx !== '' ? parseInt(editIdx) : ns2.length - 1;
-      if (ns2[lastIdx]) { ns2[lastIdx].synced = (status === 'ok'); saveCardNotes(cardId, ns2); renderNotes(cardId); }
-    });
-  }
-};
-
-// ── Edit ──────────────────────────────────────────────────────────
-window.neEdit = function(cardId, idx) {
-  var notes  = getCardNotes(cardId);
-  var note   = notes[idx];
-  if (!note) return;
-  var form   = document.getElementById('nf-' + cardId);
-  var editor = document.getElementById('ne-' + cardId);
-  form.dataset.editIdx    = idx;
-  form.dataset.pendingImgs = '[]';
-  editor.innerText = note.text || '';
-  document.getElementById('npi-' + cardId).innerHTML = '';
-  form.style.display = 'block';
-  document.getElementById('nat-' + cardId).style.display = 'none';
-  editor.focus();
-};
-
-// ── Delete note ───────────────────────────────────────────────────
-window.neDelete = function(cardId, idx) {
-  var notes = getCardNotes(cardId);
-  var note  = notes[idx];
-  // Delete images
-  if (note && note.imgs) {
-    note.imgs.forEach(function(k) { delImg(k); ghDeleteImage(k); });
-  }
-  notes.splice(idx, 1);
-  saveCardNotes(cardId, notes);
-  renderNotes(cardId);
-  // Re-sync to GitHub
-  if (ghCfg()) ghSaveNotes(collectAllNotes(), null);
-};
-
-// ── Delete image from saved note ──────────────────────────────────
-window.neDeleteImg = function(cardId, noteIdx, imgArrIdx) {
-  var notes = getCardNotes(cardId);
-  var note  = notes[noteIdx];
-  if (!note || !note.imgs) return;
-  var imgKey = note.imgs[imgArrIdx];
-  delImg(imgKey);
-  ghDeleteImage(imgKey);
-  note.imgs.splice(imgArrIdx, 1);
-  saveCardNotes(cardId, notes);
-  renderNotes(cardId);
-  if (ghCfg()) ghSaveNotes(collectAllNotes(), null);
-};
-
-// ── Lightbox ──────────────────────────────────────────────────────
-window.neLightbox = function(src) {
-  var lb = document.getElementById('neLightbox');
-  if (!lb) return;
-  document.getElementById('neLightboxImg').src = src;
-  lb.classList.add('open');
-};
-
-// ── Init: load from GitHub if configured, else use localStorage ──
-window.initNotes = function(cardId) {
-  renderNotes(cardId);
-};
-
-// On first load, try to pull latest from GitHub and merge
-(function ghInitLoad() {
-  ghLoadNotes(function(data) {
-    if (!data) return;
-    Object.keys(data).forEach(function(cid) {
-      var remote = data[cid];
-      var local  = getCardNotes(cid);
-      if (!local.length && remote.length) {
-        saveCardNotes(cid, remote);
-        renderNotes(cid);
-      }
-    });
-  });
-})();
-
-// ════ GITHUB SETTINGS ════════════════════════════════════════════
-window.neOpenSettings = function() {
-  var cfg = ghCfg() || {};
-  document.getElementById('nePatInput').value    = cfg.pat    || '';
-  document.getElementById('neRepoInput').value   = cfg.repo   || '';
-  document.getElementById('neBranchInput').value = cfg.branch || 'main';
-  document.getElementById('neModalStatus').textContent = '';
-  document.getElementById('neSettingsOverlay').classList.add('open');
-};
-window.neCloseSettings = function() {
-  document.getElementById('neSettingsOverlay').classList.remove('open');
-};
-window.neTestAndSave = function() {
-  var pat    = document.getElementById('nePatInput').value.trim();
-  var repo   = document.getElementById('neRepoInput').value.trim();
-  var branch = document.getElementById('neBranchInput').value.trim() || 'main';
-  var status = document.getElementById('neModalStatus');
-  if (!pat || !repo) { status.textContent = '⚠ PAT and repo are required.'; return; }
-  status.textContent = 'Testing connection…';
-  fetch('https://api.github.com/repos/' + repo, { headers: { Authorization: 'token ' + pat } })
-    .then(function(r) {
-      if (r.ok) {
-        localStorage.setItem(GH_CFG_KEY, JSON.stringify({ pat:pat, repo:repo, branch:branch }));
-        status.textContent = '✓ Connected! Notes will sync to ' + repo;
-        // Push all local notes immediately
-        ghSaveNotes(collectAllNotes(), null);
-        setTimeout(neCloseSettings, 1800);
-      } else {
-        status.textContent = '✕ Error ' + r.status + ' — check your PAT and repo name.';
-      }
-    }).catch(function() { status.textContent = '✕ Network error — check your connection.'; });
-};
-
-})(); /* end IIFE */
-/* ════ END NOTES ENGINE v2 ════════════════════════════════════════ */
-
 /* ════ SIDEBAR + BOTTOM BAR JS ════ */
 (function () {
-  var sidebar = document.getElementById('sidebar');
-  var btn     = document.getElementById('sbCollapseBtn');
-  var overlay = document.getElementById('sbOverlay');
+  var sidebar  = document.getElementById('sidebar');
   if (!sidebar) return;
 
-  // ── Restore collapsed state from localStorage ──
+  // ── Restore collapsed state ──────────────────────────────────
   var isCollapsed = localStorage.getItem('sbCollapsed') === '1';
   if (isCollapsed) {
     sidebar.classList.add('collapsed');
@@ -2253,67 +2307,83 @@ window.neTestAndSave = function() {
     document.body.classList.add('sb-open');
   }
 
-  // ── Mark active page ──
-  var path    = window.location.pathname.split('/').pop().replace('.html', '') || 'index';
-  var hash    = window.location.hash.replace('#', '');
+  // ── Active page ───────────────────────────────────────────────
+  var pagePath = window.location.pathname.split('/').pop().replace('.html','') || 'index';
 
-  // Activate module links
-  document.querySelectorAll('.sb-mod-link[data-page]').forEach(function (el) {
-    if (el.getAttribute('data-page') === path) el.classList.add('active');
+  document.querySelectorAll('.sb-mod-link[data-page]').forEach(function(el) {
+    if (el.getAttribute('data-page') === pagePath) el.classList.add('active');
   });
-  // Activate bottom bar items
-  document.querySelectorAll('.bb-item[data-page]').forEach(function (el) {
-    if (el.getAttribute('data-page') === path) el.classList.add('active');
+  document.querySelectorAll('.bb-item[data-page]').forEach(function(el) {
+    if (el.getAttribute('data-page') === pagePath) el.classList.add('active');
   });
 
-  // ── Open subtopic group for current page ──
-  var grp = document.querySelector('.sb-mod-group[data-group="' + path + '"]');
-  if (grp) {
-    grp.classList.add('open');
-    // Highlight active subtopic if hash present
-    if (hash) {
-      var sub = grp.querySelector('.sb-sub-link[data-tab="' + hash + '"]');
-      if (sub) sub.classList.add('active');
-    }
-  }
+  // ── Open current module group in sidebar ─────────────────────
+  var grp = document.querySelector('.sb-mod-group[data-group="' + pagePath + '"]');
+  if (grp) grp.classList.add('open');
 
-  // ── Expand/collapse on group header click (toggle subtopics) ──
-  document.querySelectorAll('.sb-mod-group').forEach(function (grp) {
-    var link = grp.querySelector(':scope > .sb-mod-link');
-    if (!link) return;
-    link.addEventListener('click', function (e) {
-      // Only intercept the expand toggle, not navigation to other pages
-      var targetPage = link.getAttribute('data-page');
-      if (targetPage && targetPage !== path) return; // let it navigate
-      // Same page or no page change — toggle subtopics
+  // ── Sidebar subtopic click → activate tab ────────────────────
+  document.querySelectorAll('.sb-sub-link[data-tab]').forEach(function(link) {
+    link.addEventListener('click', function(e) {
       e.preventDefault();
-      grp.classList.toggle('open');
+      var tabId = link.getAttribute('data-tab');
+      sbActivateTab(tabId, true);
     });
   });
 
-  // ── Hash change: update active subtopic ──
-  window.addEventListener('hashchange', function () {
-    var h = window.location.hash.replace('#', '');
-    document.querySelectorAll('.sb-sub-link').forEach(function (el) { el.classList.remove('active'); });
-    if (h && grp) {
-      var sub = grp.querySelector('.sb-sub-link[data-tab="' + h + '"]');
-      if (sub) sub.classList.add('active');
-    }
+  // ── Expand/collapse module group header ──────────────────────
+  document.querySelectorAll('.sb-mod-group').forEach(function(g) {
+    var modLink = g.querySelector(':scope > .sb-mod-link');
+    if (!modLink) return;
+    modLink.addEventListener('click', function(e) {
+      var targetPage = modLink.getAttribute('data-page');
+      if (targetPage && targetPage !== pagePath) return; // navigate normally
+      e.preventDefault();
+      g.classList.toggle('open');
+    });
   });
+
 })();
+
+// ── sbActivateTab: activate a tab and sync sidebar highlight ──
+function sbActivateTab(tabId, scrollTop) {
+  // 1. Find and click the tab button with matching data-tab-id
+  var tabBtn = document.querySelector('.tab-btn[data-tab-id="' + tabId + '"]');
+  if (tabBtn) tabBtn.click();
+
+  // 2. Highlight the matching sidebar subtopic link
+  sbHighlightSubtopic(tabId);
+
+  // 3. Scroll page to top of content
+  if (scrollTop) {
+    var content = document.getElementById('tabContent');
+    if (content) content.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+}
+
+// ── sbHighlightSubtopic: set active on matching sidebar link ──
+function sbHighlightSubtopic(tabId) {
+  document.querySelectorAll('.sb-sub-link').forEach(function(el) {
+    el.classList.remove('active');
+  });
+  var active = document.querySelector('.sb-sub-link[data-tab="' + tabId + '"]');
+  if (active) {
+    active.classList.add('active');
+    // Scroll it into view in sidebar if needed
+    active.scrollIntoView({ block: 'nearest' });
+  }
+}
 
 function toggleSidebar() {
   var sidebar = document.getElementById('sidebar');
   if (!sidebar) return;
   var collapsed = sidebar.classList.toggle('collapsed');
   document.body.classList.toggle('sb-open',   !collapsed);
-  document.body.classList.toggle('sb-closed', collapsed);
+  document.body.classList.toggle('sb-closed',  collapsed);
   localStorage.setItem('sbCollapsed', collapsed ? '1' : '0');
 }
-function closeSidebar() {
-  // no-op on desktop; overlay not shown
-}
+function closeSidebar() {}
 /* ════ END SIDEBAR JS ════ */
+
 
 </script>
 </body>
