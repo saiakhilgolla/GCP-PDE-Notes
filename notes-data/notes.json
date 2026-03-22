@@ -14,7 +14,8 @@
     {
       "text": "- Redaction completey removes data irreversibly. \n- Tokenization is reversible. You can also use tokenized data for JOINs. Access to reverse tokenization is provided through giving access to the encryption key store in KMS. The service account would be granted access to use the specific key used for tokenization.",
       "ts": 1774157270355,
-      "imgs": []
+      "imgs": [],
+      "synced": false
     }
   ]
 }
