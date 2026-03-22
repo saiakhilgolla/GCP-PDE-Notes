@@ -1,326 +1,220 @@
 <!DOCTYPE html>
 <html lang="en" data-theme="light">
 <head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Module 3b — Cloud Storage &amp; Data Transfer</title>
 <script>
 (function(){
   var t = sessionStorage.getItem('gcp_pde_theme') || 'light';
   document.documentElement.setAttribute('data-theme', t);
 })();
 </script>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Module 3 — Storage Services</title>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap');
 
-/* ── DARK THEME ── */
 [data-theme="dark"] {
-  --bg: #0d0f14;
-  --surface: #161920;
-  --surface2: #1e2230;
-  --border: #2a2f3d;
-  --text: #e8eaf0;
-  --muted: #7a8099;
-  --dim: #4a5168;
-  --prose-color: #c0c4d4;
-  --kv-val-color: #9aa0b8;
-  --code-color: #c8d0e8;
-
-  --accent: #4dff91;
-  --accent-bg: #091a11;
-  --accent-border: #0f4024;
-  --accent-text: #4dff91;
-  --num-fg: #0d0f14;
-
-  --alert-info-bg: #091a11;    --alert-info-text: #99ffcc;   --alert-info-border: #4dff91;
-  --alert-warn-bg: #1a1000;    --alert-warn-text: #ffd699;   --alert-warn-border: #ffb84d;
-  --alert-red-bg:  #1a0a0a;    --alert-red-text:  #ffaaaa;   --alert-red-border:  #ff4d4d;
-  --alert-green-bg:#091a11;    --alert-green-text:#99ffcc;   --alert-green-border:#4dff91;
-
-  --code-bg: #0a0c10;
-  --scenario-bg: #1e2230;
-  --section-label-color: #2a6641;
-  --toggle-track-on: #0f4024;
-  --toggle-border: #0f4024;
-  --toggle-knob: #4dff91;
-  --toggle-knob-shadow: rgba(77,255,145,0.3);
-  --sun-opacity: 0.35;
-  --moon-opacity: 1;
-
-  --mini-bg: #1e2230;
-  --mini-good-bg: #091a11;
-  --mini-bad-bg: #1a0a0a;
-  --mini-good-text: #4dff91;
-  --mini-bad-text: #ff4d4d;
-  --table-head-color: #4a5168;
-  --table-row-border: #1e2230;
-  --table-td-color: #9aa0b8;
-  --decision-row-bg: #1e2230;
-  --decision-badge-text: #0d0f14;
+  --bg:#0d0f14;--surface:#161920;--surface2:#1e2230;--border:#2a2f3d;--text:#e8eaf0;--muted:#7a8099;--dim:#4a5168;
+  --prose-color:#c0c4d4;--kv-val-color:#9aa0b8;--code-color:#c8d0e8;
+  --accent:#4dff91;--accent-bg:#091a11;--accent-border:#0f4024;--accent-text:#4dff91;--num-fg:#0d0f14;
+  --alert-blue-bg:#091a11;--alert-blue-text:#99ffcc;--alert-blue-border:#4dff91;
+  --alert-amber-bg:#1a1000;--alert-amber-text:#ffd699;--alert-amber-border:#ffb84d;
+  --alert-red-bg:#1a0a0a;--alert-red-text:#ffaaaa;--alert-red-border:#ff4d4d;
+  --alert-green-bg:#091a11;--alert-green-text:#99ffcc;--alert-green-border:#4dff91;
+  --alert-teal-bg:#061515;--alert-teal-text:#99eeff;--alert-teal-border:#00ccdd;
+  --alert-purple-bg:#100a1a;--alert-purple-text:#ddb3ff;--alert-purple-border:#b84dff;
+  --code-bg:#0a0c10;--section-label-color:#2a6641;
+  --toggle-track:#0f4024;--toggle-border:#0f4024;--toggle-knob:#4dff91;--toggle-shadow:rgba(77,255,145,0.3);
+  --sun-op:0.35;--moon-op:1;
+  --mini-bg:#1e2230;--mini-good-bg:#091a11;--mini-bad-bg:#1a0a0a;
+  --mini-good-text:#4dff91;--mini-bad-text:#ff4d4d;
+  --table-head:#4a5168;--table-row-border:#1e2230;--table-td:#9aa0b8;
+  --dt-bg:#1e2230;--dt-q:#9aa0b8;
+  --card-blue-bg:#050f1a;--card-blue-border:#1a3a5c;--card-blue-title:#4d9fff;
+  --card-teal-bg:#061515;--card-teal-border:#0f3535;--card-teal-title:#4deeff;
+  --card-amber-bg:#1a1000;--card-amber-border:#4d3000;--card-amber-title:#ffb84d;
+  --card-red-bg:#1a0a0a;--card-red-border:#4d1515;--card-red-title:#ff7a7a;
+  --card-purple-bg:#100a1a;--card-purple-border:#3d1550;--card-purple-title:#ddb3ff;
+  --card-green-bg:#091a11;--card-green-border:#0f4024;--card-green-title:#4dff91;
+  --callout-warn-bg:#1a1000;--callout-warn-text:#ffd699;--callout-warn-border:#ffb84d;
+  --callout-info-bg:#091a11;--callout-info-text:#99ffcc;--callout-info-border:#4dff91;
+  --callout-danger-bg:#1a0a0a;--callout-danger-text:#ffaaaa;--callout-danger-border:#ff4d4d;
+  --transfer-featured-border:#4d9fff;
+  --transfer-ok-bg:#091a11;--transfer-ok-text:#4dff91;
+  --transfer-warn-bg:#1a1000;--transfer-warn-text:#ffb84d;
 }
-
-/* ── LIGHT THEME ── */
 [data-theme="light"] {
-  --bg: #f7f8f4;
-  --surface: #ffffff;
-  --surface2: #f0f2ec;
-  --border: #dde0d8;
-  --text: #1c1f18;
-  --muted: #5a6052;
-  --dim: #9aa090;
-  --prose-color: #4a5240;
-  --kv-val-color: #5a6052;
-  --code-color: #2a3820;
-
-  --accent: #1e8a45;
-  --accent-bg: #eaf6ee;
-  --accent-border: #9ed4b2;
-  --accent-text: #1e8a45;
-  --num-fg: #ffffff;
-
-  --alert-info-bg: #eaf6ee;    --alert-info-text: #155c2e;   --alert-info-border: #1e8a45;
-  --alert-warn-bg: #fdf6e8;    --alert-warn-text: #7a4400;   --alert-warn-border: #c08020;
-  --alert-red-bg:  #fdf0f0;    --alert-red-text:  #8a2020;   --alert-red-border:  #c04040;
-  --alert-green-bg:#eaf6ee;    --alert-green-text:#155c2e;   --alert-green-border:#1e8a45;
-
-  --code-bg: #f0f2ec;
-  --scenario-bg: #f4f6f0;
-  --section-label-color: #1e8a45;
-  --toggle-track-on: #1e8a45;
-  --toggle-border: #9ed4b2;
-  --toggle-knob: #ffffff;
-  --toggle-knob-shadow: rgba(0,0,0,0.15);
-  --sun-opacity: 1;
-  --moon-opacity: 0.4;
-
-  --mini-bg: #f0f2ec;
-  --mini-good-bg: #eaf6ee;
-  --mini-bad-bg: #fdf0f0;
-  --mini-good-text: #155c2e;
-  --mini-bad-text: #8a2020;
-  --table-head-color: #9aa090;
-  --table-row-border: #f0f2ec;
-  --table-td-color: #5a6052;
-  --decision-row-bg: #f0f2ec;
-  --decision-badge-text: #ffffff;
+  --bg:#f7f8f4;--surface:#ffffff;--surface2:#f0f2ec;--border:#dde0d8;--text:#1c1f18;--muted:#5a6052;--dim:#9aa090;
+  --prose-color:#4a5240;--kv-val-color:#5a6052;--code-color:#2a3820;
+  --accent:#1e8a45;--accent-bg:#eaf6ee;--accent-border:#9ed4b2;--accent-text:#1e8a45;--num-fg:#ffffff;
+  --alert-blue-bg:#eaf6ee;--alert-blue-text:#155c2e;--alert-blue-border:#1e8a45;
+  --alert-amber-bg:#fdf6e8;--alert-amber-text:#7a4400;--alert-amber-border:#c08020;
+  --alert-red-bg:#fdf0f0;--alert-red-text:#8a2020;--alert-red-border:#c04040;
+  --alert-green-bg:#eaf6ee;--alert-green-text:#155c2e;--alert-green-border:#1e8a45;
+  --alert-teal-bg:#edf7f7;--alert-teal-text:#0d4a42;--alert-teal-border:#1a7a6e;
+  --alert-purple-bg:#f5eeff;--alert-purple-text:#4a2090;--alert-purple-border:#7a40c0;
+  --code-bg:#f0f2ec;--section-label-color:#1e8a45;
+  --toggle-track:#1e8a45;--toggle-border:#9ed4b2;--toggle-knob:#ffffff;--toggle-shadow:rgba(0,0,0,0.15);
+  --sun-op:1;--moon-op:0.4;
+  --mini-bg:#f0f2ec;--mini-good-bg:#eaf6ee;--mini-bad-bg:#fdf0f0;
+  --mini-good-text:#155c2e;--mini-bad-text:#8a2020;
+  --table-head:#9aa090;--table-row-border:#f0f2ec;--table-td:#5a6052;
+  --dt-bg:#f0f2ec;--dt-q:#5a6052;
+  --card-blue-bg:#eaf0fc;--card-blue-border:#9ec4f0;--card-blue-title:#1a4a8a;
+  --card-teal-bg:#edf7f7;--card-teal-border:#a8d8d8;--card-teal-title:#0d5c5c;
+  --card-amber-bg:#fdf6e8;--card-amber-border:#f0d4b0;--card-amber-title:#7a4400;
+  --card-red-bg:#fdf0f0;--card-red-border:#f0c0c0;--card-red-title:#8a2020;
+  --card-purple-bg:#f5eeff;--card-purple-border:#c4a8f0;--card-purple-title:#4a2090;
+  --card-green-bg:#eaf6ee;--card-green-border:#9ed4b2;--card-green-title:#1e8a45;
+  --callout-warn-bg:#fdf6e8;--callout-warn-text:#7a4400;--callout-warn-border:#c08020;
+  --callout-info-bg:#eaf6ee;--callout-info-text:#155c2e;--callout-info-border:#1e8a45;
+  --callout-danger-bg:#fdf0f0;--callout-danger-text:#8a2020;--callout-danger-border:#c04040;
+  --transfer-featured-border:#1a4a8a;
+  --transfer-ok-bg:#eaf6ee;--transfer-ok-text:#1e8a45;
+  --transfer-warn-bg:#fdf6e8;--transfer-warn-text:#7a4400;
 }
 
-* { box-sizing: border-box; margin: 0; padding: 0; }
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'IBM Plex Sans',sans-serif;background:var(--bg);color:var(--text);padding:28px 20px;max-width:860px;margin:0 auto;line-height:1.6;transition:background .3s,color .3s}
+.page-header{margin-bottom:24px;padding-bottom:18px;border-bottom:1px solid var(--border);display:flex;align-items:flex-start;justify-content:space-between;gap:16px}
+.header-text .label{font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--accent);letter-spacing:.15em;text-transform:uppercase;margin-bottom:7px}
+.header-text h1{font-size:22px;font-weight:600;color:var(--text);margin-bottom:4px}
+.header-text p{font-size:13px;color:var(--muted)}
+.theme-toggle{display:flex;align-items:center;gap:7px;flex-shrink:0;margin-top:2px;cursor:pointer;user-select:none}
+.ti-sun,.ti-moon{font-size:14px;line-height:1;transition:opacity .3s}
+.ti-sun{opacity:var(--sun-op)}.ti-moon{opacity:var(--moon-op)}
+.toggle-track{position:relative;width:42px;height:24px;background:var(--toggle-track);border-radius:99px;border:1px solid var(--toggle-border);flex-shrink:0;transition:background .3s}
+.toggle-knob{position:absolute;top:3px;left:3px;width:16px;height:16px;border-radius:50%;background:var(--toggle-knob);box-shadow:0 1px 4px var(--toggle-shadow);transition:transform .25s cubic-bezier(.4,0,.2,1)}
+[data-theme="light"] .toggle-knob{transform:translateX(18px)}
 
-body {
-  font-family: 'IBM Plex Sans', sans-serif;
-  background: var(--bg);
-  color: var(--text);
-  padding: 28px 20px;
-  max-width: 860px;
-  margin: 0 auto;
-  line-height: 1.6;
-  transition: background 0.3s, color 0.3s;
-}
+/* Tab bar */
+.tab-bar{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:20px;position:sticky;top:0;background:var(--bg);padding:10px 0;z-index:10;border-bottom:1px solid var(--border);transition:background .3s}
+.tab-btn{font-family:'IBM Plex Mono',monospace;font-size:11px;padding:5px 12px;border-radius:99px;border:1px solid var(--border);background:transparent;color:var(--muted);cursor:pointer;white-space:nowrap;transition:all .15s;letter-spacing:.03em}
+.tab-btn:hover{background:var(--surface2);color:var(--text)}
+.tab-btn.active{background:var(--accent-bg);color:var(--accent-text);border-color:var(--accent-border);font-weight:600}
+.tab-section{display:none}.tab-section.active{display:block}
 
-/* ── PAGE HEADER ── */
-.page-header {
-  margin-bottom: 24px;
-  padding-bottom: 18px;
-  border-bottom: 1px solid var(--border);
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: 16px;
-  transition: border-color 0.3s;
-}
-.header-text .label {
-  font-family: 'IBM Plex Mono', monospace;
-  font-size: 11px;
-  color: var(--accent);
-  letter-spacing: 0.15em;
-  text-transform: uppercase;
-  margin-bottom: 7px;
-}
-.header-text h1 { font-size: 22px; font-weight: 600; color: var(--text); margin-bottom: 4px; }
-.header-text p  { font-size: 13px; color: var(--muted); }
+/* Cards (gap cards) */
+.gap{border:1px solid var(--border);border-radius:10px;margin-bottom:14px;overflow:hidden;background:var(--surface);transition:background .3s,border-color .3s}
+.gap-header{display:flex;align-items:center;gap:10px;padding:13px 16px;cursor:pointer;transition:background .15s}
+.gap-header:hover{background:var(--surface2)}
+.gap-num{font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:600;color:var(--num-fg);background:var(--accent);width:22px;height:22px;border-radius:5px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.gap-title{flex:1;font-size:13.5px;font-weight:600;color:var(--text)}
+.gap-tag{font-family:'IBM Plex Mono',monospace;font-size:10px;padding:2px 8px;border-radius:99px;font-weight:600;letter-spacing:.04em;background:var(--accent-bg);color:var(--accent-text);border:1px solid var(--accent-border);white-space:nowrap}
+.chevron{font-size:10px;color:var(--dim);transition:transform .2s;margin-left:4px;flex-shrink:0}
+.chevron.open{transform:rotate(90deg)}
+.gap-body{display:none;border-top:1px solid var(--border);padding:16px 18px}
+.gap-body.open{display:block}
 
-/* ── THEME TOGGLE ── */
-.theme-toggle {
-  display: flex; align-items: center; gap: 7px;
-  flex-shrink: 0; margin-top: 2px; cursor: pointer; user-select: none;
-}
-.toggle-icon-sun, .toggle-icon-moon { font-size: 14px; line-height: 1; transition: opacity 0.3s; }
-.toggle-icon-sun  { opacity: var(--sun-opacity); }
-.toggle-icon-moon { opacity: var(--moon-opacity); }
-.toggle-track {
-  position: relative; width: 42px; height: 24px;
-  background: var(--toggle-track-on); border-radius: 99px;
-  border: 1px solid var(--toggle-border);
-  transition: background 0.3s, border-color 0.3s; flex-shrink: 0;
-}
-.toggle-knob {
-  position: absolute; top: 3px; left: 3px;
-  width: 16px; height: 16px; border-radius: 50%;
-  background: var(--toggle-knob);
-  box-shadow: 0 1px 4px var(--toggle-knob-shadow);
-  transition: transform 0.25s cubic-bezier(.4,0,.2,1), background 0.3s;
-}
-[data-theme="light"] .toggle-knob { transform: translateX(18px); }
+/* Content primitives */
+.section-label{font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--section-label-color);margin:14px 0 7px;opacity:.85}
+.section-label:first-child{margin-top:0}
+p.prose{font-size:13px;color:var(--prose-color);line-height:1.7;margin-bottom:8px}
+.kv-row{display:flex;gap:12px;margin-bottom:8px;font-size:13px}
+.kv-key{font-weight:600;color:var(--text);min-width:200px;flex-shrink:0}
+.kv-val{color:var(--kv-val-color);line-height:1.55}
+.alert{padding:10px 14px;font-size:12.5px;line-height:1.6;border-left:3px solid;margin:10px 0;border-radius:0 6px 6px 0}
+.alert-blue  {background:var(--alert-blue-bg);  color:var(--alert-blue-text);  border-color:var(--alert-blue-border)}
+.alert-amber {background:var(--alert-amber-bg); color:var(--alert-amber-text); border-color:var(--alert-amber-border)}
+.alert-red   {background:var(--alert-red-bg);   color:var(--alert-red-text);   border-color:var(--alert-red-border)}
+.alert-green {background:var(--alert-green-bg); color:var(--alert-green-text); border-color:var(--alert-green-border)}
+.alert-teal  {background:var(--alert-teal-bg);  color:var(--alert-teal-text);  border-color:var(--alert-teal-border)}
+.alert-purple{background:var(--alert-purple-bg);color:var(--alert-purple-text);border-color:var(--alert-purple-border)}
+.code{font-family:'IBM Plex Mono',monospace;font-size:11.5px;background:var(--code-bg);border:1px solid var(--border);border-radius:6px;padding:12px 14px;color:var(--code-color);line-height:1.65;white-space:pre;overflow-x:auto;margin:8px 0}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:8px 0}
+.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin:8px 0}
+.mini{background:var(--mini-bg);border:1px solid var(--border);border-radius:8px;padding:10px 12px}
+.mt{font-size:12px;font-weight:600;margin-bottom:4px;color:var(--text)}
+.mb{font-size:12px;color:var(--kv-val-color);line-height:1.5}
+.divider{height:1px;background:var(--border);margin:12px 0}
+.cmp-wrap{overflow-x:auto;margin:10px 0}
+.cmp{width:100%;border-collapse:collapse;font-size:12px}
+.cmp th{padding:7px 10px;text-align:left;font-weight:600;font-size:10px;text-transform:uppercase;letter-spacing:.08em;color:var(--table-head);border-bottom:1px solid var(--border);font-family:'IBM Plex Mono',monospace}
+.cmp td{padding:7px 10px;border-bottom:1px solid var(--table-row-border);vertical-align:top;color:var(--table-td);line-height:1.5;font-size:12px}
+.cmp td:first-child{font-weight:600;color:var(--text);white-space:nowrap}
+.cmp tr:last-child td{border-bottom:none}
+.dt{background:var(--dt-bg);border-radius:8px;padding:12px 14px;margin:8px 0}
+.dr{display:flex;align-items:center;gap:10px;margin-bottom:7px;font-size:12.5px}
+.dr:last-child{margin-bottom:0}
+.dq{flex:1;color:var(--dt-q);line-height:1.45}
+.da{font-family:'IBM Plex Mono',monospace;font-weight:600;font-size:11px;white-space:nowrap;padding:3px 10px;border-radius:99px}
 
-/* ── TAB BAR ── */
-.tab-bar {
-  display: flex; gap: 6px; flex-wrap: wrap;
-  margin-bottom: 20px; position: sticky; top: 0;
-  background: var(--bg); padding: 10px 0; z-index: 10;
-  border-bottom: 1px solid var(--border);
-  transition: background 0.3s, border-color 0.3s;
-}
-.tab-btn {
-  font-family: 'IBM Plex Mono', monospace; font-size: 11px;
-  padding: 5px 12px; border-radius: 99px;
-  border: 1px solid var(--border); background: transparent;
-  color: var(--muted); cursor: pointer; white-space: nowrap;
-  transition: all 0.15s; letter-spacing: 0.03em;
-}
-.tab-btn:hover { background: var(--surface2); color: var(--text); }
-.tab-btn.active {
-  background: var(--accent-bg); color: var(--accent-text);
-  border-color: var(--accent-border); font-weight: 600;
-}
-.tab-section { display: none; }
-.tab-section.active { display: block; }
+/* Coloured content cards */
+.cc{border-radius:8px;padding:12px 14px;margin-bottom:8px;border:1px solid}
+.cc-blue  {background:var(--card-blue-bg);  border-color:var(--card-blue-border)}
+.cc-teal  {background:var(--card-teal-bg);  border-color:var(--card-teal-border)}
+.cc-amber {background:var(--card-amber-bg); border-color:var(--card-amber-border)}
+.cc-red   {background:var(--card-red-bg);   border-color:var(--card-red-border)}
+.cc-purple{background:var(--card-purple-bg);border-color:var(--card-purple-border)}
+.cc-green {background:var(--card-green-bg); border-color:var(--card-green-border)}
+.cc-title {font-size:13px;font-weight:600;margin-bottom:3px}
+.cc-blue .cc-title  {color:var(--card-blue-title)}
+.cc-teal .cc-title  {color:var(--card-teal-title)}
+.cc-amber .cc-title {color:var(--card-amber-title)}
+.cc-red .cc-title   {color:var(--card-red-title)}
+.cc-purple .cc-title{color:var(--card-purple-title)}
+.cc-green .cc-title {color:var(--card-green-title)}
+.cc-sub{font-size:11px;font-family:'IBM Plex Mono',monospace;color:var(--muted);margin-bottom:6px}
+.cc-body{font-size:12.5px;color:var(--kv-val-color);line-height:1.6}
 
-/* ── GAP CARDS ── */
-.gap {
-  border: 1px solid var(--border); border-radius: 10px;
-  margin-bottom: 14px; overflow: hidden; background: var(--surface);
-  transition: background 0.3s, border-color 0.3s;
+/* Flow/pipeline */
+.flow{display:flex;align-items:center;flex-wrap:wrap;gap:4px;margin:10px 0}
+.fb{background:var(--mini-bg);border:1px solid var(--border);border-radius:7px;padding:8px 12px;font-size:12px;font-weight:600;color:var(--text);white-space:nowrap;text-align:center}
+.fb-label{font-size:9px;font-family:'IBM Plex Mono',monospace;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;display:block;margin-bottom:2px}
+.fb-name{font-size:12px;font-weight:600}
+.fb-note{font-size:10px;color:var(--muted);font-weight:400}
+.fa{font-size:13px;color:var(--dim);padding:0 2px}
+.fb.blue  {background:var(--card-blue-bg);  border-color:var(--card-blue-border)}
+.fb.teal  {background:var(--card-teal-bg);  border-color:var(--card-teal-border)}
+.fb.amber {background:var(--card-amber-bg); border-color:var(--card-amber-border)}
+.fb.coral {background:var(--card-red-bg);   border-color:var(--card-red-border)}
+.fb.purple{background:var(--card-purple-bg);border-color:var(--card-purple-border)}
+
+/* Check marks for table */
+.check-yes{color:var(--accent-text);font-weight:600;text-align:center}
+.check-no {color:var(--alert-red-text);font-weight:600;text-align:center}
+
+/* Transfer tool cards */
+.transfer-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin:10px 0}
+.tc{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:13px 15px}
+.tc.featured{border:2px solid var(--transfer-featured-border)}
+.tc-badge{display:inline-block;font-family:'IBM Plex Mono',monospace;font-size:10px;font-weight:600;padding:2px 8px;border-radius:99px;margin-bottom:7px}
+.tc-title{font-size:13px;font-weight:600;color:var(--text);margin-bottom:4px}
+.tc-desc{font-size:12px;color:var(--muted);line-height:1.55;margin-bottom:8px}
+.tc-row{display:flex;justify-content:space-between;align-items:flex-start;gap:8px;margin-bottom:4px;font-size:11.5px}
+.tc-lbl{color:var(--dim);font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.04em;text-transform:uppercase;white-space:nowrap}
+.tc-val{color:var(--kv-val-color);text-align:right}
+
+/* Transfer time table */
+.tt-ok  {background:var(--transfer-ok-bg);  color:var(--transfer-ok-text);  border-radius:4px;padding:2px 8px;font-size:11px;font-weight:600;white-space:nowrap;display:inline-block}
+.tt-warn{background:var(--transfer-warn-bg);color:var(--transfer-warn-text);border-radius:4px;padding:2px 8px;font-size:11px;font-weight:600;white-space:nowrap;display:inline-block}
+
+/* Decision threshold block */
+.thresh{background:var(--surface);border-left:3px solid var(--alert-blue-border);border-top:1px solid var(--border);border-right:1px solid var(--border);border-bottom:1px solid var(--border);border-radius:0 8px 8px 0;padding:13px 16px;margin:10px 0}
+.thresh-row{display:flex;gap:10px;font-size:12.5px;padding:5px 0;border-bottom:1px solid var(--border)}
+.thresh-row:last-child{border-bottom:none}
+.thresh-key{font-weight:600;color:var(--text);min-width:160px;flex-shrink:0}
+.thresh-val{color:var(--kv-val-color)}
+
+/* ul lists */
+ul.content-list{padding-left:18px;margin:6px 0 10px}
+ul.content-list li{font-size:13px;color:var(--prose-color);line-height:1.7;margin-bottom:3px}
+ul.content-list li code{font-family:'IBM Plex Mono',monospace;font-size:11px;background:var(--code-bg);border:1px solid var(--border);border-radius:3px;padding:1px 5px;color:var(--code-color)}
+
+@media(max-width:600px){
+  body{padding:14px 12px}
+  .page-header{flex-direction:column;gap:12px}
+  .header-text h1{font-size:18px}
+  .tab-bar{gap:5px;padding:8px 0}
+  .tab-btn{font-size:10px;padding:4px 9px}
+  .gap-header{padding:11px 13px;gap:8px}
+  .gap-title{font-size:12.5px}
+  .gap-tag{display:none}
+  .gap-body{padding:13px 14px}
+  .kv-row{flex-direction:column;gap:3px}.kv-key{min-width:unset}
+  .g2,.g3,.transfer-grid{grid-template-columns:1fr}
+  .code{font-size:10.5px;padding:10px 11px}
 }
-.gap-header {
-  display: flex; align-items: center; gap: 10px;
-  padding: 13px 16px; cursor: pointer; transition: background 0.15s;
-}
-.gap-header:hover { background: var(--surface2); }
-.gap-num {
-  font-family: 'IBM Plex Mono', monospace; font-size: 11px; font-weight: 600;
-  color: var(--num-fg); background: var(--accent);
-  width: 22px; height: 22px; border-radius: 5px;
-  display: flex; align-items: center; justify-content: center;
-  flex-shrink: 0; transition: background 0.3s, color 0.3s;
-}
-.gap-title { flex: 1; font-size: 13.5px; font-weight: 600; color: var(--text); }
-.gap-tag {
-  font-family: 'IBM Plex Mono', monospace; font-size: 10px;
-  padding: 2px 8px; border-radius: 99px; font-weight: 600; letter-spacing: 0.04em;
-  background: var(--accent-bg); color: var(--accent-text);
-  border: 1px solid var(--accent-border); white-space: nowrap;
-  transition: all 0.3s;
-}
-.chevron { font-size: 10px; color: var(--dim); transition: transform 0.2s; margin-left: 4px; flex-shrink: 0; }
-.chevron.open { transform: rotate(90deg); }
-.gap-body { display: none; border-top: 1px solid var(--border); padding: 16px 18px; transition: border-color 0.3s; }
-.gap-body.open { display: block; }
-
-/* ── CONTENT ── */
-.section-label {
-  font-family: 'IBM Plex Mono', monospace; font-size: 10px;
-  letter-spacing: 0.12em; text-transform: uppercase;
-  color: var(--section-label-color); margin: 14px 0 7px; opacity: 0.85;
-}
-.section-label:first-child { margin-top: 0; }
-
-p.prose { font-size: 13px; color: var(--prose-color); line-height: 1.7; margin-bottom: 8px; }
-p.prose:last-child { margin-bottom: 0; }
-
-.kv-row { display: flex; gap: 12px; margin-bottom: 8px; font-size: 13px; }
-.kv-key { font-weight: 600; color: var(--text); min-width: 185px; flex-shrink: 0; }
-.kv-val { color: var(--kv-val-color); line-height: 1.55; }
-
-.alert { padding: 10px 14px; font-size: 12.5px; line-height: 1.6; border-left: 3px solid; margin: 10px 0; transition: background 0.3s, color 0.3s; }
-.alert-blue   { background: var(--alert-info-bg);  color: var(--alert-info-text);  border-color: var(--alert-info-border); }
-.alert-amber  { background: var(--alert-warn-bg);  color: var(--alert-warn-text);  border-color: var(--alert-warn-border); }
-.alert-red    { background: var(--alert-red-bg);   color: var(--alert-red-text);   border-color: var(--alert-red-border); }
-.alert-green  { background: var(--alert-green-bg); color: var(--alert-green-text); border-color: var(--alert-green-border); }
-
-.code {
-  font-family: 'IBM Plex Mono', monospace; font-size: 11.5px;
-  background: var(--code-bg); border: 1px solid var(--border);
-  border-radius: 6px; padding: 12px 14px; color: var(--code-color);
-  line-height: 1.65; white-space: pre; overflow-x: auto; margin: 8px 0;
-  transition: background 0.3s, color 0.3s, border-color 0.3s;
-}
-
-/* ── MINI GRID ── */
-.g2 { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin: 8px 0; }
-.g3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin: 8px 0; }
-.mini {
-  background: var(--mini-bg); border-radius: 8px; padding: 10px 12px;
-  border: 1px solid var(--border); transition: background 0.3s, border-color 0.3s;
-}
-.mini.good { background: var(--mini-good-bg); border-color: var(--accent-border); }
-.mini.bad  { background: var(--mini-bad-bg);  border-color: var(--alert-red-border); }
-.mt { font-size: 12px; font-weight: 600; margin-bottom: 4px; color: var(--text); }
-.mini.good .mt { color: var(--mini-good-text); }
-.mini.bad  .mt { color: var(--mini-bad-text); }
-.mb { font-size: 12px; color: var(--kv-val-color); line-height: 1.5; }
-
-/* ── DECISION TABLE ── */
-.decision-table { background: var(--surface2); border-radius: 8px; padding: 12px 14px; margin: 8px 0; transition: background 0.3s; }
-.decision-row {
-  display: flex; align-items: center; gap: 10px;
-  margin-bottom: 7px; font-size: 13px;
-}
-.decision-row:last-child { margin-bottom: 0; }
-.decision-q { flex: 1; color: var(--kv-val-color); font-size: 12.5px; line-height: 1.45; }
-.decision-a {
-  font-family: 'IBM Plex Mono', monospace; font-weight: 600; font-size: 11px;
-  white-space: nowrap; padding: 3px 10px; border-radius: 99px;
-}
-
-/* ── COMPARISON TABLE ── */
-.cmp-wrap { overflow-x: auto; margin: 10px 0; }
-.cmp { width: 100%; border-collapse: collapse; font-size: 12px; }
-.cmp th {
-  padding: 7px 10px; text-align: left; font-weight: 600; font-size: 11px;
-  text-transform: uppercase; letter-spacing: 0.05em;
-  color: var(--table-head-color); border-bottom: 1px solid var(--border);
-  font-family: 'IBM Plex Mono', monospace;
-}
-.cmp td {
-  padding: 7px 10px; border-bottom: 1px solid var(--table-row-border);
-  vertical-align: top; color: var(--table-td-color); line-height: 1.5; font-size: 12px;
-  transition: color 0.3s, border-color 0.3s;
-}
-.cmp td:first-child { font-weight: 600; color: var(--text); white-space: nowrap; }
-.cmp tr:last-child td { border-bottom: none; }
-
-/* ── SCENARIO BOX ── */
-.scenario-box {
-  border: 1px solid var(--border); border-radius: 8px;
-  padding: 12px 14px; margin-bottom: 10px;
-  background: var(--scenario-bg); transition: background 0.3s, border-color 0.3s;
-}
-.scenario-q { font-size: 13px; font-weight: 600; color: var(--text); margin-bottom: 7px; line-height: 1.5; }
-.scenario-a { font-size: 12.5px; color: var(--kv-val-color); line-height: 1.6; }
-.scenario-a strong { color: var(--accent); font-weight: 600; }
-
-/* ── MOBILE ── */
-@media (max-width: 600px) {
-  body { padding: 14px 12px; }
-  .page-header { flex-direction: column; gap: 12px; }
-  .header-text h1 { font-size: 18px; }
-  .tab-bar { gap: 5px; padding: 8px 0; }
-  .tab-btn { font-size: 10px; padding: 4px 9px; }
-  .gap-header { padding: 11px 13px; gap: 8px; }
-  .gap-title { font-size: 12.5px; }
-  .gap-tag { display: none; }
-  .gap-body { padding: 13px 14px; }
-  .kv-row { flex-direction: column; gap: 3px; }
-  .kv-key { min-width: unset; }
-  .g2, .g3 { grid-template-columns: 1fr; }
-  .decision-row { flex-direction: column; align-items: flex-start; gap: 4px; }
-  .code { font-size: 10.5px; padding: 10px 11px; }
-}
-
-
-
-
 
 /* ══ NOTES ENGINE v3 ══════════════════════════════════════════════ */
 [data-theme="dark"] {
@@ -1004,42 +898,11 @@ body.sb-closed { padding-left: var(--sb-w-collapsed) !important; }
   line-height: 1.6;
 }
 
+
 </style>
 </head>
 <body>
 
-<!-- ═══ LIGHTBOX ═══ -->
-<div class="ne-lightbox" id="neLightbox" onclick="this.classList.remove('open')">
-  <img id="neLightboxImg" src="" alt="note image">
-</div>
-
-<!-- ═══ GITHUB SETTINGS MODAL ═══ -->
-<div class="ne-settings-overlay" id="neSettingsOverlay">
-  <div class="ne-settings-modal">
-    <h3>GitHub Sync Settings</h3>
-    <p>Notes and images will auto-commit to your GitHub repo on every save. Your PAT is stored only in your browser's localStorage and never sent anywhere except GitHub's API.</p>
-    <div class="ne-field">
-      <label>Personal Access Token</label>
-      <input type="password" id="nePatInput" placeholder="ghp_xxxxxxxxxxxxxxxxxxxx">
-      <div class="ne-hint">Needs <strong>repo</strong> scope. <a href="https://github.com/settings/tokens/new" target="_blank">Create one here ↗</a></div>
-    </div>
-    <div class="ne-field">
-      <label>Repository (owner/repo)</label>
-      <input type="text" id="neRepoInput" placeholder="yourname/gcp-pde-notes">
-    </div>
-    <div class="ne-field">
-      <label>Branch</label>
-      <input type="text" id="neBranchInput" placeholder="main">
-    </div>
-    <div class="ne-modal-status" id="neModalStatus"></div>
-    <div class="ne-modal-actions">
-      <button class="ne-modal-cancel" onclick="neCloseSettings()">Cancel</button>
-      <button class="ne-modal-save" onclick="neTestAndSave()">Save &amp; Test</button>
-    </div>
-  </div>
-</div>
-
-<!-- ═══ SIDEBAR ═══ -->
 <div class="sb-overlay" id="sbOverlay" onclick="closeSidebar()"></div>
 <aside class="sidebar" id="sidebar">
   <div class="sb-head">
@@ -1102,7 +965,7 @@ body.sb-closed { padding-left: var(--sb-w-collapsed) !important; }
         <a href="m4_cloud_storage.html#events" class="sb-sub-link" data-page="m4_cloud_storage" data-tab="events">Event-Driven Patterns</a>
       </div>
     </div>
-        <div class="sb-mod-group" data-group="m3_storage_services">
+    <div class="sb-mod-group" data-group="m3_storage_services">
       <a href="m3_storage_services.html" class="sb-mod-link" data-page="m3_storage_services">
         <span class="sb-mod-num">03</span>
         <span class="sb-mod-label">Storage Services</span>
@@ -1221,14 +1084,14 @@ body.sb-closed { padding-left: var(--sb-w-collapsed) !important; }
 
 <div class="page-header">
   <div class="header-text">
-    <div class="label">GCP PDE Study Notes — Module 3</div>
-    <h1>Storage Services Deep Dive</h1>
-    <p>8 subtopics · tap a tab to switch · tap cards to expand</p>
+    <div class="label">GCP PDE Study Notes — Module 4</div>
+    <h1>Cloud Storage &amp; Data Transfer</h1>
+    <p>9 subtopics · tap a tab to switch · tap cards to expand · add notes per card</p>
   </div>
-  <div class="theme-toggle" onclick="toggleTheme()" title="Toggle light / dark mode">
-    <span class="toggle-icon-sun">☀️</span>
+  <div class="theme-toggle" onclick="toggleTheme()">
+    <span class="ti-sun">☀️</span>
     <div class="toggle-track"><div class="toggle-knob"></div></div>
-    <span class="toggle-icon-moon">🌙</span>
+    <span class="ti-moon">🌙</span>
   </div>
 </div>
 
@@ -1245,438 +1108,328 @@ function toggleTheme() {
 
 const TABS = [
 
-  /* ══════════════════════════════════════════════════
-     1. DECISION FRAMEWORK
-  ══════════════════════════════════════════════════ */
-  {
-    id: 'decision', label: 'Decision Framework', freq: 'Reference',
-    topics: [
-      {
-        title: 'Master service selection — keyword → answer',
-        body: `<div class="decision-table">
-<div class="decision-row"><div class="decision-q">Time-series / IoT / sensor data at scale</div><div class="decision-a" style="background:#050f1a;color:#4d9fff;border:1px solid #0f3050">→ Bigtable</div></div>
-<div class="decision-row"><div class="decision-q">Low-latency random reads, milliseconds, petabytes</div><div class="decision-a" style="background:#050f1a;color:#4d9fff;border:1px solid #0f3050">→ Bigtable</div></div>
-<div class="decision-row"><div class="decision-q">HBase migration to GCP</div><div class="decision-a" style="background:#050f1a;color:#4d9fff;border:1px solid #0f3050">→ Bigtable</div></div>
-<div class="decision-row"><div class="decision-q">Global ACID / multi-region transactions / external consistency</div><div class="decision-a" style="background:#100a1a;color:#b84dff;border:1px solid #3d1550">→ Cloud Spanner</div></div>
-<div class="decision-row"><div class="decision-q">Horizontally scalable relational SQL</div><div class="decision-a" style="background:#100a1a;color:#b84dff;border:1px solid #3d1550">→ Cloud Spanner</div></div>
-<div class="decision-row"><div class="decision-q">Replace sharded MySQL at scale</div><div class="decision-a" style="background:#100a1a;color:#b84dff;border:1px solid #3d1550">→ Cloud Spanner</div></div>
-<div class="decision-row"><div class="decision-q">Mobile / web app backend, real-time sync, offline support</div><div class="decision-a" style="background:#1a0d06;color:#ff7a4d;border:1px solid #4d2510">→ Firestore</div></div>
-<div class="decision-row"><div class="decision-q">Document model, flexible schema, hierarchical data</div><div class="decision-a" style="background:#1a0d06;color:#ff7a4d;border:1px solid #4d2510">→ Firestore</div></div>
-<div class="decision-row"><div class="decision-q">Existing MySQL / PostgreSQL / SQL Server</div><div class="decision-a" style="background:#091a11;color:#4dff91;border:1px solid #0f4024">→ Cloud SQL</div></div>
-<div class="decision-row"><div class="decision-q">Lift-and-shift RDBMS workload</div><div class="decision-a" style="background:#091a11;color:#4dff91;border:1px solid #0f4024">→ Cloud SQL</div></div>
-<div class="decision-row"><div class="decision-q">Sub-millisecond caching / session storage / rate limiting</div><div class="decision-a" style="background:#1a1000;color:#ffb84d;border:1px solid #4d3000">→ Memorystore</div></div>
-<div class="decision-row"><div class="decision-q">Leaderboard / sorted set operations</div><div class="decision-a" style="background:#1a1000;color:#ffb84d;border:1px solid #4d3000">→ Memorystore</div></div>
-<div class="decision-row"><div class="decision-q">Petabyte SQL analytics / BI / OLAP / data warehouse</div><div class="decision-a" style="background:#050f1a;color:#4d9fff;border:1px solid #0f3050">→ BigQuery</div></div>
-<div class="decision-row"><div class="decision-q">Object storage / data lake / blobs / files / archival</div><div class="decision-a" style="background:#100a1a;color:#b84dff;border:1px solid #3d1550">→ Cloud Storage</div></div>
-</div>`
-      },
-      {
-        title: 'Latency ladder — pick by response time requirement',
-        body: `<div class="g3">
-<div class="mini"><div class="mt">&lt; 1ms (sub-millisecond)</div><div class="mb">Memorystore (Redis). In-memory. For caching, sessions, rate limiters, leaderboards. Data fits in RAM.</div></div>
-<div class="mini"><div class="mt">Single-digit ms</div><div class="mb">Bigtable. On-disk but fast. Low-latency random reads by row key. Petabyte-scale. High write throughput.</div></div>
-<div class="mini"><div class="mt">~5–10ms</div><div class="mb">Cloud Spanner, Firestore, Cloud SQL. Transactional reads with strong consistency. SQL or document model.</div></div>
-<div class="mini"><div class="mt">Seconds</div><div class="mb">BigQuery. Analytical scans across billions of rows. NOT for individual row lookups.</div></div>
-<div class="mini"><div class="mt">Minutes–hours</div><div class="mb">BigQuery complex joins, Dataproc Spark. Multi-pass computation, heavy aggregations.</div></div>
-<div class="mini"><div class="mt">Up to 12 hours</div><div class="mb">GCS Archive class. Compliance retention. Highest retrieval cost. Not for operational data.</div></div>
-</div>
-<div class="alert alert-red">The most common mistake: choosing BigQuery for low-latency lookups. BigQuery takes seconds per query — it is an analytical engine, not a lookup store. Millisecond lookups → Bigtable. Sub-millisecond → Memorystore.</div>`
-      },
-      {
-        title: 'Full service comparison table',
-        body: `<div class="cmp-wrap"><table class="cmp">
-<thead><tr><th>Service</th><th>Model</th><th>Scale</th><th>Latency</th><th>Consistency</th><th>Best for</th></tr></thead>
-<tbody>
-<tr><td>BigQuery</td><td>Columnar SQL</td><td>Petabytes</td><td>Seconds</td><td>Eventually consistent reads</td><td>Analytics, BI, OLAP, ML training data</td></tr>
-<tr><td>Bigtable</td><td>Wide-column NoSQL</td><td>Petabytes</td><td>Single-digit ms</td><td>Strong (single-row atomic)</td><td>Time-series, IoT, AdTech, ML features</td></tr>
-<tr><td>Cloud Spanner</td><td>Relational SQL</td><td>Petabytes</td><td>~5ms</td><td>External / global strong</td><td>Global ACID, financial systems</td></tr>
-<tr><td>Firestore</td><td>Document NoSQL</td><td>Terabytes</td><td>~10ms</td><td>Strong (default)</td><td>Mobile/web apps, real-time sync</td></tr>
-<tr><td>Cloud SQL</td><td>Relational SQL</td><td>~64TB</td><td>~1ms local</td><td>Strong (ACID)</td><td>Existing RDBMS, CMS, ERP</td></tr>
-<tr><td>Memorystore</td><td>In-memory K/V</td><td>GBs–TBs</td><td>Sub-ms</td><td>Eventual (Redis)</td><td>Caching, sessions, leaderboards</td></tr>
-<tr><td>Cloud Storage</td><td>Object store</td><td>Unlimited</td><td>100ms–12hrs</td><td>Strong (object-level)</td><td>Blobs, data lake, archival</td></tr>
-</tbody>
-</table></div>`
-      }
-    ]
-  },
-
-  /* ══════════════════════════════════════════════════
-     2. BIGTABLE
-  ══════════════════════════════════════════════════ */
-  {
-    id: 'bigtable', label: 'Bigtable', freq: 'High',
-    topics: [
-      {
-        title: 'How Bigtable works internally — the storage model',
-        body: `<p class="prose">Bigtable is a wide-column NoSQL database. Understanding the internal model is mandatory because row key design — the most-tested concept — only makes sense once you understand storage.</p>
-<div class="section-label">Data model primitives</div>
-<div class="kv-row"><div class="kv-key">Row key</div><div class="kv-val">The ONLY index in Bigtable. Every lookup and range scan is by row key. No secondary indexes exist. This makes row key design the single most critical decision in any Bigtable schema.</div></div>
-<div class="kv-row"><div class="kv-key">Column family</div><div class="kv-val">A named group of related columns defined at table creation. A table has a small number of families (1–10 typical). Columns within a family are stored together on disk.</div></div>
-<div class="kv-row"><div class="kv-key">Column qualifier</div><div class="kv-val">A named column within a family. Dynamic — NOT defined at schema creation. A row can have millions of distinct qualifiers. This is the "wide-column" — extremely sparse data is storage-efficient.</div></div>
-<div class="kv-row"><div class="kv-key">Cell</div><div class="kv-val">The intersection of row key + column family + column qualifier. Stores one byte-string value + timestamp. Multiple versions of the same cell coexist ordered by timestamp descending.</div></div>
-<div class="kv-row"><div class="kv-key">Cell versioning</div><div class="kv-val">Each cell can store multiple timestamped versions. Configurable GC policies: keep N most recent versions, or keep versions newer than N days.</div></div>
-<div class="kv-row"><div class="kv-key">Sorted by row key</div><div class="kv-val">All rows stored in sorted lexicographic order. Adjacent row keys are physically co-located on the same tablet. This is why row key design determines read/write performance.</div></div>
-<div class="section-label">Storage architecture</div>
-<div class="kv-row"><div class="kv-key">Tablet</div><div class="kv-val">A contiguous row key range. The unit of distribution across nodes. Tablets split automatically as they grow. Each tablet served by exactly one node.</div></div>
-<div class="kv-row"><div class="kv-key">Bigtable node</div><div class="kv-val">Serves a set of tablets and handles read/write requests. Adding nodes = linear throughput increase. Bigtable scales horizontally by adding nodes to the cluster.</div></div>
-<div class="kv-row"><div class="kv-key">Colossus (underlying FS)</div><div class="kv-val">Actual SSTable data lives in Google's Colossus distributed filesystem — separate from nodes. Node failure does NOT lose data. Adding/removing nodes requires no data migration.</div></div>`
-      },
-      {
-        title: 'Row key design — the #1 most-tested Bigtable concept',
-        body: `<p class="prose">Because the row key is the only index, its design determines: (1) lookup speed, (2) range scan efficiency, (3) whether you get hotspots that degrade performance.</p>
-<div class="section-label">Good row key patterns</div>
+{id:'storage-classes', label:'Storage Classes', freq:'Core Decision', topics:[
+{title:'Four storage classes and when to use each', body:`
+<p class="prose">Cloud Storage offers four storage classes that differ in pricing, retrieval cost, and minimum storage duration. Choosing the right class depends on how frequently you access the data and how long you need to keep it.</p>
 <div class="g2">
-<div class="mini good"><div class="mt">Reverse timestamp</div><div class="mb">device_id + "#" + (MAX_LONG - timestamp). Newest records sort FIRST. Makes "get latest N records" efficient. Essential for time-series.</div></div>
-<div class="mini good"><div class="mt">Composite key</div><div class="mb">customer_id + "#" + event_type + "#" + timestamp. Co-locates all data for one customer. Efficient per-customer range scans.</div></div>
-<div class="mini good"><div class="mt">Hash / salt prefix</div><div class="mb">First 4 chars of MD5(natural_key) as prefix. Distributes writes evenly across all tablets. Prevents hotspot on any single tablet.</div></div>
-<div class="mini good"><div class="mt">Reversed domain</div><div class="mb">com.google.www instead of www.google.com. Prevents all .com domains clustering and creating a read hotspot.</div></div>
+  <div class="cc cc-blue"><div class="cc-title">Standard</div><div class="cc-sub">SLA: 99.99% · No minimum duration</div><div class="cc-body">Highest storage cost, free retrieval. Best for active data, real-time pipelines, and serving assets that are accessed frequently or unpredictably.</div></div>
+  <div class="cc cc-teal"><div class="cc-title">Nearline</div><div class="cc-sub">SLA: 99.9% · 30-day minimum</div><div class="cc-body">Lower storage cost, small retrieval fee per GB. Use when data is accessed roughly once a month — for example, backups or monthly reporting data.</div></div>
+  <div class="cc cc-amber"><div class="cc-title">Coldline</div><div class="cc-sub">SLA: 99.9% · 90-day minimum</div><div class="cc-body">Much lower storage cost, higher retrieval cost per GB. Good for disaster recovery archives and older logs accessed around once per quarter.</div></div>
+  <div class="cc cc-red"><div class="cc-title">Archive</div><div class="cc-sub">SLA: 99.9% · 365-day minimum · 12hr retrieval SLA</div><div class="cc-body">Lowest storage cost, highest retrieval cost. Suited for compliance retention, legal holds, and data that is rarely if ever accessed. Note the 12-hour retrieval SLA — not suitable for anything time-sensitive.</div></div>
 </div>
-<div class="section-label">Bad patterns — these cause hotspots</div>
-<div class="g2">
-<div class="mini bad"><div class="mt">Sequential integer IDs (1, 2, 3...)</div><div class="mb">All new writes go to the tablet holding the highest ID range. One tablet overwhelmed, others idle.</div></div>
-<div class="mini bad"><div class="mt">Timestamp as prefix</div><div class="mb">All concurrent writes share similar timestamps → same tablet range → write hotspot on that tablet.</div></div>
-<div class="mini bad"><div class="mt">Low-cardinality prefix</div><div class="mb">Using status (active/inactive) as prefix = only 2 tablets receive all writes. No distribution.</div></div>
-<div class="mini bad"><div class="mt">Domain names as-is</div><div class="mb">www.google.com, www.amazon.com all start with "www" → same tablet range gets all traffic.</div></div>
-</div>
-<div class="code"># Good: reverse timestamp — newest records sort first
-MAX_LONG = 9999999999999999
-timestamp_us = int(time.time() * 1e6)
-row_key = f"sensor_001#{MAX_LONG - timestamp_us}"
-# Lexicographic order = newest first for sensor_001
-
-# Good: hash salt to prevent hotspot
-salt = hashlib.md5(natural_key.encode()).hexdigest()[:4]
-row_key = f"{salt}#{natural_key}"
-# Writes distributed evenly across all tablets</div>
-<div class="alert alert-red">The #1 Bigtable exam trap: using a monotonically increasing value (timestamp, auto-increment ID) as the row key prefix funnels all writes to one tablet. This creates a write hotspot — one node overwhelmed while others sit idle. The fix is reverse timestamp, hash prefix, or a composite key that distributes writes.</div>`
-      },
-      {
-        title: 'When to use Bigtable — use cases and limits',
-        body: `<div class="section-label">Use Bigtable for</div>
-<div class="kv-row"><div class="kv-key">Time-series data</div><div class="kv-val">Sensor readings, stock prices, metrics, logs. Row key = entity + reverse timestamp. Natural fit for the wide-column model.</div></div>
-<div class="kv-row"><div class="kv-key">IoT / telemetry</div><div class="kv-val">High write throughput from many devices. Bigtable handles millions of writes per second across its cluster.</div></div>
-<div class="kv-row"><div class="kv-key">AdTech / user behavior</div><div class="kv-val">Click-stream, impression, conversion data. Sparse wide-column model handles variable user attributes efficiently.</div></div>
-<div class="kv-row"><div class="kv-key">ML feature store</div><div class="kv-val">Store precomputed ML features keyed by entity ID (user_id, product_id). Millisecond lookups at serving time.</div></div>
-<div class="kv-row"><div class="kv-key">HBase migration</div><div class="kv-val">Bigtable is API-compatible with Apache HBase. Change only the connection config — application code unchanged.</div></div>
-<div class="section-label">Do NOT use Bigtable for</div>
-<div class="kv-row"><div class="kv-key">SQL analytics</div><div class="kv-val">No SQL, no JOINs, no aggregations. Use BigQuery.</div></div>
-<div class="kv-row"><div class="kv-key">Multi-row ACID transactions</div><div class="kv-val">Single-row atomic writes only. Multi-row transactions → Cloud Spanner.</div></div>
-<div class="kv-row"><div class="kv-key">Small datasets (&lt; 300GB)</div><div class="kv-val">Bigtable is expensive at small scale — minimum cluster cost regardless of data size. Use Cloud SQL or Firestore.</div></div>
-<div class="kv-row"><div class="kv-key">Ad-hoc queries on non-key columns</div><div class="kv-val">No secondary indexes — can only query by row key. For flexible ad-hoc queries → BigQuery.</div></div>
-<div class="alert alert-blue">Bigtable performance investigation: if performance degrades after scaling, the most common cause is hotspotting — all traffic going to one tablet due to a bad row key. Use the Key Visualizer tool in Cloud Console to identify hotspots visually.</div>`
-      }
-    ]
-  },
-
-  /* ══════════════════════════════════════════════════
-     3. CLOUD SPANNER
-  ══════════════════════════════════════════════════ */
-  {
-    id: 'spanner', label: 'Cloud Spanner', freq: 'High',
-    topics: [
-      {
-        title: 'What Cloud Spanner is and why it exists',
-        body: `<p class="prose">Cloud Spanner solves a problem that previously seemed impossible: horizontal scalability of NoSQL combined with the ACID guarantees and SQL interface of a traditional relational database. It uses TrueTime (GPS clocks + atomic clocks across Google data centers) to assign globally consistent timestamps to every transaction — enabling external consistency, which is stronger than serializable isolation.</p>
-<div class="section-label">Core capabilities</div>
-<div class="kv-row"><div class="kv-key">Global ACID transactions</div><div class="kv-val">Multi-row, multi-table, multi-region transactions with external consistency. Every transaction appears to execute at a precise real-time moment globally.</div></div>
-<div class="kv-row"><div class="kv-key">Horizontal scaling</div><div class="kv-val">Add nodes for more throughput and storage. Throughput scales linearly. No vertical scaling ceiling. Petabyte-scale.</div></div>
-<div class="kv-row"><div class="kv-key">Full SQL</div><div class="kv-val">ANSI SQL with JOINs, aggregations, subqueries, window functions. Familiar to any SQL developer.</div></div>
-<div class="kv-row"><div class="kv-key">99.999% SLA</div><div class="kv-val">Five nines for multi-region configurations. Regional = 99.99%. Designed for zero-downtime maintenance.</div></div>
-<div class="kv-row"><div class="kv-key">TrueTime</div><div class="kv-val">GPS and atomic clocks across Google's data centers provide globally unique, causally consistent timestamps. The technology enabling external consistency.</div></div>
-<div class="kv-row"><div class="kv-key">Change Streams</div><div class="kv-val">Real-time CDC stream of all Spanner data changes. Route to Pub/Sub or Dataflow for downstream processing. Equivalent to MySQL binlog or Postgres WAL, but managed.</div></div>
-<div class="section-label">When Spanner is the right answer</div>
-<div class="kv-row"><div class="kv-key">Global ACID</div><div class="kv-val">Financial systems, banking, inventory — any scenario where multi-table, multi-region data integrity is non-negotiable.</div></div>
-<div class="kv-row"><div class="kv-key">Horizontal relational scale</div><div class="kv-val">When Cloud SQL has hit its vertical scaling limit and you need more throughput/storage without sharding.</div></div>
-<div class="kv-row"><div class="kv-key">Multi-region strong consistency</div><div class="kv-val">Global users with no stale reads anywhere. Every read reflects all committed writes globally.</div></div>
-<div class="kv-row"><div class="kv-key">Five nines SLA</div><div class="kv-val">Mission-critical systems that cannot tolerate more than 5 minutes of downtime per year.</div></div>
-<div class="alert alert-red">Spanner vs Cloud SQL trap: both are relational SQL databases. The key discriminator is SCALE and DISTRIBUTION. Cloud SQL = single-region, vertically scaled, max ~64TB. Cloud Spanner = multi-region option, horizontally scaled, petabytes. "Global," "multi-region ACID," or "horizontally scalable relational" always → Spanner.</div>`
-      },
-      {
-        title: 'Schema design: interleaving and secondary indexes',
-        body: `<p class="prose">Interleaving is Spanner's primary performance optimization. Child table rows are physically co-located with their parent row on the same server split. Parent-child JOINs become local operations instead of cross-server calls — dramatically faster.</p>
-<div class="code">-- Parent table
-CREATE TABLE Customers (
-  CustomerId  INT64 NOT NULL,
-  Name        STRING(MAX),
-  Email       STRING(MAX),
-) PRIMARY KEY (CustomerId);
-
--- Child table INTERLEAVED inside parent
--- Orders rows physically co-located with their Customer row
-CREATE TABLE Orders (
-  CustomerId  INT64 NOT NULL,  -- must match parent PK
-  OrderId     INT64 NOT NULL,
-  OrderDate   DATE,
-  TotalAmount FLOAT64,
-) PRIMARY KEY (CustomerId, OrderId),
-  INTERLEAVE IN PARENT Customers ON DELETE CASCADE;
-
--- This JOIN is a local operation — no cross-server call:
-SELECT c.Name, o.OrderId, o.TotalAmount
-FROM Customers c JOIN Orders o USING (CustomerId)
-WHERE c.CustomerId = 12345;</div>
-<div class="section-label">Secondary indexes</div>
-<div class="kv-row"><div class="kv-key">Secondary index</div><div class="kv-val">Unlike Bigtable, Spanner DOES support secondary indexes. Enables efficient queries on non-primary-key columns without full table scans.</div></div>
-<div class="kv-row"><div class="kv-key">STORING clause</div><div class="kv-val">Include additional columns in the index to avoid a second lookup to the base table. Improves performance for common query patterns.</div></div>
-<div class="code">-- Secondary index on Email
-CREATE INDEX CustomersByEmail ON Customers (Email);
-
--- Index with STORING — avoids base table read for TotalAmount
-CREATE INDEX OrdersByDate ON Orders (OrderDate)
-STORING (TotalAmount, CustomerId);
--- Queries filtering on OrderDate + reading TotalAmount
--- are served entirely from the index</div>
-<div class="alert alert-blue">Interleaving exam angle: "A query JOINs Customers and Orders by CustomerId frequently. Performance is poor." → Interleave the Orders table inside Customers. Co-location makes the JOIN a local operation on the same split.</div>`
-      },
-      {
-        title: 'Spanner vs other services — when to pick which',
-        body: `<div class="kv-row"><div class="kv-key">Spanner vs Cloud SQL</div><div class="kv-val">Spanner when: multi-region, horizontal scale, &gt; 64TB, 99.999% SLA, global ACID. Cloud SQL when: single-region, vertical scale sufficient, lower cost, existing MySQL/PostgreSQL app.</div></div>
-<div class="kv-row"><div class="kv-key">Spanner vs BigQuery</div><div class="kv-val">Spanner when: OLTP (transactional reads/writes), low-latency, multi-row writes. BigQuery when: OLAP (analytical scans), BI/reporting, no heavy write workload.</div></div>
-<div class="kv-row"><div class="kv-key">Spanner vs Bigtable</div><div class="kv-val">Spanner when: SQL needed, multi-row ACID, relational schema with JOINs. Bigtable when: NoSQL, ultra-high write throughput, time-series, no SQL needed.</div></div>
-<div class="kv-row"><div class="kv-key">Spanner vs Firestore</div><div class="kv-val">Spanner when: relational model, SQL, global multi-table transactions. Firestore when: document model, mobile/web app, real-time listeners, flexible schema.</div></div>
-<div class="alert alert-green">Spanner keyword checklist — if you see ANY of these, answer is Cloud Spanner: "global ACID," "multi-region transactions," "horizontally scalable relational," "external consistency," "financial transactions at scale," "five nines SLA," "replace sharded MySQL."</div>`
-      }
-    ]
-  },
-
-  /* ══════════════════════════════════════════════════
-     4. FIRESTORE
-  ══════════════════════════════════════════════════ */
-  {
-    id: 'firestore', label: 'Firestore', freq: 'Medium',
-    topics: [
-      {
-        title: 'Firestore data model and core concepts',
-        body: `<p class="prose">Cloud Firestore is a fully managed, serverless, NoSQL document database — the backend for mobile and web applications. Successor to Cloud Datastore (backward-compatible in Datastore mode). Optimized for real-time data synchronization.</p>
-<div class="section-label">Data model</div>
-<div class="kv-row"><div class="kv-key">Document</div><div class="kv-val">The basic storage unit. A JSON-like object containing named fields. Fields can be strings, numbers, booleans, arrays, nested maps, timestamps, or document references. Maximum document size: 1MB.</div></div>
-<div class="kv-row"><div class="kv-key">Collection</div><div class="kv-val">A container of documents. Documents within a collection do not need the same fields (schema-flexible). Collections cannot directly contain other collections.</div></div>
-<div class="kv-row"><div class="kv-key">Subcollection</div><div class="kv-val">A collection nested inside a document. Enables hierarchical data: users/{userId}/orders/{orderId}/items/{itemId}. Subcollections are independent of parent documents — deleting the parent does NOT delete subcollections automatically.</div></div>
-<div class="kv-row"><div class="kv-key">Document reference</div><div class="kv-val">A pointer to another document. Used to model relationships. Firestore does NOT perform automatic JOINs on references — clients must fetch referenced documents separately (fan-out reads).</div></div>
-<div class="code">// Document at /users/user_12345
-{
-  "name": "Alice Chen",
-  "email": "alice@example.com",
-  "created_at": Timestamp(2024, 1, 15),
-  "address": {               // nested map
-    "city": "Toronto",
-    "country": "CA"
-  },
-  "tags": ["premium", "verified"]  // array field
-}
-
-// Subcollection document at /users/user_12345/orders/order_001
-{
-  "order_date": Timestamp(2024, 1, 20),
-  "total": 149.99,
-  "status": "shipped"
-}</div>`
-      },
-      {
-        title: 'Querying, indexes, and real-time features',
-        body: `<div class="section-label">Querying</div>
-<div class="kv-row"><div class="kv-key">Single collection queries</div><div class="kv-val">Query documents within one collection using filters, ordering, and limits. Fully indexed. Fast.</div></div>
-<div class="kv-row"><div class="kv-key">Collection group queries</div><div class="kv-val">Query across ALL subcollections with the same name. E.g., query all "orders" subcollections across all users simultaneously — without knowing which users have orders.</div></div>
-<div class="kv-row"><div class="kv-key">Composite indexes</div><div class="kv-val">Multi-field queries require explicit composite index creation in Firestore. Queries without the required composite index FAIL at runtime with an error message. The error includes a direct link to create the index.</div></div>
-<div class="kv-row"><div class="kv-key">No JOINs</div><div class="kv-val">Firestore has no JOIN operation. Design data denormalized (duplicate relevant fields) or accept multiple reads. Fan-out reads (fetch parent then children) are the standard pattern.</div></div>
-<div class="kv-row"><div class="kv-key">Query limitations</div><div class="kv-val">Cannot apply inequality filters on more than one field simultaneously. No full-text search — use Algolia or Elasticsearch alongside Firestore for that.</div></div>
-<div class="section-label">Real-time listeners — the killer feature</div>
-<div class="kv-row"><div class="kv-key">Real-time updates</div><div class="kv-val">Clients attach listeners to documents or collections. When data changes, Firestore PUSHES the update to all connected clients instantly — no polling. This is why Firestore is chosen for mobile/web apps over Bigtable or Cloud SQL.</div></div>
-<div class="kv-row"><div class="kv-key">Offline support</div><div class="kv-val">SDKs cache data locally. App works fully offline. Changes made offline are queued and applied when connectivity is restored. Conflict resolution is automatic.</div></div>
-<div class="kv-row"><div class="kv-key">Firestore Security Rules</div><div class="kv-val">Server-side access control evaluated against the requesting user's Firebase Auth token. Define who can read/write which documents without writing backend code.</div></div>
-<div class="section-label">Two modes — important distinction</div>
-<div class="kv-row"><div class="kv-key">Native mode (Firestore)</div><div class="kv-val">Current version. Supports real-time listeners, mobile SDKs, collection group queries, full feature set. Use for ALL new projects.</div></div>
-<div class="kv-row"><div class="kv-key">Datastore mode</div><div class="kv-val">Backward-compatible with Cloud Datastore. NO real-time listeners. NO mobile SDKs. Use ONLY when migrating existing Cloud Datastore applications.</div></div>
-<div class="alert alert-amber">Firestore mode trap: real-time listeners, mobile SDKs → Native mode. Migrating existing Cloud Datastore app → Datastore mode. These are different operational modes of the same service with different feature sets.</div>`
-      },
-      {
-        title: 'When to use Firestore',
-        body: `<div class="kv-row"><div class="kv-key">Use Firestore when</div><div class="kv-val">Mobile or web app backend, real-time data sync needed, flexible/evolving document schema, hierarchical data (users → orders → items), serverless auto-scaling, offline-first apps, pay-per-use pricing (no idle instance cost).</div></div>
-<div class="kv-row"><div class="kv-key">Do NOT use for analytics</div><div class="kv-val">Firestore has no aggregation queries, no JOINs, no GROUP BY. For analytics → BigQuery.</div></div>
-<div class="kv-row"><div class="kv-key">Do NOT use for global ACID</div><div class="kv-val">Firestore transactions are limited in scope. For global multi-table ACID across millions of documents → Cloud Spanner.</div></div>
-<div class="kv-row"><div class="kv-key">Do NOT use for time-series writes</div><div class="kv-val">High-throughput time-series writes (millions/sec) → Bigtable. Firestore is not optimized for that write pattern.</div></div>
-<div class="kv-row"><div class="kv-key">Firestore vs Cloud SQL</div><div class="kv-val">Firestore: schema-less documents, auto-scaling, no idle cost, mobile SDKs. Cloud SQL: rigid relational schema, SQL JOINs, ACID transactions, requires instance management.</div></div>
-<div class="alert alert-blue">Firestore keyword checklist: "mobile app," "web app backend," "real-time updates," "flexible schema," "document model," "offline sync," "hierarchical data," "no ops database." Any of these → Firestore.</div>`
-      }
-    ]
-  },
-
-  /* ══════════════════════════════════════════════════
-     5. CLOUD SQL
-  ══════════════════════════════════════════════════ */
-  {
-    id: 'cloudsql', label: 'Cloud SQL', freq: 'Medium',
-    topics: [
-      {
-        title: 'Cloud SQL — managed RDBMS for lift-and-shift',
-        body: `<p class="prose">Cloud SQL is fully managed MySQL, PostgreSQL, and SQL Server. Google handles backups, patches, replication, and failover. You manage schemas and queries exactly as you would on-premises. The core use case is lift-and-shift of existing RDBMS workloads.</p>
-<div class="section-label">Supported engines</div>
-<div class="kv-row"><div class="kv-key">MySQL 5.7, 8.0</div><div class="kv-val">Most common. Classic LAMP stack, WordPress, Drupal, standard web apps. Up to 96 vCPUs, 624GB RAM, 64TB.</div></div>
-<div class="kv-row"><div class="kv-key">PostgreSQL 9.6–15</div><div class="kv-val">Full PostgreSQL feature set including extensions: PostGIS (geospatial), pgvector (vector embeddings), pg_trgm (fuzzy search).</div></div>
-<div class="kv-row"><div class="kv-key">SQL Server 2017/2019</div><div class="kv-val">Enterprise, Standard, Web, Express editions. For Windows-based application stacks.</div></div>
-<div class="section-label">High availability and read replicas</div>
-<div class="kv-row"><div class="kv-key">High availability (HA)</div><div class="kv-val">Synchronous replication to a standby in a different zone. Automatic failover in ~60 seconds. Zero data loss. HA = 99.95% SLA. Without HA = 99.5%.</div></div>
-<div class="kv-row"><div class="kv-key">Read replicas</div><div class="kv-val">Asynchronous replicas for read scaling. Send read traffic to replicas to reduce load on primary. Replicas lag slightly (eventual consistency). Cannot promote in the normal sense — they exist to scale reads.</div></div>
-<div class="kv-row"><div class="kv-key">Cross-region replicas</div><div class="kv-val">Read replicas in different regions for DR or global read scaling. Can be promoted to a standalone primary if the source region fails.</div></div>
-<div class="kv-row"><div class="kv-key">Point-in-time recovery</div><div class="kv-val">Binary logging enables recovery to any point in time within the backup retention window. Configure backup retention (default 7 days, up to 365 days).</div></div>
-<div class="section-label">Connectivity</div>
-<div class="kv-row"><div class="kv-key">Cloud SQL Auth Proxy</div><div class="kv-val">Always use for application → Cloud SQL connections. Manages IAM authentication and TLS automatically. No IP allowlisting or SSL certificate management required. Standard practice for all production deployments.</div></div>
-<div class="kv-row"><div class="kv-key">Private IP</div><div class="kv-val">Deploy Cloud SQL with only a private IP (no public endpoint). Access via Auth Proxy or Private Service Connect. Recommended for all production environments.</div></div>`
-      },
-      {
-        title: 'Cloud SQL scaling limits and the Cloud SQL → Spanner decision',
-        body: `<p class="prose">Cloud SQL scales VERTICALLY only — you upgrade the instance to a larger machine type. There is no horizontal sharding built into Cloud SQL. When you hit the ceiling, the path is Cloud Spanner.</p>
+<div class="alert alert-amber"><strong>Critical exam trap — early deletion billing:</strong> Deleting an object before its class's minimum storage duration still bills you for the full minimum period. For example, if you delete a Coldline object at day 50, you are billed for all 90 days. The same applies to Nearline (30 days) and Archive (365 days). Always account for minimum duration before downclassing or deleting.</div>
+<div class="section-label">Autoclass</div>
+<p class="prose">Autoclass is a bucket-level feature that automatically transitions objects between storage classes based on their actual access patterns. You don't need to write or maintain manual lifecycle rules. Use Autoclass when access patterns are unpredictable or when you want cost optimization without operational overhead. Note that Autoclass and manual lifecycle rules are mutually exclusive on a bucket.</p>
+<div class="section-label">Decision reference</div>
 <div class="cmp-wrap"><table class="cmp">
-<thead><tr><th>Dimension</th><th>Cloud SQL</th><th>Cloud Spanner</th></tr></thead>
+<thead><tr><th>Class</th><th>Access frequency</th><th>Min duration</th><th>Retrieval cost</th><th>Use case</th></tr></thead>
 <tbody>
-<tr><td>Scaling model</td><td>Vertical only (bigger instance)</td><td>Horizontal (add nodes)</td></tr>
-<tr><td>Max storage</td><td>~64TB</td><td>Petabytes</td></tr>
-<tr><td>Regions</td><td>Single region</td><td>Single or multi-region</td></tr>
-<tr><td>SLA</td><td>99.95% (with HA)</td><td>99.999% (multi-region)</td></tr>
-<tr><td>ACID scope</td><td>Single region</td><td>Global multi-region</td></tr>
-<tr><td>Cost</td><td>Lower</td><td>Significantly higher</td></tr>
-<tr><td>Choose when</td><td>Existing MySQL/PostgreSQL app, single region, cost-sensitive</td><td>Global transactions, horizontal scale, five nines</td></tr>
+<tr><td>Standard</td><td>Frequent / unpredictable</td><td>None</td><td>Free</td><td>Active data, real-time pipelines</td></tr>
+<tr><td>Nearline</td><td>~Once per month</td><td>30 days</td><td>Low</td><td>Monthly backups, reporting</td></tr>
+<tr><td>Coldline</td><td>~Once per quarter</td><td>90 days</td><td>Medium</td><td>DR archives, old logs</td></tr>
+<tr><td>Archive</td><td>Rarely / never</td><td>365 days</td><td>High</td><td>Compliance, legal holds</td></tr>
+</tbody>
+</table></div>`},
+]},
+
+{id:'lifecycle', label:'Lifecycle Rules', freq:'Automation', topics:[
+{title:'Actions, conditions, and the standard archival pattern', body:`
+<p class="prose">Lifecycle rules let you automate storage class transitions and object deletion based on conditions. Each rule has a <strong>condition</strong> and an <strong>action</strong>. Rules are evaluated once per day, so there can be up to a 24-hour delay before any rule fires.</p>
+<div class="section-label">Two supported actions</div>
+<ul class="content-list">
+  <li><code>SetStorageClass</code> — transitions the object to a different storage class (e.g. Standard → Coldline)</li>
+  <li><code>Delete</code> — permanently deletes the object</li>
+</ul>
+<div class="section-label">Standard three-tier archival pattern</div>
+<div class="flow">
+  <div class="fb blue"><span class="fb-label">Day 0</span><span class="fb-name">Standard</span><span class="fb-note">Active storage</span></div>
+  <div class="fa">→</div>
+  <div class="fb teal"><span class="fb-label">Age &gt; 30 days</span><span class="fb-name">Nearline</span><span class="fb-note">SetStorageClass</span></div>
+  <div class="fa">→</div>
+  <div class="fb amber"><span class="fb-label">Age &gt; 90 days</span><span class="fb-name">Coldline</span><span class="fb-note">SetStorageClass</span></div>
+  <div class="fa">→</div>
+  <div class="fb coral"><span class="fb-label">Age &gt; 365 days</span><span class="fb-name">Archive or Delete</span><span class="fb-note">Final action</span></div>
+</div>
+<div class="section-label">Conditions you can use</div>
+<ul class="content-list">
+  <li><code>age</code> — number of days since the object was created</li>
+  <li><code>isLive</code> — whether the object is the current (live) version. Set to <code>false</code> to target noncurrent versions only</li>
+  <li><code>numNewerVersions</code> — matches noncurrent objects that have at least N newer versions. Used to keep only the most recent N versions</li>
+  <li><code>matchesStorageClass</code> — only apply the rule to objects already in a certain class</li>
+  <li><code>createdBefore</code> — date-based condition for compliance or migration scenarios</li>
+</ul>
+<div class="section-label">Versioned bucket housekeeping pattern</div>
+<p class="prose">For buckets with versioning enabled, clean up old noncurrent versions automatically. A common configuration:</p>
+<div class="alert alert-blue"><code>numNewerVersions=3</code> + <code>isLive=false</code> → <strong>Delete</strong><br><br>This keeps the 3 most recent versions of any object and deletes older ones — preventing unbounded storage growth.</div>
+<div class="alert alert-amber"><strong>Exam trap:</strong> SetStorageClass cannot transition objects <em>to</em> Standard class via lifecycle rules. You can only move objects to colder classes (Nearline, Coldline, Archive) or delete them. Standard → colder is allowed. Colder → Standard is not a lifecycle action.</div>`},
+]},
+
+{id:'versioning', label:'Versioning & Retention', freq:'Data Protection', topics:[
+{title:'Object versioning, soft delete, and retention policies', body:`
+<p class="prose">Cloud Storage offers three overlapping but distinct mechanisms for protecting data from accidental deletion or modification.</p>
+<div class="section-label">Object versioning</div>
+<p class="prose">When versioning is enabled on a bucket, overwriting or deleting an object does not permanently remove it. Instead, the previous copy becomes a <strong>noncurrent version</strong>, identified by a generation number.</p>
+<ul class="content-list">
+  <li>Noncurrent versions are still stored and still billed — you need lifecycle rules to clean them up</li>
+  <li>Deletion creates a <strong>delete marker</strong> — the live object disappears but the noncurrent version persists</li>
+  <li>Best for scenarios where you need full version history or to recover from accidental overwrites</li>
+</ul>
+<div class="section-label">Soft delete</div>
+<p class="prose">Soft delete is a bucket-level feature, separate from versioning, that retains deleted objects for a configurable period before permanent deletion.</p>
+<ul class="content-list">
+  <li>Retention window: configurable from <strong>7 to 90 days</strong></li>
+  <li>Simpler recovery workflow than versioning — no generation number management required</li>
+  <li>Soft-deleted objects incur storage costs for the duration of the retention window</li>
+</ul>
+<div class="g2">
+  <div class="cc cc-purple"><div class="cc-title">Versioning — when to use</div><div class="cc-body">You need full history, the ability to restore any specific past version, or you're building a system where auditability of every change matters.</div></div>
+  <div class="cc cc-teal"><div class="cc-title">Soft delete — when to use</div><div class="cc-body">You primarily want protection against accidental deletions and want simple recovery without the complexity of managing versions and generation numbers.</div></div>
+</div>
+<div class="section-label">Retention policies</div>
+<p class="prose">A retention policy sets a minimum duration during which objects in a bucket <strong>cannot be deleted or modified</strong> — even by project owners or administrators.</p>
+<ul class="content-list">
+  <li>Used for regulatory compliance — e.g. financial records that must be retained for 7 years</li>
+  <li>A bucket with a retention policy can be <strong>locked</strong> — once locked, the policy cannot be removed or shortened, ever</li>
+  <li>Locking is irreversible — use it only when compliance genuinely requires it</li>
+</ul>
+<div class="alert alert-red"><strong>Exam trap — locking is permanent:</strong> Locking a retention policy cannot be undone. A locked bucket's retention period can only be increased, never decreased. If you lock a bucket with a 1-year retention policy, you cannot delete objects for at least 1 year and cannot remove the lock.</div>`},
+]},
+
+{id:'access', label:'Access Control', freq:'Security', topics:[
+{title:'Uniform vs fine-grained access and key IAM roles', body:`
+<p class="prose">Cloud Storage supports two access control models. You choose one per bucket, and the recommendation is to use uniform access for almost all cases.</p>
+<div class="g2">
+  <div class="cc cc-blue"><div class="cc-title">Uniform bucket-level access</div><div class="cc-sub">Recommended</div><div class="cc-body">Permissions are governed entirely by IAM. Per-object ACLs are disabled. Easier to audit because there is one consistent model — you don't have to check both IAM and ACLs to understand who can access what.<br><br><strong>Once uniform access is enabled for 90 days, it cannot be disabled.</strong></div></div>
+  <div class="cc cc-amber"><div class="cc-title">Fine-grained access</div><div class="cc-sub">Use only when required</div><div class="cc-body">Combines IAM with per-object ACLs. Allows different permissions for individual objects within the same bucket. Only needed when object-level granularity is genuinely required — for example, a multi-tenant bucket where each tenant's objects must have different access.</div></div>
+</div>
+<div class="section-label">Key IAM roles</div>
+<div class="kv-row"><div class="kv-key"><code>storage.objectCreator</code></div><div class="kv-val">Write-only. Allows uploading objects but not reading or listing them. Use for service accounts that only need to deposit files — e.g. a logging agent writing log files to a bucket.</div></div>
+<div class="kv-row"><div class="kv-key"><code>storage.objectViewer</code></div><div class="kv-val">Read-only. Allows reading and listing objects but not creating or deleting them. Use for service accounts that only need to read data — e.g. a reporting pipeline reading from a data bucket.</div></div>
+<div class="kv-row"><div class="kv-key"><code>storage.objectAdmin</code></div><div class="kv-val">Full control over objects — read, write, delete, and update metadata. Use only when full object-level management is genuinely needed.</div></div>
+<div class="kv-row"><div class="kv-key"><code>storage.admin</code></div><div class="kv-val">Full control over buckets AND objects, including creating and deleting buckets. Rarely needed for service accounts — only for infrastructure tooling.</div></div>
+<div class="section-label">Signed URLs</div>
+<p class="prose">Signed URLs grant time-limited, permission-less access to a specific object without requiring the recipient to have a Google account or IAM role. The URL encodes credentials and an expiry timestamp. Use for: sharing files with external parties, pre-signed upload URLs for user-generated content, temporary download links.</p>
+<div class="alert alert-blue">Exam pattern: "External users need to download a specific file from GCS without a Google account." → Generate a Signed URL with a short expiry (e.g. 1 hour). The user accesses the URL directly — no IAM or Google login required.</div>`},
+]},
+
+{id:'encryption', label:'Encryption', freq:'Security', topics:[
+{title:'GMEK, CMEK, and CSEK — the CSEK availability trap', body:`
+<p class="prose">Cloud Storage supports three encryption models. One of them — CSEK — is a source of frequent exam confusion because its availability differs across GCP services.</p>
+<div class="cmp-wrap"><table class="cmp">
+<thead><tr><th>Encryption type</th><th>Description</th><th>BigQuery</th><th>Cloud Storage</th></tr></thead>
+<tbody>
+<tr>
+  <td><strong>GMEK</strong><br><span style="font-size:11px;color:var(--muted)">Google-managed</span></td>
+  <td>Default. Google manages the key lifecycle entirely. No configuration required. Satisfies most compliance requirements.</td>
+  <td class="check-yes">✓</td><td class="check-yes">✓</td>
+</tr>
+<tr>
+  <td><strong>CMEK</strong><br><span style="font-size:11px;color:var(--muted)">Customer-managed (Cloud KMS)</span></td>
+  <td>You create and manage the encryption key in Cloud KMS. You can rotate, disable, or destroy the key, which controls access to all data encrypted with it.</td>
+  <td class="check-yes">✓</td><td class="check-yes">✓</td>
+</tr>
+<tr>
+  <td><strong>CSEK</strong><br><span style="font-size:11px;color:var(--muted)">Customer-supplied raw keys</span></td>
+  <td>You supply the raw encryption key material directly with each API request. Google never stores the key — if you lose it, the data is permanently unrecoverable.</td>
+  <td class="check-no">✗</td><td class="check-yes">✓</td>
+</tr>
 </tbody>
 </table></div>
-<div class="alert alert-amber">Cloud SQL vs Spanner rule: "existing MySQL/PostgreSQL" → Cloud SQL. "Global transactions," "multi-region ACID," "replace sharded MySQL," "horizontal scaling relational" → Cloud Spanner. Cost is also a differentiator — Spanner is significantly more expensive per unit of throughput.</div>
-<div class="section-label">Database Migration Service (DMS)</div>
-<div class="kv-row"><div class="kv-key">What it does</div><div class="kv-val">Managed migration service with continuous replication. Keeps source and destination in sync during the migration period so the cutover window is minimal (minutes, not hours).</div></div>
-<div class="kv-row"><div class="kv-key">Homogeneous migration</div><div class="kv-val">MySQL → Cloud SQL MySQL, PostgreSQL → Cloud SQL PostgreSQL. Schema-compatible, straightforward.</div></div>
-<div class="kv-row"><div class="kv-key">Heterogeneous migration</div><div class="kv-val">Oracle → Cloud SQL PostgreSQL. DMS handles schema and data type conversion.</div></div>
-<div class="alert alert-blue">DMS exam pattern: "Migrate on-premises MySQL to Cloud SQL with minimal downtime." → Database Migration Service with continuous replication. The pipeline keeps source and Cloud SQL in sync until cutover — application switches connection string, then DMS replication is stopped.</div>`
-      }
-    ]
-  },
+<div class="alert alert-red"><strong>Critical exam point — CSEK is NOT available in BigQuery.</strong> Cloud Storage is the only major GCP analytics/storage service where customer-supplied raw keys apply. BigQuery supports GMEK and CMEK only. Any exam scenario asking about supplying your own raw key material to BigQuery is a trap — the correct answer is that this is not supported.</div>
+<div class="section-label">Choosing the right model</div>
+<div class="kv-row"><div class="kv-key">GMEK</div><div class="kv-val">Use by default. No configuration, no overhead, satisfies most compliance needs.</div></div>
+<div class="kv-row"><div class="kv-key">CMEK</div><div class="kv-val">Use when you need key lifecycle control — e.g. revoking access to all data by disabling a KMS key (crypto-shredding). Required by some compliance frameworks.</div></div>
+<div class="kv-row"><div class="kv-key">CSEK</div><div class="kv-val">Use only when you must supply raw key material and never let Google touch it. Extremely high operational risk — key loss = permanent data loss. Only for GCS, not BigQuery.</div></div>`},
+]},
 
-  /* ══════════════════════════════════════════════════
-     6. MEMORYSTORE
-  ══════════════════════════════════════════════════ */
-  {
-    id: 'memorystore', label: 'Memorystore', freq: 'Medium',
-    topics: [
-      {
-        title: 'Memorystore — in-memory for sub-millisecond latency',
-        body: `<p class="prose">Cloud Memorystore is fully managed Redis (and Valkey, the open-source Redis fork). Google handles provisioning, replication, patching, and failover. Applications connect using standard Redis clients — no code changes needed. Use it when sub-millisecond response times are required.</p>
-<div class="section-label">Redis data structures → use cases</div>
-<div class="g2">
-<div class="mini"><div class="mt">String + TTL (SETEX)</div><div class="mb">Session storage, cached API responses, feature flags, distributed locks. INCR + EXPIRE for rate limiting counters.</div></div>
-<div class="mini"><div class="mt">Sorted Set (ZADD/ZREVRANGE)</div><div class="mb">Leaderboards (score = rank), time-series event windows, priority queues. ZREVRANGE for top-N players.</div></div>
-<div class="mini"><div class="mt">Hash (HSET/HGET)</div><div class="mb">User profile cache, shopping cart contents, structured object cache. Partial updates without full object replacement.</div></div>
-<div class="mini"><div class="mt">List (LPUSH/BRPOP)</div><div class="mb">Task queue, message buffer, activity feed. BRPOP is a blocking pop — workers wait for items.</div></div>
-<div class="mini"><div class="mt">HyperLogLog</div><div class="mb">Approximate unique visitor counting with very low memory (~12KB regardless of cardinality). ±0.81% error rate.</div></div>
-<div class="mini"><div class="mt">Pub/Sub (PUBLISH/SUBSCRIBE)</div><div class="mb">Real-time notifications, chat (small scale). For large-scale durable messaging use Cloud Pub/Sub instead.</div></div>
+{id:'datalake', label:'Data Lake Patterns', freq:'Architecture', topics:[
+{title:'Hive partitioning, file formats, and the GCS data lake', body:`
+<p class="prose">Cloud Storage is the foundation of most GCP data lake architectures. Two decisions drive most of the design: how you organize files in the bucket (partitioning layout), and which file format you use.</p>
+<div class="section-label">Hive-partitioned layout</div>
+<p class="prose">The standard pattern for analytics workloads is to organize files in GCS using a Hive-style directory structure where partition values are encoded in the folder names:</p>
+<div class="code">gs://bucket/events/year=2024/month=01/day=15/file.parquet</div>
+<p class="prose">Both <strong>Dataproc</strong> (via Hive/Spark) and <strong>BigQuery</strong> (via external tables or BigLake) can read the folder names as partition pseudo-columns. This enables partition pruning — queries that filter on <code>year</code>, <code>month</code>, or <code>day</code> only scan the relevant folders rather than the entire dataset.</p>
+<div class="section-label">File format decision</div>
+<div class="kv-row"><div class="kv-key">Parquet</div><div class="kv-val">Columnar format with built-in compression. Ideal for data that has been cleaned and transformed. Best choice for BigQuery loads, Spark SQL queries, and anything queried analytically. Queries that only read a subset of columns are highly efficient.</div></div>
+<div class="kv-row"><div class="kv-key">Avro</div><div class="kv-val">Row-based format with schema embedded in the file. Excellent support for schema evolution — you can add fields without breaking existing readers. Standard choice for Dataflow pipelines and Pub/Sub message serialization. Better write performance than columnar formats.</div></div>
+<div class="kv-row"><div class="kv-key">JSON</div><div class="kv-val">Human-readable, schema-flexible. Use for the raw landing layer before any transformation. Easy to ingest from APIs and event streams. Not efficient for analytical queries — transform to Parquet before loading into BigQuery.</div></div>
+<div class="kv-row"><div class="kv-key">ORC</div><div class="kv-val">Another columnar format, common in Hadoop/Hive ecosystems. Comparable to Parquet. Prefer Parquet on GCP unless migrating existing ORC data.</div></div>
+<div class="section-label">Bronze / Silver / Gold zones</div>
+<div class="dt">
+  <div class="dr"><div class="dq"><strong>Bronze (raw)</strong> — gs://bucket/raw/</div><div class="da" style="background:var(--card-amber-bg);color:var(--card-amber-title);border:1px solid var(--card-amber-border)">JSON / Avro</div></div>
+  <div class="dr"><div class="dq"><strong>Silver (processed)</strong> — gs://bucket/processed/</div><div class="da" style="background:var(--card-blue-bg);color:var(--card-blue-title);border:1px solid var(--card-blue-border)">Parquet</div></div>
+  <div class="dr"><div class="dq"><strong>Gold (serving)</strong> — BigQuery dataset</div><div class="da" style="background:var(--accent-bg);color:var(--accent-text);border:1px solid var(--accent-border)">BQ tables</div></div>
 </div>
-<div class="section-label">Rate limiting pattern — exam favorite</div>
-<div class="code"># Rate limit: max 100 requests per minute per user
-def is_rate_limited(user_id: str) -> bool:
-    # Key includes current minute bucket
-    key = f"rate:{user_id}:{int(time.time() // 60)}"
-    count = redis_client.incr(key)
-    if count == 1:
-        redis_client.expire(key, 60)  # TTL = 60 seconds
-    return count > 100
-# Entire check completes in &lt; 0.5ms</div>`
-      },
-      {
-        title: 'Cache-aside pattern and Memorystore tiers',
-        body: `<p class="prose">The most common Memorystore use case is caching — storing results of expensive DB queries or API calls in Redis so repeated requests are served from memory.</p>
-<div class="section-label">Cache-aside (lazy loading) — the standard pattern</div>
-<div class="kv-row"><div class="kv-key">1. Check Redis first</div><div class="kv-val">Application tries to fetch the value from Redis by key. Operation completes in &lt; 1ms.</div></div>
-<div class="kv-row"><div class="kv-key">2. Cache hit</div><div class="kv-val">Key found → return cached value immediately. Database is never touched.</div></div>
-<div class="kv-row"><div class="kv-key">3. Cache miss</div><div class="kv-val">Key not found → query the primary database (Cloud SQL, Spanner, etc.). Store result in Redis with a TTL. Return result to caller.</div></div>
-<div class="kv-row"><div class="kv-key">TTL strategy</div><div class="kv-val">Always set a TTL so stale data eventually expires. 60s for near-real-time, 5–60 min for user data, 1hr for reports, 24hr for reference/config data.</div></div>
-<div class="section-label">Other caching patterns</div>
-<div class="kv-row"><div class="kv-key">Write-through</div><div class="kv-val">Every database write also updates the cache. Cache always consistent. Higher write latency. Use when reads vastly outnumber writes.</div></div>
-<div class="kv-row"><div class="kv-key">Write-behind</div><div class="kv-val">Writes go to cache, database updated asynchronously. Lowest write latency. Risk of data loss on cache failure. Rare in practice.</div></div>
-<div class="section-label">Memorystore tiers</div>
-<div class="kv-row"><div class="kv-key">Basic tier</div><div class="kv-val">No replica. Data LOST on instance failure. Development/testing only. Never use in production.</div></div>
-<div class="kv-row"><div class="kv-key">Standard tier</div><div class="kv-val">Primary + replica. Automatic failover in ~1 minute. Zero data loss. Always use Standard tier in production.</div></div>
-<div class="alert alert-blue">Cache-aside exam pattern: "A web API queries Cloud SQL for user profiles — 200ms latency. Same profiles requested thousands of times per second." → Add Memorystore (Redis) as cache. App checks Redis first (&lt; 1ms on hit), falls back to Cloud SQL (200ms) on miss and caches with 5-minute TTL.</div>
-<div class="section-label">When NOT to use Memorystore</div>
-<div class="kv-row"><div class="kv-key">As primary durable storage</div><div class="kv-val">Redis is in-memory — not durably persistent by default. Use as cache or supplement to a primary database, not as the primary data store.</div></div>
-<div class="kv-row"><div class="kv-key">Large datasets exceeding RAM</div><div class="kv-val">Memorystore instances are bounded by RAM. For petabyte-scale persistent data → Bigtable or BigQuery.</div></div>
-<div class="kv-row"><div class="kv-key">Complex queries or JOINs</div><div class="kv-val">Redis has no query language beyond key operations. For relational queries → Cloud SQL or Spanner.</div></div>`
-      }
-    ]
-  },
+<div class="alert alert-blue">Exam pattern: "Store raw data cost-effectively, process it, and make it available for analytics." → GCS Bronze (raw JSON/Avro) → Dataflow transform → GCS Silver (Parquet, Hive-partitioned) → BigQuery external table or load job → Gold BigQuery dataset.</div>`},
+]},
 
-  /* ══════════════════════════════════════════════════
-     7. EXAM SCENARIOS
-  ══════════════════════════════════════════════════ */
-  {
-    id: 'scenarios', label: 'Exam Scenarios', freq: 'Practice',
-    topics: [
-      {
-        title: 'Service selection scenarios — 10 practice questions',
-        body: `<div class="scenario-box"><div class="scenario-q">A stock trading platform processes 1 million price updates per second from 5,000 securities. Each update has a symbol, price, and timestamp. Queries always retrieve the last N readings for a specific symbol within milliseconds. Which database?</div><div class="scenario-a"><strong>Answer: Cloud Bigtable.</strong> Row key = symbol + "#" + (MAX_LONG - timestamp). Newest records sort first for each symbol — efficient "get latest N" via prefix scan. 1M writes/sec is well within Bigtable's throughput. BigQuery is wrong — seconds of latency vs milliseconds required.</div></div>
-<div class="scenario-box"><div class="scenario-q">A global bank needs to transfer funds between accounts. Each transfer must atomically debit one account and credit another, be globally consistent, and have zero possibility of duplicate transactions. Users are in 40 countries. Which database?</div><div class="scenario-a"><strong>Answer: Cloud Spanner.</strong> Global ACID transactions with external consistency across multiple regions. No other GCP service can guarantee globally consistent, multi-row, multi-region ACID transactions. Cloud SQL = single-region only. Bigtable = single-row atomic only.</div></div>
-<div class="scenario-box"><div class="scenario-q">A mobile gaming app needs user profiles, game state, and achievements that sync across devices in real time. The app must work fully offline and sync when reconnected. Expected 10M users. Which database?</div><div class="scenario-a"><strong>Answer: Firestore (Native mode).</strong> Document model for profiles/game state. Real-time listeners sync across devices. Built-in offline support with automatic sync on reconnect. Auto-scales to 10M users serverlessly. No idle instance cost.</div></div>
-<div class="scenario-box"><div class="scenario-q">The same gaming app also needs a global leaderboard. Top 100 players need to be retrieved in under 5ms. Scores update in real time. Which service handles the leaderboard?</div><div class="scenario-a"><strong>Answer: Memorystore (Redis Sorted Set).</strong> Use ZADD to update scores, ZREVRANGE to get top-N players. Sub-millisecond reads. This is the canonical Redis leaderboard pattern. Firestore queries for top-N would be too slow for this latency requirement.</div></div>
-<div class="scenario-box"><div class="scenario-q">A company runs a WordPress site on-premises with a MySQL 8.0 database (200GB). They want to migrate to GCP with minimal application code changes and no downtime. Which service and migration approach?</div><div class="scenario-a"><strong>Answer: Cloud SQL for MySQL + Database Migration Service.</strong> WordPress requires MySQL — Cloud SQL is fully managed MySQL. DMS with continuous replication keeps source and Cloud SQL in sync during migration. Cutover = change connection string. Zero application code changes.</div></div>
-<div class="scenario-box"><div class="scenario-q">A Bigtable table serving an IoT platform is experiencing degraded write performance. Cloud Monitoring shows one Bigtable node handling 90% of all writes while two others are nearly idle. What is the cause and fix?</div><div class="scenario-a"><strong>Answer: Row key hotspot.</strong> The row key likely uses a timestamp or sequential device ID as a prefix — all new writes sort to the same tablet (served by one node). Fix: redesign the row key using reverse timestamp (MAX_LONG - timestamp) or add a hash prefix/salt to distribute writes evenly across all tablets.</div></div>
-<div class="scenario-box"><div class="scenario-q">An e-commerce platform has a Cloud SQL PostgreSQL instance at maximum size (96 vCPU, 64TB). Write latency is increasing as the product catalog grows. Read replicas are already in use. What is the next step?</div><div class="scenario-a"><strong>Answer: Migrate to Cloud Spanner.</strong> Cloud SQL has hit its vertical scaling ceiling. Spanner provides horizontal scaling for writes and storage beyond 64TB. Alternatively, add Memorystore as a caching layer to reduce read load on Cloud SQL if the bottleneck is reads, not writes.</div></div>
-<div class="scenario-box"><div class="scenario-q">A data pipeline needs to store precomputed ML feature vectors keyed by user_id. During model serving, the system performs 500,000 feature lookups per second, each requiring &lt; 5ms latency. Expected data volume: 50 billion rows. Which storage?</div><div class="scenario-a"><strong>Answer: Cloud Bigtable.</strong> Row key = user_id. Features stored as columns. 50B rows at petabyte scale with millisecond lookups per row key = Bigtable's design point. BigQuery = seconds (wrong). Cloud SQL = can't handle 50B rows. Memorystore = can't hold petabytes in RAM.</div></div>
-<div class="scenario-box"><div class="scenario-q">An API processes 100,000 requests per second. Each request must verify the caller has not exceeded 1,000 requests per minute. The check must complete in &lt; 1ms to not add latency to the API. Which service?</div><div class="scenario-a"><strong>Answer: Memorystore (Redis).</strong> Use INCR + EXPIRE pattern: key = "rate:{api_key}:{minute_bucket}", INCR on each request, set 60-second TTL on first increment. Entire check completes in &lt; 0.5ms. No other GCP service provides the sub-millisecond latency needed for 100K concurrent checks.</div></div>
-<div class="scenario-box"><div class="scenario-q">A company needs both: (1) real-time inventory management (current stock levels, updated on every purchase/restock, queried by warehouse staff in &lt; 10ms), and (2) monthly trend analysis across 5 years of inventory history in SQL. How do you serve both?</div><div class="scenario-a"><strong>Answer: Two-layer HTAP architecture.</strong> Cloud Spanner (or Firestore) for operational inventory — low-latency reads/writes, ACID for inventory updates. BigQuery for historical analytics — petabyte SQL, trend reports, ML training. Use Dataflow or Spanner Change Streams → Pub/Sub → BigQuery to stream changes from operational to analytics in near real time.</div></div>`
-      },
-      {
-        title: 'Bigtable-specific scenario traps',
-        body: `<div class="scenario-box"><div class="scenario-q">An Apache HBase application runs on-premises and the company wants to migrate to GCP. The development team wants to reuse as much existing code as possible. Which GCP service?</div><div class="scenario-a"><strong>Answer: Cloud Bigtable.</strong> Bigtable is API-compatible with Apache HBase. Existing HBase application code connects to Bigtable by changing only the connection configuration (pointing to Bigtable's endpoint with appropriate credentials). No application code changes required.</div></div>
-<div class="scenario-box"><div class="scenario-q">A Bigtable table stores user activity events. The row key is designed as: user_id + "#" + event_type + "#" + timestamp. A query needs to retrieve all "purchase" events for user "user_001" from the last 30 days. Is this an efficient query?</div><div class="scenario-a"><strong>Answer: Yes, efficient.</strong> The query can use a row key range scan: prefix = "user_001#purchase#" with a timestamp range. Since rows are sorted by row key, this retrieves only matching rows. All data for user_001 is co-located. This is a well-designed composite key. However: "get most recent purchases" would require scanning forward from the lowest timestamp — consider using reverse timestamp if newest-first is the primary access pattern.</div></div>
-<div class="scenario-box"><div class="scenario-q">A Bigtable table has 10 column families. Performance is degrading. What is a likely cause?</div><div class="scenario-a"><strong>Answer: Too many column families.</strong> Best practice is 1–2 column families per table. Each column family requires separate storage and compaction overhead. 10 families is significantly above recommended limits. Consolidate related columns into fewer families. Note: this is different from column qualifiers — you can have millions of unique column qualifiers within a single family.</div></div>`
-      }
-    ]
-  },
+{id:'transfers', label:'Transfers', freq:'Migration', topics:[
+{title:'gsutil, Storage Transfer Service, and Transfer Appliance', body:`
+<p class="prose">GCP provides multiple options for moving data into Cloud Storage, each optimized for different scale and operational contexts.</p>
+<div class="transfer-grid">
+  <div class="tc">
+    <span class="tc-badge" style="background:var(--card-blue-bg);color:var(--card-blue-title);border:1px solid var(--card-blue-border)">gsutil / gcloud storage</span>
+    <div class="tc-title">Direct CLI upload</div>
+    <div class="tc-desc">Command-line tool. Uploads files from local machine or on-prem server to GCS over your network.</div>
+    <div class="divider"></div>
+    <div class="tc-row"><span class="tc-lbl">Best for</span><span class="tc-val">Up to ~10 TB</span></div>
+    <div class="tc-row"><span class="tc-lbl">Transfer type</span><span class="tc-val">One-time / ad hoc</span></div>
+    <div class="tc-row"><span class="tc-lbl">Scheduling</span><span class="tc-val">None — manual only</span></div>
+    <div class="tc-row"><span class="tc-lbl">Resume on failure</span><span class="tc-val">Limited</span></div>
+    <div class="tc-row"><span class="tc-lbl">Setup effort</span><span class="tc-val">Minimal — CLI only</span></div>
+  </div>
+  <div class="tc featured">
+    <span class="tc-badge" style="background:var(--card-blue-bg);color:var(--card-blue-title);border:1px solid var(--card-blue-border)">Storage Transfer Service</span>
+    <div class="tc-title">Managed scheduled transfer</div>
+    <div class="tc-desc">Fully managed. Scheduling, filtering, monitoring, auto-resume, bandwidth throttling. Install lightweight agent on-prem for on-prem → GCS transfers.</div>
+    <div class="divider"></div>
+    <div class="tc-row"><span class="tc-lbl">Best for</span><span class="tc-val">10 TB – hundreds of TB</span></div>
+    <div class="tc-row"><span class="tc-lbl">Transfer type</span><span class="tc-val">One-time OR recurring</span></div>
+    <div class="tc-row"><span class="tc-lbl">Scheduling</span><span class="tc-val">Cron schedule</span></div>
+    <div class="tc-row"><span class="tc-lbl">Resume on failure</span><span class="tc-val">Automatic</span></div>
+    <div class="tc-row"><span class="tc-lbl">Setup effort</span><span class="tc-val">Agent install on-prem</span></div>
+  </div>
+  <div class="tc">
+    <span class="tc-badge" style="background:var(--card-amber-bg);color:var(--card-amber-title);border:1px solid var(--card-amber-border)">Transfer Appliance</span>
+    <div class="tc-title">Physical hardware device</div>
+    <div class="tc-desc">Google ships a physical device (TA40 = 40 TB, TA300 = 300 TB). You copy locally, ship it back. Zero network usage.</div>
+    <div class="divider"></div>
+    <div class="tc-row"><span class="tc-lbl">Best for</span><span class="tc-val">50 TB+ (1 Gbps) / 500 TB+ (10 Gbps)</span></div>
+    <div class="tc-row"><span class="tc-lbl">Transfer type</span><span class="tc-val">One-time only</span></div>
+    <div class="tc-row"><span class="tc-lbl">Scheduling</span><span class="tc-val">Physical shipping cycle</span></div>
+    <div class="tc-row"><span class="tc-lbl">Resume on failure</span><span class="tc-val">N/A</span></div>
+    <div class="tc-row"><span class="tc-lbl">Setup effort</span><span class="tc-val">Device logistics — days</span></div>
+  </div>
+</div>
+<div class="section-label">Network transfer time — run this before choosing a method</div>
+<div class="cmp-wrap"><table class="cmp">
+<thead><tr><th>Data size</th><th>1 Gbps connection</th><th>10 Gbps connection</th><th>100 Gbps connection</th></tr></thead>
+<tbody>
+<tr><td>1 TB</td><td><span class="tt-ok">~3 hours</span></td><td><span class="tt-ok">~20 minutes</span></td><td><span class="tt-ok">&lt; 2 minutes</span></td></tr>
+<tr><td>10 TB</td><td><span class="tt-ok">~30 hours</span></td><td><span class="tt-ok">~3 hours</span></td><td><span class="tt-ok">~20 minutes</span></td></tr>
+<tr><td>100 TB</td><td><span class="tt-warn">~15 days</span></td><td><span class="tt-ok">~36 hours</span></td><td><span class="tt-ok">~3.6 hours</span></td></tr>
+<tr><td>1 PB</td><td><span class="tt-warn">~150 days</span></td><td><span class="tt-warn">~15 days</span></td><td><span class="tt-ok">~36 hours</span></td></tr>
+<tr><td>10 PB</td><td><span class="tt-warn">~4 years</span></td><td><span class="tt-warn">~150 days</span></td><td><span class="tt-warn">~15 days</span></td></tr>
+</tbody>
+</table></div>
+<p class="prose" style="font-size:12px;color:var(--muted)">Assumes ~60% effective network utilisation. Green = gsutil or STS is fine. Amber = seriously consider Transfer Appliance instead.</p>
+<div class="alert alert-amber"><strong>The network math trap:</strong> Exam scenarios often give a large dataset and a limited connection and ask which method to use. 2 PB over 1 Gbps ≈ 185 days. If a scenario has a tight migration deadline (e.g. "must complete within 2 weeks") and limited bandwidth, the answer is almost always <strong>Transfer Appliance</strong>.</div>`},
+]},
 
-  /* ══════════════════════════════════════════════════
-     8. TRAPS & CHEAT SHEET
-  ══════════════════════════════════════════════════ */
-  {
-    id: 'traps', label: 'Traps & Cheatsheet', freq: 'Review',
-    topics: [
-      {
-        title: 'Cross-service traps — most commonly missed on the exam',
-        body: `<div class="kv-row"><div class="kv-key">BigQuery for random lookups</div><div class="kv-val">WRONG. BigQuery = seconds. For ms lookups → Bigtable. For sub-ms → Memorystore.</div></div>
-<div class="kv-row"><div class="kv-key">Bigtable for SQL analytics</div><div class="kv-val">WRONG. No SQL, no JOINs, no aggregations. Analytics → BigQuery.</div></div>
-<div class="kv-row"><div class="kv-key">Cloud SQL for global ACID</div><div class="kv-val">WRONG. Cloud SQL is single-region only. Global ACID → Cloud Spanner.</div></div>
-<div class="kv-row"><div class="kv-key">Cloud SQL for horizontal scaling</div><div class="kv-val">WRONG. Cloud SQL is vertically scaled only. Horizontal → Cloud Spanner.</div></div>
-<div class="kv-row"><div class="kv-key">Bigtable for datasets &lt; 300GB</div><div class="kv-val">WRONG. Expensive at small scale. Use Cloud SQL or Firestore.</div></div>
-<div class="kv-row"><div class="kv-key">Bigtable for multi-row ACID</div><div class="kv-val">WRONG. Single-row atomic writes only. Multi-row ACID → Spanner.</div></div>
-<div class="kv-row"><div class="kv-key">Memorystore as primary storage</div><div class="kv-val">WRONG. Not durable by default. Cache only — primary data lives elsewhere.</div></div>
-<div class="kv-row"><div class="kv-key">Firestore for analytics</div><div class="kv-val">WRONG. No aggregations or JOINs. Analytics → BigQuery.</div></div>
-<div class="kv-row"><div class="kv-key">Spanner for simple low-traffic apps</div><div class="kv-val">WRONG (usually). Expensive. For simple apps → Cloud SQL. Spanner = scale + global ACID.</div></div>
-<div class="alert alert-amber">Most confused pair — Bigtable vs BigQuery: Both petabyte-scale. Bigtable = online serving, ms lookups, NoSQL, write-heavy. BigQuery = offline analytics, second-level SQL scans, OLAP. Never swap them.</div>`
-      },
-      {
-        title: 'Bigtable row key rules — commit these cold',
-        body: `<div class="kv-row"><div class="kv-key">Sequential IDs as prefix</div><div class="kv-val">NEVER — causes write hotspot.</div></div>
-<div class="kv-row"><div class="kv-key">Timestamp as prefix</div><div class="kv-val">NEVER as raw timestamp — causes write hotspot. Use REVERSE timestamp instead.</div></div>
-<div class="kv-row"><div class="kv-key">Low-cardinality prefix</div><div class="kv-val">NEVER — concentrates writes. Add hash salt.</div></div>
-<div class="kv-row"><div class="kv-key">Reverse timestamp pattern</div><div class="kv-val">GOOD — newest records sort first, distributes writes over time.</div></div>
-<div class="kv-row"><div class="kv-key">Hash prefix / salt</div><div class="kv-val">GOOD — distributes writes across all tablets evenly.</div></div>
-<div class="alert alert-amber">Most confused pair one last time: Bigtable = online serving, ms lookups, NoSQL, high-write-throughput, time-series. BigQuery = offline analytics, second-level SQL scans, OLAP. A question mentioning "low-latency" and "large scale" together means Bigtable, not BigQuery.</div>`
-      },
-      {
-        title: 'Complete final cheat sheet — service selection',
-        body: `<div class="decision-table">
-<div class="decision-row"><div class="decision-q">Time-series / IoT / sensor data at scale / HBase migration</div><div class="decision-a" style="background:#050f1a;color:#4d9fff;border:1px solid #0f3050">→ Bigtable</div></div>
-<div class="decision-row"><div class="decision-q">Low-latency random reads at petabyte scale (ms)</div><div class="decision-a" style="background:#050f1a;color:#4d9fff;border:1px solid #0f3050">→ Bigtable</div></div>
-<div class="decision-row"><div class="decision-q">Global ACID / multi-region transactions / external consistency</div><div class="decision-a" style="background:#100a1a;color:#b84dff;border:1px solid #3d1550">→ Cloud Spanner</div></div>
-<div class="decision-row"><div class="decision-q">Horizontally scalable relational SQL / replace sharded MySQL</div><div class="decision-a" style="background:#100a1a;color:#b84dff;border:1px solid #3d1550">→ Cloud Spanner</div></div>
-<div class="decision-row"><div class="decision-q">Mobile/web app, real-time sync, document model, offline support</div><div class="decision-a" style="background:#1a0d06;color:#ff7a4d;border:1px solid #4d2510">→ Firestore</div></div>
-<div class="decision-row"><div class="decision-q">Existing MySQL / PostgreSQL / SQL Server / lift-and-shift RDBMS</div><div class="decision-a" style="background:#091a11;color:#4dff91;border:1px solid #0f4024">→ Cloud SQL</div></div>
-<div class="decision-row"><div class="decision-q">Sub-millisecond caching / rate limiting / leaderboard / sessions</div><div class="decision-a" style="background:#1a1000;color:#ffb84d;border:1px solid #4d3000">→ Memorystore</div></div>
-<div class="decision-row"><div class="decision-q">Petabyte SQL analytics / BI / OLAP / data warehouse</div><div class="decision-a" style="background:#050f1a;color:#4d9fff;border:1px solid #0f3050">→ BigQuery</div></div>
-<div class="decision-row"><div class="decision-q">Object storage / data lake / blobs / archival</div><div class="decision-a" style="background:#100a1a;color:#b84dff;border:1px solid #3d1550">→ Cloud Storage</div></div>
-</div>`
-      }
-    ]
-  }
+{id:'data-transfer', label:'Data Transfer Comparison', freq:'Reference', topics:[
+{title:'All GCP transfer tools — full side-by-side comparison', body:`
+<p class="prose">Beyond GCS-focused tools, GCP provides specialised transfer services for databases and data warehouses. Here is the complete picture.</p>
+<div class="transfer-grid" style="grid-template-columns:1fr 1fr 1fr;margin-bottom:10px">
+  <div class="tc">
+    <span class="tc-badge" style="background:var(--card-blue-bg);color:var(--card-blue-title);border:1px solid var(--card-blue-border)">gsutil / gcloud storage</span>
+    <div class="tc-title">Direct CLI upload</div>
+    <div class="tc-desc">Command-line. Uploads from local machine or on-prem server to GCS over your network.</div>
+    <div class="divider"></div>
+    <div class="tc-row"><span class="tc-lbl">Best for</span><span class="tc-val">Up to ~10 TB</span></div>
+    <div class="tc-row"><span class="tc-lbl">Type</span><span class="tc-val">One-time / ad hoc</span></div>
+    <div class="tc-row"><span class="tc-lbl">Scheduling</span><span class="tc-val">None</span></div>
+    <div class="tc-row"><span class="tc-lbl">Network</span><span class="tc-val">Uses your bandwidth</span></div>
+    <div class="tc-row"><span class="tc-lbl">Setup</span><span class="tc-val">Minimal</span></div>
+  </div>
+  <div class="tc featured">
+    <span class="tc-badge" style="background:var(--card-blue-bg);color:var(--card-blue-title);border:1px solid var(--card-blue-border)">Storage Transfer Service</span>
+    <div class="tc-title">Managed scheduled transfer</div>
+    <div class="tc-desc">Fully managed. Scheduling, filtering, monitoring, auto-resume. Agent on-prem or cloud-to-cloud (S3, Azure Blob).</div>
+    <div class="divider"></div>
+    <div class="tc-row"><span class="tc-lbl">Best for</span><span class="tc-val">10 TB – hundreds of TB</span></div>
+    <div class="tc-row"><span class="tc-lbl">Type</span><span class="tc-val">One-time OR recurring</span></div>
+    <div class="tc-row"><span class="tc-lbl">Scheduling</span><span class="tc-val">Cron schedule</span></div>
+    <div class="tc-row"><span class="tc-lbl">Network</span><span class="tc-val">Uses your bandwidth</span></div>
+    <div class="tc-row"><span class="tc-lbl">Setup</span><span class="tc-val">Agent install on-prem</span></div>
+  </div>
+  <div class="tc">
+    <span class="tc-badge" style="background:var(--card-amber-bg);color:var(--card-amber-title);border:1px solid var(--card-amber-border)">Transfer Appliance</span>
+    <div class="tc-title">Physical hardware device</div>
+    <div class="tc-desc">TA40 = 40 TB, TA300 = 300 TB. Copy locally, ship back. Zero network usage.</div>
+    <div class="divider"></div>
+    <div class="tc-row"><span class="tc-lbl">Best for</span><span class="tc-val">50 TB+ (1G) / 500 TB+ (10G)</span></div>
+    <div class="tc-row"><span class="tc-lbl">Type</span><span class="tc-val">One-time only</span></div>
+    <div class="tc-row"><span class="tc-lbl">Scheduling</span><span class="tc-val">Physical shipping</span></div>
+    <div class="tc-row"><span class="tc-lbl">Network</span><span class="tc-val">Zero — local copy</span></div>
+    <div class="tc-row"><span class="tc-lbl">Setup</span><span class="tc-val">Device logistics — days</span></div>
+  </div>
+</div>
+<div class="transfer-grid" style="grid-template-columns:1fr 1fr 1fr">
+  <div class="tc">
+    <span class="tc-badge" style="background:var(--mini-bg);color:var(--muted);border:1px solid var(--border)">Dedicated Interconnect</span>
+    <div class="tc-title">Private network connection</div>
+    <div class="tc-desc">Physical private line between your data centre and Google. Run STS or gsutil over it for maximum throughput without the public internet.</div>
+    <div class="divider"></div>
+    <div class="tc-row"><span class="tc-lbl">Best for</span><span class="tc-val">Ongoing high-volume</span></div>
+    <div class="tc-row"><span class="tc-lbl">Bandwidth</span><span class="tc-val">10 Gbps – 100 Gbps</span></div>
+    <div class="tc-row"><span class="tc-lbl">Security</span><span class="tc-val">No public internet</span></div>
+    <div class="tc-row"><span class="tc-lbl">Setup</span><span class="tc-val">High — weeks and cost</span></div>
+  </div>
+  <div class="tc">
+    <span class="tc-badge" style="background:var(--card-green-bg);color:var(--card-green-title);border:1px solid var(--card-green-border)">Database Migration Service</span>
+    <div class="tc-title">Relational DB migration</div>
+    <div class="tc-desc">CDC replication keeps source and destination in sync. Minimal-downtime cutover — seconds only.</div>
+    <div class="divider"></div>
+    <div class="tc-row"><span class="tc-lbl">Sources</span><span class="tc-val">MySQL, PostgreSQL, Oracle, SQL Server</span></div>
+    <div class="tc-row"><span class="tc-lbl">Destinations</span><span class="tc-val">Cloud SQL, AlloyDB</span></div>
+    <div class="tc-row"><span class="tc-lbl">Type</span><span class="tc-val">Backfill + ongoing CDC</span></div>
+    <div class="tc-row"><span class="tc-lbl">Downtime</span><span class="tc-val">Seconds on cutover</span></div>
+    <div class="tc-row"><span class="tc-lbl">Setup</span><span class="tc-val">Moderate</span></div>
+  </div>
+  <div class="tc">
+    <span class="tc-badge" style="background:var(--card-teal-bg);color:var(--card-teal-title);border:1px solid var(--card-teal-border)">BQ Data Transfer Service</span>
+    <div class="tc-title">Warehouse &amp; SaaS → BigQuery</div>
+    <div class="tc-desc">Managed ingestion into BigQuery from data warehouses and SaaS platforms. BQ Migration Service handles SQL translation.</div>
+    <div class="divider"></div>
+    <div class="tc-row"><span class="tc-lbl">Sources</span><span class="tc-val">Redshift, Teradata, S3, Google Ads, Salesforce</span></div>
+    <div class="tc-row"><span class="tc-lbl">Destination</span><span class="tc-val">BigQuery only</span></div>
+    <div class="tc-row"><span class="tc-lbl">Type</span><span class="tc-val">One-time or recurring</span></div>
+    <div class="tc-row"><span class="tc-lbl">Setup</span><span class="tc-val">Low — fully managed</span></div>
+  </div>
+</div>
+<div class="section-label">Decision rules</div>
+<div class="thresh">
+  <div class="thresh-row"><span class="thresh-key">Small / ad hoc</span><span class="thresh-val">Under ~10 TB, one-time, no scheduling needed → gsutil</span></div>
+  <div class="thresh-row"><span class="thresh-key">Recurring sync</span><span class="thresh-val">Any size, daily/weekly, need monitoring and resume → Storage Transfer Service with agent</span></div>
+  <div class="thresh-row"><span class="thresh-key">Cloud-to-cloud</span><span class="thresh-val">S3 or Azure Blob → GCS → Storage Transfer Service (no agent needed)</span></div>
+  <div class="thresh-row"><span class="thresh-key">Network too slow</span><span class="thresh-val">Transfer would take more than 1–2 weeks → Transfer Appliance (TA40 or TA300)</span></div>
+  <div class="thresh-row"><span class="thresh-key">No public internet</span><span class="thresh-val">Security/compliance requires private path → Dedicated Interconnect + Storage Transfer Service</span></div>
+  <div class="thresh-row"><span class="thresh-key">Relational database</span><span class="thresh-val">MySQL / PostgreSQL / Oracle / SQL Server → Database Migration Service</span></div>
+  <div class="thresh-row"><span class="thresh-key">Warehouse → BigQuery</span><span class="thresh-val">Redshift / Teradata / SaaS platforms → BigQuery Data Transfer Service</span></div>
+  <div class="thresh-row"><span class="thresh-key">Sneakernet threshold</span><span class="thresh-val">1 Gbps: &gt;50 TB | 10 Gbps: &gt;500 TB | 100 Gbps: &gt;5 PB → Transfer Appliance wins</span></div>
+</div>`},
+]},
+
+{id:'events', label:'Event-Driven Patterns', freq:'Architecture', topics:[
+{title:'Pub/Sub notifications, Eventarc, and event types', body:`
+<p class="prose">Cloud Storage integrates with GCP's eventing infrastructure to support fully event-driven data pipelines — no polling required. When a file lands in a bucket, downstream processing can begin automatically.</p>
+<div class="section-label">Pub/Sub notifications (classic pattern)</div>
+<p class="prose">Configure a bucket to publish a Pub/Sub notification whenever specific events occur. The most common event type is <code>OBJECT_FINALIZE</code>, which fires whenever a new object is successfully created or overwritten.</p>
+<div class="flow">
+  <div class="fb blue"><span class="fb-label">Trigger</span><span class="fb-name">New file lands</span><span class="fb-note">OBJECT_FINALIZE</span></div>
+  <div class="fa">→</div>
+  <div class="fb teal"><span class="fb-label">Notification</span><span class="fb-name">Pub/Sub message</span><span class="fb-note">Object metadata</span></div>
+  <div class="fa">→</div>
+  <div class="fb purple"><span class="fb-label">Processing</span><span class="fb-name">Cloud Function</span><span class="fb-note">Or Dataflow pipeline</span></div>
+</div>
+<p class="prose">The Pub/Sub message contains metadata about the new object (bucket name, object name, size, content type). The downstream Cloud Function or Dataflow job uses this metadata to locate and process the file.</p>
+<div class="section-label">Eventarc (newer approach)</div>
+<p class="prose">Eventarc routes GCS events directly to Cloud Run services or Workflows without needing to manually configure Pub/Sub topics and subscriptions. Same event types, simpler configuration model.</p>
+<div class="g2">
+  <div class="cc cc-teal"><div class="cc-title">Pub/Sub notifications</div><div class="cc-body">More established, more flexible. Use when your consumer is a Cloud Function, Dataflow, or any system that can subscribe to a Pub/Sub topic — including on-prem systems.</div></div>
+  <div class="cc cc-purple"><div class="cc-title">Eventarc</div><div class="cc-body">Newer and simpler to configure. Use when routing to Cloud Run or Workflows and you want a unified eventing model with less infrastructure to manage.</div></div>
+</div>
+<div class="section-label">Key event types</div>
+<ul class="content-list">
+  <li><code>OBJECT_FINALIZE</code> — object created or overwritten (most common, triggers downstream pipeline)</li>
+  <li><code>OBJECT_DELETE</code> — object deleted or overwritten (fires for the old version)</li>
+  <li><code>OBJECT_ARCHIVE</code> — object archived when versioning is on (noncurrent version created)</li>
+  <li><code>OBJECT_METADATA_UPDATE</code> — object metadata changed</li>
+</ul>
+<div class="alert alert-blue">Exam pattern: "A Dataflow pipeline should start processing automatically whenever a new file lands in a GCS bucket." → Configure a Pub/Sub notification on the bucket for OBJECT_FINALIZE events. The Dataflow pipeline subscribes to the Pub/Sub topic — each message triggers processing of the new file. Alternatively use a GCSObjectExistenceSensor in Composer with mode="reschedule".</div>`},
+]},
 
 ]; // END TABS
-
-const tabBar = document.getElementById('tabBar');
-const tabContent = document.getElementById('tabContent');
 
 /* ════ NOTES ENGINE v3 ════════════════════════════════════════════ */
 (function() {
@@ -2200,6 +1953,9 @@ window.neTestAndSave = function(){
 /* ════ END NOTES ENGINE v3 ════════════════════════════════════════ */
 
 
+const tabBar = document.getElementById('tabBar');
+const tabContent = document.getElementById('tabContent');
+
 TABS.forEach((tab, ti) => {
   const btn = document.createElement('button');
   btn.className = 'tab-btn' + (ti === 0 ? ' active' : '');
@@ -2218,13 +1974,12 @@ TABS.forEach((tab, ti) => {
   sec.className = 'tab-section' + (ti === 0 ? ' active' : '');
   sec.id = 'sec-' + ti;
 
-    tab.topics.forEach((topic, tpi) => {
+  tab.topics.forEach((topic, tpi) => {
     const gid = `g${ti}_${tpi}`;
     const cid = `c${ti}_${tpi}`;
     const cardId = `${tab.id}_${tpi}`;
     const div = document.createElement('div');
     div.className = 'gap';
-    // Set card HTML without note zone (avoids backtick conflicts in template literal)
     div.innerHTML = `
       <div class="gap-header" onclick="tog('${gid}','${cid}')">
         <div class="gap-num">${tpi + 1}</div>
@@ -2233,14 +1988,12 @@ TABS.forEach((tab, ti) => {
         <span class="chevron${tpi === 0 ? ' open' : ''}" id="${cid}">▶</span>
       </div>
       <div class="gap-body${tpi === 0 ? ' open' : ''}" id="${gid}">${topic.body}</div>`;
-    // Append note zone separately (its HTML contains backticks which break template literals)
     const bodyEl = div.querySelector('#' + gid);
-    const noteZoneEl = document.createElement('div');
-    noteZoneEl.innerHTML = buildNoteZone(cardId);
-    bodyEl.appendChild(noteZoneEl.firstElementChild || noteZoneEl);
+    const nzWrap = document.createElement('div');
+    nzWrap.innerHTML = buildNoteZone(cardId);
+    bodyEl.appendChild(nzWrap.firstElementChild || nzWrap);
     sec.appendChild(div);
   });
-
   tabContent.appendChild(sec);
 });
 
@@ -2248,20 +2001,14 @@ TABS.forEach((tab, ti) => {
   tab.topics.forEach((_, tpi) => { initNotes(`${tab.id}_${tpi}`); });
 });
 
-// Sync sidebar with first active tab on load
 if (typeof sbHighlightSubtopic === 'function' && TABS.length > 0) {
   sbHighlightSubtopic(TABS[0].id);
 }
-
 
 function tog(b, c) {
   document.getElementById(b).classList.toggle('open');
   document.getElementById(c).classList.toggle('open');
 }
-
-
-
-
 
 /* ════ SIDEBAR + BOTTOM BAR JS ════ */
 (function () {
@@ -2355,6 +2102,39 @@ function closeSidebar() {}
 /* ════ END SIDEBAR JS ════ */
 
 
+
 </script>
+
+<!-- ═══ LIGHTBOX ═══ -->
+<div class="ne-lightbox" id="neLightbox" onclick="this.classList.remove('open')">
+  <img id="neLightboxImg" src="" alt="note image">
+</div>
+
+<!-- ═══ GITHUB SETTINGS MODAL ═══ -->
+<div class="ne-settings-overlay" id="neSettingsOverlay">
+  <div class="ne-settings-modal">
+    <h3>GitHub Sync Settings</h3>
+    <p>Notes and images will auto-commit to your GitHub repo on every save. Your PAT is stored only in your browser's localStorage and never sent anywhere except GitHub's API.</p>
+    <div class="ne-field">
+      <label>Personal Access Token</label>
+      <input type="password" id="nePatInput" placeholder="ghp_xxxxxxxxxxxxxxxxxxxx">
+      <div class="ne-hint">Needs <strong>repo</strong> scope. <a href="https://github.com/settings/tokens/new" target="_blank">Create one here ↗</a></div>
+    </div>
+    <div class="ne-field">
+      <label>Repository (owner/repo)</label>
+      <input type="text" id="neRepoInput" placeholder="yourname/gcp-pde-notes">
+    </div>
+    <div class="ne-field">
+      <label>Branch</label>
+      <input type="text" id="neBranchInput" placeholder="main">
+    </div>
+    <div class="ne-modal-status" id="neModalStatus"></div>
+    <div class="ne-modal-actions">
+      <button class="ne-modal-cancel" onclick="neCloseSettings()">Cancel</button>
+      <button class="ne-modal-save" onclick="neTestAndSave()">Save &amp; Test</button>
+    </div>
+  </div>
+</div>
+
 </body>
 </html>
